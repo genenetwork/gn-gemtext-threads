@@ -1,0 +1,116 @@
+# Information about lizardfs, and some usage suggestions
+
+On the octopus cluster the lizardfs head node is on octopus01, with disks being added mainly from the other nodes. SSDs are added to the lizardfs-chunkserver.service systemd service and HDDs added to the lizardfs-chunkserver-hdd.service. The storage pool is available on all nodes at /lizardfs, with the default storage option of "slow", which corresponds to two copies of the data, both on HDDs.
+
+## Interacting with lizardfs
+
+It is possible to query the server for all the available goals:
+
+```
+$ lizardfs-admin list-goals octopus01 9421
+
+Goal definitions:
+Id      Name    Definition
+1       1_copy  1_copy: $std _
+2       2_copy  2_copy: $std {_ _}
+...
+19      slow    slow: $std {HDD HDD}
+20      fast    fast: $std {SSD SSD}
+21      2ssd    2ssd: $std {SSD SSD}
+...
+```
+
+To change the replication level:
+
+```
+$ lizardfs setgoal slow /lizardfs/efraimf -r
+
+/lizardfs/efraimf/:
+ inodes with goal changed:               2
+ inodes with goal not changed:           0
+ inodes with permission denied:          0
+```
+
+And to see the replication level:
+
+```
+$ lizardfs getgoal /lizardfs/efraimf/
+
+/lizardfs/efraimf/: slow
+
+$ lizardfs getgoal /lizardfs/efraimf/ -r
+
+/lizardfs/efraimf/:
+ files with goal        slow :          1
+ directories with goal  slow :          1
+```
+
+## Checking the health of the pool
+
+There are a couple of commands which can be used to check on the health of the pool. They all take the syntax of `lizardfs-admin <command> <head-node> <port>`.
+
+To find out the overall health of the data on the pool:
+
+```
+$ lizardfs-admin chunks-health octopus01 9421
+
+Chunks availability state:
+        Goal    Safe    Unsafe  Lost
+        slow    202726  26005   2073
+        fast    43397   1085    -
+        2ssd    7984    -       -
+
+Chunks replication state:
+        Goal    0       1       2       3       4       5       6       7       8       9       10+
+        slow    95      1870    228839  -       -       -       -       -       -       -       -
+        fast    17253   2317    24912   -       -       -       -       -       -       -       -
+        2ssd    7984    -       -       -       -       -       -       -       -       -       -
+
+Chunks deletion state:
+        Goal    0       1       2       3       4       5       6       7       8       9       10+
+        slow    68      15      2081    27598   201022  20      -       -       -       -       -
+        fast    12603   720     1880    5377    23902   -       -       -       -       -       -
+        2ssd    7984    -       -       -       -       -       -       -       -       -       -
+
+```
+
+To query how the individual disks are filling up and if there are any errors:
+
+```
+lizardfs-admin list-disks octopus01 9421 | less
+```
+
+Other commands can be found with `man lizardfs-admin`.
+
+
+## Deleted files
+
+Lizardfs also keeps deleted files, by default for 30 days. If you need to recover deleted files (or delete them permanently) then the metadata directory can be mounted with:
+
+```
+$ mfsmount /path/to/unused/mount -o mfsmeta
+```
+
+For more information see the lizardfs documentation online
+=> https://dev.lizardfs.com/docs/adminguide/advanced_configuration.html#trash-directory lizardfs documentation for the trash directory
+
+## Gotchas
+
+It should be noted that any goal using erasure_coding is incredibly slow to write to, and defining goals like this should be avoided. Although it does decrease the amount of space each file takes up in the pool, the trade-off when it is mistakenly used for data or folders which will be written to outweighs the benefits.
+
+"speeding up" replication or resilvering of the data can be done in /etc/lizardfs/mfsmaster.cfg. Uncomment the following lines to increase their effect 10-fold from their defaults:
+
+```
+# CHUNKS_SOFT_DEL_LIMIT = 100
+# CHUNKS_HARD_DEL_LIMIT = 250
+# CHUNKS_WRITE_REP_LIMIT = 20 
+# CHUNKS_READ_REP_LIMIT = 100
+```
+
+followed by either restarting the lizardfs-master.service or by running (probably as root on octopus01):
+
+```
+lizardfs-admin reload-config octopus01 9421
+```
+
+It has not yet been tested to see how much this affects reading and writing to the HDDs or SSDs while this change is in effect.
