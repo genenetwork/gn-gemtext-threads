@@ -1,0 +1,13 @@
+# GeneNetwork Gemini Issue Tracker
+
+We have decided to move our existing issue trackers and kanban board to one gemini powered repository! Reasons are:
+
+* Decentralised management
+* No dependency on github and others
+* Easy editing in emacs/vim etc.
+* git version control
+
+=> https://gemini.circumlunar.space/docs/gemtext.gmi GemText markdown/markup
+=> https://en.wikipedia.org/wiki/Gemini_(protocol) Gemini protocol
+
+Issues are simple gemini documents that grow downwards - dating is managed through git. We'll add a proxy to display these documents. The kanban is managed through a directory and symbolic links.
