@@ -1,1 +1,18 @@
 # Binding notebooks
+
+Binder and Cocalc are tools for deploying Jupyter notebooks, R/shiny notebooks and Pluto notebooks. These binding tools do a lot more and do not leverage GNU Guix lightweight container infrastructure. In this project we want to create a binding-lite.
+
+## Members
+
+* jgart
+* pjotr
+
+## Implementation
+
+Key is to leverage what is in Guix and what we already have in GeneNetwork as much as possible.
+
+We should create this separately from genenetwork because all we want to do is run notebooks in containers. We should be able to use and external authentication system, fetch notebooks from git elsewhere and push them on git elsewhere.
+
+binding-lite will be packaged in GNU Guix. GeneNetwork will essentially be a 'rebranding' of binding-lite.
+
+Later we'll add an API to create notebooks on the fly. That is a separate topic.
