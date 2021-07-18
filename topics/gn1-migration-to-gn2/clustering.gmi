@@ -1,0 +1,29 @@
+# Migrate GN1 Clustering
+
+GeneNetwork1 has clustering output that we want to migrate to GN2. For example, go to
+
+=> http://gn1-lily.genenetwork.org/ GN1 on Lily
+
+Select Type -> CRTD mRNA data and do a search for 'synap*'. Click on the top 10 results checkboxes and Add to the basket (add is an icon). Now click on 'Select all' and the 'Heat map' icons. Computation may take a while.
+
+Next click on 'Cluster traits' and 'Redraw' map. This is the one we want in GN3/GN2!
+
+=> ./heatmap.png
+
+## Members
+
+* fredm
+* pjotr
+
+## Useful links
+
+=> https://github.com/genenetwork/genenetwork1/tree/master/web/webqtl/heatmap Implementation
+
+## Implementation
+
+As a first step the computations should move to GN3 with proper regression/unit testing scripts. Next wire them up as REST API endpoints and add it to the GN2 web interface:
+
+- [ ] Move computation to GN3
+- [ ] Create REST API endpoints
+- [ ] Add regression/unit tests in GN3
+- [ ] Add to GN2 web interface
