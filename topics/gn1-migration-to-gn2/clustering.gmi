@@ -27,3 +27,19 @@ As a first step the computations should move to GN3 with proper regression/unit 
 - [ ] Create REST API endpoints
 - [ ] Add regression/unit tests in GN3
 - [ ] Add to GN2 web interface
+
+
+@pjotr I couldn't quite figure out what "CRTD mRNA", so I selected "Cartilage mRNA" , to try and produce a heat map, and I did get some results.
+
+The selected data was:
+
+- Species: Mouse (mm10)
+- Group: BXD Family
+- Type: Cartilage mRNA
+
+I got
+=> http://gn1-lily.genenetwork.org/image/Heatmap_8CJbN7Iy.png the initial heatmap
+and
+=> http://gn1-lily.genenetwork.org/image/Heatmap_syjdiq5z.png the 'Cluster Traits' heatmap
+
+is that anything like what I should expect?
