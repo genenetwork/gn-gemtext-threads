@@ -43,3 +43,11 @@ and
 => http://gn1-lily.genenetwork.org/image/Heatmap_syjdiq5z.png the 'Cluster Traits' heatmap
 
 is that anything like what I should expect?
+
+
+
+I (@fredmanglis) have noticed that the computation of the heatmap data is intertwined with the drawing of the heatmap.
+
+I think this will be among the first things to separate, as part of moving the computation over to GN3. My initial impression of this, is that the GN3 should handle the computation and GN2 the display.
+
+Please correct me if I am wrong.
