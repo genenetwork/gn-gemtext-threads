@@ -33,9 +33,9 @@ As a first step the computations should move to GN3 with proper regression/unit 
 
 The selected data was:
 
-- Species: Mouse (mm10)
-- Group: BXD Family
-- Type: Cartilage mRNA
+* Species: Mouse (mm10)
+* Group: BXD Family
+* Type: Cartilage mRNA
 
 I got
 => http://gn1-lily.genenetwork.org/image/Heatmap_8CJbN7Iy.png the initial heatmap
