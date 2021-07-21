@@ -19,7 +19,9 @@ Note how we use one table to store different diffs from different data types. Th
 
 ### Setup
 
-First, run [this](https://github.com/genenetwork/genenetwork3/blob/main/sql/metadata_audit.sql) sql script to add the "metadata<sub>audit</sub>" table.
+First, run this sql script to add the "metadata<sub>audit</sub>" table:
+
+=> https://github.com/genenetwork/genenetwork3/blob/main/sql/metadata_audit.sql Sql script to run
 
 For everything to run, use the latest commit on the main branch from gn3. One way to make sure that you are running the latest changes, make sure that you have genenetwork3 cloned somewhere in your path; and keep it updated. Thereafter set, a PATH in "bin/genenetwork2" which should look something similar to `export PYTHONPATH=/home/bonface/projects/genenetwork3:$PYTHON_GN_PATH:$GN2_BASE_DIR/wqflask:$PYTHONPATH`.
 
@@ -30,15 +32,19 @@ Alternatively, install gn3 in it's own profile. This can be sometimes inconvenie
 
 These are the steps you can do to edit a phenotype/ probeset:
 
--   Log in to a trait page or a probeset (Make sure that your are logged in). From the "Trait Data and Analysis page" for the probeset/ trait, there's an "Edit" button under "Details and Links". Use this to edit the metadata.
+- Log in to a trait page or a probeset (Make sure that your are logged in). From the "Trait Data and Analysis page" for the probeset/ trait, there's an "Edit" button under "Details and Links". Use this to edit the metadata.
 
--   An example of editing a published phenotype is: "*trait/10007/edit/inbredset-id/10007*"
+- An example of editing a published phenotype is: "*trait/10007/edit/inbredset-id/10007*"
 
 After editing traits, you could see changes in a diff format at the very top of the update page.
 
 
 ### Notes
 
--   Atm, creds are hard-coded. See: <https://github.com/genenetwork/genenetwork2/blob/testing/wqflask/wqflask/decorators.py>. That needs to be improved.
+- Atm, creds are hard-coded. See:
 
--   For Probeset data, atm some tables aren't yet updated(unfortunately those tables aren't used anywhere). I need to figure that out.
+=> https://github.com/genenetwork/genenetwork2/blob/testing/wqflask/wqflask/decorators.py
+
+That needs to be improved.
+
+- For Probeset data, atm some tables aren't yet updated(unfortunately those tables aren't used anywhere). I need to figure that out.
