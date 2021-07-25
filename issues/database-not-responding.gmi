@@ -1,0 +1,13 @@
+# Mariadb table locked
+
+Arthur reports: MariaDB is not responding Saturday, July 24 2021 at 10:48 pm. I tried to enter data to the table ProbeSetXRef.pValue and when normally takes few seconds, now is more than 10 minutes without completion/responding.
+
+Zach: before restarting the table can you check the status first?
+
+=> https://mariadb.com/kb/en/show-table-status/
+
+some ideas here
+
+=> https://dba.stackexchange.com/questions/98725/mariadb-innodb-what-to-do-on-locks-in-status-log-but-no-locked-table-found
+
+we are still using MyISAM for these tables: a switch to InnoDB may help.

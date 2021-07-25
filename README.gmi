@@ -11,3 +11,5 @@ We have decided to move our existing issue trackers and kanban board to one gemi
 => https://en.wikipedia.org/wiki/Gemini_(protocol) Gemini protocol
 
 Issues are simple gemini documents that grow downwards - dating of additions is managed through git. We'll add a proxy to display these documents. The kanban is managed through a directory and symbolic links.
+
+=> issues/README.gmi Issue tracker
