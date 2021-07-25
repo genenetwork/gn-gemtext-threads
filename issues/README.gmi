@@ -11,15 +11,46 @@ Assuming people add to the doc at the bottom that should not be too hard.
 At the top we could add tags:
 
 * assigned: pjotrp, zachs
-* labels: critical bug, in progress
+* keywords: critical bug, in progress
 * milestone: 1.1
 
 Which we can use to generate lists of links.
 
 Make sense?
 
-For the kanban board we can simply use the labels. Override/add with a separate
+For the kanban board we can simply use the keywords. Override/add with a separate
 
 * kanban: Brain storm
 
+Keywords are flexible, but common wons are
+
+* request
+* bug
+* critical bug
+* enhancement
+* in progress
+* testing
+* later
+* documentation
+* help wanted
+* closed
+
+the keyword statement may have aliases, such as tag and kanban. To undo a keyword simply remove them from the file.
+
 Can't think of anything more to add to make it really useful :)
+
+## Tracking information
+
+Git can do all of that. A viewer may benefit from serial git information, therefore it is recommended to add information to the end of the file.
+
+## Closing issues
+
+Moving an issue file will disconnect the git record. Therefore simple add
+
+* tag: closed
+
+## Converting
+
+### Converting issues from a github issue tracker
+
+=> https://github.com/mattduck/gh2md Github to markdown dump
