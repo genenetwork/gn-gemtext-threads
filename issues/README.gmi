@@ -1,0 +1,25 @@
+# Designing an issue tracker on gemini
+
+I added a first issue here:
+
+=> https://github.com/genenetwork/gn-gemtext-threads/blob/main/issues/database-not-responding.gmi
+
+I am thinking we just use git to pull out dates and people contributions (pjotrp wrote ...) for display in a document/web page.
+
+Assuming people add to the doc at the bottom that should not be too hard.
+
+At the top we could add tags:
+
+* assigned: pjotrp, zachs
+* labels: critical bug, in progress
+* milestone: 1.1
+
+Which we can use to generate lists of links.
+
+Make sense?
+
+For the kanban board we can simply use the labels. Override/add with a separate
+
+* kanban: Brain storm
+
+Can't think of anything more to add to make it really useful :)
