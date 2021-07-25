@@ -12,4 +12,9 @@ We have decided to move our existing issue trackers and kanban board to one gemi
 
 Issues are simple gemini documents that grow downwards - dating of additions is managed through git. We'll add a proxy to display these documents. The kanban is managed through a directory and symbolic links.
 
-=> issues/README.gmi Issue tracker
+=> https://github.com/genenetwork/gn-gemtext-threads/blob/main/issues/database-not-responding.gmi Issue tracker on github
+
+We will soon add a web readable version of
+
+=> https://genenetwork.org/issues Issue tracker
+=> https://genenetwork.org/kanban Kanban board
