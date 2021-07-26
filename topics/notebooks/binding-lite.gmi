@@ -93,3 +93,13 @@ The use cases for `repo2guix` are driven by the following design decisions:
 
 2. Manual guix container building and running the container from the command line,
    `repo2guix`, by users on their workstations.
+
+## Initial Ideas for binder-lite Front End and Backend
+
+* Single-page application for logging in to a guix-jupyter notebook view.
+
+* Leverage oauth for reusing user registration credentials from other platform websites.
+
+* Git repository url input form for sending to repo2guix on the backend. 
+
+* Push changes made in notebook session to remote origin repository on third-party git forge.
