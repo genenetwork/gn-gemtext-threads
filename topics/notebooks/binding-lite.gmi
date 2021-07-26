@@ -16,3 +16,80 @@ We should create this separately from genenetwork because all we want to do is r
 binding-lite will be packaged in GNU Guix. GeneNetwork will essentially be a 'rebranding' of binding-lite.
 
 Later we'll add an API to create notebooks on the fly. That is a separate topic.
+
+## Background
+
+The current way of using guix-jupyter is to create a guix environment that contains the guix-jupyter kernel and jupyter.
+
+The user can then run the `jupyter notebook` command which prints a url to the terminal for the user to copy/paste into the browser.
+
+Once the url is opened in the browser, a user has to select the guix kernel and choose the notebook from the file manager menu.
+
+## Initial Design Ideas
+
+The first goal is to fire up a jupyter notebook from a local git repository. 
+
+Afterwards, this would be implemented with a remote git repository.
+
+We need a command line interface/tool and guile library to automate the process of opening a jupyter notebook from a local git repository.
+
+I am tentatively calling this tool `repo2guix`.
+
+Some of the tasks that `repo2guix` will need to automate is preselecting the guix kernel and opening the browser to the notebook view
+of the given url. 
+
+Here is an example of how the command line interface would be used:
+
+```
+$ repo2guix file:///path/to/<git-repository>
+
+To access the notebook, open this file in a browser:
+        file:///path/to/<git-repository>
+    or copy and paste one of these URLs:
+        http://localhost:8890/?token=fc21c17b9ec31eddbea28c06ce086cf71b5605a09610439b
+    or  http://127.0.0.1:8890/?token=fc21c17b9ec31eddbea28c06ce086cf71b5605a09610439b
+```
+        
+## Managing Jupyter Notebook Dependencies
+
+We'll need a manifest.scm file that will specify the dependencies needed by the guix-jupyter notebook.
+
+Below is an example of the contents of a guix-jupyter notebook repository that can be given to `repo2guix`:
+
+```
+$ tree <git-repository>
+.
+├── LICENSE
+├── README.md
+├── index.ipynb
+└── manifest.scm
+```
+
+An example of the contents of manifest.scm:
+
+```
+(specifications->manifest
+  '("python-numpy" 
+    "python-pandas"
+    "python-matplotlib"))
+```
+
+## Additional Features and Ideas
+
+One possibility for easing the creation of a manifest.scm in the notebook repository is to parse the requirements.txt/setup.py, 
+in the case of a python notebook, and generate the manifest.scm file for the notebook user.
+
+We would have to write similar manifest generators for Julia and R project dependencies in order to support this feature. 
+
+I will ask on the guix mailing lists for feedback on this idea.
+
+Once we have this library we can start building binder-lite on top of it. 
+
+## Use Cases
+
+The use cases for `repo2guix` are driven by the following design decisions:
+
+1. Automated guix container building guile library to be used by binder-lite.
+
+2. Manual guix container building and running the container from the command line,
+   `repo2guix`, by users on their workstations.
