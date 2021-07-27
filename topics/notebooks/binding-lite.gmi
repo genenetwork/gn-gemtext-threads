@@ -33,15 +33,15 @@ Afterwards, this would be implemented with a remote git repository.
 
 We need a command line interface/tool and guile library to automate the process of opening a jupyter notebook from a local git repository.
 
-I am tentatively calling this tool `repo2guix`.
+I am tentatively calling this tool `guix-notebook-launcher`.
 
-Some of the tasks that `repo2guix` will need to automate is preselecting the guix kernel and opening the browser to the notebook view
+Some of the tasks that `guix-notebook-launcher` will need to automate is preselecting the guix kernel and opening the browser to the notebook view
 of the given url. 
 
 Here is an example of how the command line interface would be used:
 
 ```
-$ repo2guix file:///path/to/<git-repository>
+$ guix-notebook-launcher file:///path/to/<git-repository>
 
 To access the notebook, open this file in a browser:
         file:///path/to/<git-repository>
@@ -54,7 +54,7 @@ To access the notebook, open this file in a browser:
 
 We'll need a manifest.scm file that will specify the dependencies needed by the guix-jupyter notebook.
 
-Below is an example of the contents of a guix-jupyter notebook repository that can be given to `repo2guix`:
+Below is an example of the contents of a guix-jupyter notebook repository that can be given to `guix-notebook-launcher`:
 
 ```
 $ tree <git-repository>
@@ -87,12 +87,12 @@ Once we have this library we can start building binder-lite on top of it.
 
 ## Use Cases
 
-The use cases for `repo2guix` are driven by the following design decisions:
+The use cases for `guix-notebook-launcher` are driven by the following design decisions:
 
 1. Automated guix container building guile library to be used by binder-lite.
 
 2. Manual guix container building and running the container from the command line,
-   `repo2guix`, by users on their workstations.
+   `guix-notebook-launcher`, by users on their workstations.
 
 ## Initial Ideas for binder-lite Front End and Backend
 
@@ -100,6 +100,6 @@ The use cases for `repo2guix` are driven by the following design decisions:
 
 * Leverage oauth for reusing user registration credentials from other platform websites.
 
-* Git repository url input form for sending to repo2guix on the backend. 
+* Git repository url input form for sending to guix-notebook-launcher on the backend. 
 
 * Push changes made in notebook session to remote origin repository on third-party git forge.
