@@ -25,15 +25,13 @@ The user can then run the `jupyter notebook` command which prints a url to the t
 
 Once the url is opened in the browser, a user has to select the guix kernel and choose the notebook from the file manager menu.
 
-## Initial Design Ideas
+## Initial Design Ideas: guix-notebook-launcher 
 
 The first goal is to fire up a jupyter notebook from a local git repository. 
 
 Afterwards, this would be implemented with a remote git repository.
 
 We need a command line interface/tool and guile library to automate the process of opening a jupyter notebook from a local git repository.
-
-I am tentatively calling this tool `guix-notebook-launcher`.
 
 Some of the tasks that `guix-notebook-launcher` will need to automate is preselecting the guix kernel and opening the browser to the notebook view
 of the given url. 
