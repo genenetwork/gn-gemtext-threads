@@ -87,9 +87,9 @@ Once we have this library we can start building binder-lite on top of it.
 
 The use cases for `guix-notebook-launcher` are driven by the following design decisions:
 
-1. Automated guix container building guile library to be used by binder-lite.
+* Automated guix container building guile library to be used by binder-lite.
 
-2. Manual guix container building and running the container from the command line,
+* Manual guix container building and running the container from the command line,
    `guix-notebook-launcher`, by users on their workstations.
 
 ## Initial Ideas for binder-lite Front End and Backend
