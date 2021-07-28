@@ -125,3 +125,17 @@ The use cases for `guix-notebook-launcher` are driven by the following design de
 => https://nalaginrut.com/archives/2021/05/04/scheme%20language%20is%20good%20enough%20for%20products Scheme Language in Production
 => https://github.com/GeorgianaElena/binder-example Binder Example
 
+## Current Questions I Have to Answer
+
+* Is OAuth still needed?
+* Pushing? Pulling? Authentification? Via the github API? 
+* What type does a manifest return? Test this in the guix repl.
+* Will we build binder-lite completely from scratch or are there useful pieces from binderhub that we can salvage and while stripping out the docker integration? 
+* How will we parse the new dependencies that a user introduces during a notebook session? 
+* Will guix-jupyter magics be available to the notebook user? How will they interact with guix-notebook-launcher data?
+* Will dependencies be written back to requirements.scm to update the state at the end of a notebook session? Is this already implemented in Binderhub?
+
+### Reference Links
+
+=> https://hpc.guix.info/blog/2019/10/towards-reproducible-jupyter-notebooks/ Guix Jupyter Magics
+
