@@ -139,3 +139,15 @@ The use cases for `guix-notebook-launcher` are driven by the following design de
 
 => https://hpc.guix.info/blog/2019/10/towards-reproducible-jupyter-notebooks/ Guix Jupyter Magics
 
+## Misc Binder Lite Ideas
+
+Should binder-lite be a distribution of GNU Guix System?
+
+GeneNetwork can provide custom ISO and QEMU images that contain binder-lite ready to be deployed to bare metal or a VM.
+
+This is inspired by the-littlest-jupyterhub distribution.
+
+### Reference Links
+
+=> https://tljh.jupyter.org/en/latest/ The Littlest JupyterHub 
+
