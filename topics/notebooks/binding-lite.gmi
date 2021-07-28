@@ -101,3 +101,27 @@ The use cases for `guix-notebook-launcher` are driven by the following design de
 * Git repository url input form for sending to guix-notebook-launcher on the backend. 
 
 * Push changes made in notebook session to remote origin repository on third-party git forge.
+
+## Next Development Steps
+
+### Script / Command Line Interface / Web UI Mock / GNU Artanis
+
+* Test loading a preconfigured guix-jupyter kernel with `MultiKernelManager.default_kernel_nameUnicode`.
+* Fire up a preselected guix kernel from a guile or bash script with $BROWSER.
+* Understand what the data is that the UI will be interacting with.
+* Start mocking a web UI while continuing to develop guix-notebook-launcher and the data that it will provide to the front-end.
+* Finish reading, the source code of binderhub. It is only 10,212 lines of python as of Wed 28 Jul 2021 12:20:10 AM EDT.
+* Finish reading the source code of repo2docker. It is only 12,356 lines of python as of Wed 28 Jul 2021 12:21:22 AM EDT.
+* Meet with Efraim on Thursday to discuss guix containers and my progress on this project.
+* Create a mock similar to notebook.gesis.org with GNU artanis, `sxml->xml` from `(sxml simple)`, or just plain html and vanilla javascript.
+* Research production readyness of GNU Artanis and whether we'll need it. Contact Nala Ginrut.
+* Launch guix-jupyter session from binder-example git repository similar to binder-example by GeorgianaElena.
+
+### Reference Links
+
+=> https://jupyter-notebook.readthedocs.io/en/latest/config.html Jupyter Notebook Config File
+=> https://notebooks.gesis.org/ Gesis Notebooks Front Page
+=> https://www.gnu.org/software/artanis/manual/ GNU Artanis
+=> https://nalaginrut.com/archives/2021/05/04/scheme%20language%20is%20good%20enough%20for%20products Scheme Language in Production
+=> https://github.com/GeorgianaElena/binder-example Binder Example
+
