@@ -1,0 +1,3 @@
+# Redirect HTTP to HTTPS
+
+All http://genenetwork.org URIs should redirect to https://genenetwork.org URIs. This should be done on the HTTP server (nginx) config. Currently, if the user enters the HTTP site on their browser, they stay on the HTTP site.
