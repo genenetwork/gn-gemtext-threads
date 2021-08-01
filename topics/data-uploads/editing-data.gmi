@@ -37,7 +37,7 @@ select * FROM information_schema.COLUMNS WHERE table_schema=DATABASE() AND TABLE
 
 For everything to run, use the latest commit on the main branch from gn3. One way to make sure that you are running the latest changes, make sure that you have genenetwork3 cloned somewhere in your path; and keep it updated. Thereafter set, a PATH in "bin/genenetwork2" which should look something similar to `export PYTHONPATH=/home/bonface/projects/genenetwork3:$PYTHON_GN_PATH:$GN2_BASE_DIR/wqflask:$PYTHONPATH`.
 
-Alternatively, install gn3 in it's own profile. This can be sometimes inconvenient since the latest changes from gn3 can be ahead of the the package definition in our channel.
+Alternatively, install gn3 in it's own profile. This can be sometimes rinconvenient since the latest changes from gn3 can be ahead of the the package definition in our channel.
 
 
 ### How to edit a trait Editing a trait/ probeset
