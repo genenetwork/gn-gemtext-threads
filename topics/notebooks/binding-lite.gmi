@@ -132,9 +132,21 @@ The use cases for `guix-notebook-launcher` are driven by the following design de
 
 ## Current Questions I Have to Answer
 
-* Is OAuth still needed?
+* Is OAuth still needed? 
+
+Yes
+
+* What type does a manifest return? 
+
+A manifest! Which of course is just another record :)
+
+```
+scheme@(guix-user)> ,use (gnu packages) (guix profiles)
+scheme@(guix-user)> (manifest? (specifications->manifest '("python-ipython")))
+$1 = #t
+```
+
 * Pushing? Pulling? Authentification? Via the github API? 
-* What type does a manifest return? Test this in the guix repl.
 * Will we build binder-lite completely from scratch or are there useful pieces from binderhub that we can salvage and while stripping out the docker integration? 
 * How will we parse the new dependencies that a user introduces during a notebook session? 
 * Will guix-jupyter magics be available to the notebook user? How will they interact with guix-notebook-launcher data?
