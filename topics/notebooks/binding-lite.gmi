@@ -104,6 +104,11 @@ The use cases for `guix-notebook-launcher` are driven by the following design de
 
 ## Next Development Steps
 
+## Current Notebook Launcher Issues
+
+=> https://paste.sr.ht/~jgart/0c04c5ee583fe8ac7bf69097025e0453592e81e8#jupyter-notebook-fails-to-connect-L14 store-connection-error
+=> https://git.sr.ht/~jgart/binderlite-demo/tree/demo1/item/demo.scm#L39 Current Notebook Container Default Settings
+
 ### Script / Command Line Interface / Web UI Mock / GNU Artanis
 
 * Test loading a preconfigured guix-jupyter kernel with `MultiKernelManager.default_kernel_nameUnicode`.
@@ -150,4 +155,5 @@ This is inspired by the-littlest-jupyterhub distribution.
 ### Reference Links
 
 => https://tljh.jupyter.org/en/latest/ The Littlest JupyterHub 
+
 
