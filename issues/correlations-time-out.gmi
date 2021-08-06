@@ -1,0 +1,62 @@
+# Correlations time out
+
+We are seeing errors with correlations which happen for the larger requests, such as
+
+=> http://gn2.genenetwork.org/show_trait?trait_id=ENSG00000244734&dataset=GTEXv8_Wbl_tpm_0220
+
+It looks like correlations don't finish - and worse the running processes take a significant chunk of RAM, around 10GB each. Eventually they disappear.
+
+## Tasks
+
+* assigned: pjotrp, zachs
+* keywords: critical bug, in progress
+
+* [X] Set up OOM killer
+* [ ] Many GN2 threads taking too much RAM
+* [ ] Disable URL messages
+
+## OOM Killer
+
+To prevent future OOM killing I set the memory allocation in sysctl.conf to
+
+```
+vm.overcommit_ratio=95
+vm.overcommit_memory=2
+```
+
+The running kernel did not accept these, so it requires a reboot (later).
+
+## GN2 threads
+
+One error I am seeing in the logs is
+
+```
+/export/local/home/zas1024/opt/genenetwork2_20210805/lib/python3.8/site-packages/scipy/stats/stats.py:3913: PearsonRConstantInputWarning: An input array is constant; the correlation coefficent is not defined.warnings.warn(PearsonRConstantInputWarning())
+```
+
+This is bleeding through to GN2 as a library which explains why it is
+not the GN3 server growing.
+
+In all, the instability is probably caused be a computation going out of whack. What is worrisome is the amount of RAM all processes take. Python is not cleaning up. We should start by lowering gunicorn cleanup routines, such as --max-requests INT and --max-requests-jitter INT in
+
+=> https://docs.gunicorn.org/en/stable/settings.html Gunicorn settings
+
+see
+
+=> https://github.com/genenetwork/genenetwork2/commit/d29dfb72ceb005ab045203a36b1fc1552544b1e2
+
+## GN3 Threads
+
+Currently the GN3 API is run with
+
+```
+env FLASK_DEBUG=1 FLASK_APP="main.py" flask run --port=8086
+```
+
+## Log noise
+
+In the logs we see also quite a bit of noise. Should disable that:
+
+```
+Werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+```
