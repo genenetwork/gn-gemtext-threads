@@ -12,7 +12,7 @@ It looks like correlations don't finish - and worse the running processes take a
 * keywords: critical bug, in progress
 
 * [X] Set up OOM killer
-* [ ] Many GN2 threads taking too much RAM
+* [X] Prevent many GN2 threads taking too much RAM
 * [ ] Disable URL messages
 
 ## OOM Killer
@@ -52,6 +52,10 @@ Currently the GN3 API is run with
 ```
 env FLASK_DEBUG=1 FLASK_APP="main.py" flask run --port=8086
 ```
+
+I added gunicorn for production
+
+=> https://github.com/genenetwork/genenetwork3#running-the-flask-app GN3 gunicorn instructions
 
 ## Log noise
 
