@@ -1,0 +1,7 @@
+# Adding Terminal Output
+
+GeneNetwork runs external tools. We would like to have an option for (advanced) users, such as I, to view terminal output while running them. It will give some insight that can only be gained from reading the flask logs, right now. Not everyone has that access. The first candidate is xterm.js which is also used by Jupyter and others. It can talk web sockets:
+
+=> https://xtermjs.org/docs/api/addons/attach/ xterm.js websocket support
+
+As GN3 (REST) API handles calling external tools it kinda make sense to handle the terminal output page through GN3 and communicate through websockets. But first I'll do a Sinatra test run.
