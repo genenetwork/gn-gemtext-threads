@@ -1,0 +1,9 @@
+# Clean up Authorisation
+
+Look at Chris' authorisation code[0]. Atm genenetwork2's handling of
+authorisation is a bit clunky; Since @Bonface is working on the data
+data up-loader, and it requires authorisation, this is a good time to
+clean up authorisation.
+
+
+[0] https://github.com/chfi/gn-proxy
