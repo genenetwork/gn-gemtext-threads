@@ -1,0 +1,61 @@
+# 
+#### Fetch all Sample Data
+
+Currently we fetch all the sample data using this function:
+
+```
+def get_trait_csv_sample_data(conn: Any,
+                              trait_name: int, phenotype_id: int):
+    """Fetch a trait and return it as a csv string"""
+    sql = ("SELECT DISTINCT Strain.Id, PublishData.Id, Strain.Name, "
+           "PublishData.value, "
+           "PublishSE.error, NStrain.count FROM "
+           "(PublishData, Strain, PublishXRef, PublishFreeze) "
+           "LEFT JOIN PublishSE ON "
+           "(PublishSE.DataId = PublishData.Id AND "
+           "PublishSE.StrainId = PublishData.StrainId) "
+           "LEFT JOIN NStrain ON (NStrain.DataId = PublishData.Id AND "
+           "NStrain.StrainId = PublishData.StrainId) WHERE "
+           "PublishXRef.InbredSetId = PublishFreeze.InbredSetId AND "
+           "PublishData.Id = PublishXRef.DataId AND "
+           "PublishXRef.Id = %s AND PublishXRef.PhenotypeId = %s "
+           "AND PublishData.StrainId = Strain.Id Order BY Strain.Name")
+    csv_data = ["Strain Id,Strain Name,Value,SE,Count"]
+    publishdata_id = ""
+    with conn.cursor() as cursor:
+        cursor.execute(sql, (trait_name, phenotype_id,))
+        for record in cursor.fetchall():
+            (strain_id, publishdata_id,
+             strain_name, value, error, count) = record
+            csv_data.append(
+                ",".join([str(val) if val else "x"
+                          for val in (strain_id, strain_name,
+                                      value, error, count)]))
+    return f"# Publish Data Id: {publishdata_id}\n\n" + "\n".join(csv_data)
+```
+
+
+Sometimes there are situations where we want to display sample data
+that isn't part of the "main" sample list (which is the one in the
+.geno file).  In this page[0][1] you see the samples split into
+"Primary" and "Other." In the code(genenetwork2), it does a DB query
+for all sample data and just puts all the sample data that isn't in
+the "primary" list (as taken from the .geno file) into the Other
+table.
+
+It's ridiculous how we pull the sample list from the .geno file. In
+the past this was done using qtlreaper's Python module to read in the
+.geno file - the functions in
+wqflask/maintenance/get_group_samplelists were written when we were
+removing all use of the old qtlreaper.
+
+Parents/F1s are also a situation where we need to come up with some
+alternative way to store them, and ideally in a way that is more
+flexible and allows for other situations (like 4-way crosses -
+currently the code always just assumes 2 parents and 2 F1s). They're
+currently hard-coded in webqtlUtil.py.
+
+[0]
+
+[1] * Tasks, Guix
+:ARCHIVE: /home/bonface/Self/org/archive/2021_guix.org_archive::
