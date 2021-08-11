@@ -51,3 +51,43 @@ I (@fredmanglis) have noticed that the computation of the heatmap data is intert
 I think this will be among the first things to separate, as part of moving the computation over to GN3. My initial impression of this, is that the GN3 should handle the computation and GN2 the display.
 
 Please correct me if I am wrong.
+
+
+## 2021-08-11
+
+I have had a look at the Python implementation of Plotly, and tried out a few of the examples to get a feel for the library and its capabilities. I think it is possible to use the library to draw the heatmaps, though I'll need more time to fully grasp how it works, and how I could use it to actually provide some of the features in the clustering heatmaps that do not seem to be out-of-the-box with plotly, e.g. the lines with clustering distance.
+
+It does also seem like the library might provide more complex heatmaps, such as
+
+=> https://plotly.com/python/imshow/#display-an-xarray-image-with-pximshow heatmap of xarray data
+
+which sort of approximates the heatmap example linked in
+
+=> https://github.com/genenetwork/genenetwork3/pull/31#issuecomment-891539359 zsloan's comment
+
+I wrote a simple script to test out the library as shown:
+
+```
+import random
+import plotly.express as px
+
+def generate_random_data(width=10, height=30):
+    return [[random.uniform(0,2) for i in range(0, width)]
+            for j in range(0, height)]
+
+def main():
+    fig = px.imshow(generate_random_data())
+    fig.show()
+
+if __name__ == "__main__":
+    main()
+```
+
+Thankfully, the following python packages seem to already be packaged with guix-bioinformatics:
+
+* python-plotly
+* python-pandas
+* python-xarray
+* python-scipy
+
+The only (seemingly) missing package is `python-pooch`
