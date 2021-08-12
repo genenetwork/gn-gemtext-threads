@@ -91,3 +91,11 @@ Thankfully, the following python packages seem to already be packaged with guix-
 * python-scipy
 
 The only (seemingly) missing package is `python-pooch`
+
+## python-pooch
+
+python-pooch is in guix as of commit 211c933 in master from this March:
+
+=> https://guix.gnu.org/packages/python-pooch-1.3.0/ python-pooch package listing
+=> https://issues.guix.gnu.org/47022 python-pooch patch thread
+
