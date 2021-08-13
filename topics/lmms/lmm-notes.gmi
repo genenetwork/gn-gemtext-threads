@@ -1,0 +1,9 @@
+# LMM Notes
+
+## Time series data
+
+FlxQTL by Saunak Sen can handle time series data in an (genetic) LMM
+context.  They have to be measured on a rectangular grid (or be
+imputed).
+
+=> https://www.juliapackages.com/p/flxqtl
