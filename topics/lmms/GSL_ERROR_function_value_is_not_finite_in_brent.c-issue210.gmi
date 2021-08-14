@@ -1,0 +1,93 @@
+# GEMMA GSL ERROR: function value is not finite in brent.c
+
+In github issue 210 this comes up. @hrwang was kind enough to send me a dataset that brings up this error. Now we stand a chance of doing something about it! As in
+
+```
+napoli:~/iwrk/opensource/code/genetics/gemma/tmp/issue210$ ../../bin/gemma -bfile 20 -k BS_kinship.sXX.txt -lmm 1 -c Covariate_PC3.txt -n 1 -o outname
+GEMMA 0.99.0-pre1 (2021-08-11) by Xiang Zhou, Pjotr Prins and team (C) 2012-2021
+Reading Files ...
+## number of total individuals = 727
+## number of analyzed individuals = 57
+## number of covariates = 4
+## number of phenotypes = 1
+## number of total SNPs/var        =   215451
+## number of analyzed SNPs         =    72731
+Start Eigen-Decomposition...
+pve estimate =0.956403
+se(pve) =0.255427
+GSL ERROR: function value is not finite in newton.c at line 88 errno 9
+```
+
+Next I ran with the debug switch and it stops with the slightly more informative
+
+```
+../../bin/gemma -bfile 20 -k BS_kinship.sXX.txt -lmm 1 -c Covariate_PC3.txt -n 1 -o outname -debug
+GEMMA 0.99.0-pre1 (2021-08-11) by Xiang Zhou, Pjotr Prins and team (C) 2012-2021
+GSL random generator type: mt19937; seed = 25479 (option -1); first value = 191757793
+Reading Files ...
+## number of total individuals = 727
+## number of analyzed individuals = 57
+## number of covariates = 4
+## number of phenotypes = 1
+## number of total SNPs/var        =   215451
+## number of analyzed SNPs         =    72731
+Start Eigen-Decomposition...
+pve estimate =0.956403
+se(pve) =0.255427
+ERROR: Enforce failed for Trying to take the log of 0.000000 in src/mathfunc.cpp at line 118 in safe_log
+```
+
+Next step is rebuilding gemma with debug info `make debug` and rerun in the debugger. A backtrace of
+
+```
+gdb --args ../../bin/gemma -bfile 20 -k BS_kinship.sXX.txt -lmm 1 -c Covariate_PC3.txt -n 1 -o outname -debug
+```
+
+shows
+
+```
+#2  0x000000000047dcb0 in safe_log (d=d@entry=0) at src/mathfunc.cpp:118
+#3  0x00000000004707ea in LogRL_f (l=l@entry=1.0000000000000001e-05, params=params@entry=0x7fffffffcc20)
+    at src/lmm.cpp:851
+#4  0x0000000000471b05 in CalcLambda (func_name=func_name@entry=82 'R', params=...,
+    l_min=l_min@entry=1.0000000000000001e-05, l_max=100000, n_region=10,
+    lambda=@0x7fffffffccc8: 3.2054654756518093, logf=@0x7fffffffcca0: 0.83040722111380116)
+    at src/lmm.cpp:1970
+#5  0x0000000000475cac in LMM::AnalyzePlink (this=this@entry=0x7fffffffd1a0, U=U@entry=0x4fcc80,
+    eval=eval@entry=0x52dff0, UtW=UtW@entry=0x4fccc0, Uty=Uty@entry=0x7fffffffd140, W=W@entry=0x4fe140,
+    y=<optimized out>, gwasnps=...) at src/lmm.cpp:1860
+#6  0x00000000004359f5 in GEMMA::BatchRun (this=this@entry=0x7fffffffe720, cPar=...)
+    at src/gemma.cpp:2798
+#7  0x000000000047bed0 in main (argc=14, argv=0x7fffffffe888) at src/main.cpp:86
+```
+
+In this case a SNP for some reason balks. Another run, after disabling the log check renders
+
+```
+#0  0x00007ffff5e1deca in raise ()
+   from /gnu/store/fa6wj5bxkj5ll1d7292a70knmyl7a0cr-glibc-2.31/lib/libpthread.so.0
+#1  0x00000000004245ba in gemma_gsl_error_handler (reason=<optimized out>, file=<optimized out>,
+    line=88, gsl_errno=<optimized out>) at src/gemma.cpp:75
+#2  0x00007ffff7e59f6d in newton_iterate ()
+   from /gnu/store/qsr7pw4cbka4qhxm3h0bkwwl7h08qfmw-profile/lib/libgsl.so.25
+#3  0x0000000000471cba in CalcLambda (func_name=func_name@entry=82 'R', params=...,
+    l_min=l_min@entry=1.0000000000000001e-05, l_max=100000, n_region=<optimized out>,
+    lambda=@0x7fffffffccc8: 1.0000000000000001e-05, logf=@0x7fffffffcca0: 507.88508012472289)
+    at src/lmm.cpp:2040
+```
+
+points out that in line 2040 `gsl_root_fdfsolver_iterate` is not happy executing a Newton root solver. What is interesting is that, in this case, the gemma_gsl_error_handler is called and stops processing. We now have three ways to stop GEMMA from the same error!
+
+The original version bails out inside GSL:
+
+```
+GSL ERROR: function value is not finite in newton.c at line 88 errno 9
+
+#0  0x00007ffff5e1deca in raise ()
+   from /gnu/store/fa6wj5bxkj5ll1d7292a70knmyl7a0cr-glibc-2.31/lib/libpthread.so.0
+#1  0x00007ffff7e59f6d in newton_iterate ()
+   from /gnu/store/qsr7pw4cbka4qhxm3h0bkwwl7h08qfmw-profile/lib/libgsl.so.25
+#2  0x000000000047a9c5 in CalcLambda(char, FUNC_PARAM&, double, double, unsigned long, double&, double&) [clone .constprop.671] ()
+```
+
+@hrwang had a good suggestion to make sure that the output for the SNP is made invalid and to continue processing. Disabling the error handler let GEMMA continue. I added a check for the status flag to make sure output was set to invalid (nan). In the test set 178 out of 72732 SNPs failed.
