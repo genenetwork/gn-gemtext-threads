@@ -1,0 +1,31 @@
+# genecup is currently running as root on penguin2.
+
+Currently when run using shepherd it fails like this:
+
+guix system: warning: Consider running 'guix pull' followed by
+'guix system reconfigure' to get up-to-date packages and security updates.
+
+guile: warning: failed to install locale
+Backtrace:
+           6 (primitive-load "/gnu/store/gkksaranscqwyzixgm4fk83by1n?")
+In gnu/build/linux-container.scm:
+    299:8  5 (call-with-temporary-directory #<procedure 7ff547853640?>)
+   327:16  4 (_ "/tmp/guix-directory.mkZ75V")
+   270:12  3 (run-container _ _ (mnt pid ipc uts user) 65536 _ # _ # _)
+    200:4  2 (initialize-user-namespace _ 65536 #:guest-uid _ # _)
+In ice-9/ports.scm:
+    465:8  1 (call-with-output-file _ _ #:binary _ #:encoding _)
+In unknown file:
+           0 (close-output-port #<output: /proc/15090/uid_map 8>)
+
+ERROR: In procedure close-output-port:
+In procedure fport_write: Operation not permitted
+
+A number of changes to different types of shepherd services (exec-command, make-system-constructor) still failed to actually run the container when started with `herd start genecup`. Ratspub is run from a `guix environment` rather than `guix system container` so we'll switch to that so we can go back to running all the services using shepherd.
+
+=> https://git.genenetwork.org/efraim/shepherd-services/commit/b3c96077c2ae3ebda05eb53d81fa6e377a55132d The commit to make genecup run in a guix environment, using shepherd.
+
+## Notes
+
+* It is unclear if the environmental-variables in the shepherd service are carried over to the shell script, but it seems not
+* Had to run 'guix pull' to update the guix tree for genecup, since the guix-bioinformatics repository had made breaking changes since the last time.
