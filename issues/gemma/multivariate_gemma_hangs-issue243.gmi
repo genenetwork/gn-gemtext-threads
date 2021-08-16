@@ -2,6 +2,15 @@
 
 => https://github.com/genetics-statistics/GEMMA/issues/243
 
+The simulated dataset was generated.  Benjamin Chu writes: I think the main problem might be how I did the simulation. I believe it was something like
+
+```
+b ~ N(0, 1) # for k position of b only, others are 0
+yi ~ N(xi^T * b, 1)
+```
+
+where yi is length 2 vector of phenotype, xi is length 10000 genotype vector (entries 0, 1 or 2), and b is length 10000 effect size vector but only k position of b is drawn from standard Normal. This might be a poor simulation model for GEMMA. Later I changed the simulation model and the divergence problem went away.
+
 The following command finishes:
 
 ```
