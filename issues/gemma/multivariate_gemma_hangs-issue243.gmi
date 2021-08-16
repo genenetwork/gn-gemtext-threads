@@ -1,6 +1,8 @@
 # Multivariate GEMMA hangs (issue 243)
 
-The following command does finish
+=> https://github.com/genetics-statistics/GEMMA/issues/243
+
+The following command finishes:
 
 ```
 time ../../bin/gemma -bfile multivariate_2traits -k output/multivariate.cXX.txt -maf 0.0000001 -lmm 4 -n 1 2 -o gemma.polygenic.result
@@ -122,4 +124,33 @@ at src/gemma.cpp:2830
     eval=eval@entry=0x5233c0, UtW=UtW@entry=0x5233f0, UtY=UtY@entry=0x523430) at src/mvlmm.cpp:3806
 ```
 
-A profiler should help pinpoint where time is spent. The issue submitter admits that this is a contrived edge-case so I am not going to work on it until I start optimizing mvlmm.
+Shows time is spent mostly in one place.
+
+A profiler should help pinpoint where time is spent. The issue submitter admits that this is a contrived edge-case so I am not going to work on it until I start optimizing mvlmm. Just a quick check with gperftools (formerly the Google profiler) which is packaged in GNU Guix:
+
+Profiling above gemma dataset
+
+```
+     120   7.3%   7.3%      155   9.4% CalcQi
+      96   5.8%  13.1%       96   5.8% dgemm_kernel_ZEN
+      88   5.3%  18.4%       88   5.3% __sched_yield
+      81   4.9%  23.3%      109   6.6% blas_memory_free
+      77   4.7%  28.0%       77   4.7% __pthread_mutex_unlock_usercnt
+      71   4.3%  32.3%       94   5.7% CalcXHiY
+      69   4.2%  36.5%       87   5.3% dgemm_nn
+      66   4.0%  40.5%       66   4.0% __pthread_mutex_lock
+      63   3.8%  44.3%       63   3.8% __ieee754_log_fma
+      59   3.6%  47.9%      179  10.9% blas_memory_alloc
+      58   3.5%  51.4%       58   3.5% gsl_vector_get
+      57   3.5%  54.9%       88   5.3% dgemm_nt
+      56   3.4%  58.3%       80   4.9% CalcOmega
+      56   3.4%  61.7%      421  25.5% cblas_dgemm
+      54   3.3%  64.9%       54   3.3% dgemm_beta_ZEN
+      51   3.1%  68.0%      537  32.6% CalcSigma
+      51   3.1%  71.1%       76   4.6% dsyr_thread_L
+      43   2.6%  73.7%       43   2.6% gsl_matrix_get
+      41   2.5%  76.2%       41   2.5% gsl_matrix_set
+      37   2.2%  78.5%      130   7.9% MphCalcLogL
+```
+
+CalcSigma and CalcQi are worth looking into. Also cblas_dgemm may need some attention.
