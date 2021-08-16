@@ -1,0 +1,125 @@
+# Multivariate GEMMA hangs (issue 243)
+
+The following command does finish
+
+```
+time ../../bin/gemma -bfile multivariate_2traits -k output/multivariate.cXX.txt -maf 0.0000001 -lmm 4 -n 1 2 -o gemma.polygenic.result
+real    133m29.533s
+user    133m31.746s
+sys     0m5.064s
+```
+
+But is slow. A print statement shows close to a second is spent on every SNP:
+
+```
+0.83 9994,10000
+0.82 9995,10000
+0.81 9996,10000
+0.80 9997,10000
+0.80 9998,10000
+0.80 9999,10000
+```
+
+Running the debugger on and hitting Ctrl-C repeatedly stops in the following places
+
+```
+#0  0x00000000004807f9 in MphCalcLogL (eval=eval@entry=0x5233c0, xHiy=xHiy@entry=0x59e5d0,
+    D_l=D_l@entry=0x5ac840, UltVehiY=UltVehiY@entry=0x53e500, Qi=Qi@entry=0x59e2e0) at src/mvlmm.cpp:579
+#1  0x000000000048104b in MphEM (func_name=func_name@entry=82 'R', max_iter=1000, max_prec=0.001,
+    eval=eval@entry=0x5233c0, X=X@entry=0x540930, Y=Y@entry=0x5408d0, U_hat=U_hat@entry=0x53e380,
+    E_hat=0x53e3e0, OmegaU=0x53e440, OmegaE=0x53e4a0, UltVehiY=0x53e500, UltVehiBX=0x53e560,
+    UltVehiU=0x53e5c0, UltVehiE=0x53e620, V_g=0x540990, V_e=0x540a20, B=0x540ab0) at src/mvlmm.cpp:662
+#2  0x000000000048f924 in MVLMM::AnalyzePlink (this=this@entry=0x7fffffffcf20, U=U@entry=0x523380,
+    eval=eval@entry=0x5233c0, UtW=UtW@entry=0x5233f0, UtY=UtY@entry=0x523430) at src/mvlmm.cpp:3803
+#3  0x0000000000435c2e in GEMMA::BatchRun (this=this@entry=0x7fffffffe4a0, cPar=...)
+    at src/gemma.cpp:2830
+
+#0  0x00007ffff7df8690 in gsl_matrix_sub ()
+   from /gnu/store/pmmbmrbizz668plrrvfyvqh5ymvjy5p4-profile/lib/libgsl.so.25
+#1  0x000000000047fc91 in UpdateU (OmegaE=OmegaE@entry=0x53e4a0, UltVehiY=UltVehiY@entry=0x53e500,
+    UltVehiBX=UltVehiBX@entry=0x53e560, UltVehiU=UltVehiU@entry=0x53e5c0) at src/mvlmm.cpp:387
+#2  0x0000000000480e76 in MphEM (func_name=func_name@entry=76 'L', max_iter=1000, max_prec=0.001,
+    eval=eval@entry=0x5233c0, X=X@entry=0x540930, Y=Y@entry=0x5408d0, U_hat=U_hat@entry=0x53e380,
+    E_hat=0x53e3e0, OmegaU=0x53e440, OmegaE=0x53e4a0, UltVehiY=0x53e500, UltVehiBX=0x53e560,
+    UltVehiU=0x53e5c0, UltVehiE=0x53e620, V_g=0x540990, V_e=0x540a20, B=0x540ab0) at src/mvlmm.cpp:686
+#3  0x000000000048faed in MVLMM::AnalyzePlink (this=this@entry=0x7fffffffcf20, U=U@entry=0x523380,
+    eval=eval@entry=0x5233c0, UtW=UtW@entry=0x5233f0, UtY=UtY@entry=0x523430) at src/mvlmm.cpp:3778
+#4  0x0000000000435c2e in GEMMA::BatchRun (this=this@entry=0x7fffffffe4a0, cPar=...)
+
+at src/gemma.cpp:2830
+
+#0  0x00007ffff6300718 in dgemm_nt ()
+   from /gnu/store/pmmbmrbizz668plrrvfyvqh5ymvjy5p4-profile/lib/libopenblas.so.0
+#1  0x00007ffff622e6f3 in cblas_dgemm ()
+   from /gnu/store/pmmbmrbizz668plrrvfyvqh5ymvjy5p4-profile/lib/libopenblas.so.0
+#2  0x00007ffff7d6af44 in gsl_blas_dgemm ()
+   from /gnu/store/pmmbmrbizz668plrrvfyvqh5ymvjy5p4-profile/lib/libgsl.so.25
+#3  0x00000000004806a4 in CalcSigma (func_name=func_name@entry=82 'R', eval=eval@entry=0x5233c0,
+    D_l=D_l@entry=0x59e5d0, X=X@entry=0x540930, OmegaU=OmegaU@entry=0x53e440,
+    OmegaE=OmegaE@entry=0x53e4a0, UltVeh=0x5abd30, Qi=0x5abe50, Sigma_uu=0x540fb0, Sigma_ee=0x5ac7e0)
+    at src/mvlmm.cpp:542
+#4  0x0000000000480f62 in MphEM (func_name=func_name@entry=82 'R', max_iter=1000, max_prec=0.001,
+    eval=eval@entry=0x5233c0, X=X@entry=0x540930, Y=Y@entry=0x5408d0, U_hat=U_hat@entry=0x53e380,
+    E_hat=0x53e3e0, OmegaU=0x53e440, OmegaE=0x53e4a0, UltVehiY=0x53e500, UltVehiBX=0x53e560,
+    UltVehiU=0x53e5c0, UltVehiE=0x53e620, V_g=0x540990, V_e=0x540a20, B=0x540ab0) at src/mvlmm.cpp:704
+#5  0x000000000048f924 in MVLMM::AnalyzePlink (this=this@entry=0x7fffffffcf20, U=U@entry=0x523380,
+    eval=eval@entry=0x5233c0, UtW=UtW@entry=0x5233f0, UtY=UtY@entry=0x523430) at src/mvlmm.cpp:3803
+#6  0x0000000000435c2e in GEMMA::BatchRun (this=this@entry=0x7fffffffe4a0, cPar=...)
+    at src/gemma.cpp:2830
+
+#0  0x00007ffff5e16f00 in __pthread_mutex_unlock_usercnt ()
+   from /gnu/store/fa6wj5bxkj5ll1d7292a70knmyl7a0cr-glibc-2.31/lib/libpthread.so.0
+#1  0x00007ffff622e6fb in cblas_dgemm ()
+   from /gnu/store/pmmbmrbizz668plrrvfyvqh5ymvjy5p4-profile/lib/libopenblas.so.0
+#2  0x00007ffff7d6af44 in gsl_blas_dgemm ()
+   from /gnu/store/pmmbmrbizz668plrrvfyvqh5ymvjy5p4-profile/lib/libgsl.so.25
+#3  0x000000000048067b in CalcSigma (func_name=func_name@entry=82 'R', eval=eval@entry=0x5233c0,
+    D_l=D_l@entry=0x5ac970, X=X@entry=0x540930, OmegaU=OmegaU@entry=0x53e440,
+    OmegaE=OmegaE@entry=0x53e4a0, UltVeh=0x5abdb0, Qi=0x59eb10, Sigma_uu=0x5ac3e0, Sigma_ee=0x5ab290)
+    at src/mvlmm.cpp:541
+
+#0  0x00007ffff5e16f19 in __pthread_mutex_unlock_usercnt ()
+   from /gnu/store/fa6wj5bxkj5ll1d7292a70knmyl7a0cr-glibc-2.31/lib/libpthread.so.0
+#1  0x00007ffff643d667 in blas_memory_alloc ()
+   from /gnu/store/pmmbmrbizz668plrrvfyvqh5ymvjy5p4-profile/lib/libopenblas.so.0
+#2  0x00007ffff622e648 in cblas_dgemm ()
+   from /gnu/store/pmmbmrbizz668plrrvfyvqh5ymvjy5p4-profile/lib/libopenblas.so.0
+#3  0x00007ffff7d6af44 in gsl_blas_dgemm ()
+   from /gnu/store/pmmbmrbizz668plrrvfyvqh5ymvjy5p4-profile/lib/libgsl.so.25
+#4  0x0000000000480652 in CalcSigma (func_name=func_name@entry=82 'R', eval=eval@entry=0x5233c0,
+    D_l=D_l@entry=0x5ab1e0, X=X@entry=0x540930, OmegaU=OmegaU@entry=0x53e440,
+    OmegaE=OmegaE@entry=0x53e4a0, UltVeh=0x5a0990, Qi=0x59e570, Sigma_uu=0x59e2e0, Sigma_ee=0x5abe30)
+    at src/mvlmm.cpp:539
+
+#0  0x000000000047f8e7 in gsl_matrix_get (j=389, i=0, m=0x53e500)
+    at /gnu/store/pmmbmrbizz668plrrvfyvqh5ymvjy5p4-profile/include/gsl/gsl_matrix_double.h:286
+#1  CalcXHiY (eval=eval@entry=0x5233c0, D_l=D_l@entry=0x59f980, X=X@entry=0x540930,
+    UltVehiY=UltVehiY@entry=0x53e500, xHiy=xHiy@entry=0x5aaf40) at src/mvlmm.cpp:349
+#2  0x0000000000481033 in MphEM (func_name=func_name@entry=82 'R', max_iter=1000, max_prec=0.001,
+    eval=eval@entry=0x5233c0, X=X@entry=0x540930, Y=Y@entry=0x5408d0, U_hat=U_hat@entry=0x53e380,
+    E_hat=0x53e3e0, OmegaU=0x53e440, OmegaE=0x53e4a0, UltVehiY=0x53e500, UltVehiBX=0x53e560,
+    UltVehiU=0x53e5c0, UltVehiE=0x53e620, V_g=0x540990, V_e=0x540a20, B=0x540ab0) at src/mvlmm.cpp:658
+#3  0x000000000048f9da in MVLMM::AnalyzePlink (this=this@entry=0x7fffffffcf20, U=U@entry=0x523380,
+    eval=eval@entry=0x5233c0, UtW=UtW@entry=0x5233f0, UtY=UtY@entry=0x523430) at src/mvlmm.cpp:3805
+#4  0x0000000000435c2e in GEMMA::BatchRun (this=this@entry=0x7fffffffe4a0, cPar=...)
+    at src/gemma.cpp:2830
+
+#0  0x00007ffff62ffd0b in dgemm_nn ()
+   from /gnu/store/pmmbmrbizz668plrrvfyvqh5ymvjy5p4-profile/lib/libopenblas.so.0
+#1  0x00007ffff622e6f3 in cblas_dgemm ()
+   from /gnu/store/pmmbmrbizz668plrrvfyvqh5ymvjy5p4-profile/lib/libopenblas.so.0
+#2  0x00007ffff7d6af44 in gsl_blas_dgemm ()
+   from /gnu/store/pmmbmrbizz668plrrvfyvqh5ymvjy5p4-profile/lib/libgsl.so.25
+#3  0x000000000048067b in CalcSigma (func_name=func_name@entry=82 'R', eval=eval@entry=0x5233c0,
+    D_l=D_l@entry=0x5a13f0, X=X@entry=0x540930, OmegaU=OmegaU@entry=0x53e440,
+    OmegaE=OmegaE@entry=0x53e4a0, UltVeh=0x5a4410, Qi=0x5a8320, Sigma_uu=0x59fec0, Sigma_ee=0x5acca0)
+    at src/mvlmm.cpp:541
+#4  0x0000000000480f62 in MphEM (func_name=func_name@entry=82 'R', max_iter=1000, max_prec=0.001,
+    eval=eval@entry=0x5233c0, X=X@entry=0x540930, Y=Y@entry=0x5408d0, U_hat=U_hat@entry=0x53e380,
+    E_hat=0x53e3e0, OmegaU=0x53e440, OmegaE=0x53e4a0, UltVehiY=0x53e500, UltVehiBX=0x53e560,
+    UltVehiU=0x53e5c0, UltVehiE=0x53e620, V_g=0x540990, V_e=0x540a20, B=0x540ab0) at src/mvlmm.cpp:704
+#5  0x000000000048fa1d in MVLMM::AnalyzePlink (this=this@entry=0x7fffffffcf20, U=U@entry=0x523380,
+    eval=eval@entry=0x5233c0, UtW=UtW@entry=0x5233f0, UtY=UtY@entry=0x523430) at src/mvlmm.cpp:3806
+```
+
+A profiler should help pinpoint where time is spent. The issue submitter admits that this is a contrived edge-case so I am not going to work on it until I start optimizing mvlmm.
