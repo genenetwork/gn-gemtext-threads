@@ -132,3 +132,18 @@ feature to set up the colours as appropriate, when different colour-schemes are 
 => https://plotly.com/python/colorscales/ colour scales documentation
 => https://plotly.com/python/plotly-fundamentals/ plotly fundamentals page
 => https://plotly.com/python/categorical-axes/ categorical axes
+
+## 2021-08-17
+
+Tried providing the data-points as a dictionary instead of number, to test out the categorical layout of the plots: something along the lines of:
+
+```
+data = [[{'value': 0.07039128483638035, 'category': 'C57BL/6J +'}, {'value': 1.8493427990767048, 'category': 'C57BL/6J +'}, ..., {'value': 1.3089193078506003, 'category': 'C57BL/6J +'}]]
+```
+
+but that did work as expected.
+
+Paused on heatmap generation to first test out the database access code.
+
+Added tests and fixed issues with older db-access code to get a sample of the data for drawing heatmaps.
+
