@@ -200,12 +200,28 @@ For the actual heatmap representation, it looks to me like the `neworder` variab
 
 is what is populated and used to draw the "cells" of the heatmap diagram: see
 
-=> https://github.com/genenetwork/genenetwork1/blob/master/web/webqtl/heatmap/Heatmap.py#L206-L316
+=> https://github.com/genenetwork/genenetwork1/blob/master/web/webqtl/heatmap/Heatmap.py#L206-L316 this chunk.
 
-This has not yet been migrated over
+This has not yet been migrated over.
+
+Within the loop that uses `neworder`, there is a call to `genotype.regression(...)` function.
+
+From what I (fredmanglis) can tell, it seems this `regression` function might be the one defined in the
+
+=> https://github.com/genenetwork/QTLReaper/blob/master/Src/dataset.c#L416 QTLReaper library.
+
+I am not entirely sure where we stand on the use of QTLReaper. I think there was a move away from using this library some time in the past.
 
 There **might** be need to migrate the
 
 => https://github.com/genenetwork/genenetwork1/blob/master/web/webqtl/heatmap/Heatmap.py#L419-L438 `getNearestMarker` function out
 
 So, it does seem like I had previously missed out on a lot of extra computation that still needs migration.
+
+### 2021-08-20 14:15
+
+The `neworder` variable setup has been partially migrated. The use of the `xoffset` and `d_1` variables has not been cleared up at this point - they could be removed in the future.
+
+Also migrated retrieval of strains with non-NoneType values
+
+Awaiting response on use of QTLReaper.
