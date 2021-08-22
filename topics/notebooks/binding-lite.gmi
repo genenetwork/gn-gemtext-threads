@@ -178,3 +178,11 @@ This is inspired by the-littlest-jupyterhub distribution.
 
 => https://git.sr.ht/~jgart/binderlite Demo
 
+### TODOs
+
+* Updgrade Flask to 2.0 in GNU Guix.
+* Add favicon.
+* Add css styling and html meta headers.
+* Add Guix logo loading css animation similar to https://github.com/jupyterhub/binderhub/blob/master/binderhub/static/loading.css
+* Add xtermjs component while waiting for container to build.
+* Cull container after a period of inactivity.
