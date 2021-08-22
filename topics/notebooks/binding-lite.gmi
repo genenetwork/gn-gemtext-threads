@@ -180,6 +180,7 @@ This is inspired by the-littlest-jupyterhub distribution.
 
 ### TODOs
 
+* Add tests
 * Add cloned repository to a uuid generated path so that app doesn't fail on reclone due to previously existing git repo
 * Updgrade Flask to 2.0 in GNU Guix.
 * Add favicon.
