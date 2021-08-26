@@ -225,3 +225,33 @@ The `neworder` variable setup has been partially migrated. The use of the `xoffs
 Also migrated retrieval of strains with non-NoneType values
 
 Awaiting response on use of QTLReaper.
+
+## 2021-08-26
+
+Reading through the Genenetwork2 code to figure out how the ~rust-qtlreaper~ module is used.
+
+I cloned
+
+=> https://github.com/chfi/rust-qtlreaper ~rust-qtlreaper~
+
+and searched through the code for python bindings (py_module_initializer!) but could not find it in either the rust-qtlreaper or genenetwork2 repositories
+
+This causes me to suspect that when ~import reaper~ appears in the Genenetwork2 code, it actually uses the older QTLReaper implemented in C. This suspicion is further strengthened by the fact that when
+
+=> https://github.com/genenetwork/genenetwork3/commit/7aa5f5422908b4dbfc80f3f73b008507878a34aa I added ~rust-qtlreaper~
+
+to the dependencies for the Genenetwork3 environment,  I could not do ~import reaper~ successfully:
+
+```
+$ env GUIX_PACKAGE_PATH=~/genenetwork/guix-bioinformatics/ ~/.config/guix/current/bin/guix environment -C --network --load=guix.scm
+frederick@galadriel-ubuntu ~/genenetwork/genenetwork3 [env]$ python3
+Python 3.8.2 (default, Jan  1 1970, 00:00:01)
+[GCC 7.5.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import reaper
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ModuleNotFoundError: No module named 'reaper'
+```
+
+There's a chance we might have to write a separate rust library whose entire purpose is to add the python bindings, or maybe add the bindings to the rust-qtlreaper library itself.
