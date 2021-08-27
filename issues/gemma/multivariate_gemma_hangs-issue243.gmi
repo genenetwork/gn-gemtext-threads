@@ -163,3 +163,5 @@ Profiling above gemma dataset
 ```
 
 CalcSigma and CalcQi are worth looking into. Also cblas_dgemm may need some attention.
+
+For now I am dropping this until I pick up the mvlmm speedups.
