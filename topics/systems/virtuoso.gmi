@@ -1,0 +1,97 @@
+# Running Virtuoso
+
+We run instances of Virtuoso for our graph databases. Virtuoso is a remarkable software and running some really large databases, including Uniprot
+
+=> https://github.com/openlink/virtuoso-opensource
+=> https://www.uniprot.org/sparql/
+
+On Penguin2 virtuoso is running by default as a shepherd servive, see
+
+=> ./shepherd.gmi
+
+```
+guix environment --ad-hoc virtuoso-ose -- virtuoso-t -f
+```
+
+=> https://git.genenetwork.org/efraim/shepherd-services/src/branch/master/shepherd/init.d/virtuoso.scm penguin2:/home/shepherd/shepherd-services/shepherd/init.d/virtuoso.scm
+
+The database is initialized from 'penguin2:/export/virtuoso/var/lib/virtuoso/db/virtuoso.ini'
+
+## Running a new instance
+
+For testing we want to run a temporary instance. Let's start from the virtuoso.ini file:
+
+```
+mkdir -p ~/services/virtuoso
+cd services/virtuoso
+cp /export/virtuoso/var/lib/virtuoso/db/virtuoso.ini .
+```
+
+and edit it to change paths and ports - use non-priviliged ports(!). A full diff is below. Start the server in a screen or tmux (it may ask for creating ./db):
+
+```
+penguin2:~/services/virtuoso$ ~/.config/guix/current/bin/guix environment --ad-hoc virtuoso-ose glibc-locales
+
+penguin2:~/services/virtuoso$ /gnu/store/9aqd4jmkafhkdm095hnmxpxzws3ym3wd-virtuoso-ose-7.2.5/bin/virtuoso-t +foreground +configfile virtuoso.ini
+
+03:34:50 HTTP/WebDAV server online at 28890
+03:34:50 Server online at 21111 (pid 57078)
+```
+
+Now the server should respond to
+
+```
+curl localhost:28890/sparql
+```
+
+and the admin interface on
+
+```
+curl localhost:28890/conductor
+```
+
+To use the service from your remote machine use ssh tunnels:
+
+```
+ssh -L 28890:127.0.0.1:28890 -f -N myname@penguin2.genenetwork.org
+```
+
+and surf to http://localhost:28890/conductor. A good time to change the default password (dba:dba)!
+
+## Uploading data with CURL
+
+To upload RDF I use rapper to validate the data. First delete the existing graph with something like
+
+```
+curl -v --digest --user dba:password --verbose --url -G http://localhost:28890/sparql-graph-crud-auth --data-urlencode graph=https://BioHackrXiv.org/graph -X DELETE
+```
+
+Next update the graph with
+
+```
+curl -v -X PUT --digest -u dba:a-h9tlenHTill -H Content-Type:text/turtle -T test/data/biohackrxiv.ttl -G http://localhost:28890/sparql-graph-crud-auth --data-urlencode graph=https://BioHackrXiv.org/graph
+```
+
+Where BioHackrXiv is the name of the graph (in this example). A python version can be found in
+
+=> https://github.com/pubseq/bh20-seq-resource/blob/master/scripts/update_virtuoso/check_for_updates.py
+
+## Virtuoso.ini
+
+What changed in $HOME/services/virtuoso/virtuoso.ini
+
+```
++DatabaseFile                   = $HOME/services/virtuoso/db/virtuoso.db
++ErrorLogFile                   = $HOME/services/virtuoso/db/virtuoso.log
++LockFile                       = $HOME/services/virtuoso/db/virtuoso.lck
++TransactionFile                = $HOME/services/virtuoso/db/virtuoso.trx
++xa_persistent_file             = $HOME/services/virtuoso/db/virtuoso.pxa
++DatabaseFile                   = $HOME/services/virtuoso/db/virtuoso-temp.db
++TransactionFile                = $HOME/services/virtuoso/db/virtuoso-temp.trx
+-ServerPort                     = 1111
++ServerPort                     = 21111
++NumberOfBuffers                = 340000
++MaxDirtyBuffers                = 250000
++ServerPort                     = 28890
++ServerRoot                     = $HOME/services/virtuoso/vsp
+```

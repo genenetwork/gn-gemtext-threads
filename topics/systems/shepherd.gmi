@@ -1,0 +1,20 @@
+# Shepherd
+
+On Debian based systems we run shepherd as a shepherd user. The service gets started up through systemd:
+
+```
+[Unit]
+Description=Launch user shepherd daemon
+Wants=guix-daemon.service
+
+[Service]
+Type=oneshot
+ExecStart=/var/guix/profiles/per-user/shepherd/guix-profile/bin/shepherd --socket=/home/shepherd/.config/shepherd/shepherd.sock
+User=shepherd
+Group=shepherd
+
+[Install]
+WantedBy=multi-user.target
+```
+
+=> https://git.genenetwork.org/efraim/shepherd-services Running shepherd services
