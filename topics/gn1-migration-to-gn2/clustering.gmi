@@ -285,3 +285,11 @@ it seems like the groups correspond to the ~riset~ field in GN3, since they shar
 I might need to figure out how the traits correspond to a species.
 
 For the time being, however, I make the assumption that the ~riset~ field for all the traits is the same value, and use that to get the genotype file for use in computation of the QTL values with /rust-qtlreaper/.
+
+### 11:37
+
+The traits files should only contain the strains that can be found in the corresponding genotype file used for computation of the QTLs. If the trait file contains strains not present in the genotype file, then /rust-qtlreaper/ panics and fails.
+
+I should also look into reworking ~gn3.computations.export_trait_data~ function, so that each value is linked to the strain that it corresponds to, so that we do not rely on numerical order. This should help reduce chances of bugs where the strains and the values are not in the same order.
+
+I also need to figure out how the strains in the genotype are passed around in GN1. I have mostly ignored that since in GN1, those details were passed around in a class object.
