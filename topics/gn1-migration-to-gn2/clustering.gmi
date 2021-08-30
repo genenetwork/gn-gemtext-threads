@@ -255,3 +255,33 @@ ModuleNotFoundError: No module named 'reaper'
 ```
 
 There's a chance we might have to write a separate rust library whose entire purpose is to add the python bindings, or maybe add the bindings to the rust-qtlreaper library itself.
+
+## 2021-08-30
+
+### 08:38
+
+I built a new module to act as an interface between /rust-qtlreaper/ and the Genenetwork3 python code.
+
+I also looked at how the genotype file is identified in GN2 and compared with the data in GN3. It seems like the corresponding value in GN3 to identify the genotype file would be the ~riset~ field in the trait.
+
+For the examples used to test the data out, all the values end up being "BXD". There is a chance that the ~riset~ field's value could be different for each trait, depending on what the user runs the code against.
+
+I think this is part of what Rob was talking about
+
+=> https://github.com/genenetwork/genenetwork3/pull/31#issuecomment-890907828 here.
+
+The issues to consider are:
+
+* If all the traits are from a single group, then ALL the heatmap functions can be run
+* If all the traits are from a single species, but different groups, then only the 'mapping' function of the heatmap should be enabled
+* If the traits are from two or more species, then NO heatmap functions can be run.
+
+Still need to identify how the groups are identified/formed. From a cursory inspection of
+
+=> https://github.com/genenetwork/genenetwork2/blob/testing/wqflask/base/data_set.py#L319 GN2
+
+it seems like the groups correspond to the ~riset~ field in GN3, since they share the name
+
+I might need to figure out how the traits correspond to a species.
+
+For the time being, however, I make the assumption that the ~riset~ field for all the traits is the same value, and use that to get the genotype file for use in computation of the QTL values with /rust-qtlreaper/.
