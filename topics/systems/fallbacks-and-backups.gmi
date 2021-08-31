@@ -1,0 +1,22 @@
+# Fallbacks and backups
+
+As a hurricane is barreling towards our machine room in Memphis we are checking our fallbacks and backups for GeneNetwork. For years we have been making backups on Amazon - both S3 and a running virtual machine. The latter was expensive, so I replaced it with a bare metal server which earns itself (if it hadn't been down for months, but that is a different story).
+
+## Backup and restore
+
+We are using borg for backing up data. Borg is excellent at deduplication and compression of data and is pretty fast too. Incremental copies work with rsync - so that is fast. To restore the full MariaDB database from a local borg repo takes a few minutes:
+
+```
+wrk@epysode:/export/restore_tux01$ time borg extract -v /export2/backup/tux01/borg-tux01::BORG-TUX01-MARIADB-20210829-04:20-Sun
+real    17m32.498s
+user    8m49.877s
+sys     4m25.934s
+```
+
+This all contrasts heavily with restoring 300GB from Amazon S3.
+
+Next restore the GN2 home dir
+
+```
+root@epysode:/# borg extract export2/backup/tux01/borg-genenetwork::TUX01_BORG_GN2_HOME-20210830-04:00-Mon
+```
