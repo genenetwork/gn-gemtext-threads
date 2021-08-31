@@ -293,3 +293,16 @@ The traits files should only contain the strains that can be found in the corres
 I should also look into reworking ~gn3.computations.export_trait_data~ function, so that each value is linked to the strain that it corresponds to, so that we do not rely on numerical order. This should help reduce chances of bugs where the strains and the values are not in the same order.
 
 I also need to figure out how the strains in the genotype are passed around in GN1. I have mostly ignored that since in GN1, those details were passed around in a class object.
+
+
+## 2021-08-31
+
+### 06:59
+
+Succeeded in
+
+* figuring out how to link the genotype files to traits
+* loading samples/strains from the genotype files
+* testing the /rust-qtlreaper/ interface code
+
+Now to integrate the results into the main code, and start looking into parsing the results of running qtlreaper into data we can use to generate heatmaps.
