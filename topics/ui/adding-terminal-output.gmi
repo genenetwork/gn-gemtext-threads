@@ -5,3 +5,25 @@ GeneNetwork runs external tools. We would like to have an option for (advanced) 
 => https://xtermjs.org/docs/api/addons/attach/ xterm.js websocket support
 
 As GN3 (REST) API handles calling external tools it kinda make sense to handle the terminal output page through GN3 and communicate through websockets. But first I'll do a Sinatra test run.
+
+## possible xtermjs alternative
+
+=> https://github.com/joewalnes/websocketd possible xtermjs alternative
+
+=> http://websocketd.com/ home page with tutorials in various languages 
+
+They forgot scheme:
+
+```
+(define (websocketd-loop n)
+"Count from 1 to n, pausing
+for a second between each iteration"
+  (if (zero? n)
+      'done!
+      (begin
+        (display n)
+        (display "\n")
+        (sleep 1)
+        (websocketd-loop (- n 1)))))
+```
+
