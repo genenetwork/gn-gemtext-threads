@@ -69,7 +69,7 @@ curl -v --digest --user dba:password --verbose --url -G http://localhost:28890/s
 Next update the graph with
 
 ```
-curl -v -X PUT --digest -u dba:a-h9tlenHTill -H Content-Type:text/turtle -T test/data/biohackrxiv.ttl -G http://localhost:28890/sparql-graph-crud-auth --data-urlencode graph=https://BioHackrXiv.org/graph
+curl -v -X PUT --digest -u dba:password -H Content-Type:text/turtle -T test/data/biohackrxiv.ttl -G http://localhost:28890/sparql-graph-crud-auth --data-urlencode graph=https://BioHackrXiv.org/graph
 ```
 
 Where BioHackrXiv is the name of the graph (in this example). A python version can be found in
