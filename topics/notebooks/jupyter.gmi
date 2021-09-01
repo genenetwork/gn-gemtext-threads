@@ -1,0 +1,38 @@
+# Jupyter notebooks
+
+## Run with GNU Guix
+
+Jupyter notebooks can be installed in a profile
+
+```
+~/opt/guix-latest/bin/guix package -i jupyter python-pandas vim screen tree -p ~/opt/jupyter
+source ~/opt/jupyter/etc/profile
+jupyter notebook --notebook-dir=. --no-browser
+```
+
+or, even better, in a container
+
+```
+~/opt/guix-latest/bin/guix environment -C --network jupyter python-pandas vim tree
+jupyter notebook --notebook-dir=~/jupyter --no-browser --port=8989 --config=~/.jupyter.py
+```
+
+To set a password create one with
+
+```python
+from notebook.auth import passwd
+passwd()
+```
+
+and paste that into the config file, e.g.
+
+```
+c.NotebookApp.password = u'sha1:67c9e60bb8b6:9ffede0825894254b2e042ea597d771089e11aed'
+'argon2:$argon2id$v=19$m=10240,t=10,p=8$iq49+bKeCkueyBHo4jEpVQ$/fzhorq3xC4mM65OBgmJ/A'
+```
+
+You may need to generate that with
+
+```
+jupyter notebook --generate-config --config=~/.jupyter.py
+```
