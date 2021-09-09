@@ -332,3 +332,9 @@ This means that I need to organise the data provided in a way that we can genera
 Finalise on generation of the individual chromosome heatmaps.
 
 Start figuring out how to combine the individual heatmaps into one large one
+
+### 11:05
+
+Combining the plots with ~plotly.subplots.make_subplots~ function seems to get us some way towards getting the final heatmap.
+
+The clustering lines, are still not drawn however. There were explorations of dendrograms done to see whether that can help with that.
