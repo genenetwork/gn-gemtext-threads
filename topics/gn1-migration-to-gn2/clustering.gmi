@@ -306,3 +306,29 @@ Succeeded in
 * testing the /rust-qtlreaper/ interface code
 
 Now to integrate the results into the main code, and start looking into parsing the results of running qtlreaper into data we can use to generate heatmaps.
+
+## 2021-09-06
+
+The results are parsed and the following information has been gleaned so far, considering:
+
+=> ./sample_clustering_heatmap.png the 'Cluster Traits' heatmap
+
+The values on the vertical axis [0 .. 19, "X"] come from the "Chr" field of the parsed QTLReaper results
+
+There are 5 additional values that exist in the QTLReaper results: these are, "cM", "Mb", "LRS", "Additive" and "pValue" - of these, it seems like the "LRS" value is what is plotted on the heatmap.
+
+The values for "Additive", "Locus", and "Chr" seem to modify the colours, and where the values are plotted on the chart. They might not find much use in GN3, from the look of things.
+
+## 2021-09-08
+
+After further analysis of the data, and comparing it with the sample heatmaps generated from GN1, it seems like the GN1 heatmap diagram is actually a number of heatmaps, all sharing the same axis (X) for the traits, but having different Chromosome axes (Y).
+
+This means that I need to organise the data provided in a way that we can generate these set of heatmaps, and also figure out how to merge them in such a way that they share the same traits axis.
+
+## 2021-09-09
+
+### 06:10
+
+Finalise on generation of the individual chromosome heatmaps.
+
+Start figuring out how to combine the individual heatmaps into one large one
