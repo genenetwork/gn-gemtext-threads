@@ -78,10 +78,30 @@ If I try to run it with the `--container` flag then I run into permission issues
 
 inside another container.
 
-### Question(s)
+## Question(s)
 
-Do we want to not hard code guix-kernel to run inside a container and instead to be able to explicitly 
+###
+
+Do we want to avoid hard coding guix-kernel to run inside a container and instead be able to explicitly 
 specify a container environment from the binderlite app or should this be left to guix-kernel? 
 
-See above section on guix-kernel runs by default in a container.
+See above section on guix-kernel running by default in a container.
+
+###
+
+I currently cannot kill running jupyter instances on penguin2:
+
+```
+kill-jupyter
+kill: (1251): Operation not permitted
+kill: (34495): No such process
+kill: (52689): Operation not permitted
+kill: (52720): Operation not permitted
+kill: (52956): Operation not permitted
+Killed
+```
+
+=> https://git.genenetwork.org/jgart/binderlite/src/branch/master/bin/kill-jupyter kill-jupyter
+
+How should I get around this?
 
