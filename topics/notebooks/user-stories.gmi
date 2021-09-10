@@ -1,0 +1,87 @@
+# Next Steps
+
+Whenever we start a notebook let's generate an id (put the id in a db or in memory start) and then accept the id as 
+part of the route to get to the notebook. 
+
+The server has to look that id up and route the user to that particular jupyter notebook instance.
+
+Currently, users are directed to a jupyter notebook instance via parsing the output of `list_running_servers`:
+
+=> https://git.genenetwork.org/jgart/binderlite/src/branch/master/app.py#L37 list_running_servers in binderlite src
+
+This has its issues because we cannot uniquely identify the last launched notebook.
+
+## Optimizations 
+
+### Shutdown notebook and save to memory 
+
+If we are shutting down the notebook to save memory then we want
+to remember it's location in order to return to it.
+
+The jupyter notebook API has a function for listing currently running notebooks (mentioned above):
+
+```
+def list_running_servers(runtime_dir=None):
+    """Iterate over the server info files of running notebook servers.
+
+    Given a runtime directory, find nbserver-* files in the security directory,
+    and yield dicts of their information, each one pertaining to
+    a currently running notebook server instance.
+    """
+```
+
+There is also a function for getting a timestamp of the last time the notebook server did something:
+
+```
+ def last_activity(self):
+        """Get a UTC timestamp for when the server last did something.
+
+        Includes: API activity, kernel activity, kernel shutdown, and terminal
+        activity.
+        """
+```
+
+I need to decide on a way to uniquely identify the last built jupyter notebook.
+
+### Shutdown kernels gracefully
+
+* shutdown jupyter gracefully 
+
+Find a way to shutdown jupyter kernels gracefully. Jupyter kernels are currently shutdown by sending a kill signal 
+(SIGINT, Ctrl+c) via the terminal.
+
+This currently produces the following error:
+
+```
+Exception in thread Thread-1:
+Traceback (most recent call last):
+  File "/gnu/store/sd2ic7bpv8fx3imy1j8xcjclx71sv6q0-python-3.8.2/lib/python3.8/threading.py", line 932, in _bootstrap_inner
+      self.run()
+        File "/gnu/store/sd2ic7bpv8fx3imy1j8xcjclx71sv6q0-python-3.8.2/lib/python3.8/threading.py", line 870, in run
+            self._target(*self._args, **self._kwargs)
+              File "/gnu/store/w9bgs701xg1gbhxb6a4fsrjkj10c4sxc-python-notebook-6.3.0/lib/python3.8/site-packages/notebook/notebookapp.py", line 1961, in _confirm_exit
+                  line = sys.stdin.readline()
+                  OSError: [Errno 5] Input/output error
+```           
+
+## guix-kernel runs by default in a container
+
+guix-kernel (AKA guix-jupyter) runs by default in a container.
+
+See here:
+
+=> https://gitlab.inria.fr/guix-hpc/guix-kernel/-/blob/master/guix/jupyter/kernel.scm#L181 eval/container*
+
+The reason I bring this up is because I currently run binderlite without the `--container` flag.
+
+If I try to run it with the `--container` flag then I run into permission issues due to running a container
+
+inside another container.
+
+### Question(s)
+
+Do we want to not hard code guix-kernel to run inside a container and instead to be able to explicitly 
+specify a container environment from the binderlite app or should this be left to guix-kernel? 
+
+See above section on guix-kernel runs by default in a container.
+
