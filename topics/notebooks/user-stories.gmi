@@ -1,7 +1,7 @@
 # Next Steps
 
-Whenever we start a notebook let's generate an id (put the id in a db or in memory start) and then accept the id as 
-part of the route to get to the notebook. 
+Whenever we start a notebook let's generate an id (put the id in a db or in memory start) and then accept the id as
+part of the route to get to the notebook.
 
 The server has to look that id up and route the user to that particular jupyter notebook instance.
 
@@ -11,9 +11,9 @@ Currently, users are directed to a jupyter notebook instance via parsing the out
 
 This has its issues because we cannot uniquely identify the last launched notebook.
 
-## Optimizations 
+## Optimizations
 
-### Shutdown notebook and save to memory 
+### Shutdown notebook and save to memory
 
 If we are shutting down the notebook to save memory then we want
 to remember it's location in order to return to it.
@@ -45,9 +45,9 @@ I need to decide on a way to uniquely identify the last built jupyter notebook.
 
 ### Shutdown kernels gracefully
 
-* shutdown jupyter gracefully 
+* shutdown jupyter gracefully
 
-Find a way to shutdown jupyter kernels gracefully. Jupyter kernels are currently shutdown by sending a kill signal 
+Find a way to shutdown jupyter kernels gracefully. Jupyter kernels are currently shutdown by sending a kill signal
 (SIGINT, Ctrl+c) via the terminal.
 
 This currently produces the following error:
@@ -62,7 +62,7 @@ Traceback (most recent call last):
               File "/gnu/store/w9bgs701xg1gbhxb6a4fsrjkj10c4sxc-python-notebook-6.3.0/lib/python3.8/site-packages/notebook/notebookapp.py", line 1961, in _confirm_exit
                   line = sys.stdin.readline()
                   OSError: [Errno 5] Input/output error
-```           
+```
 
 ## guix-kernel runs by default in a container
 
@@ -82,10 +82,12 @@ inside another container.
 
 ###
 
-Do we want to avoid hard coding guix-kernel to run inside a container and instead be able to explicitly 
-specify a container environment from the binderlite app or should this be left to guix-kernel? 
+Do we want to avoid hard coding guix-kernel to run inside a container and instead be able to explicitly
+specify a container environment from the binderlite app or should this be left to guix-kernel?
 
 See above section on guix-kernel running by default in a container.
+
+Suggestion: we will create our own derived kernels and dependencies.
 
 ###
 
@@ -105,3 +107,4 @@ Killed
 
 How should I get around this?
 
+Suggestion: try killing a container rather then the jupyter process. Use the pid of the container.
