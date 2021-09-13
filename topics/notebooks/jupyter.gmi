@@ -13,7 +13,14 @@ jupyter notebook --notebook-dir=. --no-browser
 or, even better, in a container
 
 ```
-~/opt/guix-latest/bin/guix environment -C --network jupyter python-pandas vim tree
+guix environment -C --network --ad-hoc jupyter python-pandas
+jupyter notebook --notebook-dir=~/jupyter --no-browser --port=8989 --config=~/.jupyter.py
+```
+
+or, with a manifest
+
+```
+guix environment --container --network -m requirements.scm
 jupyter notebook --notebook-dir=~/jupyter --no-browser --port=8989 --config=~/.jupyter.py
 ```
 
