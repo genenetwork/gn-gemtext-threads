@@ -1,0 +1,12 @@
+# GN1 Production
+
+# Description
+
+We are facing a number of issues with GN1 running on production (tux01). Here we track resolving them.
+
+# Tags
+
+* critical bug
+* in progress
+* assigned: pjotrp, zachs, robw
+* kanban: pjotrp

@@ -43,7 +43,7 @@ For the kanban board we can simply use the keywords. Override/add with a separat
 
 * kanban: Brain storm
 
-Keywords are flexible, but common wons are
+Keywords are flexible, but common ones are
 
 * request
 * bug
@@ -68,7 +68,7 @@ Git can do all of that. A viewer may benefit from serial git information, theref
 
 Moving an issue file will disconnect the git record. Therefore simple add
 
-* tag: closed
+* closed
 
 ## Converting
 
