@@ -1,12 +1,26 @@
 # GN1 Production
 
-# Description
+We are facing a number of issues with GN1 running on production (tux01). This is the meta-index to track resolving them.
 
-We are facing a number of issues with GN1 running on production (tux01). Here we track resolving them.
+This list does not include stuff that needs to be ported to GN2(!). See the GN2 tracker for that.
 
-# Tags
+## Tags
 
 * critical bug
 * in progress
 * assigned: pjotrp, zachs, robw
 * kanban: pjotrp
+
+## List of outstanding issues
+
+(see also E-mail Rob 14 Sep 2021)
+
+* [ ] Fix annotating metadata - until we have GN2 alternative
+=> ./gn1-network-graph.gmi [ ] Fix network graph (it does not display image)
+=> ./gn1-pairscan.gmi [ ] Pairscan not working
+* [ ] Fix annotation link
+* [ ] Enable time machines
+* [ ] Disable galaxy URL
+* [ ] Disable EC2 URL
+* [ ] Disable GN mailing list URL
+* [ ] Disable all defunct URLs
