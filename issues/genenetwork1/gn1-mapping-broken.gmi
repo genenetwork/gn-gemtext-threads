@@ -1,0 +1,19 @@
+# Marker mapping
+
+Marker regression is broken with
+
+```
+Traceback (most recent call last):
+  File "/gnshare/gn/web/webqtl/cmdLine/webqtlCmdLine.py", line 170, in ?
+    page = MarkerRegressionPage.MarkerRegressionPage(fd)
+  File "/gnshare/gn/web/webqtl/cmdLine/../markerRegression/MarkerRegressionPage.py", line 203, in __init__
+    resultstable,tblobj,bottomInfo  = self.GenReport(ChrNameOrderIdDict,fd, _genotype, _strains, _vals, _vars)
+  File "/gnshare/gn/web/webqtl/cmdLine/../markerRegression/MarkerRegressionPage.py", line 438, in GenReport
+    qtlresults = _genotype.regression(strains = _strains, trait = _vals)
+AttributeError: 'genotype' object has no attribute 'regression'
+```
+
+## Tags
+
+* assigned: zachs, pjotrp
+* bug

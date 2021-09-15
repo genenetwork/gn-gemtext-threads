@@ -1,0 +1,17 @@
+# GN1 Slowness
+
+GN1 needs to clean up the following
+
+```
+GNRoot="/gnshare/gn"
+find $GNRoot/web/tmp    -mmin +100 -exec rm -rfv {} \;
+find $GNRoot/web/image  -mmin +100 -exec rm -rfv {} \;
+mkdir -p $GNRoot/web/tmp
+mkdir -p $GNRoot/web/image
+```
+
+Note that the -delete switch is much faster than -exec, so
+
+```
+find $GNRoot/web/image  -mmin +100 -delete
+```
