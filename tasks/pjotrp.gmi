@@ -1,0 +1,11 @@
+# Pjotr tasks
+
+## Tags
+
+* kanban: pjotrp
+
+## Tasks
+
+* GN3: make sure GN3 services are running
+=> ../topics/systems/gn-services.gmi
+* GN2: add link to wikidata gene aliases
