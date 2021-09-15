@@ -1,1 +1,70 @@
 # GN1 Pairscan
+
+Pair scan is not working because of an import issue.
+
+```
+Here is the error I get trying to run pair-scan.
+Traceback (most recent call last):
+File "/gnshare/gn/web/webqtl/cmdLine/webqtlCmdLine.py", line 79, in ?
+from pairScan import DirectPlotPage
+File "/gnshare/gn/web/webqtl/cmdLine/../pairScan/DirectPlotPage.py", line 32,
+in ?
+import direct
+ImportError: No module named direct
+```
+
+# Tags
+
+* critical bug
+* assigned: pjotrp
+
+# Notes
+
+Efraim included the module and wrote
+
+```
+from the traceback it looks like it's in production.
+
+from my gn1-python24-site-packages folder from lily there's a direct.so{,.bak} file so I'll start hunting around to see what I can make of it.
+```
+
+and a fix in guix-bioinformatics:
+
+```
+gn: Add python24-direct
+```
+
+it is not on Tux01, so let's update from
+
+```
+guix-past 4f5856f85578a04991dc646a06279d51f85973bf
+guix-bioinformatics b08410a9944e677ef71267410b235ba869f3935f
+```
+
+and
+
+```
+gn1@tux01:~$ ~/opt/guix/bin/guix --version
+guix (GNU Guix) 1.2.0-12.dffc918
+```
+
+First update guix with
+
+```
+gn1@tux01:~$ ~/opt/guix/bin/guix pull -p ~/opt/guix-latest
+```
+
+Which got me the error Unbound variable: license:bsd-0.
+
+followed by the git repos above.
+
+The error changed into
+
+```
+Traceback (most recent call last):
+  File "/gnshare/gn/web/webqtl/cmdLine/webqtlCmdLine.py", line 81, in ?
+    page = DirectPlotPage.DirectPlotPage(fd)
+  File "/gnshare/gn/web/webqtl/cmdLine/../pairScan/DirectPlotPage.py", line 141, in __init__
+    ResultFull, ResultInteract, ResultAdd = direct.permu(webqtlConfig.GENODIR, _vals, _strains, genofile + ".geno", 500) #XZ, 08/14/2008: add module name webqtlConfig
+AttributeError: 'module' object has no attribute 'permu'
+```
