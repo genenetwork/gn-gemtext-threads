@@ -7,6 +7,10 @@ Binder and Cocalc are tools for deploying Jupyter notebooks, R/shiny notebooks a
 * jgart
 * pjotr
 
+## Kanban
+
+* jgart
+
 ## Implementation
 
 Key is to leverage what is in Guix and what we already have in GeneNetwork as much as possible.

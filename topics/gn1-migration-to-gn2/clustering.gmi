@@ -15,6 +15,10 @@ Next click on 'Cluster traits' and 'Redraw' map. This is the one we want in GN3/
 * fredm
 * pjotr
 
+## Kanban
+
+* fredm
+
 ## Useful links
 
 => https://github.com/genenetwork/genenetwork1/tree/master/web/webqtl/heatmap Implementation
