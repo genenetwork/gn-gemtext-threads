@@ -16,6 +16,8 @@ ImportError: No module named direct
 # Tags
 
 * critical bug
+* missing dependency
+* binary blob
 * assigned: pjotrp
 
 # Notes
@@ -54,8 +56,6 @@ First update guix with
 gn1@tux01:~$ ~/opt/guix/bin/guix pull -p ~/opt/guix-latest
 ```
 
-Which got me the error Unbound variable: license:bsd-0.
-
 followed by the git repos above.
 
 The error changed into
@@ -68,3 +68,16 @@ Traceback (most recent call last):
     ResultFull, ResultInteract, ResultAdd = direct.permu(webqtlConfig.GENODIR, _vals, _strains, genofile + ".geno", 500) #XZ, 08/14/2008: add module name webqtlConfig
 AttributeError: 'module' object has no attribute 'permu'
 ```
+
+Turns out we are using the wrong direct.so. I made it work by adding the binary blob with LD_LIBRARY_PATH (also required libstdc++.so.6)
+
+* assigned: efraimf
+
+I just fixed pairscan with a bad hack. You can enjoy the production
+machine. Note it will disappear on a restart right now of GN1. Efraim,
+it works if direct.so and libstdc++.so.6 are visible. Maybe you can
+add the binary blob to GN1 and we pray it keeps working?
+
+With gn1.genenetwork.org test by selecting the hippocampus dataset,
+look for 'shh' gene, click 'pair scan' on the mapping page and
+'compute'.
