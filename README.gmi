@@ -23,3 +23,24 @@ We will soon add a web readable version of
 Other discussions on leaving github
 
 => https://github.com/bitcoin-core/bitcoin-devwiki/wiki/GitHub-alternatives-for-Bitcoin-Core
+
+## gnbug
+
+You may peruse the issues in this repository using the provided gnbug command-line interface. gnbug requires guile. Please install guile before running gnbug.
+
+List all issues.
+```
+./gnbug list
+```
+
+Only list issues assigned to pjotrp.
+```
+./gnbug list --assigned=pjotrp
+```
+
+List issues that were created or updated in the last 3 days, in the last week or month respectively. The --since argument is passed directly to `git log`. Therefore, gnbug understands any --since argument that `git log` understands.
+```
+./gnubug news --since='3 days'
+./gnubug news --since='1 week'
+./gnubug news --since='1 month'
+```

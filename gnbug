@@ -1,0 +1,178 @@
+#! /usr/bin/env guile
+!#
+
+(import (srfi srfi-26)
+        (srfi srfi-37)
+        (srfi srfi-171)
+        (ice-9 ftw)
+        (ice-9 match)
+        (ice-9 popen)
+        (ice-9 rdelim))
+
+(define (invoke program . args)
+  (unless (zero? (apply system* program args))
+    (error "Invocation of program failed" (cons program args))))
+
+(define (call-with-input-pipe proc program . args)
+  "Execute PROGRAM ARGS ... in a subprocess with a pipe to it. Call
+PROC with an input port to that pipe. Close the pipe once PROC exits,
+even if it exits non-locally. Return the value returned by PROC."
+  (let ((port #f))
+    (dynamic-wind (lambda () (set! port (apply open-pipe* OPEN_READ program args)))
+                  (cut proc port)
+                  (lambda ()
+                    (let ((return-value (status:exit-val (close-pipe port))))
+                      (unless (and return-value
+                                   (zero? return-value))
+                        (error "Invocation of program failed" (cons program args))))))))
+
+(define* (find-files directory #:optional (pred (const #t)))
+  "Recursively find all files under DIRECTORY that satisfy PRED."
+  (define (do-nothing name stat result)
+    result)
+
+  (file-system-fold (const #t)
+                    (lambda (name stat result)
+                      (if (pred name stat)
+                          (cons name result)
+                          result))
+                    do-nothing
+                    do-nothing
+                    do-nothing
+                    (lambda (name stat errno result)
+                      (error (strerror errno) name))
+                    '()
+                    directory))
+
+(define (assignees file)
+  "Return the list of assignees in gemini FILE."
+  (call-with-input-file file
+    (lambda (port)
+      (port-transduce (compose
+                       (tfilter (cut string-prefix? "* assigned:" <>))
+                       (tappend-map (lambda (line)
+                                      (map (cut string-trim-both <>)
+                                           (string-split
+                                            (substring line (string-length "* assigned:"))
+                                            #\,)))))
+                      rcons
+                      read-line
+                      port))))
+
+(define (git-updated-files transducer start-commit end-commit)
+  "Use TRANSDUCER to transduce over the list of files updated between
+START-COMMIT and END-COMMIT."
+  (call-with-input-pipe
+   (lambda (port)
+     (port-transduce (compose (tmap (lambda (line)
+                                      (match (string-split line #\tab)
+                                        ((status file)
+                                         (list (match status
+                                                 ("A" 'added)
+                                                 ("D" 'deleted)
+                                                 ("M" 'modified))
+                                               file)))))
+                              transducer)
+                     (const #t) read-line port))
+   "git" "diff" "--stat" "--name-status"
+   (string-append start-commit ".." end-commit)))
+
+(define rlast
+  (case-lambda
+    (() #f)
+    ((result) result)
+    ((result input) input)))
+
+(define (git-first-commit-since since)
+  "Return the hash of the first git commit since SINCE, where SINCE is
+passed verbatim to the --since argument of `git log'. Return #f if
+there is no such commit."
+  (call-with-input-pipe
+   (lambda (port)
+     (port-transduce (tmap identity)
+                     rlast
+                     read-line
+                     port))
+   "git" "log" "--format=format:%H" "--since" since))
+
+(define (color code str)
+  "Return STR within ANSI escape CODE, thus rendering it in color in a
+terminal."
+  (format #f "~a[~am~a~a[0m" #\esc code str #\esc))
+
+(define red (cut color 31 <>))
+(define green (cut color 32 <>))
+(define magenta (cut color 35 <>))
+(define blue (cut color 34 <>))
+(define cyan (cut color 36 <>))
+
+(define (invalid-option name arg loads)
+  (error "Invalid option" name))
+
+(define (invalid-operand arg loads)
+  (error "Invalid argument" arg))
+
+(define main
+  (match-lambda*
+    ((_ "news" args ...)
+     (let ((args (args-fold args
+                            (list (option (list "since") #t #f
+                                          (lambda (opt name arg loads)
+                                            (acons 'since arg loads))))
+                            invalid-option
+                            invalid-operand
+                            '())))
+       (unless (assq 'since args)
+         (error "--since argument required"))
+       (git-updated-files (tlog (match-lambda*
+                                  ((_ (status file))
+                                   (format #t ((case status
+                                                 ((added) green)
+                                                 ((deleted) red)
+                                                 ((modified) magenta))
+                                               "~a (~a)~%")
+                                           file
+                                           (case status
+                                             ((added) "new")
+                                             ((deleted) "deleted")
+                                             ((modified) "updated"))))))
+                          (or (git-first-commit-since (assq-ref args 'since))
+                              "HEAD")
+                          "HEAD")))
+    ((_ "list" args ...)
+     (let ((args (args-fold args
+                            (list (option (list "assigned") #t #f
+                                          (lambda (opt name arg loads)
+                                            (acons 'assigned arg loads))))
+                            invalid-option
+                            invalid-operand
+                            '())))
+       (format #t "~%total ~a~%"
+               (list-transduce (compose (tmap (lambda (file)
+                                                (list (substring file (string-length "./"))
+                                                      (assignees file))))
+                                        (tfilter (match-lambda
+                                                   ((_ assignees)
+                                                    (or (not (assq 'assigned args))
+                                                        (member (assq-ref args 'assigned) assignees)))))
+                                        (tlog (match-lambda*
+                                                ((_ (file ()))
+                                                 (format #t "~a~%" file))
+                                                ((_ (file assignees))
+                                                 (format #t "~a ~a~%"
+                                                         file
+                                                         (magenta (string-append "(assigned: "
+                                                                                 (string-join assignees ", ")
+                                                                                 ")")))))))
+                               rcount
+                               ;; Get all gemini files except
+                               ;; README.gmi and hidden files. Text
+                               ;; editors tend to create hidden files
+                               ;; while editing, and we want to avoid
+                               ;; them.
+                               (find-files "." (lambda (name _)
+                                                 (and (string-suffix? ".gmi" name)
+                                                      (not (string=? (basename name) "README.gmi"))
+                                                      (not (string-prefix? "." (basename name))))))))))))
+
+(apply main (command-line))
