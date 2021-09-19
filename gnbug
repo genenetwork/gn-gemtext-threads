@@ -47,10 +47,13 @@ even if it exits non-locally. Return the value returned by PROC."
                     directory))
 
 (define-record-type <issue>
-  (issue file title assigned)
+  (issue file title creator created-date created-relative-date assigned)
   issue?
   (file issue-file)
   (title issue-title)
+  (creator issue-creator)
+  (created-date issue-created-date)
+  (created-relative-date issue-created-relative-date)
   (assigned issue-assigned))
 
 (define (issues)
@@ -59,12 +62,16 @@ even if it exits non-locally. Return the value returned by PROC."
   ;; editors tend to create hidden files while editing, and we want to
   ;; avoid them.
   (map (lambda (file)
-         (let ((file-details (file-details file)))
+         (let ((file-details (file-details file))
+               (creation-details (creation-details file)))
            (issue file
                   ;; Fallback to filename if title has no alphabetic
                   ;; characters.
                   (let ((title (hashtable-ref file-details 'title "")))
                     (if (string-any char-set:letter title) title file))
+                  (assq-ref creation-details 'creator)
+                  (assq-ref creation-details 'created-date)
+                  (assq-ref creation-details 'created-relative-date)
                   (hashtable-ref file-details 'assigned '()))))
        (find-files "."
                    (lambda (name _)
@@ -96,6 +103,19 @@ even if it exits non-locally. Return the value returned by PROC."
                         read-line
                         port)))
     result))
+
+(define (creation-details file)
+  "Return an association list of creation details about FILE extracted
+from the git repository."
+  (call-with-input-pipe
+   read
+   "git" "log" "--diff-filter=A"
+   (string-append "--format=format:("
+                  "(creator . \"%an\")"
+                  "(created-date . %at)"
+                  "(created-relative-date . \"%ar\")"
+                  ")")
+   "--" file))
 
 (define (git-updated-files transducer start-commit end-commit)
   "Use TRANSDUCER to transduce over the list of files updated between
@@ -191,12 +211,14 @@ terminal."
                                                        (member (assq-ref args 'assigned)
                                                                (issue-assigned issue)))))
                                         (tlog (lambda (_ issue)
-                                                (match (issue-assigned issue)
-                                                  (() (format #t "~a~%" (issue-title issue)))
-                                                  (assignees
-                                                   (format #t "~a ~a~%"
-                                                           (issue-title issue)
-                                                           (magenta (string-append "(assigned: "
+                                                (format #t "~a ~a ~a~a~%"
+                                                        (issue-created-relative-date issue)
+                                                        (cyan (issue-creator issue))
+                                                        (issue-title issue)
+                                                        (match (issue-assigned issue)
+                                                          (() "")
+                                                          (assignees
+                                                           (magenta (string-append " (assigned: "
                                                                                    (string-join assignees ", ")
                                                                                    ")"))))))))
                                rcount
