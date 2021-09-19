@@ -1,7 +1,8 @@
 #! /usr/bin/env guile
 !#
 
-(import (srfi srfi-9)
+(import (rnrs hashtables)
+        (srfi srfi-9)
         (srfi srfi-26)
         (srfi srfi-37)
         (srfi srfi-171)
@@ -46,9 +47,10 @@ even if it exits non-locally. Return the value returned by PROC."
                     directory))
 
 (define-record-type <issue>
-  (issue file assigned)
+  (issue file title assigned)
   issue?
   (file issue-file)
+  (title issue-title)
   (assigned issue-assigned))
 
 (define (issues)
@@ -57,28 +59,43 @@ even if it exits non-locally. Return the value returned by PROC."
   ;; editors tend to create hidden files while editing, and we want to
   ;; avoid them.
   (map (lambda (file)
-         (issue file
-                (assignees file)))
+         (let ((file-details (file-details file)))
+           (issue file
+                  ;; Fallback to filename if title has no alphabetic
+                  ;; characters.
+                  (let ((title (hashtable-ref file-details 'title "")))
+                    (if (string-any char-set:letter title) title file))
+                  (hashtable-ref file-details 'assigned '()))))
        (find-files "."
                    (lambda (name _)
                      (and (string-suffix? ".gmi" name)
                           (not (string=? (basename name) "README.gmi"))
                           (not (string-prefix? "." (basename name))))))))
 
-(define (assignees file)
-  "Return the list of assignees in gemini FILE."
-  (call-with-input-file file
-    (lambda (port)
-      (port-transduce (compose
-                       (tfilter (cut string-prefix? "* assigned:" <>))
-                       (tappend-map (lambda (line)
-                                      (map (cut string-trim-both <>)
-                                           (string-split
-                                            (substring line (string-length "* assigned:"))
-                                            #\,)))))
-                      rcons
-                      read-line
-                      port))))
+(define (file-details file)
+  "Return a hashtable of details extracted from gemini FILE."
+  (let ((result (make-eq-hashtable)))
+    (call-with-input-file file
+      (lambda (port)
+        (port-transduce (tmap (lambda (line)
+                                (cond
+                                 ((string-prefix? "* assigned:" line)
+                                  (hashtable-update! result 'assigned
+                                                     (lambda (previous)
+                                                       (append (map (cut string-trim-both <>)
+                                                                    (string-split
+                                                                     (substring line (string-length "* assigned:"))
+                                                                     #\,))
+                                                               previous))
+                                                     '()))
+                                 ((string-prefix? "# " line)
+                                  (unless (hashtable-contains? result 'title)
+                                    (hashtable-set! result 'title
+                                                    (substring line (string-length "# "))))))))
+                        (const #t)
+                        read-line
+                        port)))
+    result))
 
 (define (git-updated-files transducer start-commit end-commit)
   "Use TRANSDUCER to transduce over the list of files updated between
@@ -174,16 +191,14 @@ terminal."
                                                        (member (assq-ref args 'assigned)
                                                                (issue-assigned issue)))))
                                         (tlog (lambda (_ issue)
-                                                (let ((file (substring (issue-file issue)
-                                                                       (string-length "./"))))
-                                                  (match (issue-assigned issue)
-                                                    (() (format #t "~a~%" file))
-                                                    (assignees
-                                                     (format #t "~a ~a~%"
-                                                             file
-                                                             (magenta (string-append "(assigned: "
-                                                                                     (string-join assignees ", ")
-                                                                                     ")")))))))))
+                                                (match (issue-assigned issue)
+                                                  (() (format #t "~a~%" (issue-title issue)))
+                                                  (assignees
+                                                   (format #t "~a ~a~%"
+                                                           (issue-title issue)
+                                                           (magenta (string-append "(assigned: "
+                                                                                   (string-join assignees ", ")
+                                                                                   ")"))))))))
                                rcount
                                (issues)))))))
 
