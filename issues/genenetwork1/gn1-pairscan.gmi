@@ -81,3 +81,18 @@ add the binary blob to GN1 and we pray it keeps working?
 With gn1.genenetwork.org test by selecting the hippocampus dataset,
 look for 'shh' gene, click 'pair scan' on the mapping page and
 'compute'.
+
+# Update from Efraim
+
+I have copied the previous version of direct.so to IPFS, it is available
+at QmYUZiuAP6DJeubu69JqvRWSsn53qCZCS3FkRWgTowtWkA. Note that it is direct.so
+itself. As of commit
+
+```
+gn: Use known good binary version of direct.so for genenetwork1
+```
+
+we are now using that for genenetwork1. Patchelf makes it refer to the correct
+libstdc++.so.6 (namely one provided by Guix) so we don't need to worry about it
+being specifically propagated. I'm having trouble actually running the
+genenetwork1 container so Pjotr said he'd test it out.
