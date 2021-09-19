@@ -57,27 +57,30 @@ even if it exits non-locally. Return the value returned by PROC."
   (assigned issue-assigned))
 
 (define (issues)
-  "Return a list of all issues."
+  "Return a list of all issues, sorted newest first."
   ;; Get all gemini files except README.gmi and hidden files. Text
   ;; editors tend to create hidden files while editing, and we want to
   ;; avoid them.
-  (map (lambda (file)
-         (let ((file-details (file-details file))
-               (creation-details (creation-details file)))
-           (issue file
-                  ;; Fallback to filename if title has no alphabetic
-                  ;; characters.
-                  (let ((title (hashtable-ref file-details 'title "")))
-                    (if (string-any char-set:letter title) title file))
-                  (assq-ref creation-details 'creator)
-                  (assq-ref creation-details 'created-date)
-                  (assq-ref creation-details 'created-relative-date)
-                  (hashtable-ref file-details 'assigned '()))))
-       (find-files "."
-                   (lambda (name _)
-                     (and (string-suffix? ".gmi" name)
-                          (not (string=? (basename name) "README.gmi"))
-                          (not (string-prefix? "." (basename name))))))))
+  (sort (map (lambda (file)
+               (let ((file-details (file-details file))
+                     (creation-details (creation-details file)))
+                 (issue file
+                        ;; Fallback to filename if title has no alphabetic
+                        ;; characters.
+                        (let ((title (hashtable-ref file-details 'title "")))
+                          (if (string-any char-set:letter title) title file))
+                        (assq-ref creation-details 'creator)
+                        (assq-ref creation-details 'created-date)
+                        (assq-ref creation-details 'created-relative-date)
+                        (hashtable-ref file-details 'assigned '()))))
+             (find-files "."
+                         (lambda (name _)
+                           (and (string-suffix? ".gmi" name)
+                                (not (string=? (basename name) "README.gmi"))
+                                (not (string-prefix? "." (basename name)))))))
+        (lambda (issue1 issue2)
+          (> (issue-created-date issue1)
+             (issue-created-date issue2)))))
 
 (define (file-details file)
   "Return a hashtable of details extracted from gemini FILE."
