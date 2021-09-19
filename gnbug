@@ -1,7 +1,8 @@
 #! /usr/bin/env guile
 !#
 
-(import (srfi srfi-26)
+(import (srfi srfi-9)
+        (srfi srfi-26)
         (srfi srfi-37)
         (srfi srfi-171)
         (ice-9 ftw)
@@ -43,6 +44,26 @@ even if it exits non-locally. Return the value returned by PROC."
                       (error (strerror errno) name))
                     '()
                     directory))
+
+(define-record-type <issue>
+  (issue file assigned)
+  issue?
+  (file issue-file)
+  (assigned issue-assigned))
+
+(define (issues)
+  "Return a list of all issues."
+  ;; Get all gemini files except README.gmi and hidden files. Text
+  ;; editors tend to create hidden files while editing, and we want to
+  ;; avoid them.
+  (map (lambda (file)
+         (issue file
+                (assignees file)))
+       (find-files "."
+                   (lambda (name _)
+                     (and (string-suffix? ".gmi" name)
+                          (not (string=? (basename name) "README.gmi"))
+                          (not (string-prefix? "." (basename name))))))))
 
 (define (assignees file)
   "Return the list of assignees in gemini FILE."
@@ -148,31 +169,22 @@ terminal."
                             invalid-operand
                             '())))
        (format #t "~%total ~a~%"
-               (list-transduce (compose (tmap (lambda (file)
-                                                (list (substring file (string-length "./"))
-                                                      (assignees file))))
-                                        (tfilter (match-lambda
-                                                   ((_ assignees)
-                                                    (or (not (assq 'assigned args))
-                                                        (member (assq-ref args 'assigned) assignees)))))
-                                        (tlog (match-lambda*
-                                                ((_ (file ()))
-                                                 (format #t "~a~%" file))
-                                                ((_ (file assignees))
-                                                 (format #t "~a ~a~%"
-                                                         file
-                                                         (magenta (string-append "(assigned: "
-                                                                                 (string-join assignees ", ")
-                                                                                 ")")))))))
+               (list-transduce (compose (tfilter (lambda (issue)
+                                                   (or (not (assq 'assigned args))
+                                                       (member (assq-ref args 'assigned)
+                                                               (issue-assigned issue)))))
+                                        (tlog (lambda (_ issue)
+                                                (let ((file (substring (issue-file issue)
+                                                                       (string-length "./"))))
+                                                  (match (issue-assigned issue)
+                                                    (() (format #t "~a~%" file))
+                                                    (assignees
+                                                     (format #t "~a ~a~%"
+                                                             file
+                                                             (magenta (string-append "(assigned: "
+                                                                                     (string-join assignees ", ")
+                                                                                     ")")))))))))
                                rcount
-                               ;; Get all gemini files except
-                               ;; README.gmi and hidden files. Text
-                               ;; editors tend to create hidden files
-                               ;; while editing, and we want to avoid
-                               ;; them.
-                               (find-files "." (lambda (name _)
-                                                 (and (string-suffix? ".gmi" name)
-                                                      (not (string=? (basename name) "README.gmi"))
-                                                      (not (string-prefix? "." (basename name))))))))))))
+                               (issues)))))))
 
 (apply main (command-line))
