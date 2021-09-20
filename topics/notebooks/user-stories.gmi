@@ -82,6 +82,14 @@ inside another container.
 
 ###
 
+What is the idiomatic way in nginx to forward everything beyond some prefix.
+
+Currently using the $rest arg but that might not be a good way to do it:
+
+=> https://git.genenetwork.org/jgart/binderlite/src/branch/master/nginx.conf#L36
+
+###
+
 Do we want to avoid hard coding guix-kernel to run inside a container and instead be able to explicitly
 specify a container environment from the binderlite app or should this be left to guix-kernel?
 
