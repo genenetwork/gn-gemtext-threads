@@ -19,6 +19,10 @@ Next click on 'Cluster traits' and 'Redraw' map. This is the one we want in GN3/
 
 * fredm
 
+## Tags
+
+* assigned: fredm
+
 ## Useful links
 
 => https://github.com/genenetwork/genenetwork1/tree/master/web/webqtl/heatmap Implementation
