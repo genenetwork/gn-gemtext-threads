@@ -1,0 +1,24 @@
+# Genetwork CLI
+
+It would be great for GeneNetwork to have a nice command line client for doing 
+most if not all the things you can do with the html interface (GN2) and/or the 
+API (GN3). 
+
+I think this feature might interest scientific researchers who are comfortable 
+with the command line.
+
+GitHub and GNU MediaGoblin have one:
+
+=> https://git.savannah.gnu.org/cgit/mediagoblin.git/tree/mediagoblin/gmg_commands MediaGoblin CLI Commands
+
+=> https://docs.mediagoblin.org/en/master/siteadmin/commandline-upload.html
+
+GNU MediaGoblin has a basic API:
+
+=> https://git.savannah.gnu.org/cgit/mediagoblin.git/tree/mediagoblin/api MediaGoblin API
+
+Github Command Line Client:
+
+=> https://cli.github.com/ gh
+
+
