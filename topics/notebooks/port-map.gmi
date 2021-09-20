@@ -1,0 +1,8 @@
+# port map
+
+|-----|-----------|
+|port |service    |
+|-----|-----------|
+|80   |nginx      |
+|8989 |binderlite |
+|xxxx |jupyter(s) |
