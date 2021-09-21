@@ -230,5 +230,12 @@ terminal."
                                                                                     ")")))))))))
                                rcount
                                (issues)))))
+    ((_ "edit" issue-number)
+     (unless (getenv "EDITOR")
+       (error "Please set the EDITOR environment variable to your favorite editor. For example,
+export EDITOR=emacsclient"))
+     (invoke (getenv "EDITOR")
+             (issue-file (list-ref (issues)
+                                   (1- (string->number issue-number))))))))
 
 (apply main (command-line))
