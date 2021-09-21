@@ -40,9 +40,9 @@ Only list issues assigned to pjotrp.
 
 List issues that were created or updated in the last 3 days, in the last week or month respectively. The --since argument is passed directly to `git log`. Therefore, gnbug understands any --since argument that `git log` understands.
 ```
-./gnubug news --since='3 days'
-./gnubug news --since='1 week'
-./gnubug news --since='1 month'
+./gnbug news --since='3 days'
+./gnbug news --since='1 week'
+./gnbug news --since='1 month'
 ```
 
 Using `direnv` with `gnbug` allows the user to drop the `./` in the command.
