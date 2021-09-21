@@ -38,6 +38,11 @@ Only list issues assigned to pjotrp.
 ./gnbug list --assigned=pjotrp
 ```
 
+Edit an issue, say issue 9. This opens the relevant gemtext file in your favourite editor as defined by the EDITOR environment variable.
+```
+./gnbug edit 9
+```
+
 List issues that were created or updated in the last 3 days, in the last week or month respectively. The --since argument is passed directly to `git log`. Therefore, gnbug understands any --since argument that `git log` understands.
 ```
 ./gnubug news --since='3 days'
