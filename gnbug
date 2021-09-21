@@ -209,22 +209,26 @@ terminal."
                             invalid-operand
                             '())))
        (format #t "~%total ~a~%"
-               (list-transduce (compose (tfilter (lambda (issue)
-                                                   (or (not (assq 'assigned args))
-                                                       (member (assq-ref args 'assigned)
-                                                               (issue-assigned issue)))))
-                                        (tlog (lambda (_ issue)
-                                                (format #t "~a ~a ~a~a~%"
-                                                        (issue-created-relative-date issue)
-                                                        (cyan (issue-creator issue))
-                                                        (issue-title issue)
-                                                        (match (issue-assigned issue)
-                                                          (() "")
-                                                          (assignees
-                                                           (magenta (string-append " (assigned: "
-                                                                                   (string-join assignees ", ")
-                                                                                   ")"))))))))
+               (list-transduce (compose (tenumerate 1)
+                                        (tfilter (match-lambda
+                                                   ((_ . issue)
+                                                    (or (not (assq 'assigned args))
+                                                        (member (assq-ref args 'assigned)
+                                                                (issue-assigned issue))))))
+                                        (tlog (match-lambda*
+                                                ((_ (index . issue))
+                                                 (format #t "~a ~a ~a ~a~a~%"
+                                                         (magenta (string-append "#" (number->string index)))
+                                                         (issue-created-relative-date issue)
+                                                         (cyan (issue-creator issue))
+                                                         (issue-title issue)
+                                                         (match (issue-assigned issue)
+                                                           (() "")
+                                                           (assignees
+                                                            (magenta (string-append " (assigned: "
+                                                                                    (string-join assignees ", ")
+                                                                                    ")")))))))))
                                rcount
-                               (issues)))))))
+                               (issues)))))
 
 (apply main (command-line))
