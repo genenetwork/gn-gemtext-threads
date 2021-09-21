@@ -44,3 +44,6 @@ List issues that were created or updated in the last 3 days, in the last week or
 ./gnubug news --since='1 week'
 ./gnubug news --since='1 month'
 ```
+
+Using `direnv` with `gnbug` allows the user to drop the `./` in the command.
+
