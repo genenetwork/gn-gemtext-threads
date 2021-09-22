@@ -96,6 +96,10 @@ strings, and return them as a list."
   (map (cut string-trim-both <>)
        (string-split str #\,)))
 
+(define (remove-prefix prefix str)
+  "Remove PREFIX from STR."
+  (substring str (string-length prefix)))
+
 (define (file-details file)
   "Return a hashtable of details extracted from gemini FILE."
   (let ((result (make-eq-hashtable)))
@@ -108,13 +112,13 @@ strings, and return them as a list."
                                  ((string-prefix? "* assigned:" line)
                                   (hashtable-append! result 'assigned
                                                      (comma-split
-                                                      (substring line (string-length "* assigned:")))))
+                                                      (remove-prefix "* assigned:" line))))
                                  ;; The first level one heading is the
                                  ;; title.
                                  ((string-prefix? "# " line)
                                   (unless (hashtable-contains? result 'title)
                                     (hashtable-set! result 'title
-                                                    (substring line (string-length "# "))))))))
+                                                    (remove-prefix "# " line)))))))
                         (const #t)
                         read-line
                         port)))
