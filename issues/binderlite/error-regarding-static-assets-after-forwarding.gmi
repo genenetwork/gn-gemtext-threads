@@ -1,5 +1,8 @@
 # Nginx forwarding error regarding static assets
 
+* bug
+* assigned: jgart
+
 When nginx forwards the following jupyter notebook url:
 
 `http://localhost/58955/41634c46e4c1ef94b02b646509ae8a7bb023bb4ac7926faa`
@@ -25,3 +28,4 @@ I get the following error (see nginx question in notebooks/user-stories):
 [W 04:46:28.141 NotebookApp] 404 GET /static/components/requirejs/require.js (127.0.0.1) 2.180000ms referer=http://localhost/58955/41634c46e4c1ef94b02b646509ae8a7bb023bb4ac7926faa
 [W 04:46:28.181 NotebookApp] 404 GET /static/base/images/favicon.ico (127.0.0.1) 2.610000ms referer=http://localhost/58955/41634c46e4c1ef94b02b646509ae8a7bb023bb4ac7926faa
 ```
+
