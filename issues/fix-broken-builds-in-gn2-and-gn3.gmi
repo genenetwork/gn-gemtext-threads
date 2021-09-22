@@ -1,0 +1,11 @@
+# Make build green
+
+Right now, for both gn2 and gn3, we have broken builds(red) for both
+gn3 and gn2.
+
+## Tasks
+
+* assigned: bonfacekilz
+
+* [ ] Fix pylint/ mypy issues in gn3
+* [ ] Update docker image in gn2
