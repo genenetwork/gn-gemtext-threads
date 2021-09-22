@@ -1,0 +1,9 @@
+# 404 error in logs
+
+We get many 404's in GN logs. Can we rewire that so no log entries appear as a full stack dump?
+
+## Tags
+
+* enhancement
+* deployment
+* assigned: bonfacem, pjotrp
