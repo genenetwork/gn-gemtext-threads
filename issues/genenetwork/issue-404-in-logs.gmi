@@ -7,3 +7,7 @@ We get many 404's in GN logs. Can we rewire that so no log entries appear as a f
 * enhancement
 * deployment
 * assigned: bonfacem, pjotrp
+
+## Notes
+
+=> https://flask.palletsprojects.com/en/2.0.x/errorhandling/
