@@ -2,6 +2,7 @@
 !#
 
 (import (rnrs hashtables)
+        (rnrs io ports)
         (srfi srfi-9)
         (srfi srfi-26)
         (srfi srfi-37)
@@ -238,13 +239,20 @@ export EDITOR=emacsclient"))
           (issue-file (list-ref (issues)
                                 (1- (string->number issue-number))))))
 
+(define (gnbug-show issue-number)
+  (put-string (current-output-port)
+              (call-with-input-file (issue-file (list-ref (issues)
+                                                          (1- (string->number issue-number))))
+                get-string-all)))
+
 (define main
   (match-lambda*
     ((_ command args ...)
      (apply (match command
               ("news" gnbug-news)
               ("list" gnbug-list)
-              ("edit" gnbug-edit))
+              ("edit" gnbug-edit)
+              ("show" gnbug-show))
             args))
     ;; gnbug is an alias for `gnbug list'
     ((_)
