@@ -90,6 +90,8 @@ even if it exits non-locally. Return the value returned by PROC."
       (lambda (port)
         (port-transduce (tmap (lambda (line)
                                 (cond
+                                 ;; Lists with the assigned: prefix
+                                 ;; specify assignees.
                                  ((string-prefix? "* assigned:" line)
                                   (hashtable-update! result 'assigned
                                                      (lambda (previous)
@@ -99,6 +101,8 @@ even if it exits non-locally. Return the value returned by PROC."
                                                                      #\,))
                                                                previous))
                                                      '()))
+                                 ;; The first level one heading is the
+                                 ;; title.
                                  ((string-prefix? "# " line)
                                   (unless (hashtable-contains? result 'title)
                                     (hashtable-set! result 'title
