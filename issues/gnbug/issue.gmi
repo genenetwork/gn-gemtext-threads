@@ -1,0 +1,27 @@
+# Maybe `gnbug` should be an alias for `gnbug list` 
+
+WDYT?
+
+* bug
+
+```
+[jgart@gac gn-kanban]$ ./gnbug
+Backtrace:
+In ice-9/boot-9.scm:
+  1752:10  6 (with-exception-handler _ _ #:unwind? _ # _)
+In unknown file:
+           5 (apply-smob/0 #<thunk 7f2c6b7ed0c0>)
+In ice-9/boot-9.scm:
+    724:2  4 (call-with-prompt _ _ #<procedure default-prompt-handle…>)
+In ice-9/eval.scm:
+    619:8  3 (_ #(#(#<directory (guile-user) 7f2c6b7f3c80>)))
+In ice-9/boot-9.scm:
+   2835:4  2 (save-module-excursion _)
+  4380:12  1 (_)
+In /home/jgart/gn-kanban/gnbug:
+    177:2  0 (main . _)
+
+/home/jgart/gn-kanban/gnbug:177:2: In procedure main:
+Throw to key `match-error' with args `("match" "no matching pattern" ("./gnbug"))'.
+```
+
