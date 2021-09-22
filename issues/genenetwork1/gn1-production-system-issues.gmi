@@ -15,11 +15,11 @@ This list does not include stuff that needs to be ported to GN2(!). See the GN2 
 (see also E-mail Rob 14 Sep 2021)
 
 * [ ] Fix annotating metadata - until we have GN2 alternative
-=> ./gn1-pairscan.gmi [ ] Pairscan not working
-* [ ] Fix annotation link
+* [ ] Fix annotation link - appears to be a hard coded redirect
 * [ ] Enable time machines
+* [ ] Disable all defunct URLs (needs a script)
 * [X] Disable galaxy URL
 * [X] Disable EC2 URL
 * [X] Disable GN mailing list URL
-* [ ] Disable all defunct URLs
+=> ./gn1-pairscan.gmi [x] Pairscan not working
 => ./gn1-network-graph.gmi [X] Fix network graph (it does not display image)
