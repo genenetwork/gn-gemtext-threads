@@ -1,0 +1,21 @@
+# Medaka Inbred Kiyosu-Karlsruhe (MIKK) Panel
+
+Genotyping from VCF
+
+   On Tue, Sep 21, 2021 at 12:15 PM Arthur Centeno <[1]acenteno@gmail.com>
+   wrote:
+
+   Hi Pjotr,
+   Uploading now
+   to /export2/local/home/acenteno/Ian_MIKK_genotypes/mikk_clean.vcf.gz
+   It will take a while (~14.69GB)
+   Arthur
+
+   On Tue, Sep 21, 2021 at 12:03 PM Pjotr Prins <[2]pjotr2021@thebird.nl>
+   wrote:
+
+     PLINK to .GENO is straightforward. We can use the tool I wrote (gemma2lib) which goes via Rqtl2. PLINK can also convert from VCF and then on to .GENO, but I think that route is nasty and probably error prone. bcftools same, same. Arthur, if you copy the VCF files to tux01 and tell me when and where, I can have a go at setting up a tool chain we/you can use.
+
+## Tags
+
+* assigned: pjotrp, acenteno
