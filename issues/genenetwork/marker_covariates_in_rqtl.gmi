@@ -1,0 +1,9 @@
+# Marker covariates implemented wrong in rqtl_wrapper.R
+
+According to Danny, the implementation of marker covariates in rqtl_wrapper.R is wrong. For the time being, 
+I've removed this option. Currently just waiting on Danny to get back to me with the fix (which I'll then add to rqtl_wrapper.R)
+
+## Tags
+
+* bug
+* assigned: zsloan
