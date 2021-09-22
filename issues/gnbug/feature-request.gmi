@@ -3,3 +3,7 @@
 What do you think of having a `gnbug cat`? It is similar to `gnbug edit` but
 instead of opening with your `EDITOR` it prints the given issue number to 
 standard output.
+
+I have now implemented this feature, but I am calling it `gnbug show' instead of `gnbug cat' because in the future we might add syntax highlighting, print other metadata (creator, participants, etc.) along with the actual text, and that is better described as `gnbug show'. If you feel that an additional `gnbug cat' sub-command that prints out the raw text verbatim is useful, feel free to reopen this issue.
+
+* closed
