@@ -90,6 +90,12 @@ it is associated to the empty list."
   (hashtable-update!
    hashtable key (cut append <> new-values) '()))
 
+(define (comma-split str)
+  "Split string at commas, trim whitespace from both ends of the split
+strings, and return them as a list."
+  (map (cut string-trim-both <>)
+       (string-split str #\,)))
+
 (define (file-details file)
   "Return a hashtable of details extracted from gemini FILE."
   (let ((result (make-eq-hashtable)))
@@ -101,10 +107,8 @@ it is associated to the empty list."
                                  ;; specify assignees.
                                  ((string-prefix? "* assigned:" line)
                                   (hashtable-append! result 'assigned
-                                                     (map (cut string-trim-both <>)
-                                                          (string-split
-                                                           (substring line (string-length "* assigned:"))
-                                                           #\,))))))
+                                                     (comma-split
+                                                      (substring line (string-length "* assigned:")))))
                                  ;; The first level one heading is the
                                  ;; title.
                                  ((string-prefix? "# " line)
