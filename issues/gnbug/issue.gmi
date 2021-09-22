@@ -25,3 +25,6 @@ In /home/jgart/gn-kanban/gnbug:
 Throw to key `match-error' with args `("match" "no matching pattern" ("./gnbug"))'.
 ```
 
+This is now implemented.
+
+* closed
