@@ -245,6 +245,9 @@ export EDITOR=emacsclient"))
               ("news" gnbug-news)
               ("list" gnbug-list)
               ("edit" gnbug-edit))
-            args))))
+            args))
+    ;; gnbug is an alias for `gnbug list'
+    ((_)
+     (gnbug-list))))
 
 (apply main (command-line))
