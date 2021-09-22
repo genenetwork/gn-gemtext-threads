@@ -173,69 +173,78 @@ terminal."
 (define (invalid-operand arg loads)
   (error "Invalid argument" arg))
 
+(define (gnbug-news . args)
+  (let ((args (args-fold args
+                         (list (option (list "since") #t #f
+                                       (lambda (opt name arg loads)
+                                         (acons 'since arg loads))))
+                         invalid-option
+                         invalid-operand
+                         '())))
+    (unless (assq 'since args)
+      (error "--since argument required"))
+    (git-updated-files (tlog (match-lambda*
+                               ((_ (status file))
+                                (format #t ((case status
+                                              ((added) green)
+                                              ((deleted) red)
+                                              ((modified) magenta))
+                                            "~a (~a)~%")
+                                        file
+                                        (case status
+                                          ((added) "new")
+                                          ((deleted) "deleted")
+                                          ((modified) "updated"))))))
+                       (or (git-first-commit-since (assq-ref args 'since))
+                           "HEAD")
+                       "HEAD")))
+
+(define (gnbug-list . args)
+  (let ((args (args-fold args
+                         (list (option (list "assigned") #t #f
+                                       (lambda (opt name arg loads)
+                                         (acons 'assigned arg loads))))
+                         invalid-option
+                         invalid-operand
+                         '())))
+    (format #t "~%total ~a~%"
+            (list-transduce (compose (tenumerate 1)
+                                     (tfilter (match-lambda
+                                                ((_ . issue)
+                                                 (or (not (assq 'assigned args))
+                                                     (member (assq-ref args 'assigned)
+                                                             (issue-assigned issue))))))
+                                     (tlog (match-lambda*
+                                             ((_ (index . issue))
+                                              (format #t "~a ~a ~a ~a~a~%"
+                                                      (magenta (string-append "#" (number->string index)))
+                                                      (issue-created-relative-date issue)
+                                                      (cyan (issue-creator issue))
+                                                      (issue-title issue)
+                                                      (match (issue-assigned issue)
+                                                        (() "")
+                                                        (assignees
+                                                         (magenta (string-append " (assigned: "
+                                                                                 (string-join assignees ", ")
+                                                                                 ")")))))))))
+                            rcount
+                            (issues)))))
+
+(define (gnbug-edit issue-number)
+  (unless (getenv "EDITOR")
+    (error "Please set the EDITOR environment variable to your favorite editor. For example,
+export EDITOR=emacsclient"))
+  (invoke (getenv "EDITOR")
+          (issue-file (list-ref (issues)
+                                (1- (string->number issue-number))))))
+
 (define main
   (match-lambda*
-    ((_ "news" args ...)
-     (let ((args (args-fold args
-                            (list (option (list "since") #t #f
-                                          (lambda (opt name arg loads)
-                                            (acons 'since arg loads))))
-                            invalid-option
-                            invalid-operand
-                            '())))
-       (unless (assq 'since args)
-         (error "--since argument required"))
-       (git-updated-files (tlog (match-lambda*
-                                  ((_ (status file))
-                                   (format #t ((case status
-                                                 ((added) green)
-                                                 ((deleted) red)
-                                                 ((modified) magenta))
-                                               "~a (~a)~%")
-                                           file
-                                           (case status
-                                             ((added) "new")
-                                             ((deleted) "deleted")
-                                             ((modified) "updated"))))))
-                          (or (git-first-commit-since (assq-ref args 'since))
-                              "HEAD")
-                          "HEAD")))
-    ((_ "list" args ...)
-     (let ((args (args-fold args
-                            (list (option (list "assigned") #t #f
-                                          (lambda (opt name arg loads)
-                                            (acons 'assigned arg loads))))
-                            invalid-option
-                            invalid-operand
-                            '())))
-       (format #t "~%total ~a~%"
-               (list-transduce (compose (tenumerate 1)
-                                        (tfilter (match-lambda
-                                                   ((_ . issue)
-                                                    (or (not (assq 'assigned args))
-                                                        (member (assq-ref args 'assigned)
-                                                                (issue-assigned issue))))))
-                                        (tlog (match-lambda*
-                                                ((_ (index . issue))
-                                                 (format #t "~a ~a ~a ~a~a~%"
-                                                         (magenta (string-append "#" (number->string index)))
-                                                         (issue-created-relative-date issue)
-                                                         (cyan (issue-creator issue))
-                                                         (issue-title issue)
-                                                         (match (issue-assigned issue)
-                                                           (() "")
-                                                           (assignees
-                                                            (magenta (string-append " (assigned: "
-                                                                                    (string-join assignees ", ")
-                                                                                    ")")))))))))
-                               rcount
-                               (issues)))))
-    ((_ "edit" issue-number)
-     (unless (getenv "EDITOR")
-       (error "Please set the EDITOR environment variable to your favorite editor. For example,
-export EDITOR=emacsclient"))
-     (invoke (getenv "EDITOR")
-             (issue-file (list-ref (issues)
-                                   (1- (string->number issue-number))))))))
+    ((_ command args ...)
+     (apply (match command
+              ("news" gnbug-news)
+              ("list" gnbug-list)
+              ("edit" gnbug-edit))
+            args))))
 
 (apply main (command-line))
