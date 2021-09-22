@@ -83,6 +83,13 @@ even if it exits non-locally. Return the value returned by PROC."
           (> (issue-created-date issue1)
              (issue-created-date issue2)))))
 
+(define (hashtable-append! hashtable key new-values)
+  "Append NEW-VALUES to the list of values KEY is associated to in
+HASHTABLE. If KEY is not associated to any value in HASHTABLE, assume
+it is associated to the empty list."
+  (hashtable-update!
+   hashtable key (cut append <> new-values) '()))
+
 (define (file-details file)
   "Return a hashtable of details extracted from gemini FILE."
   (let ((result (make-eq-hashtable)))
@@ -93,14 +100,11 @@ even if it exits non-locally. Return the value returned by PROC."
                                  ;; Lists with the assigned: prefix
                                  ;; specify assignees.
                                  ((string-prefix? "* assigned:" line)
-                                  (hashtable-update! result 'assigned
-                                                     (lambda (previous)
-                                                       (append (map (cut string-trim-both <>)
-                                                                    (string-split
-                                                                     (substring line (string-length "* assigned:"))
-                                                                     #\,))
-                                                               previous))
-                                                     '()))
+                                  (hashtable-append! result 'assigned
+                                                     (map (cut string-trim-both <>)
+                                                          (string-split
+                                                           (substring line (string-length "* assigned:"))
+                                                           #\,))))))
                                  ;; The first level one heading is the
                                  ;; title.
                                  ((string-prefix? "# " line)
