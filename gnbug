@@ -271,11 +271,18 @@ terminal."
                                                              (issue-assigned issue))))))
                                      (tlog (match-lambda*
                                              ((_ (index . issue))
-                                              (format #t "~a ~a ~a ~a~a~%"
+                                              (format #t "~a ~a ~a ~a~a~a~%"
                                                       (magenta (string-append "#" (number->string index)))
                                                       (issue-created-relative-date issue)
                                                       (cyan (issue-creator issue))
                                                       (issue-title issue)
+                                                      (match (issue-keywords issue)
+                                                        (() "")
+                                                        (keywords
+                                                         (blue
+                                                          (string-append " ["
+                                                                         (string-join keywords ", ")
+                                                                         "]"))))
                                                       (match (issue-assigned issue)
                                                         (() "")
                                                         (assignees
