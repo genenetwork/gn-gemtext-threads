@@ -108,6 +108,14 @@ strings, and return them as a list."
   "Remove PREFIX from STR."
   (substring str (string-length prefix)))
 
+(define (get-line-dos-or-unix port)
+  "Read line from PORT. This differs from `get-line' in (rnrs io
+ports) in that it also supports DOS line endings."
+  (let ((line (get-line port)))
+    (if (eof-object? line)
+        line
+        (string-trim-right line #\return))))
+
 (define (file-details file)
   "Return a hashtable of details extracted from gemini FILE."
   (let ((result (make-eq-hashtable)))
@@ -157,7 +165,7 @@ strings, and return them as a list."
                                     (hashtable-set! result 'title
                                                     (remove-prefix "# " line)))))))
                         (const #t)
-                        get-line
+                        get-line-dos-or-unix
                         port)))
     result))
 
