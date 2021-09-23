@@ -10,8 +10,7 @@
         (srfi srfi-171)
         (ice-9 ftw)
         (ice-9 match)
-        (ice-9 popen)
-        (ice-9 rdelim))
+        (ice-9 popen))
 
 (define (invoke program . args)
   (unless (zero? (apply system* program args))
@@ -158,7 +157,7 @@ strings, and return them as a list."
                                     (hashtable-set! result 'title
                                                     (remove-prefix "# " line)))))))
                         (const #t)
-                        read-line
+                        get-line
                         port)))
     result))
 
@@ -189,7 +188,7 @@ START-COMMIT and END-COMMIT."
                                                  ("M" 'modified))
                                                file)))))
                               transducer)
-                     (const #t) read-line port))
+                     (const #t) get-line port))
    "git" "diff" "--stat" "--name-status"
    (string-append start-commit ".." end-commit)))
 
@@ -207,7 +206,7 @@ there is no such commit."
    (lambda (port)
      (port-transduce (tmap identity)
                      rlast
-                     read-line
+                     get-line
                      port))
    "git" "log" "--format=format:%H" "--since" since))
 
