@@ -28,12 +28,12 @@ Other discussions on leaving github
 
 You may peruse the issues in this repository using the provided gnbug command-line interface. gnbug requires guile. Please install guile before running gnbug.
 
-List all issues.
+List all open issues.
 ```
 ./gnbug list
 ```
 
-Only list issues assigned to pjotrp.
+Only list open issues assigned to pjotrp.
 ```
 ./gnbug list --assigned=pjotrp
 ```

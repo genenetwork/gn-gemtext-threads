@@ -266,9 +266,10 @@ terminal."
             (list-transduce (compose (tenumerate 1)
                                      (tfilter (match-lambda
                                                 ((_ . issue)
-                                                 (or (not (assq 'assigned args))
-                                                     (member (assq-ref args 'assigned)
-                                                             (issue-assigned issue))))))
+                                                 (and (issue-open issue)
+                                                      (or (not (assq 'assigned args))
+                                                          (member (assq-ref args 'assigned)
+                                                                  (issue-assigned issue)))))))
                                      (tlog (match-lambda*
                                              ((_ (index . issue))
                                               (format #t "~a ~a ~a ~a~a~a~%"
