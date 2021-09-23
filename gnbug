@@ -228,93 +228,159 @@ terminal."
 (define (invalid-operand arg loads)
   (error "Invalid argument" arg))
 
-(define (gnbug-news . args)
-  (let ((args (args-fold args
-                         (list (option (list "since") #t #f
-                                       (lambda (opt name arg loads)
-                                         (acons 'since arg loads))))
-                         invalid-option
-                         invalid-operand
-                         '())))
-    (unless (assq 'since args)
-      (error "--since argument required"))
-    (git-updated-files (tlog (match-lambda*
-                               ((_ (status file))
-                                (format #t ((case status
-                                              ((added) green)
-                                              ((deleted) red)
-                                              ((modified) magenta))
-                                            "~a (~a)~%")
-                                        file
-                                        (case status
-                                          ((added) "new")
-                                          ((deleted) "deleted")
-                                          ((modified) "updated"))))))
-                       (or (git-first-commit-since (assq-ref args 'since))
-                           "HEAD")
-                       "HEAD")))
+(define (command-line-program)
+  "Return the name, that is arg0, of the command-line program invoked
+to run gnbug."
+  (match (command-line)
+    ((program _ ...) program)))
 
-(define (gnbug-list . args)
-  (let ((args (args-fold args
-                         (list (option (list "assigned") #t #f
-                                       (lambda (opt name arg loads)
-                                         (acons 'assigned arg loads))))
-                         invalid-option
-                         invalid-operand
-                         '())))
-    (format #t "~%total ~a~%"
-            (list-transduce (compose (tenumerate 1)
-                                     (tfilter (match-lambda
-                                                ((_ . issue)
-                                                 (and (issue-open issue)
-                                                      (or (not (assq 'assigned args))
-                                                          (member (assq-ref args 'assigned)
-                                                                  (issue-assigned issue)))))))
-                                     (tlog (match-lambda*
-                                             ((_ (index . issue))
-                                              (format #t "~a ~a ~a ~a~a~a~%"
-                                                      (magenta (string-append "#" (number->string index)))
-                                                      (issue-created-relative-date issue)
-                                                      (cyan (issue-creator issue))
-                                                      (issue-title issue)
-                                                      (match (issue-keywords issue)
-                                                        (() "")
-                                                        (keywords
-                                                         (blue
-                                                          (string-append " ["
-                                                                         (string-join keywords ", ")
-                                                                         "]"))))
-                                                      (match (issue-assigned issue)
-                                                        (() "")
-                                                        (assignees
-                                                         (magenta (string-append " (assigned: "
-                                                                                 (string-join assignees ", ")
-                                                                                 ")")))))))))
-                            rcount
-                            (issues)))))
+(define gnbug-news
+  (match-lambda*
+    (("--help")
+     (format #t "Usage: ~a news
+List recent updates.
 
-(define (gnbug-edit issue-number)
-  (unless (getenv "EDITOR")
-    (error "Please set the EDITOR environment variable to your favorite editor. For example,
+  --since=DATE  show updates more recent than DATE
+
+"
+             (command-line-program)))
+    (args
+     (let ((args (args-fold args
+                            (list (option (list "since") #t #f
+                                          (lambda (opt name arg loads)
+                                            (acons 'since arg loads))))
+                            invalid-option
+                            invalid-operand
+                            '())))
+       (unless (assq 'since args)
+         (error "--since argument required"))
+       (git-updated-files (tlog (match-lambda*
+                                  ((_ (status file))
+                                   (format #t ((case status
+                                                 ((added) green)
+                                                 ((deleted) red)
+                                                 ((modified) magenta))
+                                               "~a (~a)~%")
+                                           file
+                                           (case status
+                                             ((added) "new")
+                                             ((deleted) "deleted")
+                                             ((modified) "updated"))))))
+                          (or (git-first-commit-since (assq-ref args 'since))
+                              "HEAD")
+                          "HEAD")))))
+
+(define gnbug-list
+  (match-lambda*
+    (("--help")
+     (format #t "Usage: ~a list [OPTIONS]
+List issues.
+
+  --assigned=ASSIGNED    only list issues assigned to ASSIGNED
+
+"
+             (command-line-program)))
+    (args
+     (let ((args (args-fold args
+                            (list (option (list "assigned") #t #f
+                                          (lambda (opt name arg loads)
+                                            (acons 'assigned arg loads))))
+                            invalid-option
+                            invalid-operand
+                            '())))
+       (format #t "~%total ~a~%"
+               (list-transduce (compose (tenumerate 1)
+                                        (tfilter (match-lambda
+                                                   ((_ . issue)
+                                                    (and (issue-open issue)
+                                                         (or (not (assq 'assigned args))
+                                                             (member (assq-ref args 'assigned)
+                                                                     (issue-assigned issue)))))))
+                                        (tlog (match-lambda*
+                                                ((_ (index . issue))
+                                                 (format #t "~a ~a ~a ~a~a~a~%"
+                                                         (magenta (string-append "#" (number->string index)))
+                                                         (issue-created-relative-date issue)
+                                                         (cyan (issue-creator issue))
+                                                         (issue-title issue)
+                                                         (match (issue-keywords issue)
+                                                           (() "")
+                                                           (keywords
+                                                            (blue
+                                                             (string-append " ["
+                                                                            (string-join keywords ", ")
+                                                                            "]"))))
+                                                         (match (issue-assigned issue)
+                                                           (() "")
+                                                           (assignees
+                                                            (magenta (string-append " (assigned: "
+                                                                                    (string-join assignees ", ")
+                                                                                    ")")))))))))
+                               rcount
+                               (issues)))))))
+
+(define gnbug-edit
+  (match-lambda*
+    (("--help")
+     (format #t "Usage: ~a edit ISSUE-NUMBER
+Start $EDITOR to edit issue #ISSUE-NUMBER.
+
+"
+             (command-line-program)))
+    ((issue-number)
+     (unless (getenv "EDITOR")
+       (error "Please set the EDITOR environment variable to your favorite editor. For example,
 export EDITOR=emacsclient"))
-  (invoke (getenv "EDITOR")
-          (issue-file (list-ref (issues)
-                                (1- (string->number issue-number))))))
+     (invoke (getenv "EDITOR")
+             (issue-file (list-ref (issues)
+                                   (1- (string->number issue-number))))))))
 
-(define (gnbug-show issue-number)
-  (put-string (current-output-port)
-              (call-with-input-file (issue-file (list-ref (issues)
-                                                          (1- (string->number issue-number))))
-                get-string-all)))
+(define gnbug-show
+  (match-lambda*
+    (("--help")
+     (format #t "Usage: ~a show ISSUE-NUMBER
+Show the text of issue #ISSUE-NUMBER.
+
+"
+             (command-line-program)))
+    ((issue-number)
+     (put-string (current-output-port)
+                 (call-with-input-file (issue-file (list-ref (issues)
+                                                             (1- (string->number issue-number))))
+                   get-string-all)))))
+
+(define (print-usage)
+  (format #t "Usage: ~a COMMAND [OPTIONS] [ARGS]
+
+COMMAND must be one of the sub-commands listed below:
+
+  list      list issues
+  edit      edit an issue
+  show      show the text of an issue
+  news      list recent updates
+
+To get usage information for one of these sub-commands, run
+  ~a COMMAND --help
+
+"
+          (command-line-program)
+          (command-line-program)))
 
 (define main
   (match-lambda*
+    ((command "--help")
+     (print-usage))
     ((_ command args ...)
      (apply (match command
               ("news" gnbug-news)
               ("list" gnbug-list)
               ("edit" gnbug-edit)
-              ("show" gnbug-show))
+              ("show" gnbug-show)
+              (invalid-command
+               (format (current-error-port) "Invalid command `~a'~%~%"
+                       invalid-command)
+               (print-usage)
+               (exit #f)))
             args))
     ;; gnbug is an alias for `gnbug list'
     ((_)
