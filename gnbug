@@ -3,6 +3,7 @@
 
 (import (rnrs hashtables)
         (rnrs io ports)
+        (srfi srfi-1)
         (srfi srfi-9)
         (srfi srfi-26)
         (srfi srfi-37)
@@ -48,14 +49,17 @@ even if it exits non-locally. Return the value returned by PROC."
                     directory))
 
 (define-record-type <issue>
-  (issue file title creator created-date created-relative-date assigned)
+  (issue file title creator created-date created-relative-date
+         assigned keywords open)
   issue?
   (file issue-file)
   (title issue-title)
   (creator issue-creator)
   (created-date issue-created-date)
   (created-relative-date issue-created-relative-date)
-  (assigned issue-assigned))
+  (assigned issue-assigned)
+  (keywords issue-keywords)
+  (open issue-open))
 
 (define (issues)
   "Return a list of all issues, sorted newest first."
@@ -63,8 +67,9 @@ even if it exits non-locally. Return the value returned by PROC."
   ;; editors tend to create hidden files while editing, and we want to
   ;; avoid them.
   (sort (map (lambda (file)
-               (let ((file-details (file-details file))
-                     (creation-details (creation-details file)))
+               (let* ((file-details (file-details file))
+                      (creation-details (creation-details file))
+                      (all-keywords (hashtable-ref file-details 'keywords '())))
                  (issue file
                         ;; Fallback to filename if title has no alphabetic
                         ;; characters.
@@ -73,7 +78,11 @@ even if it exits non-locally. Return the value returned by PROC."
                         (assq-ref creation-details 'creator)
                         (assq-ref creation-details 'created-date)
                         (assq-ref creation-details 'created-relative-date)
-                        (hashtable-ref file-details 'assigned '()))))
+                        (hashtable-ref file-details 'assigned '())
+                        ;; "closed" is a special keyword to indicate
+                        ;; the open/closed status of an issue.
+                        (delete "closed" all-keywords)
+                        (not (member "closed" all-keywords)))))
              (find-files "."
                          (lambda (name _)
                            (and (string-suffix? ".gmi" name)
@@ -113,6 +122,35 @@ strings, and return them as a list."
                                   (hashtable-append! result 'assigned
                                                      (comma-split
                                                       (remove-prefix "* assigned:" line))))
+                                 ;; Lists with the keywords: prefix
+                                 ;; specify keywords.
+                                 ((string-prefix? "* keywords:" line)
+                                  (hashtable-append! result 'keywords
+                                                     (comma-split
+                                                      (remove-prefix "* keywords:" line))))
+                                 ;; A more fuzzy heuristic to find keywords
+                                 ((and (string-prefix? "* " line)
+                                       ;; Is every comma-separated
+                                       ;; element two words utmost?
+                                       (every (lambda (element)
+                                                (<= (length
+                                                     (string-split element #\space))
+                                                    2))
+                                              (comma-split (remove-prefix "* " line)))
+                                       ;; Does any comma-separated
+                                       ;; element contain a potential
+                                       ;; keyword?
+                                       (any (lambda (element)
+                                              (any (lambda (keyword)
+                                                     (string-contains element keyword))
+                                                   (list "request" "bug" "critical"
+                                                         "enhancement" "progress"
+                                                         "testing" "later" "documentation"
+                                                         "help" "closed")))
+                                            (comma-split (remove-prefix "* " line))))
+                                  (hashtable-append! result 'keywords
+                                                     (comma-split
+                                                      (remove-prefix "* " line))))
                                  ;; The first level one heading is the
                                  ;; title.
                                  ((string-prefix? "# " line)
