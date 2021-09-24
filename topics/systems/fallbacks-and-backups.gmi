@@ -2,6 +2,16 @@
 
 As a hurricane is barreling towards our machine room in Memphis we are checking our fallbacks and backups for GeneNetwork. For years we have been making backups on Amazon - both S3 and a running virtual machine. The latter was expensive, so I replaced it with a bare metal server which earns itself (if it hadn't been down for months, but that is a different story).
 
+## Tags
+
+* enhancement
+* deploy
+* assigned: pjotrp
+
+## Tasks
+
+* [ ] Get backups running again on fallback
+
 ## Backup and restore
 
 We are using borg for backing up data. Borg is excellent at deduplication and compression of data and is pretty fast too. Incremental copies work with rsync - so that is fast. To restore the full MariaDB database from a local borg repo takes a few minutes:
@@ -20,3 +30,18 @@ Next restore the GN2 home dir
 ```
 root@epysode:/# borg extract export2/backup/tux01/borg-genenetwork::TUX01_BORG_GN2_HOME-20210830-04:00-Mon
 ```
+
+## Get backups running on fallback
+
+Recently epysode was reinstated after hardware failure. I took the opportunity to reinstall the machine. The backups are described in the repo (genenetwork org members have access)
+
+=> https://github.com/genenetwork/gn-services/blob/master/services/backups.org
+
+As epysode was one of the main sheepdog messaging servers I need to reinstate:
+
+* [X] scripts for sheepdog
+* [X] enable trim
+* [X] reinstate monitoring web services
+* [x] reinstate daily backup from penguin2
+* [X] CRON
+* [ ] make sure messaging works through redis
