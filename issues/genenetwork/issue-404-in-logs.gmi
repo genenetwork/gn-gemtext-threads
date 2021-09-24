@@ -11,3 +11,62 @@ We get many 404's in GN logs. Can we rewire that so no log entries appear as a f
 ## Notes
 
 => https://flask.palletsprojects.com/en/2.0.x/errorhandling/
+
+Some of those 404's in our log
+mean that we forgot to package something; for
+example:
+
+=>
+https://git.genenetwork.org/guix-bioinformatics/guix-bioinformatics/commit/e80fe4ddcf15e21004b8135cf8af34b458697f64
+
+Removing the 404's would prevent us from catching important errors if
+ever they occur. I suggest we fix the 404's; some of them have a
+cascading effect, like the font-awesome missing "webfonts" folder I
+just fixed that leads to a lot of unnecessary 404s.
+
+For error handling, I think that will evolve with the code-base with
+time as it gets leaner. One way the aforementioned flask page
+recommends handling errors is by creating custom errors for your
+particular subject-domain needs and probably send a 5xx message that's
+more helpful. At the moment we are using one error-handler for
+everything(notice the generic "Exception")! See:
+
+```
+@app.errorhandler(Exception)
+def handle_bad_request(e):
+    err_msg = str(e)
+    logger.error(err_msg)
+    logger.error(request.url)
+    # get the stack trace and send it to the logger
+    exc_type, exc_value, exc_traceback = sys.exc_info()
+    logger.error(traceback.format_exc())
+    now = datetime.datetime.utcnow()
+    time_str = now.strftime('%l:%M%p UTC %b %d, %Y')
+    formatted_lines = [request.url
+                       + " (" + time_str + ")"] + traceback.format_exc().splitlines()
+
+    # Handle random animations
+    # Use a cookie to have one animation on refresh
+    animation = request.cookies.get(err_msg[:32])
+    if not animation:
+        list = [fn for fn in os.listdir(
+            "./wqflask/static/gif/error") if fn.endswith(".gif")]
+        animation = random.choice(list)
+
+    resp = make_response(render_template("error.html", message=err_msg,
+                                         stack=formatted_lines, error_image=animation, version=GN_VERSION))
+
+    # logger.error("Set cookie %s with %s" % (err_msg, animation))
+    resp.set_cookie(err_msg[:32], animation)
+    return resp
+```
+
+I'll look a way for removing this:
+
+```
+    exc_type, exc_value, exc_traceback = sys.exc_info()
+    logger.error(traceback.format_exc())
+```
+
+with a more sane, but probably still useful,
+log. That's where I problem IIUC lies.
