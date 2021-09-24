@@ -1,8 +1,5 @@
 # Nginx forwarding error regarding static assets
 
-* bug
-* assigned: jgart
-
 When nginx forwards the following jupyter notebook url:
 
 `http://localhost/58955/41634c46e4c1ef94b02b646509ae8a7bb023bb4ac7926faa`
@@ -29,3 +26,27 @@ I get the following error (see nginx question in notebooks/user-stories):
 [W 04:46:28.181 NotebookApp] 404 GET /static/base/images/favicon.ico (127.0.0.1) 2.610000ms referer=http://localhost/58955/41634c46e4c1ef94b02b646509ae8a7bb023bb4ac7926faa
 ```
 
+* closed
+
+See https://git.genenetwork.org/jgart/binderlite/commit/311b85b089e059303041eb2db71d0b1947fe4482
+
+When we paste the token in it allows us to use the notebook successfully
+Then it remembers the cookie and it works in the future.
+
+But if we try a different browser or if we clear cookies in the devtools panel
+(firefox -> storage) then, that cookie will not be saved and we run into the same
+issue.
+
+The nginx config now forwards correctly with the new regex and proper 
+proxy_redirect. The new issue is the token having to be manually inputted into 
+the form. Subsequent nginx forwards successfully forward the port/url link without
+an issue.
+
+Example token accepted by nginx regex: 
+
+```
+http://localhost/49761/?token=f6269bbf48ee5c9887732f5bc76d32f37e1f25483195ae88
+```
+
+The next step is to get jupyter to accept the generated token on the first 
+request without needing to input it manually first.
