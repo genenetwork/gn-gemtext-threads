@@ -42,6 +42,9 @@ As epysode was one of the main sheepdog messaging servers I need to reinstate:
 * [X] scripts for sheepdog
 * [X] enable trim
 * [X] reinstate monitoring web services
-* [x] reinstate daily backup from penguin2
+* [t] reinstate daily backup from penguin2
 * [X] CRON
-* [ ] make sure messaging works through redis
+* [X] make sure messaging works through redis
+* [ ] add GN1 backup
+* [ ] add IPFS backup
+* [ ] other backups
