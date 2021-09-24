@@ -6,4 +6,49 @@ data up-loader, and it requires authorisation, this is a good time to
 clean up authorisation.
 
 
+# Notes
+
+mRNA datasets ("ProbeSetFreeze" in the DB) contain traits, so when you
+assign privileges to an mRNA dataset, it will apply to all traits
+within.
+
+But the phenotype resources (for example the dataset name
+"BXDPublish"; the stuff in the PublishXRef, etc tables) are just the
+traits themselves. The rows of "PublishFreeze" in the DB don't
+correspond to individual resources like the rows of ProbeSetFreeze
+(neither do databased genotypes - GenoFreeze - for that matter). There
+isn't really any "containing" classification for them beyond the
+group. BXD phenotype traits can each come from different studies and
+thus have different privileges for different users, etc, but there's
+nothing in the database really representing that.
+
+This means that if you want to change privileges for phenotype data,
+you have to do it trait by trait (or at least to a selection of traits
+you manually choose). But for mRNA ("ProbeSet") traits you can just
+refer to the entire dataset (and as far as I'm aware this will always
+be the case; there's never a need to assign privileges trait-by-trait
+for the mRNA traits.
+
+Another way of representing this is that for mRNA datasets you have
+the following levels:
+
+Species -> Group -> Dataset (this is a resource) -> Traits
+
+But for phenotypes/genotypes:
+
+Species -> Group -> Traits (each is a resource)
+
+
+On the UI(quote from Zach):
+
+> One interface issue I ran into is how to add/remove groups (since
+> currently the proxy only cares about groups for retrieving the
+> privilege masks). I think I set it up so that you can search for
+> groups by a user's name, e-mail, or parts of the Group Name itself,
+> though I was uncertain about that because it means that anyone doing
+> this could see every group/user.  For adding users to a group, I
+> have people direct input e-mails (instead of giving the ability to
+> search).
+
+
 [0] https://github.com/chfi/gn-proxy
