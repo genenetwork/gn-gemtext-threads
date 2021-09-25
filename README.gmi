@@ -55,5 +55,9 @@ List issues that were created or updated in the last 3 days, in the last week or
 ./gnbug news --since='1 month'
 ```
 
-Using `direnv` with `gnbug` allows the user to drop the `./` in the command.
+To learn more about gnbug, please use the built-in help feature.
+```
+./gnbug --help
+```
 
+Using `direnv` with `gnbug` allows the user to drop the `./` in the command.
