@@ -61,7 +61,7 @@ even if it exits non-locally. Return the value returned by PROC."
   (open issue-open))
 
 (define (issues)
-  "Return a list of all issues, sorted newest first."
+  "Return a list of all issues, sorted oldest first."
   ;; Get all gemini files except README.gmi and hidden files. Text
   ;; editors tend to create hidden files while editing, and we want to
   ;; avoid them.
@@ -88,7 +88,7 @@ even if it exits non-locally. Return the value returned by PROC."
                                 (not (string=? (basename name) "README.gmi"))
                                 (not (string-prefix? "." (basename name)))))))
         (lambda (issue1 issue2)
-          (> (issue-created-date issue1)
+          (< (issue-created-date issue1)
              (issue-created-date issue2)))))
 
 (define (hashtable-append! hashtable key new-values)
