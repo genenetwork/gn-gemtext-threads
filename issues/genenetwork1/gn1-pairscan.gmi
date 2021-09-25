@@ -2,6 +2,7 @@
 
 Pair scan is not working because of an import issue.
 
+
 ```
 Here is the error I get trying to run pair-scan.
 Traceback (most recent call last):
@@ -21,6 +22,10 @@ ImportError: No module named direct
 * assigned: pjotrp
 
 # Notes
+
+Where 'direct' is an imported module. Interestingly it looks like we import the wrong one!
+
+I plugged in the direct.so binary blob and set the LD_LIBRARY_PATH. That gets it running, but we need the source code for the future(!)
 
 Efraim included the module and wrote
 

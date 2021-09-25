@@ -14,7 +14,9 @@ This list does not include stuff that needs to be ported to GN2(!). See the GN2 
 ## List of outstanding issues
 (see also E-mail Rob 14 Sep 2021)
 
-* [ ] Fix annotating metadata - until we have GN2 alternative
+* [ ] Fix annotating metadata - or do we have GN2 alternative?
+=> gn1-slowness.gmi [.] Clean up tmp dirs with CRON
+=> gn1-mapping-broken.gmi [ ] Marker regression is broken
 * [ ] Fix annotation link - appears to be a hard coded redirect
 * [ ] Enable time machines
 * [ ] Disable all defunct URLs (needs a script)
@@ -23,3 +25,4 @@ This list does not include stuff that needs to be ported to GN2(!). See the GN2 
 * [X] Disable GN mailing list URL
 => ./gn1-pairscan.gmi [x] Pairscan not working
 => ./gn1-network-graph.gmi [X] Fix network graph (it does not display image)
+* [ ] Disable all defunct URLs
