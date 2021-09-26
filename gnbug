@@ -456,7 +456,7 @@ To get usage information for one of these sub-commands, run
 
 (define main
   (match-lambda*
-    ((command "--help")
+    ((_ "--help")
      (print-usage))
     ((_ command args ...)
      (apply (match command
