@@ -218,6 +218,10 @@ there is no such commit."
                      port))
    "git" "log" "--format=format:%H" "--since" since))
 
+;;;
+;;; 3 bit colors using ANSI escape codes
+;;;
+
 (define (color code str)
   "Return STR within ANSI escape CODE, thus rendering it in color in a
 terminal."
@@ -225,9 +229,17 @@ terminal."
 
 (define red (cut color 31 <>))
 (define green (cut color 32 <>))
-(define magenta (cut color 35 <>))
+(define yellow (cut color 33 <>))
 (define blue (cut color 34 <>))
+(define magenta (cut color 35 <>))
 (define cyan (cut color 36 <>))
+
+(define red-background (cut color 41 <>))
+(define green-background (cut color 42 <>))
+(define yellow-background (cut color 43 <>))
+(define blue-background (cut color 44 <>))
+(define magenta-background (cut color 45 <>))
+(define cyan-background (cut color 46 <>))
 
 (define (invalid-option name arg loads)
   (error "Invalid option" name))
