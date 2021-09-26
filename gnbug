@@ -361,6 +361,12 @@ List recent updates.
             (cyan (issue-created-relative-date issue))
             " by "
             (cyan (issue-creator issue))))
+  (when (> (issue-posts issue) 1)
+    (display (string-append (cyan ",")
+                            " last updated "
+                            (cyan (issue-last-updated-relative-date issue))
+                            " by "
+                            (cyan (issue-last-updater issue)))))
   (unless (zero? (issue-tasks issue))
     (display (string-append (cyan "; ")
                             (number->string (issue-completed-tasks issue))
