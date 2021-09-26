@@ -50,6 +50,7 @@ even if it exits non-locally. Return the value returned by PROC."
 
 (define-record-type <issue>
   (issue file title creator created-date created-relative-date
+         last-updater last-updated-date last-updated-relative-date
          assigned keywords open tasks completed-tasks posts)
   issue?
   (file issue-file)
@@ -57,6 +58,9 @@ even if it exits non-locally. Return the value returned by PROC."
   (creator issue-creator)
   (created-date issue-created-date)
   (created-relative-date issue-created-relative-date)
+  (last-updater issue-last-updater)
+  (last-updated-date issue-last-updated-date)
+  (last-updated-relative-date issue-last-updated-relative-date)
   (assigned issue-assigned)
   (keywords issue-keywords)
   (open issue-open)
@@ -80,6 +84,9 @@ even if it exits non-locally. Return the value returned by PROC."
                         (hashtable-ref file-details 'creator #f)
                         (hashtable-ref file-details 'created-date #f)
                         (hashtable-ref file-details 'created-relative-date #f)
+                        (hashtable-ref file-details 'last-updater #f)
+                        (hashtable-ref file-details 'last-updated-date #f)
+                        (hashtable-ref file-details 'last-updated-relative-date #f)
                         (hashtable-ref file-details 'assigned '())
                         ;; "closed" is a special keyword to indicate
                         ;; the open/closed status of an issue.
@@ -187,14 +194,23 @@ ports) in that it also supports DOS line endings."
        (hashtable-set!
         result 'posts
         (port-transduce
-         (tmap (lambda (line)
-                 (let ((alist (call-with-input-string line read)))
-                   (hashtable-set! result 'creator
-                                   (assq-ref alist 'author))
-                   (hashtable-set! result 'created-date
-                                   (assq-ref alist 'author-date))
-                   (hashtable-set! result 'created-relative-date
-                                   (assq-ref alist 'author-relative-date)))))
+         (compose (tenumerate)
+                  (tmap (match-lambda
+                          ((index . line)
+                           (let ((alist (call-with-input-string line read)))
+                             (when (zero? index)
+                               (hashtable-set! result 'last-updater
+                                               (assq-ref alist 'author))
+                               (hashtable-set! result 'last-updated-date
+                                               (assq-ref alist 'author-date))
+                               (hashtable-set! result 'last-updated-relative-date
+                                               (assq-ref alist 'author-relative-date)))
+                             (hashtable-set! result 'creator
+                                             (assq-ref alist 'author))
+                             (hashtable-set! result 'created-date
+                                             (assq-ref alist 'author-date))
+                             (hashtable-set! result 'created-relative-date
+                                             (assq-ref alist 'author-relative-date)))))))
          rcount get-line port)))
      "git" "log"
      (string-append "--format=format:("
