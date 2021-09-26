@@ -350,6 +350,10 @@ List recent updates.
                                    (string-join (issue-assigned issue)
                                                 ", ")
                                    ")"))))
+  (when (> (issue-posts issue) 1)
+    (display (string-append " ["
+                            (number->string (issue-posts issue))
+                            " posts]")))
   (newline)
   (display (string-append
             (cyan (string-append "#" (number->string issue-number)))
