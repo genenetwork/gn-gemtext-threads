@@ -10,7 +10,8 @@
         (srfi srfi-171)
         (ice-9 ftw)
         (ice-9 match)
-        (ice-9 popen))
+        (ice-9 popen)
+        (ice-9 regex))
 
 (define (invoke program . args)
   (unless (zero? (apply system* program args))
@@ -49,7 +50,7 @@ even if it exits non-locally. Return the value returned by PROC."
 
 (define-record-type <issue>
   (issue file title creator created-date created-relative-date
-         assigned keywords open)
+         assigned keywords open tasks completed-tasks)
   issue?
   (file issue-file)
   (title issue-title)
@@ -58,7 +59,9 @@ even if it exits non-locally. Return the value returned by PROC."
   (created-relative-date issue-created-relative-date)
   (assigned issue-assigned)
   (keywords issue-keywords)
-  (open issue-open))
+  (open issue-open)
+  (tasks issue-tasks)
+  (completed-tasks issue-completed-tasks))
 
 (define (issues)
   "Return a list of all issues, sorted oldest first."
@@ -81,7 +84,9 @@ even if it exits non-locally. Return the value returned by PROC."
                         ;; "closed" is a special keyword to indicate
                         ;; the open/closed status of an issue.
                         (delete "closed" all-keywords)
-                        (not (member "closed" all-keywords)))))
+                        (not (member "closed" all-keywords))
+                        (hashtable-ref file-details 'tasks 0)
+                        (hashtable-ref file-details 'completed-tasks 0))))
              (find-files "."
                          (lambda (name _)
                            (and (string-suffix? ".gmi" name)
@@ -158,6 +163,15 @@ ports) in that it also supports DOS line endings."
                                   (hashtable-append! result 'keywords
                                                      (comma-split
                                                       (remove-prefix "* " line))))
+                                 ;; Checkbox lists are tasks. If the
+                                 ;; checkbox has any character other
+                                 ;; than space in it, the task is
+                                 ;; completed.
+                                 ((string-match "\\* \\[(.)\\]" line)
+                                  => (lambda (m)
+                                       (hashtable-update! result 'tasks 1+ 0)
+                                       (unless (string=? (match:substring m 1) " ")
+                                         (hashtable-update! result 'completed-tasks 1+ 0))))
                                  ;; The first level one heading is the
                                  ;; title.
                                  ((string-prefix? "# " line)
