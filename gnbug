@@ -50,7 +50,7 @@ even if it exits non-locally. Return the value returned by PROC."
 
 (define-record-type <issue>
   (issue file title creator created-date created-relative-date
-         assigned keywords open tasks completed-tasks)
+         assigned keywords open tasks completed-tasks posts)
   issue?
   (file issue-file)
   (title issue-title)
@@ -61,7 +61,8 @@ even if it exits non-locally. Return the value returned by PROC."
   (keywords issue-keywords)
   (open issue-open)
   (tasks issue-tasks)
-  (completed-tasks issue-completed-tasks))
+  (completed-tasks issue-completed-tasks)
+  (posts issue-posts))
 
 (define (issues)
   "Return a list of all issues, sorted oldest first."
@@ -85,7 +86,8 @@ even if it exits non-locally. Return the value returned by PROC."
                         (delete "closed" all-keywords)
                         (not (member "closed" all-keywords))
                         (hashtable-ref file-details 'tasks 0)
-                        (hashtable-ref file-details 'completed-tasks 0))))
+                        (hashtable-ref file-details 'completed-tasks 0)
+                        (hashtable-ref file-details 'posts #f))))
              (find-files "."
                          (lambda (name _)
                            (and (string-suffix? ".gmi" name)
@@ -182,15 +184,23 @@ ports) in that it also supports DOS line endings."
                         port)))
     (call-with-input-pipe
      (lambda (port)
-       (let ((alist (read port)))
-         (for-each (lambda (key)
-                     (hashtable-set! result key (assq-ref alist key)))
-                   (list 'creator 'created-date 'created-relative-date))))
-     "git" "log" "--diff-filter=A"
+       (hashtable-set!
+        result 'posts
+        (port-transduce
+         (tmap (lambda (line)
+                 (let ((alist (call-with-input-string line read)))
+                   (hashtable-set! result 'creator
+                                   (assq-ref alist 'author))
+                   (hashtable-set! result 'created-date
+                                   (assq-ref alist 'author-date))
+                   (hashtable-set! result 'created-relative-date
+                                   (assq-ref alist 'author-relative-date)))))
+         rcount get-line port)))
+     "git" "log"
      (string-append "--format=format:("
-                    "(creator . \"%an\")"
-                    "(created-date . %at)"
-                    "(created-relative-date . \"%ar\")"
+                    "(author . \"%an\")"
+                    "(author-date . %at)"
+                    "(author-relative-date . \"%ar\")"
                     ")")
      "--" file)
     result))
