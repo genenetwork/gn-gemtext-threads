@@ -332,6 +332,12 @@ List recent updates.
             (cyan (issue-created-relative-date issue))
             " by "
             (cyan (issue-creator issue))))
+  (unless (zero? (issue-tasks issue))
+    (display (string-append (cyan "; ")
+                            (number->string (issue-completed-tasks issue))
+                            "/"
+                            (number->string (issue-tasks issue))
+                            " tasks done")))
   (newline))
 
 (define gnbug-list
