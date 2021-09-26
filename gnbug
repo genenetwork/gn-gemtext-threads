@@ -291,24 +291,34 @@ List recent updates.
 
 (define (print-issue issue-number issue)
   "Print ISSUE with number ISSUE-NUMBER."
-  (format #t "~a ~a ~a ~a~a~a~%"
-          (magenta (string-append "#" (number->string issue-number)))
-          (issue-created-relative-date issue)
-          (cyan (issue-creator issue))
-          (issue-title issue)
-          (match (issue-keywords issue)
-            (() "")
-            (keywords
-             (blue
-              (string-append " ["
-                             (string-join keywords ", ")
-                             "]"))))
-          (match (issue-assigned issue)
-            (() "")
-            (assignees
-             (magenta (string-append " (assigned: "
-                                     (string-join assignees ", ")
-                                     ")"))))))
+  (display (magenta (issue-title issue)))
+  ;; Highlight keywords containing "bug" or "critical" in red. Else,
+  ;; highlight in blue.
+  (unless (null? (issue-keywords issue))
+    (display " ")
+    (display (string-join
+              (map (lambda (keyword)
+                     ((cond
+                       ((any (cut string-contains keyword <>)
+                             (list "bug" "critical"))
+                        red-background)
+                       (else blue-background))
+                      (string-append " " keyword " ")))
+                   (issue-keywords issue))
+              " ")))
+  (unless (null? (issue-assigned issue))
+    (display (green (string-append " (assigned: "
+                                   (string-join (issue-assigned issue)
+                                                ", ")
+                                   ")"))))
+  (newline)
+  (display (string-append
+            (cyan (string-append "#" (number->string issue-number)))
+            " opened "
+            (cyan (issue-created-relative-date issue))
+            " by "
+            (cyan (issue-creator issue))))
+  (newline))
 
 (define gnbug-list
   (match-lambda*
