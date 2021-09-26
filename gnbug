@@ -277,6 +277,27 @@ List recent updates.
                               "HEAD")
                           "HEAD")))))
 
+(define (print-issue issue-number issue)
+  "Print ISSUE with number ISSUE-NUMBER."
+  (format #t "~a ~a ~a ~a~a~a~%"
+          (magenta (string-append "#" (number->string issue-number)))
+          (issue-created-relative-date issue)
+          (cyan (issue-creator issue))
+          (issue-title issue)
+          (match (issue-keywords issue)
+            (() "")
+            (keywords
+             (blue
+              (string-append " ["
+                             (string-join keywords ", ")
+                             "]"))))
+          (match (issue-assigned issue)
+            (() "")
+            (assignees
+             (magenta (string-append " (assigned: "
+                                     (string-join assignees ", ")
+                                     ")"))))))
+
 (define gnbug-list
   (match-lambda*
     (("--help")
@@ -305,24 +326,7 @@ List issues.
                                                                      (issue-assigned issue)))))))
                                         (tlog (match-lambda*
                                                 ((_ (index . issue))
-                                                 (format #t "~a ~a ~a ~a~a~a~%"
-                                                         (magenta (string-append "#" (number->string index)))
-                                                         (issue-created-relative-date issue)
-                                                         (cyan (issue-creator issue))
-                                                         (issue-title issue)
-                                                         (match (issue-keywords issue)
-                                                           (() "")
-                                                           (keywords
-                                                            (blue
-                                                             (string-append " ["
-                                                                            (string-join keywords ", ")
-                                                                            "]"))))
-                                                         (match (issue-assigned issue)
-                                                           (() "")
-                                                           (assignees
-                                                            (magenta (string-append " (assigned: "
-                                                                                    (string-join assignees ", ")
-                                                                                    ")")))))))))
+                                                 (print-issue index issue)))))
                                rcount
                                (issues)))))))
 
