@@ -8,6 +8,7 @@
         (srfi srfi-26)
         (srfi srfi-37)
         (srfi srfi-171)
+        (srfi srfi-171 gnu)
         (ice-9 ftw)
         (ice-9 match)
         (ice-9 popen)
@@ -266,6 +267,8 @@ there is no such commit."
 terminal."
   (format #f "~a[~am~a~a[0m" #\esc code str #\esc))
 
+(define bold (cut color 1 <>))
+
 (define red (cut color 31 <>))
 (define green (cut color 32 <>))
 (define yellow (cut color 33 <>))
@@ -432,10 +435,48 @@ Show the text of issue #ISSUE-NUMBER.
 "
              (command-line-program)))
     ((issue-number)
-     (put-string (current-output-port)
-                 (call-with-input-file (issue-file (list-ref (issues)
-                                                             (1- (string->number issue-number))))
-                   get-string-all)))))
+     (call-with-input-file (issue-file (list-ref (issues)
+                                                 (1- (string->number issue-number))))
+       (lambda (port)
+         (port-transduce
+          (compose
+           ;; Detect preformatted text blocks.
+           (tfold (match-lambda*
+                    (((pre? . _) line)
+                     (cons (if (string-prefix? "```" line)
+                               (not pre?)
+                               pre?)
+                           line)))
+                  (cons #f #f))
+           (tmap (lambda (pre?+line)
+                   (match pre?+line
+                     ((pre? . line)
+                      (cond
+                       ;; Print headlines in bold.
+                       ((string-prefix? "#" line)
+                        (display (bold line)))
+                       ;; Print lists in cyan.
+                       ((string-prefix? "*" line)
+                        (display (cyan line)))
+                       ;; Print links in cyan, but only the actual
+                       ;; link, and not the => prefix or the label.
+                       ((string-match "^(=>[ \t]*)([^ ]*)([^\n]*)" line)
+                        => (lambda (m)
+                             (display (match:substring m 1))
+                             (display (cyan (match:substring m 2)))
+                             (display (match:substring m 3))))
+                       ;; Print preformatted text backticks in
+                       ;; magenta.
+                       ((string-prefix? "```" line)
+                        (display (magenta line)))
+                       (else
+                        ;; If part of preformatted block, print in
+                        ;; magenta. Else, print in default color.
+                        (display (if pre? (magenta line) line))))))
+                   (newline))))
+          (const #t)
+          get-line-dos-or-unix
+          port))))))
 
 (define (print-usage)
   (format #t "Usage: ~a COMMAND [OPTIONS] [ARGS]
