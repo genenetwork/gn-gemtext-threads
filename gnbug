@@ -334,15 +334,17 @@ List recent updates.
 (define (print-issue issue-number issue)
   "Print ISSUE with number ISSUE-NUMBER."
   (display (magenta (issue-title issue)))
-  ;; Highlight keywords containing "bug" or "critical" in red. Else,
-  ;; highlight in blue.
+  ;; Highlight keywords containing "bug" or "critical" as whole words
+  ;; in red. Else, highlight in blue.
   (unless (null? (issue-keywords issue))
     (display " ")
     (display (string-join
               (map (lambda (keyword)
                      ((cond
-                       ((any (cut string-contains keyword <>)
-                             (list "bug" "critical"))
+                       ((not (null? (lset-intersection
+                                     string=?
+                                     (string-split keyword #\space)
+                                     (list "bug" "critical"))))
                         red-background)
                        (else blue-background))
                       (string-append " " keyword " ")))
