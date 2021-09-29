@@ -1,0 +1,16 @@
+# Tux01 hard disk crash
+
+One spinning disk crashed on Sept. 26th. It was used for Arthur's HOME and backups.
+
+# Tags
+
+* assigned: pjotrp
+* priority: medium
+
+# Info
+
+The system is still up, so it is not too urgent. First step is to recover the backup system. The rsync backups are in an inconsistent state, fortunately we have a BORG_BORG backup (a backup of the backup):
+
+```
+epysode:/export/backup$ borg extract --progress borg-borg::BORG_BORG_TUX01-Saturday-20210925-07:12:04
+```
