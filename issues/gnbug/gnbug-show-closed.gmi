@@ -1,5 +1,7 @@
 # gnbug cat
 
+* feature-request
+
 What do you think of having a `gnbug cat`? It is similar to `gnbug edit` but
 instead of opening with your `EDITOR` it prints the given issue number to 
 standard output.
