@@ -1,0 +1,5 @@
+* bug
+* assigned: jgart
+
+Let's add a template for when a url fails because the user entered the wrong 
+url or the resource is not available.
