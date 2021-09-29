@@ -1,0 +1,9 @@
+* feature-request
+
+Should gnbug have a linter?
+
+For example, If a user forgets to add a tag or some other syntax that we want them
+to add then the linter reminds them to add more info, tags, etc.
+
+Or, maybe we want to check that the user does not add a tag that we don't want to
+support.
