@@ -1,0 +1,20 @@
+# Sheepdog
+
+I have written sheepdog to keep track of backups etc. Here are some issues
+that need resolving at some point.
+
+=> https://github.com/pjotrp/deploy
+
+## Tags
+
+* assigned: pjotrp
+* enhancement
+
+## Tasks
+
+* [ ] check whether rsync dir exists before proceeding
+* [ ] send digest E-mails
+* [ ] smart state E-mails on services going down
+* [ ] block on root user if not running from protected dir
+* [ ] borg/rsync should check validity of repo before propagating
+* [ ] borg/rsync ignore files that have wrong permissions
