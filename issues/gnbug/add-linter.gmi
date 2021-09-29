@@ -1,6 +1,7 @@
 # A linter for gnbug
 
 * feature-request
+* gnbug
 
 Should gnbug have a linter?
 
