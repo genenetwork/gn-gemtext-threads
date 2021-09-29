@@ -7,3 +7,7 @@ to add then the linter reminds them to add more info, tags, etc.
 
 Or, maybe we want to check that the user does not add a tag that we don't want to
 support.
+
+I am not sure. Pjotr is of the philosophy that we should keep the text as unstructured and unrestrictive as possible, and I agree with this philosophy. Linters are likely to annoy users more than help them. They might discourage casual use of the issue tracker. Especially with tags, we don't really want to restrict the user from coming up with new tags.
+
+WDYT? Am I missing some scenario where the linter could be essential?
