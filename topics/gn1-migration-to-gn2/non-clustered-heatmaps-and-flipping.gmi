@@ -1,0 +1,23 @@
+# Non-Clustered and Flippable Heatmaps
+
+With the
+
+=> ./clustering.gmi Migrate GN1 Clustering
+
+issue, the clustering heatmaps are migrated over to GN3.
+
+During the presentation meeting on 2021-10-01, Rob requested that the heatmaps have two features:
+
+* It should be possible to flip the heatmap orientation from horizontal to vertical and vice-versa
+* It should be possible to generate a heatmap with no dendrograms
+
+## Members
+
+* fredm
+* pjotr
+* zsloan
+
+## Tags
+
+* feature
+* assigned: fredm, zsloan
