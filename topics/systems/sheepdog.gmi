@@ -12,6 +12,7 @@ that need resolving at some point.
 
 ## Tasks
 
+* [ ] add lock functionality
 * [ ] check whether rsync dir exists before proceeding
 * [ ] send digest E-mails
 * [ ] smart state E-mails on services going down

@@ -6,6 +6,8 @@
 
 ## Tasks
 
+* Allow @bonfacem to run redis on P2
+* Pluto tool with Zach
 => ../issues/genenetwork1/gn1-production-system-issues.gmi
 * get data from summer211.uthsc.edu
 => ../issues/data/MIKK-panel.gmi
