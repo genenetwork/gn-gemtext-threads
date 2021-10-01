@@ -1,0 +1,10 @@
+# Guix Containers
+
+## Bugs
+
+guix container exec command does not currently work: 
+
+http://issues.guix.gnu.org/50916
+
+Good to know in case we think we might need it for something container related 
+in the future.
