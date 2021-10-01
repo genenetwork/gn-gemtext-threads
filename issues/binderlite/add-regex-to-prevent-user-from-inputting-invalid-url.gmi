@@ -1,0 +1,6 @@
+* bug
+
+* assigned: jgart
+
+Add regex to the html form to prevent the user from submitting an invalid git repo
+url or other string.
