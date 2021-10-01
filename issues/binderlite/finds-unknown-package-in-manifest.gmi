@@ -1,0 +1,33 @@
+# When binderlite finds an unkown package in a guix manifest
+
+What do we do if binderlite finds a package that is not in upstream guix in a 
+manifest?
+
+This is what it currently does:
+
+```
+guix environment: error: guile-pipe: unknown package
+guix environment: error: failed to load '/tmp/notebooks/jgarte/guile-notebook-genenetwork-api/guix.scm':
+gnu/packages.scm:543:4: In procedure specification->package+output:
+Throw to key `quit' with args `(1)'.
+```
+Should we send the user to a 404 Package not Found page and tell them to package 
+it and submit a patch to upstream before using it in a binderlite container?
+
+=> https://github.com/jgarte/guile-notebook-genenetwork-api/blob/master/guix.scm manifest attempted from
+
+=> https://github.com/joshwalters/guile-pipe the unkown package
+
+## Open questions/Ideas
+
+Should binderlite support building containers with packages from third party 
+Guix Channels or only packages trusted from upstream?
+
+If yes, how should binderlite users specify/request a channel to subscribe to?
+
+Or, should channels be managed by the sysadmin only for security reasons?
+
+It's probably a security risk since a guix channel can pull in arbitrary 
+packaged code that might not be audited or fully trusted.
+
+* bug
