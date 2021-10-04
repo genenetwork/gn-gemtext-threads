@@ -1,0 +1,15 @@
+* feature-request
+
+* assigned: jgart
+
+Add spinner or animation to submit form while the user waits.
+
+## Questions
+
+1. Do we want to use xtermjs for binderlite or something simpler/lighter like an 
+animation that let's the user know more explicitly that they are waiting for 
+a container to be built? A spinning guix gnu logo could be cool.
+
+https://www.w3schools.com/howto/howto_css_loader.asp
+
+https://spin.js.org/https://spin.js.org/
