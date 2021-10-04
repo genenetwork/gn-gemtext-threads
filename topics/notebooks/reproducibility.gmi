@@ -1,0 +1,16 @@
+# Reproducibility
+
+## How Guix manages reproducibility
+
+=> https://hpc.guix.info/blog/2021/09/whats-in-a-package/ whats in a package
+
+=> https://lists.gnu.org/archive/html/emacs-bug-tracker/2019-11/msg00569.html
+
+=> https://guix.gnu.org/cookbook/en/html_node/Basic-setup-with-manifests.html
+
+## Notes on how others are managing or thinking about reproducibility
+
+https://github.com/fonsp/Pluto.jl#built-in-package-manager
+
+https://mybinder.readthedocs.io/en/latest/tutorials/reproducibility.html#pin-dependencies
+
