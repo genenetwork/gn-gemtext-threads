@@ -1,0 +1,12 @@
+# Binderlite Notebook Gallery
+
+We need a gallery for users to click notebooks that they have stored previously.
+
+We can use redis or sql to store the notebooks and later retrieve them.
+
+# Notes and Links
+
+=> https://github.com/gesiscss/binder_gallery gesis notebook gallery
+
+=> https://notebooks.gesis.org/gallery/ gallery live instance
+
