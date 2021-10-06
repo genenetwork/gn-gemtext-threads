@@ -47,9 +47,14 @@ As epysode was one of the main sheepdog messaging servers I need to reinstate:
 * [X] make sure messaging works through redis
 * [x] fix and propagate GN1 backup
 * [ ] fix and propagate IPFS and gitea backups
+* [ ] add GN1 backup
+* [ ] add IPFS backup
+* [ ] other backups
+* [ ] email on fail
 
 Tux01 is backup up now. Need to make sure it propagates to
 
 * [ ] P2
 * [ ] epysode
 * [ ] rabbit
+
