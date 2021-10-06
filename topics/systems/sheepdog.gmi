@@ -19,3 +19,8 @@ that need resolving at some point.
 * [ ] block on root user if not running from protected dir
 * [ ] borg/rsync should check validity of repo before propagating
 * [ ] borg/rsync ignore files that have wrong permissions
+* [ ] package in GNU Guix for root scripts
+* [ ] list current state - it means parsing the state list
+* [ ] synchronize between queues using a dump
+* [ ] sheepdog_expect.rb - expect PINGs
+* [ ] sheepdog_rsync.rb - test for 'total size is 0'
