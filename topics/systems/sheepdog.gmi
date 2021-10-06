@@ -24,3 +24,6 @@ that need resolving at some point.
 * [ ] synchronize between queues using a dump
 * [ ] sheepdog_expect.rb - expect PINGs
 * [ ] sheepdog_rsync.rb - test for 'total size is 0'
+* [ ] sheepdog_list tag and filter switches improve behaviour
+* [ ] add sheepdog_web_monitor
+* [ ] borg: set user/group after backup

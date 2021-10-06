@@ -1,0 +1,9 @@
+# Decommission machines
+
+# Tasks
+
+* artemis - dead. Remove from rack
+
+see also
+
+=> https://trello.com/c/usOYPBG9/72-decommissioning-older-machines

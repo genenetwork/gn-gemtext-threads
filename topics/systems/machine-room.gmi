@@ -1,0 +1,10 @@
+# Machine room
+
+## Tags
+
+* assign: pjotrp, dana
+
+## Tasks
+
+=> decommission-machines.gmi Decommission machines
+* Network switch
