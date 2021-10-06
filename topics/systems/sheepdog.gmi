@@ -26,4 +26,5 @@ that need resolving at some point.
 * [ ] sheepdog_rsync.rb - test for 'total size is 0'
 * [ ] sheepdog_list tag and filter switches improve behaviour
 * [ ] add sheepdog_web_monitor
-* [ ] borg: set user/group after backup
+* [X] borg: set user/group after backup
+* [ ] add remote borg backup with sshfs
