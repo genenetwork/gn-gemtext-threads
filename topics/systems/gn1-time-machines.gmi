@@ -1,0 +1,45 @@
+# GN1 Time machines
+
+We want to reinstate the time machines and run them in containers. Databases and source code as they were running before are located in
+
+=> penguin2:/export/backup/artemis/borg
+
+Use the borg backup tool to extract with the passphrase in my ~/.borg-pass
+
+```
+TM                                   Fri, 2019-12-27 07:48:12
+TM_etc_httpd                         Fri, 2019-12-27 07:49:18
+TM_gn_web.checkpoint                 Fri, 2019-12-27 07:52:21
+TM_gn_web                            Fri, 2019-12-27 09:45:09
+TM_artemis                           Sat, 2019-12-28 01:55:40
+TM_artemis2                          Sun, 2019-12-29 02:20:38
+```
+
+note that borg contents can be listed with `borg list dir::TM_etc_httpd`.
+
+Essentially it contains the full mariadb databases, source code and etc files to set up the containers. Start with the most recent one and see if you can get that to run on Penguin2. After that we'll do the others. The database are named, for example,
+
+```
+rw-rw-r-- wrk    sudo   37907660 Wed, 2009-02-18 16:40:47 export/backup/artemis/mysql/gn_db_20090304/Geno.MYD
+-rw-rw-r-- wrk    sudo   37940692 Fri, 2009-12-25 00:42:24 export/backup/artemis/mysql/gn_db_20091225/Geno.MYD
+-rw-rw-r-- wrk    sudo   37940764 Thu, 2010-08-05 14:13:30 export/backup/artemis/mysql/gn_db_20100810/Geno.MYD
+-rw-rw-r-- wrk    sudo    4451132 Sun, 2011-04-24 03:38:14 export/backup/artemis/mysql/gn_db_20110424/Geno.MYD
+-rw-rw-r-- wrk    sudo    4451132 Mon, 2011-08-08 03:25:18 export/backup/artemis/mysql/gn_db_20110808/Geno.MYD
+-rw-rw-r-- wrk    sudo    4424608 Mon, 2012-09-24 11:43:46 export/backup/artemis/mysql/gn_db_20120928/Geno.MYD
+-rw-rw-r-- wrk    sudo   23838240 Tue, 2014-01-14 14:40:47 export/backup/artemis/mysql/gn_db_20140123/Geno.MYD
+-rw-rw-r-- wrk    sudo   24596912 Sun, 2014-11-23 23:22:30 export/backup/artemis/mysql/gn_db_20150224/Geno.MYD
+-rw-rw-r-- wrk    sudo   24597500 Wed, 2015-07-22 12:48:33 export/backup/artemis/mysql/gn_db_20160316/Geno.MYD
+-rw-rw-r-- wrk    sudo   24596908 Tue, 2016-06-07 17:39:37 export/backup/artemis/mysql/gn_db_20160822/Geno.MYD
+-rw-rw-r-- wrk    sudo   24596908 Tue, 2016-06-07 17:39:37 export/backup/artemis/mysql/gn_db_20161212/Geno.MYD
+-rw-rw-r-- wrk    sudo   33730812 Wed, 2017-04-12 17:06:40 export/backup/artemis/mysql/gn_db_20180228/Geno.MYD
+```
+
+so you can see all the different versions. The matching code bases should be there too.
+
+## Tags
+
+* assigned: pjotrp, efraimf
+
+## Tasks
+
+## Info
