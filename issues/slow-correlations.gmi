@@ -1,0 +1,93 @@
+# Slow Correlations and UI crashes
+
+Correlations for huge data set(like the exo dataset) is very slow; and the UI crashes.
+
+## Tasks
+
+* assigned: bonfacekilz, alex
+* keywords: critical bug, in progress
+
+* [ ] Caching slow queries
+* [ ] Server side pagination
+
+## Background
+
+First, what we've done:
+
+- Optimised a bunch of SQL.
+- https://mariadb.com/kb/en/query-cache/  
+- General code clean-up in some places.
+- Futile experiments with code parallelisation.
+- Add a "test compute" button. More on this later.
+
+As Rob has pointed out before, gn2 is much much slower than
+gn1. Before, we mistakenly thought that it was because that it only
+computed one of the correlations; but Zach correctly pointed out that
+it, gn1, did in fact still compute all correlations in a similar
+fashion to gn2.
+
+The problems we have with gn2 are 2-fold:
+
+- Slow computations
+- UI crashing on our users for huge datasets
+  
+We took a step back; tried to probe deeper how we do correlations. To
+do a correlation, we need to run a query on the entire dataset. After
+running a query on this dataset, we additionally fetch metadata on
+this dataset as seen here:
+
+=> https://github.com/genenetwork/genenetwork2/blob/70f8ed53f85cfb42ca81ed6c3b4c9cf1060940e5/wqflask/wqflask/correlation/show_corr_results.py#L88
+
+This takes a long time: it's our biggest bottleneck. 
+
+For sample correlation we call this function to fetch the data:
+
+=> https://github.com/genenetwork/genenetwork2/blob/70f8ed53f85cfb42ca81ed6c3b4c9cf1060940e5/wqflask/base/data_set.py#L731
+
+IMO this seems to be the main issue among all queries.
+
+For tissue correlation we call this function to fetch the data this
+doesn't take much time less than 20 seconds to create instance and
+fetch results.
+
+=> https://github.com/genenetwork/genenetwork2/blob/70f8ed53f85cfb42ca81ed6c3b4c9cf1060940e5/wqflask/base/mrna_assay_tissue_data.py#L78>
+
+For lit correlation, we fetch the correlation from the DB no
+computation happens
+
+
+Assume a user selects "sample correlation" in the form with limit
+2000, they will fetch the results for the entire sample dataset to
+compute the sample correlation; then filter the top 2000 traits. Fetch
+the tissue input for them then do the correlation then fetch lit
+results for them.
+
+ATM, we know that our datasets are immutable unless @Acenteno updates
+things. So why don't we just cache the results of such queries in
+Redis, or in some json file. And use those instead of running the
+query on every computation? A file look-up or a Redis look-up would be
+much faster than what we already have.
+
+Also, another thing that could be improved on is replacing some basic
+data-structures used during the computations with more efficient
+ones. As an example, it makes little sense to use a list that holds a
+huge number of elements, when we could use a generator instead, or
+depending on the application, a more appropriate structure. That could
+shave some more seconds.
+
+Something else worth mentioning is that the fast correlations that
+used parallelisation produced bugs in gn2 could be re-written in a
+more reliable way using threads-- that's what IIRC what gn1 did. So
+that's something worth exploring too.
+
+WRT the UI crashing, we rely too much on Javascript
+(DataTables). AFAICT, the massive results we get from the correlations
+are sent to DataTables to process. That's asking too much! We
+brainstormed on some high level ideas on how to do this. One of them
+being to have the results stored somewhere. And to build pagination
+off those results. Now that's up to Alex to decide how to go about it.
+
+Something cool that Alex pointed is an interesting "manual" testing
+mechanism which he can feel free to try out: Separate the actual
+"computation" and the "pre-fetching" in code. And see what takes
+time.
