@@ -18,3 +18,4 @@ We are going to move production to tux02 - tux01 will be the staging machine. Th
 * [x] same for GN2 production environment
 * [ ] sheepdog borg borg the backups
 * [ ] setup https
+* [ ] start GN2 production services
