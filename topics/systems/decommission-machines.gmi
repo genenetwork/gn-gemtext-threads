@@ -20,7 +20,7 @@
 
 ## Switched off/down
 
-* [X] summer211 - ran UTHSC (R610) - needs backup, but no access
+* [X] summer211 - ran UTHSC browser (R610) - needs backup to fetch annotations, but no access
 * [X] alexandria (off)
 * [X] proust (off)
 * [X] artemis (Poweredge 860 -2006 model-, 2 core XEON, 2GB RAM: pjotr, arthur, root - runs time machines) see also Artemis runs time machines
