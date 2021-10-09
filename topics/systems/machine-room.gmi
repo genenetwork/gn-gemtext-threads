@@ -10,4 +10,5 @@
 * [ ] Network switch 10Gbs
 * [ ] Add disks to tux01 - Sep 28 To Brock
 
+=> tux02-production.gmi setup new production machine
 => decommission-machines.gmi Decommission machines
