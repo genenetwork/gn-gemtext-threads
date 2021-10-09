@@ -6,5 +6,8 @@
 
 ## Tasks
 
+* [ ] Make tux02e visible from outside
+* [ ] Network switch 10Gbs
+* [ ] Add disks to tux01 - Sep 28 To Brock
+
 => decommission-machines.gmi Decommission machines
-* Network switch

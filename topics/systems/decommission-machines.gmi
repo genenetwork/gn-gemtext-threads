@@ -1,8 +1,36 @@
 # Decommission machines
 
+# Tags
+
+* assigned: pjotrp, arthurc, dana
+
 # Tasks
 
-* artemis - dead. Remove from rack
+## Running (OK)
+
+* [ ] rabbit is used for backups (R815 - 2010 model - , 24core, AMD, 64G, 2TB: pjotr, root)
+
+## Still running old Linux
+
+* [ ] xeon (1950 - 2006 model - pjotr root) pivotcollections.org
+* [ ] lily (1950 in use by gn1: pjotr root)
+* [ ] rhodes (860) - runs wiki?
+* [ ] NB (860) unused? - was mailman trial
+* [ ] tyche (2950 - 2006 model - login as arthur, no root, hacked?) - reset passwords
+
+## Switched off/down
+
+* [X] summer211 - ran UTHSC (R610) - needs backup, but no access
+* [X] alexandria (off)
+* [X] proust (off)
+* [X] artemis (Poweredge 860 -2006 model-, 2 core XEON, 2GB RAM: pjotr, arthur, root - runs time machines) see also Artemis runs time machines
+* [X] zeus (860 pjotr/root) - Genome browser?
+* [X] plum (860 2006 model)
+* [X] bamboo (860)
+* [X] pine (860)
+* [X] winter211 (R610)
+* [X] spring211 (Poweredge R610 2010 model - no access)
+* [X] autumn211 (R610)
 
 see also
 
