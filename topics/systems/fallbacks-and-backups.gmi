@@ -10,7 +10,10 @@ As a hurricane is barreling towards our machine room in Memphis we are checking 
 
 ## Tasks
 
-* [ ] Get backups running again on fallback
+* [ ] backup ratspub, r/shiny, bnw, covid19, hegp, pluto services
+* [ ] /etc /home/shepherd backups for Octopus
+* [X] /etc /home/shepherd backups for P2
+* [X] Get backups running again on fallback
 
 ## Backup and restore
 
@@ -42,19 +45,19 @@ As epysode was one of the main sheepdog messaging servers I need to reinstate:
 * [X] scripts for sheepdog
 * [X] enable trim
 * [X] reinstate monitoring web services
-* [t] reinstate daily backup from penguin2
+* [X] reinstate daily backup from penguin2
 * [X] CRON
 * [X] make sure messaging works through redis
-* [x] fix and propagate GN1 backup
-* [ ] fix and propagate IPFS and gitea backups
-* [ ] add GN1 backup
-* [ ] add IPFS backup
+* [X] fix and propagate GN1 backup
+* [X] fix and propagate IPFS and gitea backups
+* [X] add GN1 backup
+* [X] add IPFS backup
 * [ ] other backups
 * [ ] email on fail
 
-Tux01 is backup up now. Need to make sure it propagates to
+Tux01 is backed up now. Need to make sure it propagates to
 
-* [ ] P2
-* [ ] epysode
-* [ ] rabbit
-
+* [X] P2
+* [X] epysode
+* [X] rabbit
+* [X] Tux02
