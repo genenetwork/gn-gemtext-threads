@@ -12,7 +12,7 @@ that need resolving at some point.
 
 ## Tasks
 
-* [ ] add lock functionality
+* [ ] add locking functionality for tags - added borg with-lock
 * [ ] check whether rsync dir exists before proceeding
 * [ ] send digest E-mails
 * [ ] smart state E-mails on services going down
@@ -20,11 +20,11 @@ that need resolving at some point.
 * [ ] borg/rsync should check validity of repo before propagating
 * [ ] borg/rsync ignore files that have wrong permissions
 * [ ] package in GNU Guix for root scripts
-* [ ] list current state - it means parsing the state list
+* [ ] list current state - it means parsing the state list (some exists)
 * [ ] synchronize between queues using a dump
 * [ ] sheepdog_expect.rb - expect PINGs
 * [ ] sheepdog_rsync.rb - test for 'total size is 0'
 * [ ] sheepdog_list tag and filter switches improve behaviour
-* [ ] add sheepdog_web_monitor
+* [ ] add sheepdog_web_monitor - currently using plain curl
 * [X] borg: set user/group after backup
 * [ ] add remote borg backup with sshfs
