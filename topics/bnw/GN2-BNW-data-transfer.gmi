@@ -22,3 +22,7 @@ The current output reads:
 ```
 
 but is not accepted by the latest version of BNW.
+
+## Notes
+
+Found the PHP file on Xeon. Sent to Jesse for comment. Made a backup on rabbit.

@@ -12,18 +12,26 @@
 
 ## Still running old Linux
 
-* [ ] xeon (1950 - 2006 model - pjotr root) pivotcollections.org
-* [ ] lily (1950 in use by gn1: pjotr root)
+* [ ] xeon (1950 - 2006 model - pjotr root) BNW, pivotcollections.org
+      - made a full backup on rabbit
+      - need to move DNS for pivotcollections to Tux02 or P2
+* [ ] lily (1950 - still in use by gn1: pjotr root)
+      - runs gn1-lily and Arthur uses it
 * [ ] rhodes (860) - runs wiki?
+      - no login
 * [ ] NB (860) unused? - was mailman trial
+      - no login
 * [ ] tyche (2950 - 2006 model - login as arthur, no root, hacked?) - reset passwords
+      - tyche hard disk array is broken, failed to recover
 
 ## Switched off/down
 
 * [X] summer211 - ran UTHSC browser (R610) - needs backup to fetch annotations, but no access
+      - need to access when in machine room
 * [X] alexandria (off)
 * [X] proust (off)
 * [X] artemis (Poweredge 860 -2006 model-, 2 core XEON, 2GB RAM: pjotr, arthur, root - runs time machines) see also Artemis runs time machines
+      - dead
 * [X] zeus (860 pjotr/root) - Genome browser?
 * [X] plum (860 2006 model)
 * [X] bamboo (860)
