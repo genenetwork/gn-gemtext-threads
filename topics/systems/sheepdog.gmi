@@ -12,8 +12,8 @@ that need resolving at some point.
 
 ## Tasks
 
-* [ ] add locking functionality for tags - added borg with-lock
-* [ ] check whether rsync dir exists before proceeding
+* [X] add locking functionality for tags - added borg with-lock (test)
+* [ ] check whether rsync dir exists, repo valid and/or no lock before proceeding
 * [ ] send digest E-mails
 * [ ] smart state E-mails on services going down
 * [ ] block on root user if not running from protected dir

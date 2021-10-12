@@ -1,0 +1,9 @@
+# Octopus sysmaintenance
+
+## Tags
+
+* assigned: pjotrp, efraimf, erikg
+
+## Tasks
+
+* [ ] initiate backup of configuration
