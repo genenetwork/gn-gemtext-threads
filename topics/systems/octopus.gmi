@@ -6,4 +6,8 @@
 
 ## Tasks
 
-* [ ] initiate backup of configuration
+* [X] install sheepdog
+* [X] run borg backup
+* [X] propagate backup to rabbit
+* [X] fix redis updates - use rev tunnel
+* [X] check other dirs
