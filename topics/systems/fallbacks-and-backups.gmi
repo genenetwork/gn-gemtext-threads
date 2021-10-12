@@ -11,9 +11,10 @@ As a hurricane is barreling towards our machine room in Memphis we are checking 
 ## Tasks
 
 * [ ] backup ratspub, r/shiny, bnw, covid19, hegp, pluto services
-* [ ] /etc /home/shepherd backups for Octopus
+* [X] /etc /home/shepherd backups for Octopus
 * [X] /etc /home/shepherd backups for P2
 * [X] Get backups running again on fallback
+* [ ] fix redis queue for P2
 
 ## Backup and restore
 
@@ -52,7 +53,7 @@ As epysode was one of the main sheepdog messaging servers I need to reinstate:
 * [X] fix and propagate IPFS and gitea backups
 * [X] add GN1 backup
 * [X] add IPFS backup
-* [ ] other backups
+* [X] other backups
 * [ ] email on fail
 
 Tux01 is backed up now. Need to make sure it propagates to
