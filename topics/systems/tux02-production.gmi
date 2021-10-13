@@ -17,7 +17,11 @@ We are going to move production to tux02 - tux01 will be the staging machine. Th
 * [X] sheepdog copy database backup from tux01 on a daily basis using ibackup user
 * [X] same for GN2 production environment
 * [X] sheepdog borg borg the backups
-* [ ] setup https
+* [ ] setup https and letsencrypt
 * [ ] start GN2 production services
 * [ ] setup logrotate for production log files
 * [ ] run git automatically on /etc and backup without passwords
+
+# Info
+
+* borg extract borg-genenetwork::borg-GN2-home-20211012-04:00-Tue

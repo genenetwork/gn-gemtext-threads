@@ -1,0 +1,11 @@
+# Letsencrypt
+
+## Tags
+
+* assigned: pjotr
+* bug
+
+## Tasks
+
+* [ ] letsencrypt is failing on P2 and Tux01
+* [ ] ucscbrowser needs a certificate
