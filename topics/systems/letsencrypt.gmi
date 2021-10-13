@@ -7,5 +7,18 @@
 
 ## Tasks
 
-* [ ] letsencrypt is failing on P2 and Tux01
-* [ ] ucscbrowser needs a certificate
+* [X] letsencrypt is failing on P2 and Tux01 (expiry Nov12)
+  - letsencrypt was down
+* [X] ucscbrowser needs a certificate (now forwards http -> https)
+
+## Notes
+
+```
+certbot renew --dry-run
+```
+
+Add certificate
+
+```
+certbot certonly --nginx --agree-tos --preferred-challenges http -d ucscbrowser.genenetwork.org --register-unsafely-without-email
+```
