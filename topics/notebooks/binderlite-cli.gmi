@@ -1,0 +1,11 @@
+# CLI Features
+
+## Admin
+
+* Clear Database
+
+## User
+
+* Upload Notebooks
+* List Notebooks
+* Download Notebooks
