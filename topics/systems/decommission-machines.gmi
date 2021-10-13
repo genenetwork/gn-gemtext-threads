@@ -18,7 +18,17 @@
 * [ ] lily (1950 - still in use by gn1: pjotr root)
       - runs gn1-lily and Arthur uses it
 * [ ] rhodes (860) - runs wiki?
-      - no login
+      - login fixed by @acenteno
+      - services are
+        ServerName wiki.genenetwork.org
+        DocumentRoot /var/www/mediawiki
+        ServerName lookseq.genenetwork.org
+        DocumentRoot /var/www/lookseq/html
+        ServerName lookseq2.genenetwork.org
+        DocumentRoot /var/www/lookseq2/html
+        ServerName galaxy.genenetwork.org
+        DocumentRoot /var/www/galaxy
+
 * [ ] NB (860) unused? - was mailman trial
       - no login
 * [ ] tyche (2950 - 2006 model - login as arthur, no root, hacked?) - reset passwords
