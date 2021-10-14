@@ -16,6 +16,7 @@ As a hurricane is barreling towards our machine room in Memphis we are checking 
 * [X] Get backups running again on fallback
 * [ ] fix redis queue for P2 - needs to be on rabbit
 * [ ] fix bacchus large backups
+* [ ] backup octopus01:/lizardfs/backup-pangenome
 
 ## Backup and restore
 
