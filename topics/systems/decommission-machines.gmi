@@ -8,7 +8,7 @@
 
 ## Running (OK)
 
-* [ ] rabbit is used for backups (R815 - 2010 model - , 24core, AMD, 64G, 2TB: pjotr, root)
+* rabbit is used for backups (R815 - 2010 model - , 24core, AMD, 64G, 5TB: pjotr, root)
 
 ## Still running old Linux
 
@@ -22,12 +22,16 @@
       - services are
         ServerName wiki.genenetwork.org
         DocumentRoot /var/www/mediawiki
+          mysql -u mediawikiuser -pmonroe815link201 mediawikidb
+          35 pages
+          save pages as HTML
         ServerName lookseq.genenetwork.org
         DocumentRoot /var/www/lookseq/html
         ServerName lookseq2.genenetwork.org
         DocumentRoot /var/www/lookseq2/html
         ServerName galaxy.genenetwork.org
         DocumentRoot /var/www/galaxy
+      - Dave is doing the final backup
 
 * [ ] NB (860) unused? - was mailman trial
       - no login
