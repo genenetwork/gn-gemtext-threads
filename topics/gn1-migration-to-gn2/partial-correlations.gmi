@@ -27,3 +27,36 @@ That gives you a list of hits.
 ## Tags
 
 * assigned: fredm
+
+## Notes
+
+### 2021-10-15: fredm
+
+The example in the description above says to pick 3 traits from the search results to use for the partial correlation.
+
+If you, however, find need to pick more than 3 traits, the following things are of note:
+
+* There can only ever be a single **Primary** trait: if the user selects more than one, indicate an error
+* There can only ever be a maximum of 3 **Control** traits: if the user selects more than three, indicate an error
+* For **Pearson's r** and **Spearman's rho** computations (the buttons immediately below the table), there must be at least one Target trait. If the user does not provide any, indicate an error
+
+In the lower half, the user can select the database against which the partial correlations are to be run. I still need to figure what this is about - probably read the code and ask a lot of questions as necessary.
+
+The user can also select what to calculate, from the following list:
+
+* Genetic Correlation, Pearson's r
+* Genetic Correlation, Spearman's rho
+* SGO Literature Correlation
+* Tissue Correlation, Pearson's r
+* Tissue Correlation, Spearman's rho
+
+There is no indication,on the UI, of the difference between the **Pearson's r** and **Spearman's rho** with the buttons, and those in the list in the lower half of the page.
+
+The user can also select the total number of results to return
+
+#### Possible Correlation Errors
+
+* Tissue Correlation Error
+* Literature Correlation Error
+
+Maybe there is even a **Genetic Correlation Error**, but I am yet to run into it - I am simply extrapolating from my exploration with the existing system.
