@@ -27,16 +27,20 @@ That gives you a list of hits.
 ## Tags
 
 * assigned: fredm
+* migration, in progress
 
 ## Notes
 
 ### 2021-10-15: fredm
+
+#### UI Exploration
 
 The example in the description above says to pick 3 traits from the search results to use for the partial correlation.
 
 If you, however, find need to pick more than 3 traits, the following things are of note:
 
 * There can only ever be a single **Primary** trait: if the user selects more than one, indicate an error
+* At lease one control trait MUST be selected. If there is no selected control trait, indicate an error
 * There can only ever be a maximum of 3 **Control** traits: if the user selects more than three, indicate an error
 * For **Pearson's r** and **Spearman's rho** computations (the buttons immediately below the table), there must be at least one Target trait. If the user does not provide any, indicate an error
 
