@@ -58,9 +58,24 @@ There is no indication,on the UI, of the difference between the **Pearson's r** 
 
 The user can also select the total number of results to return
 
-#### Possible Correlation Errors
+##### Possible Correlation Errors
 
 * Tissue Correlation Error
 * Literature Correlation Error
 
 Maybe there is even a **Genetic Correlation Error**, but I am yet to run into it - I am simply extrapolating from my exploration with the existing system.
+
+#### Code Exploration
+
+These are some of the (possibly) relevant files in GN1 unearthed so far:
+
+* /web/webqtl/main.py: Entry-point -> goes to SearchResultPage then the ShowTraitPage/Collections page
+* /web/webqtl/correlation/PartialCorrInputPage.py: from collections on clicking "Partial"
+* /web/webqtl/cmdLine/cmdPartialCorrelationPage.py: from PartialCorrInputPage on clicking "Calculate" in the form in the second half of the page
+* /web/webqtl/correlation/PartialCorrTraitPage.py: from PartialCorrInputPage on clicking "Pearson's r" or "Spearman's rho" buttons in the first half of the page
+* /web/webqtl/correlation/PartialCorrDBPage.py: from cmdPartialCorrelationPage: form data is saved to file and used via CLI to compute the correlations - This seems to be the results page
+
+The relevant javascript files used on GN1 are:
+
+* webqtl.js: see `databaseFunc` and `validateTrait` functions
+* jqueryFunction.js: see `validateTraitNumber` function
