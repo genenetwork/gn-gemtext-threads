@@ -31,10 +31,10 @@ Next click on 'Cluster traits' and 'Redraw' map. This is the one we want in GN3/
 
 As a first step the computations should move to GN3 with proper regression/unit testing scripts. Next wire them up as REST API endpoints and add it to the GN2 web interface:
 
-- [ ] Move computation to GN3
-- [ ] Create REST API endpoints
-- [ ] Add regression/unit tests in GN3
-- [ ] Add to GN2 web interface
+- [x] Move computation to GN3
+- [x] Create REST API endpoints
+- [x] Add regression/unit tests in GN3
+- [x] Add to GN2 web interface
 
 
 @pjotr I couldn't quite figure out what "CRTD mRNA", so I selected "Cartilage mRNA" , to try and produce a heat map, and I did get some results.
