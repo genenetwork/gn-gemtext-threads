@@ -1,0 +1,29 @@
+# Partial Correlation
+
+## Description
+
+Go to
+
+=> http://gn1-lily.genenetwork.org/ GN1 on Lily
+
+Search for traits 'synap*'
+
+Select all and Add in search results.
+
+Pick 3 and hit 'Partial'
+
+Put one each in X, Y and Z columns
+
+And compute against database (lower half).
+
+That gives you a list of hits.
+
+## Members
+
+* fredm
+* pjotp
+* alex
+
+## Tags
+
+* assigned: fredm
