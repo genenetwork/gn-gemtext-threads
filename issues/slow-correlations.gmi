@@ -91,3 +91,17 @@ Something cool that Alex pointed is an interesting "manual" testing
 mechanism which he can feel free to try out: Separate the actual
 "computation" and the "pre-fetching" in code. And see what takes
 time.
+
+# Notes
+
+#### Mon 18 Oct 2021 12:42:17 PM EAT
+
+Atm GN2 is un-usable for Rob for basic tours and show-and-tells, and
+it is a persistent problem that is getting worse the more he
+complains.  Correlation is slower than it was ever before; and search
+is broken. For a simple search of 10,000 phenotypes, it takes a lot of
+time to compute.
+
+According to Rob, GN1 does not rely on a cache. Instead it is
+computing from a materialized view of the database that is
+intentionally designed for a fast web service.
