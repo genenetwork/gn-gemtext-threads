@@ -26,3 +26,36 @@ but is not accepted by the latest version of BNW.
 ## Notes
 
 Found the PHP file on Xeon. Sent to Jesse for comment. Made a backup on rabbit.
+
+### Run bnw test instance
+
+```
+        # Launch php-fpm
+        guix environment --ad-hoc php -- php-fpm --fpm-config php-fpm.conf
+
+        # Launch nginx
+        guix environment -L guix-past/modules -L guix-bioinformatics bnw --ad-hoc nginx -- nginx -p tmp/var/run/nginx -
+c nginx.conf
+
+        # To see the BNW website
+        # From your local machine:
+        ssh -L 8888:localhost:8888 -N penguin2
+        # and then it should be visible in your webbrowser at localhost:8888
+        # I believe any local changes should be reflected immediately.
+        # I believe any local changes should be reflected immediately.
+
+        # stopping nginx
+        kill $(pgrep nginx -u jessez | head -n1)
+
+        # stopping php-fpm
+        kill $(pgrep php-fpm -u jessez | head -n1)
+```
+
+When you have that running I can switch over the BNW website to yours,
+so you can test run with GN. Do run BNW from GN you can:
+
+1. Search for 'shh' in http://genenetwork.org/
+2. checkbox the 3 results
+3. hit the BNW button
+
+
