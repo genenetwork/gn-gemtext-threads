@@ -1,6 +1,10 @@
 # Clean up Authorisation
 
-Look at Chris' authorisation code[0]. Atm genenetwork2's handling of
+Look at Chris' authorisation code:
+
+=> https://github.com/chfi/gn-proxy
+
+Atm genenetwork2's handling of
 authorisation is a bit clunky; Since @Bonface is working on the data
 data up-loader, and it requires authorisation, this is a good time to
 clean up authorisation.
@@ -50,5 +54,20 @@ On the UI(quote from Zach):
 > have people direct input e-mails (instead of giving the ability to
 > search).
 
+#### Mon 18 Oct 2021
 
-[0] https://github.com/chfi/gn-proxy
+- Marked the function `check_owner_or_admin` as deprecated. It's only
+  used in: `wqflask/show_trait/show_trait.py`.
+
+- Heavy use of the walrus operator to remove alot of boiler plate.
+
+#### Tue 19 Oct 2021
+
+- Every resource needs to have the 3 fields set for the group-mask:
+  "data", "metadata", "admin". Otherwise, a hash-ref error will be
+  thrown:
+
+```
+03 ~~> hash-ref: no value found for key
+  key: 'admins
+```
