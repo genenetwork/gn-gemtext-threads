@@ -40,7 +40,7 @@ The example in the description above says to pick 3 traits from the search resul
 If you, however, find need to pick more than 3 traits, the following things are of note:
 
 * There can only ever be a single **Primary** trait: if the user selects more than one, indicate an error
-* At lease one control trait MUST be selected. If there is no selected control trait, indicate an error
+* At least one control trait MUST be selected. If there is no selected control trait, indicate an error
 * There can only ever be a maximum of 3 **Control** traits: if the user selects more than three, indicate an error
 * For **Pearson's r** and **Spearman's rho** computations (the buttons immediately below the table), there must be at least one Target trait. If the user does not provide any, indicate an error
 
@@ -79,3 +79,20 @@ The relevant javascript files used on GN1 are:
 
 * webqtl.js: see `databaseFunc` and `validateTrait` functions
 * jqueryFunction.js: see `validateTraitNumber` function
+
+### 2021-10-18: fredm
+
+#### UI Explorations
+
+Some extra notes on UI that were not noted down:
+
+* A trait can ONLY EVER BE in one category, i.e either in **Primary**, **Control**, **Target** or **Ignored** but not in more that one of those categories.
+
+#### Code Exploration
+
+**RISet** values should be interpreted as **group**
+**strain** values should be interpreted as **sample**
+
+There's some UI setup code after selection of the traits to use for the partial correlation. The UI setup code will probably be migrated to GN2, leaving the heavy-lifting "Partial Correlations" code, that I assume exists, for migration to GN3.
+
+For GN3, it seems like we can simply reuse some of the trait-retrieval code migrated over when working on the clustered heatmaps.
