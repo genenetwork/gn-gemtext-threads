@@ -6,12 +6,14 @@
 
 ## Tasks
 
-* Allow @bonfacem to run redis on P2
-* Pluto tool with Zach
+* [ ] Rabbit https and GN2 https
+* [X] Allow @bonfacem to run redis on P2
+=> ../topics/systems/tux02-production.gmi Set up stable GN service
+* [ ] Pluto tool with Zach
 => ../issues/genenetwork1/gn1-production-system-issues.gmi
-* get data from summer211.uthsc.edu
+* [ ] get data from summer211.uthsc.edu (access machine room)
 => ../issues/data/MIKK-panel.gmi
-* GN3: make sure GN3 services are running
+* [ ] GN3: make sure GN3 services are running
 => ../topics/systems/gn-services.gmi
-* GN2: add link to wikidata gene aliases
+* [ ] GN2: add link to wikidata gene aliases
 => ../topics/systems/fallbacks-and-backups.gmi

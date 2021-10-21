@@ -12,13 +12,13 @@ We are going to move production to tux02 - tux01 will be the staging machine. Th
 * [X] set up nginx (Debian)
 * [X] test ipmi console (172.23.30.40)
 * [X] test ports (nginx)
-* [ ] set up network for external tux02e.uthsc.edu (128.169.4.52)
+* [?] set up network for external tux02e.uthsc.edu (128.169.4.52)
 * [X] set up deployment evironment
 * [X] sheepdog copy database backup from tux01 on a daily basis using ibackup user
 * [X] same for GN2 production environment
 * [X] sheepdog borg borg the backups
+* [X] start GN2 production services
 * [ ] setup https and letsencrypt
-* [ ] start GN2 production services
 * [ ] setup logrotate for production log files
 * [ ] run git automatically on /etc and backup without passwords
 
