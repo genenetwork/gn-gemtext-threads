@@ -1,0 +1,7 @@
+# Remove everything elastic search
+
+We are no longer using that database
+
+## Tags
+
+* assigned: bonfacem
