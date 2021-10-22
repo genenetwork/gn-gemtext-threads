@@ -1,0 +1,33 @@
+# Quality Control Project
+
+Develop an app with a web interface to automate the job of cleaning tsv data
+files for entry. The app would be used by a group of users on a network to
+upload data.
+
+QC should be embedded functionality of the data uploader that Bonface has written.
+
+* Upload data through REST API - it goes into a temp dir for a user (data is in
+   escrow) - Bonface wrote this already
+* Run QC - what Arthur proposes (start here)
+* Show results - run tools (hard part!)
+* User can say - please accept data (Bonface wrote this)
+* Curator accepts data (different person!) (Bonface wrote this)
+* Data gets piped into GN proper
+
+The QC step consists of
+
+* Standard checks - some GN tools, such as outliers
+* Run mapping
+
+So, even though the data is in 'escrow' we should be able to use it as
+something that is in the database. GN1 does some of that. This is
+where Arun comes in - we need to have a common handler for data that
+is in the database and data that is in escrow. My idea is that this
+will all be text files (truth files). A simple first QC step is to
+check that all fields in the table are numbers where should be. Not
+text.
+
+Note we could run QC through the REST API too. That would allow it to
+be run from R and Python and Jupyter notebooks. Make it part of GN3.
+
+The tricky part is still how the data is handled in escrow.
