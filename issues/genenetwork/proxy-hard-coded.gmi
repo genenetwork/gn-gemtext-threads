@@ -1,0 +1,27 @@
+# Proxy has hard coded URLs
+
+These should be handled in a settings file. Also for GN3. How about introducing
+a shared JSON file?
+
+
+```
+gn2@tux02:~/production/gene$ rg 8080 --type py
+wqflask/wqflask/decorators.py
+28:                requests.get("http://localhost:8080/"
+
+wqflask/base/trait.py
+364:        the_url = "http://localhost:8080/run-action?resource={}&user={}&branch=data&action=view".format(
+367:        the_url = "http://localhost:8080/run-action?resource={}&user={}&branch=data&action=view&trait={}".format(
+
+wqflask/wqflask/marker_regression/display_mapping_results.py
+80:               "#000000", "#800000", "#008000", "#000080", "#808000", "#800080",
+81:               "#008080", "#808080", "#C00000", "#00C000", "#0000C0", "#C0C000",
+
+wqflask/utility/authentication_tools.py
+39:    the_url = "http://localhost:8080/available?resource={}&user={}".format(
+96:    the_url = "http://localhost:8080/available?resource={}&user={}".format(
+```
+
+# Tags
+
+* assigned: bonfacem, pjotrp, zachs
