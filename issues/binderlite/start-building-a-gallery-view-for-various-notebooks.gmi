@@ -10,3 +10,4 @@ We can use redis or sql to store the notebooks and later retrieve them.
 
 => https://notebooks.gesis.org/gallery/ gallery live instance
 
+* closed
