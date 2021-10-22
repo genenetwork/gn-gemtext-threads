@@ -19,15 +19,16 @@ We are going to move production to tux02 - tux01 will be the staging machine. Th
 * [X] sheepdog borg borg the backups
 * [X] start GN2 production services
 * [X] add GN3 aliases server
-* [ ] add Genenetwork3
+* [X] add Genenetwork3 service
+      env FLASK_APP="main.py" flask run --port=8087
 * [X] add proxy
-  - [ ] port 8080 is hard coded in GN2
 * [ ] setup https and letsencrypt
-* [ ] set up firewalling
-* [ ] set up system
+* [X] set up firewalling
+* [ ] set up systemd
 * [ ] setup logrotate for production log files
 * [ ] run git automatically on /etc and backup without passwords
 * [ ] add borg backups
+* [ ] look at performance
 
 # Info
 
