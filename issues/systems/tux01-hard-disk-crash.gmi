@@ -14,3 +14,5 @@ The system is still up, so it is not too urgent. First step is to recover the ba
 ```
 epysode:/export/backup$ borg extract --progress borg-borg::BORG_BORG_TUX01-Saturday-20210925-07:12:04
 ```
+
+We are adding a new 4TB SSD.

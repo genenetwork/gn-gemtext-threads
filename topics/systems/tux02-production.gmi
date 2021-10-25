@@ -30,6 +30,10 @@ We are going to move production to tux02 - tux01 will be the staging machine. Th
 * [ ] add borg backups
 * [ ] look at performance
 
-# Info
+## Info
 
-* borg extract borg-genenetwork::borg-GN2-home-20211012-04:00-Tue
+Restoring a database from backup (under an hour)
+
+```
+root@tux02:/export3/backup/tux01/borg# borg extract borg-tux01::borg-backup-mariadb-20211024-03:09-Sun --progress
+```

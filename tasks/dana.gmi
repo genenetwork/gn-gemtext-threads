@@ -1,0 +1,14 @@
+# Tasks for Dan
+
+## Tags
+
+* assigned: dana, pjotrp
+
+## Tasks
+
+* [ ] Tux02 https firewalling
+* [ ] Octopus 10Gbs switch + cables
+* [ ] 4TB SSDs for Tux01 and Tux02
+=> ../topics/systems/decommission-machines.gmi
+
+## Info
