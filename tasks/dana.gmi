@@ -6,7 +6,7 @@
 
 ## Tasks
 
-* [ ] Tux02 https firewalling
+* [X] Tux02 https firewalling
 * [ ] Octopus 10Gbs switch + cables
 * [ ] 4TB SSDs for Tux01 and Tux02
 => ../topics/systems/decommission-machines.gmi
