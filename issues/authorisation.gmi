@@ -63,11 +63,52 @@ On the UI(quote from Zach):
 
 #### Tue 19 Oct 2021
 
-- Every resource needs to have the 3 fields set for the group-mask:
-  "data", "metadata", "admin". Otherwise, a hash-ref error will be
-  thrown:
+- Every resource needs to have the 3 fields set for the group-mask and
+  default-mask: "data", "metadata", "admin". Otherwise, a hash-ref
+  error will be thrown:
 
 ```
 03 ~~> hash-ref: no value found for key
   key: 'admins
 ```
+
+  On this regard, the documentation for gn-proxy should be updated
+  since it's abit misleading.
+
+- An owner, from the proxy views has super-user privileges for
+  everything
+
+#### Mon 26 Oct 2021
+
+- Some issues Zach pointed out:
+
+> The /trait/update endpoint*, when accessed from >
+  "/trait/<name>/edit/inbredset-id/<inbredset_id>", currently doesn't
+  seem to work because kwargs/args are empty. This is presumably due
+  to it being a POST endpoint and not having the necessary fields
+  passed through the URL. I can access all the form inputs in the
+  decorator with request.form, though those form inputs still don't
+  include the resource_id or inbredset_id/dataset_name with those same
+  variable names; they're in the edit_phenotype form as inbred-set-id
+  and dataset-name respectively (this is why I mentioned the variable
+  names; if I gave the decorator access to them with request.form,
+  they didn't match the variable names it expected).  So I'm not
+  really sure how best to fix this; I'm guessing that either the >
+  trait/update endpoint needs to be changed to include the resource ID
+  > (though this is complicated by the fact that there can be many
+  traits within a resource_id for ProbeSet traits; it's only phenotype
+  traits where each individual trait is its own resource), or the
+  decorator itself needs to be changed to also access request.form.
+
+> There's also a separate issue with
+  "/trait/edit/probeset-name/<dataset_name>" that likely stems from
+  the fact that you need both a dataset name and trait ID for
+  "probeset" traits (and in this case dataset_name is actually the
+  trait ID). So this probably calls for the endpoint itself being
+  changed in some way.
+
+- Fixed the above, while at the same time, adding the new auth links
+  to the show trait page. Key point is that I changed the URLs and
+  moved them to their own module. Particularly for published datasets.
+
+- New PR: https://github.com/genenetwork/genenetwork2/pull/614
