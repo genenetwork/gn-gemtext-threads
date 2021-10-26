@@ -1,0 +1,35 @@
+# MariaDB
+
+Here we capture some common actions
+
+## Tags
+
+* info
+
+## Check the transaction logs
+
+Start the client and:
+
+```
+MariaDB [db_webqtl]> show binary logs;
++-----------------------+-----------+
+| Log_name              | File_size |
++-----------------------+-----------+
+| gn0-binary-log.000012 | 374532448 |
+| gn0-binary-log.000013 | 933672549 |
+| gn0-binary-log.000014 |  12774545 |
++-----------------------+-----------+
+3 rows in set (0.001 sec)
+```
+
+To get a log
+
+```
+mysql -p -u webqtlout  db_webqtl -e "SHOW BINLOG EVENTS IN 'gn0-binary-log.000014';"
+```
+
+To get a log with some stuff filtered out try
+
+```
+mysql -p -u webqtlout db_webqtl -e "SHOW BINLOG EVENTS IN 'gn0-binary-log.000014';" -r -s |grep -v -e "Access\|GTID\|INSERT_ID\|COMMIT\|Temp\|lastlogin\|LITERA\|flush\|ROLLBACK"
+```
