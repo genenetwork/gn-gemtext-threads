@@ -1,0 +1,22 @@
+# GN Checklist
+
+This is the checklist to run through when testing GN2.
+
+## Tags
+
+* assigned: pjotrp
+
+## Tasks
+
+This is a check list for testing whether GN2 is completely deployed
+
+* [ ] wain page
+=> https://luna.genenetwork.org/
+* [ ] simple search (e.g. shh in hippocampus mRNA)
+=> https://luna.genenetwork.org/search?species=mouse&group=BXD&type=Hippocampus+mRNA&dataset=HC_M2_0606_P&search_terms_or=shh&search_terms_and=&FormID=searchResult
+* [ ] try your own search term
+* [ ] wild card seach (e.g. sh* in hippocampus mRNA)
+=> https://luna.genenetwork.org/search?species=mouse&group=BXD&type=Hippocampus+mRNA&dataset=HC_M2_0606_P&search_terms_or=sh*&search_terms_and=&FormID=searchResult
+* [ ] try your own wild-card search
+
+will continue...
