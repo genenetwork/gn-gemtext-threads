@@ -1,0 +1,15 @@
+# Remove Elastic Search
+
+Elastic Search is no longer used, yet we have dead code referencing it
+in gn2.
+
+
+## Tasks
+
+* assigned: bonfacekilz
+* keywords: chore, done
+
+## Notes
+
+While at it, "@depracated" was removed since it added extra noise to
+the logs.
