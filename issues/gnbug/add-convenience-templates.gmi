@@ -1,0 +1,29 @@
+# Add convenienve templates
+
+* feature-request
+
+WDYT of adding a subcommand called `report` to generate a template for a bug report?
+
+I was thinking of an interface like the following:
+
+```
+gnbug report feature-request "New feature: IPFS Downloads"
+```
+
+Or expressed as generic command parameters:
+
+```
+command subcommand tag(s) title
+```
+
+Which creates a file in issues/binderlite directory with a template like the 
+following:
+
+
+```
+# New feature: IPFS Downloads
+
+* feature-request
+```
+
+Might be bloat but might be nice and convenient also. WDYT?
