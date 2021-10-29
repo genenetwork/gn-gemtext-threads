@@ -1,0 +1,25 @@
+# Return canned text if notebook description returns none
+
+* bug?
+* assigned: jgart
+
+Notebooks that do not have a description will use python's `None` value as the 
+project's description.
+
+Should we return some other text instead?
+
+We could do something like the following idea:
+
+```
+if notebook.description == None:
+    return "Project does not have a description."
+```
+
+Or we could do:
+
+```
+if notebook.description == None:
+    return "Could not retrieve description for project."
+```
+
+WDYT?
