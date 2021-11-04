@@ -10,7 +10,7 @@ This is the checklist to run through when testing GN2.
 
 This is a check list for testing whether GN2 is completely deployed
 
-* [ ] wain page
+* [ ] visit main page
 => https://luna.genenetwork.org/
 * [ ] simple search (e.g. shh in hippocampus mRNA)
 => https://luna.genenetwork.org/search?species=mouse&group=BXD&type=Hippocampus+mRNA&dataset=HC_M2_0606_P&search_terms_or=shh&search_terms_and=&FormID=searchResult
@@ -18,5 +18,42 @@ This is a check list for testing whether GN2 is completely deployed
 * [ ] wild card seach (e.g. sh* in hippocampus mRNA)
 => https://luna.genenetwork.org/search?species=mouse&group=BXD&type=Hippocampus+mRNA&dataset=HC_M2_0606_P&search_terms_or=sh*&search_terms_and=&FormID=searchResult
 * [ ] try your own wild-card search
+* [ ] visit a trait page
+=> https://luna.genenetwork.org/show_trait?trait_id=1427571_at&dataset=HC_M2_0606_P
+
 
 will continue...
+
+
+curl -X POST -b 'anon_user_v1=4d2ce6d3-0d4c-4349-b491-a4e179fdc163:d5fdc040c737e2a775d2' https://luna.genenetwork.org/run_mapping
+
+https://luna.genenetwork.org/run_mapping
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate, br
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 12345
+Origin: https://luna.genenetwork.org
+Connection: keep-alive
+Referer: https://luna.genenetwork.org/loading
+Cookie: anon_user_v1=4d2ce6d3-0d4c-4349-b491-a4e179fdc163:d5fdc040c737e2a775d2; 404 Not Found: The requested URL=Wild-Type-Mouse.gif
+Upgrade-Insecure-Requests: 1
+Sec-GPC: 1
+
+https://luna.genenetwork.org/run_mapping
+POST /run_mapping HTTP/1.1
+Host: luna.genenetwork.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate, br
+Referer: https://luna.genenetwork.org/loading
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 12345
+Origin: https://luna.genenetwork.org
+Connection: keep-alive
+Cookie: anon_user_v1=4d2ce6d3-0d4c-4349-b491-a4e179fdc163:d5fdc040c737e2a775d2; 404 Not Found: The requested URL=Wild-Type-Mouse.gif
+Upgrade-Insecure-Requests: 1
+Sec-GPC: 1
+Cache-Control: max-age=0
