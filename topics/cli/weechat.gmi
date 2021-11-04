@@ -1,6 +1,8 @@
 # Weechat
 
-Arun has packaged weechat for slack and matrix. Current install using a guix environment:
+Weechat is a very versatile terminal chat that can handle IRC, Matrix and Slack.
+
+Arun has packaged weechat for slack and matrix in GNU Guix. Current install using a guix environment:
 
 ```
 env GUIX_PACKAGE_PATH=~/guix-bioinformatics/ ~/opt/guix-latest/bin/guix environment --ad-hoc coreutils weechat weechat-matrix weechat-wee-slack nss-certs openssl python
@@ -17,6 +19,7 @@ If you go through the motions you get a token and
 
 ```
 /slack register 2654233192084.2682932906197.fd6d6e55c0038f-etc-052b4fa578ec497710b4b8770f1-etc
+/python reload slack
 ```
 
 More instructions for https://github.com/wee-slack/wee-slack.
