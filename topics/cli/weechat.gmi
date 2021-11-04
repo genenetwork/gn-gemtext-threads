@@ -1,1 +1,22 @@
 # Weechat
+
+Arun has packaged weechat for slack and matrix. Current install using a guix environment:
+
+```
+env GUIX_PACKAGE_PATH=~/guix-bioinformatics/ ~/opt/guix-latest/bin/guix environment --ad-hoc coreutils weechat weechat-matrix weechat-wee-slack nss-certs openssl python
+echo $GUIX_ENVIRONMENT
+/gnu/store/i4a3ynfjvq8r8cch14gkn2fwfs77wagj-profile/
+weechat
+/python load /gnu/store/i4a3ynfjvq8r8cch14gkn2fwfs77wagj-profile/share/weechat/python/wee_slack.py
+/slack register
+```
+
+So, capture the shell GUIX_ENVIRONMENT and use that to launch the wee-slack plugin. Next register a token through te Slack web interface.
+
+If you go through the motions you get a token and
+
+```
+/slack register 2654233192084.2682932906197.fd6d6e55c0038f-etc-052b4fa578ec497710b4b8770f1-etc
+```
+
+More instructions for https://github.com/wee-slack/wee-slack.
