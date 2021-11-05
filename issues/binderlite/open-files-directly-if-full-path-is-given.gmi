@@ -1,0 +1,16 @@
+# Open notebook directly if full path to notebook file is given
+
+* feature-request
+* assigned: jgart
+
+We'd like to be able launch a notebook directly if the user gives the fullpath to the notebook file.
+
+Should we allow urls like this?
+
+https://github.com/jgarte/guile-notebook-genenetwork-api/blob/master/genenetwork-api.ipynb
+
+The above is a valid github url that also points to the notebook file.
+
+Or only this?
+
+https://github.com/jgarte/guile-notebook-genenetwork-api/genenetwork-api.ipynb
