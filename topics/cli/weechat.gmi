@@ -2,6 +2,8 @@
 
 Weechat is a very versatile terminal chat that can handle IRC, Matrix and Slack.
 
+## Weechat install + slack
+
 Arun has packaged weechat for slack and matrix in GNU Guix. Current install using a guix environment:
 
 ```
@@ -23,3 +25,42 @@ If you go through the motions you get a token and
 ```
 
 More instructions for https://github.com/wee-slack/wee-slack.
+
+## Weechat IRC
+
+We have a GeneNetwork channel
+
+```
+/set irc.server_default.nicks pjotrp
+/server add libera irc.libera.chat/6697 -ssl -autoconnect
+/connect libera
+/join #guix
+/join #guix-risc-v
+/join #guix-hpc
+/join #genenetwork
+```
+
+## Weechat matrix
+
+The matrix plugin works similar to above Slack plugin.
+
+```
+/script load matrix.py
+/matrix server add fosdem chat.fosdem.org
+/set matrix.server.matrix_org.username pjotrp-linux
+/set matrix.server.matrix_org.password ****
+/set matrix.server.matrix_org.autoconnect on
+/save
+```
+
+Only the matrix version is not so polished. For example, it is hard to find the buffers because they are named by a hash. In a buffer you can rename with
+
+```
+/buffer set short_name myname
+```
+
+Also, you need to enable every channel explicitly to exchange keys
+
+```
+/olm verify @user:matrix.org *
+```
