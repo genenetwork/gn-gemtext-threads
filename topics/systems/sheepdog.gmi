@@ -13,6 +13,7 @@ that need resolving at some point.
 ## Tasks
 
 * [X] add locking functionality for tags - added borg with-lock (test)
+* [X] chgrp functionality in sheepdog_borg
 * [ ] check whether rsync dir exists, repo valid and/or no lock before proceeding
 * [ ] send digest E-mails
 * [ ] smart state E-mails on services going down
