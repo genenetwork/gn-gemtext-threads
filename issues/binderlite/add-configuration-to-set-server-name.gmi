@@ -1,0 +1,11 @@
+# Add configuration to set server name
+
+* assigned: jgart
+
+* feature
+
+Let's use environment variables as configuration
+
+https://flask.palletsprojects.com/en/2.0.x/cli/?highlight=environment%20variables
+
+https://docs.python.org/3/library/os.html?highlight=os%20environ#os.environ
