@@ -1,0 +1,24 @@
+# Genewiki conversion
+
+GeneNetwork1 contains a genewiki:
+
+=> http://gn1.genenetwork.org/webqtl/main.py?FormID=geneWiki&symbol=BRCA2
+
+We want to migrate it to markdown documents that can be fetched from
+
+=> https://github.com/genenetwork/gn-docs/genes
+
+So the steps are to (1) migrate the existing genewiki data in the database to named markdown documents in that repository and (2) create a rendered page that is found through
+
+=> https://genenetwork.org/doc/genes/BRCA2
+
+with an edit button, similar to
+
+=> http://genenetwork.org/facilities/
+
+## Tags
+
+* assigned: pjotrp, zsloan
+* enhancement
+
+## Tasks

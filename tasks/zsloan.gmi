@@ -1,0 +1,12 @@
+# Tasks for Zach
+
+## Tags
+
+* assigned: zsloan
+
+## Tasks
+
+* [ ] Fix global search
+=> ../issues/genenetwork/global-search.gmi fix global search
+* [ ] GN1 migrate genewiki pages
+=> ../issues/genenetwork/genewiki.gmi
