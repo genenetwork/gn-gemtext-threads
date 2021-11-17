@@ -1,0 +1,29 @@
+# Quality Control Checks
+
+1. Gene Symbols to ProbeSetId (Affymetrix format):
+
+AFFX-BkGr-GC03_st -> TCO500002136.mm.2
+
+2. Inbred Strain names should prefer long form:
+
+B6 -> C57BL/6
+D2 -> DBA/2
+
+3. Probeset IDs that don't have any values should be pruned:
+
+For example an Affymetrix data set might have ~28,000 entries and the data set that
+is allowed into the GeneNetwork will be 22,000 entries.
+
+4. The standard error between male and female mice has to be computed.
+
+5. SE values have to be computed to 8 decimal places.
+
+6. The average between male and female mice has to be computed.
+
+7. AVG values have to be computed to only 3 decimal places.
+
+8. Datasets/studies having the same ProbeSetID should be grouped together.
+
+9. There should be no trailing spaces in data cells.
+
+10. Entries should have the same capitalization style.
