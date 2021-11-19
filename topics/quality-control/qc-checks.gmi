@@ -2,6 +2,18 @@
 
 1. Gene Symbols to ProbeSetId (Affymetrix format):
 
+We favour using Illumina, Affimetrix, and other platform formats.
+
+Custom formats require a new annotation file to be created.
+
+We usually use Ensemble ID or Gene IDs.
+
+1.1 Ensemble transcript IDs usually have duplicates that need to be pruned.
+
+ENSMBL1234
+
+## Example Gene Symbol to ProbeSetId
+
 AFFX-BkGr-GC03_st -> TCO500002136.mm.2
 
 2. Inbred Strain names should prefer long form:
