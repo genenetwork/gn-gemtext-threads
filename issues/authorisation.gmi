@@ -10,6 +10,18 @@ data up-loader, and it requires authorisation, this is a good time to
 clean up authorisation.
 
 
+# TODO
+
+- [ ] Make user able to delete/ add extra value
+
+- [ ] Fetch complete list of samples from database and genotype file
+  instead of only fetching that list from the database.  Look at trait
+  page for reference.
+
+- [ ] Extend idea of csv generation to probeset data.  Get data from
+  the genotype file and work out how to update the values from the
+  database.
+
 # Notes
 
 mRNA datasets ("ProbeSetFreeze" in the DB) contain traits, so when you
