@@ -5,3 +5,5 @@ We need to enumerate all QC checks and platforms that we want to test against.
 * assigned: jgart, arthur
 
 * in progress
+ 
+Arthur was here.
