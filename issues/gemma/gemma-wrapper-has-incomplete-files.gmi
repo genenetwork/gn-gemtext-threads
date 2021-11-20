@@ -17,6 +17,10 @@ GNU parallel can fail, but does not tell how individual processes did. Need to c
 
 Turns out GNU parallel can keep track of jobs in a job log - and even rerun the ones missing. The last we don't need because we are using a cache. But we can use the log file to remove any incomplete output files!
 
+## Dealing with locks
+
 There is another parallel issue (pun intended) where gemma-wrapper is invoked twice for the same job. This is quite possible when people get impatient waiting for a first job to finish.
 
 One solution is to write a lock file using the inputs as a hash. The lock file can contain a PID and we can check if that is still alive. I should do the same for sheepdog locks(!)
+
+=> https://github.com/genetics-statistics/gemma-wrapper/commit/e7e516ec5a6ffc5b398302fa204685a40e76e171 Added locking support
