@@ -9,7 +9,7 @@ Gemma wrapper caches files - but it can happen a cached file is incomplete and n
 ## Tasks
 
 * [ ] parse parallel job log for failed tasks and remove the output files.
-* [ ] create a (global) lock file for gemma-wrapper
+* [X] create a (global) lock file for gemma-wrapper
 
 ## Info
 
