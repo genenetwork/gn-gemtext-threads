@@ -15,7 +15,13 @@ Gemma wrapper caches files - but it can happen a cached file is incomplete and n
 
 GNU parallel can fail, but does not tell how individual processes did. Need to check if it can return a thread (number). If not we have the option of checking the GEMMA status file and/or see if the output file is complete (by counting number of lines).
 
-Turns out GNU parallel can keep track of jobs in a job log - and even rerun the ones missing. The last we don't need because we are using a cache. But we can use the log file to remove any incomplete output files!
+The 'obvious' fix would be to create an error handler in GEMMA itself that would clean up output files on error exit. E.g. using
+
+=> https://www.cplusplus.com/reference/exception/set_terminate/
+
+The problem is that it is NOT a catch all. If there is a hardware fault - a hanging CPU core, for example, which we see - or a problem in a library, such as openblas, there is no guarantee that the terminate handler will be called. Another complication is that a terminate handler needs to be aware of the files being output - i.e., we need to carry the state down somehow. I think we can probably address these issues as much is handled in the GEMMA PARAM class, but it is not worth the effort.
+
+It turns out that GNU parallel can keep track of jobs in a job log - and even rerun the ones missing. The last we don't need because we are using a cache. But we can use the log file to remove any incomplete output files! To me this is the obvious solution because 'parallel' is monitoring outside the GEMMA process and is a hardened piece of software. On failure it simply designates runs that way and we can clean up any (partly) produced files followed by a safe rerun. The lock routine below ascertains no processes are creating the same output at the same time.
 
 ## Dealing with locks
 
