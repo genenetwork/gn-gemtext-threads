@@ -7,7 +7,8 @@
 ## Tasks
 
 * [ ] Rabbit https and GN2 https
-* [X] Allow @bonfacem to run redis on P2
+* [ ] fix GN1 images linking to http://www.webqtl.org/array_images/S238-1F1-U74Av2.png
+=> http://gn1.genenetwork.org/webqtl/main.py?FormID=sharinginfo&GN_AccessionId=2
 => ../topics/systems/tux02-production.gmi Set up stable GN service
 * [ ] Pluto tool with Zach
 => ../issues/genenetwork1/gn1-production-system-issues.gmi

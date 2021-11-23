@@ -2,13 +2,16 @@
 
 Look at Chris' authorisation code:
 
-=> https://github.com/chfi/gn-proxy
+=> https://github.com/genenetwork/gn-proxy
 
 Atm genenetwork2's handling of
 authorisation is a bit clunky; Since @Bonface is working on the data
 data up-loader, and it requires authorisation, this is a good time to
 clean up authorisation.
 
+# Tags
+
+* assigned: bonfacem, pjotrp, zachs
 
 # TODO
 
