@@ -58,3 +58,16 @@ phenotypes.
 --
 Rob
 ```
+
+```
+QTL analysis was performed in F2 mice using the R package R/qtl
+(RRID:SCR_009085) as previously described.11,29,42 Quality checking
+of genotypes and QTL analysis were performed in R (https://www.r-
+project.org/) using R/bestNormalize (https://github.com/petersonR/
+bestNormalize) and R/qtl.42 Phenotypes were assessed for normality
+using the Shapiro–Wilk Test. Because some of the data residuals devi-
+ated significantly from normality, we used the orderNorm function to
+perform Ordered Quantile normalization43 on all phenotypes. QTL
+--
+A quantitative trait variant in Gabra2 underlies increased methamphetamine stimulant sensitivity
+```
