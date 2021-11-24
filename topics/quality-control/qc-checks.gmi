@@ -42,32 +42,4 @@ is allowed into the GeneNetwork will be 22,000 entries.
 
 11. Assesing Phenotypes for normality with Shapiro-Wilk Test.
 
-https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.shapiro.html
-https://vedexcel.com/how-to-perform-a-shapiro-wilk-test-in-python/
-
-```
-Here is a simple QC procedure we may want to consider that was used by
-Megan and Camron in a recent paper  that I have attached.
-
-
-Phenotypes were assessed for normality using the Shapiro–Wilk Test. Because
-some of the data residuals devi- ated significantly from normality, we used
-the orderNorm function to perform Ordered Quantile normalization43 on all
-phenotypes.
-
---
-Rob
-```
-
-```
-QTL analysis was performed in F2 mice using the R package R/qtl
-(RRID:SCR_009085) as previously described.11,29,42 Quality checking
-of genotypes and QTL analysis were performed in R (https://www.r-
-project.org/) using R/bestNormalize (https://github.com/petersonR/
-bestNormalize) and R/qtl.42 Phenotypes were assessed for normality
-using the Shapiro–Wilk Test. Because some of the data residuals devi-
-ated significantly from normality, we used the orderNorm function to
-perform Ordered Quantile normalization43 on all phenotypes. QTL
---
-A quantitative trait variant in Gabra2 underlies increased methamphetamine stimulant sensitivity
-```
+12. Check for annotations file.
