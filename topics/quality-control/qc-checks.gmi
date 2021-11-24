@@ -39,3 +39,22 @@ is allowed into the GeneNetwork will be 22,000 entries.
 9. There should be no trailing spaces in data cells.
 
 10. Entries should have the same capitalization style.
+
+11. Assesing Phenotypes for normality with Shapiro-Wilk Test.
+
+https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.shapiro.html
+https://vedexcel.com/how-to-perform-a-shapiro-wilk-test-in-python/
+
+```
+Here is a simple QC procedure we may want to consider that was used by
+Megan and Camron in a recent paper  that I have attached.
+
+
+Phenotypes were assessed for normality using the Shapiro–Wilk Test. Because
+some of the data residuals devi- ated significantly from normality, we used
+the orderNorm function to perform Ordered Quantile normalization43 on all
+phenotypes.
+
+--
+Rob
+```
