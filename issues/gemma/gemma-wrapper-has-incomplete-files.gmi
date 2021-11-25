@@ -8,7 +8,7 @@ Gemma wrapper caches files - but it can happen a cached file is incomplete and n
 
 ## Tasks
 
-* [ ] parse parallel job log for failed tasks and remove the output files.
+* [X] parse parallel job log for failed tasks and remove the output files.
 * [X] create a (global) lock file for gemma-wrapper
 
 ## Info
@@ -22,6 +22,12 @@ The 'obvious' fix would be to create an error handler in GEMMA itself that would
 The problem is that it is NOT a catch all. If there is a hardware fault or a problem in a library, such as openblas, there is no guarantee that the terminate handler will be called. Another complication is that a terminate handler needs to be aware of the files being output - i.e., we need to carry the state down somehow. I think we can probably address these issues as much is handled in the GEMMA PARAM class, but it is not worth the effort (I'll take care of it in a GEMMA rewrite).
 
 It turns out that GNU parallel can keep track of jobs in a job log - and even rerun the ones missing using the `--joblog` and `--resume` switches. The last we don't need because we are using a cache. But we can use the log file to remove any incomplete output files! To me this is the obvious solution because 'parallel' is monitoring outside the GEMMA process and is a hardened piece of software. On failure it simply designates runs that way and we can clean up any (partly) produced files followed by a safe rerun. The lock routine below ascertains no processes are creating the same output at the same time.
+
+## Delete files on failure
+
+Implemented in
+
+=> https://github.com/genetics-statistics/gemma-wrapper/commit/624ed0d805f29ab682cffbe46bc104dffd0d713c
 
 ## Dealing with locks
 
