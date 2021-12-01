@@ -43,3 +43,5 @@ is allowed into the GeneNetwork will be 22,000 entries.
 11. Assesing Phenotypes for normality with Shapiro-Wilk Test.
 
 12. Check for annotations file.
+
+13. Check for CRLF.
