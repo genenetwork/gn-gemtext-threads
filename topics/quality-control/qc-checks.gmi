@@ -1,6 +1,6 @@
 # Quality Control Checks
 
-1. Gene Symbols to ProbeSetId (Affymetrix format):
+1. ProbeSetId (Affymetrix format):
 
 We favour using Illumina, Affimetrix, and other platform formats.
 
