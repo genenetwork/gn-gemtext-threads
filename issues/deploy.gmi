@@ -5,10 +5,10 @@ hassle.  In genenetwork2, our configs live in different places, and it
 takes some fiddling tinged with a bit of domain (gn2) knowledge to
 work out what setting live where.  With the introduction of blueprints
 in our code-base, this duplication became a necessary evil because
-most of the settings QC checks happen in a "utility/settings.py" which
+most of the settings QC checks happen in a "utility/tools.py" which
 unfortunately imports the "app" object.  This import leads to circular
 imports whenever we use blueprints.  Unfortunately, a huge chunk of
-the code base uses "utility/settings.py" to get configuration
+the code base uses "utility/tools.py" to get configuration
 settings; and removing this would make gn2 as is disfunctional.
 
 # Tags
