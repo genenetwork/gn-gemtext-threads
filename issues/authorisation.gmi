@@ -15,9 +15,9 @@ clean up authorisation.
 
 # TODO
 
-- [ ] Make user able to delete/ add extra value
+- [x] Make user able to delete/ add extra value
 
-- [ ] Fetch complete list of samples from database and genotype file
+- [x] Fetch complete list of samples from database and genotype file
   instead of only fetching that list from the database.  Look at trait
   page for reference.
 
