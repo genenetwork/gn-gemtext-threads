@@ -1,3 +1,7 @@
+## Tags
+
+* assigned: bonfacem
+
 ### Introduction
 
 At the moment, you can edit metadata related to a published phenotype and a probeset. When an edit is done, the diff data is stored in a table, `metadata_audit` in json format that looks something like:
