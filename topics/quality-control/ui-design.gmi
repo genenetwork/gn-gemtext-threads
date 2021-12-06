@@ -21,6 +21,8 @@ If the platform you chose is not available:
   
   They can contact us via email.
 
+4. Allow excel file upload?
+
 ## More Example UI Interactions and Checks
 
 "If your dataset does not comply with GN then you can try uploading your
