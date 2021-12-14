@@ -45,3 +45,5 @@ is allowed into the GeneNetwork will be 22,000 entries.
 12. Check for annotations file.
 
 13. Check for CRLF.
+
+14. Check for UTF-8 encoding.
