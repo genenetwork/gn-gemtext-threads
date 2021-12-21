@@ -7,5 +7,24 @@ gn3 and gn2.
 
 * assigned: bonfacekilz
 
-* [ ] Fix pylint/ mypy issues in gn3
-* [ ] Update docker image in gn2
+### Notes
+
+At the moment, we are getting the following build failures in gn2,
+
+```
+Compiling '/gnu/store/bm0909ha5nv5chgp3bk5fw0my6mrsabr-genenetwork2-3.11-guix-fe345c9/lib/python3.9/site-packages/wqflask/wqflask/wgcna/wgcna_analysis.py'...
+Compiling '/gnu/store/bm0909ha5nv5chgp3bk5fw0my6mrsabr-genenetwork2-3.11-guix-fe345c9/lib/python3.9/site-packages/wqflask/wsgi.py'...
+error: in phase 'install': uncaught exception:
+%exception #<&invoke-error program: "python" arguments: ("-m" "compileall" "--invalidation-mode=unchecked-hash" "/gnu/store/bm0909ha5nv5chgp3bk5fw0my6mrsabr-genenetwork2-3.11-guix-fe345c9") exit-status: 1 term-signal: #f stop-signal: #f> 
+phase `install' failed after 0.9 seconds
+command "python" "-m" "compileall" "--invalidation-mode=unchecked-hash" "/gnu/store/bm0909ha5nv5chgp3bk5fw0my6mrsabr-genenetwork2-3.11-guix-fe345c9" failed with status 1
+note: keeping build directory `/tmp/guix-build-genenetwork2-3.11-guix-fe345c9.drv-0'
+builder for `/gnu/store/l5hb8bfz3di3zga93963arlka03lijn8-genenetwork2-3.11-guix-fe345c9.drv' failed with exit code 1
+build of /gnu/store/l5hb8bfz3di3zga93963arlka03lijn8-genenetwork2-3.11-guix-fe345c9.drv failed
+View build log at '/var/log/guix/drvs/l5/hb8bfz3di3zga93963arlka03lijn8-genenetwork2-3.11-guix-fe345c9.drv.bz2'.
+guix build: error: build of `/gnu/store/l5hb8bfz3di3zga93963arlka03lijn8-genenetwork2-3.11-guix-fe345c9.drv' failed
+
+```
+
+This starts happening (not yet comfirmed) when python is bumped up
+from 3.8 to 3.9
