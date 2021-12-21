@@ -1,4 +1,136 @@
-# Mariadb table locked
+# Hanging database
+
+Mariadb occassionally stops responding.
+
+## Tasks
+
+* assigned: pjotrp, zsloan
+* bug
+
+# Info
+
+## Mariadb is 'hanging'
+
+In the last 12 hours GN2 monitoring shows the website is responding intermittendly. A quick check shows the database is blocking. Rather than simply restarting the database - which is known to sort the issue - the timing is that the US is sleeping so I can do some checking. Let's take a look.
+
+Mariadb is at 4x CPU
+
+```
+PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+ 40514 mysql     20   0   37.3g   1.8g  18268 S 394.4   0.7   4855:33 mysqld
+```
+
+The ps table shows a backup is ongoing
+
+```
+root      57559  0.0  0.0   2388   756 ?        Ss   03:00   0:00 /bin/sh -c /bin/su mysql -c /export/backup/scripts/tux01/backup_mariadb.sh  >> ~/cron.log 2>&1
+mysql     57588  0.2  0.0 200112 27292 ?        Sl   03:00   0:25 mariabackup --backup --target-dir=/home/backup/tux01_mariadb_new/latest/ --user=webqtlout --password=x xxxxxxx
+```
+
+Tales in use:
+
+```
+MariaDB [db_webqtl]> show open tables where in_use > 1;
++-----------+----------------+--------+-------------+
+| Database  | Table          | In_use | Name_locked |
++-----------+----------------+--------+-------------+
+| db_webqtl | InfoFiles      |      5 |           0 |
+| db_webqtl | GeneRIF_BASIC  |      3 |           0 |
+| db_webqtl | ProbeFreeze    |      4 |           0 |
+| db_webqtl | ProbeSet       |      4 |           0 |
+| db_webqtl | ProbeSetXRef   |      4 |           0 |
+| db_webqtl | Species        |      4 |           0 |
+| db_webqtl | Geno           |      4 |           0 |
+| db_webqtl | Chr_Length     |      2 |           0 |
+| db_webqtl | Tissue         |      4 |           0 |
+| db_webqtl | ProbeSetFreeze |      4 |           0 |
+| db_webqtl | InbredSet      |      4 |           0 |
++-----------+----------------+--------+-------------+
+11 rows in set (0.001 sec)
+```
+
+In the error log we seeing a lot of
+
+```
+2021-12-21  6:17:57 256179 [Warning] Aborted connection 256179 to db: 'db_webqtl' user: 'webqtlout' host: '128.169.5.59' (Got timeout reading communication packets)
+```
+
+```
+SHOW FULL PROCESSLIST;
+458 rows in set (0.003 sec)
+```
+
+with entries
+
+```
+| 256363 | webqtlout   | 128.169.5.59:59120 | db_webqtl | Query      |    15 | Waiting for table flush  | SELECT Id, Name, FullName, ShortName, DataScale FROM ProbeSetFreeze  WHERE  public > 0 AND (Name = "CB_M_0305_R" OR FullName = "CB_M_0305_R" OR ShortName = "CB_M_0305_R")
+```
+
+waiting for tables to flush!
+
+at the top of the process list we find
+
+```
+Id  User  Host  db  Command Time  State Info  Progress                                                                 1 system user   NULL  Daemon  NULL  InnoDB purge coordinator  NULL  0.000                                              2 system user   NULL  Daemon  NULL  InnoDB purge worker NULL  0.000                                                    3 system user   NULL  Daemon  NULL  InnoDB purge worker NULL  0.000                                                    4 system user   NULL  Daemon  NULL  InnoDB purge worker NULL  0.000                                                    5 system user   NULL  Daemon  NULL  InnoDB shutdown handler NULL  0.000                                                227365  webqtlout 127.0.0.1:33950 db_webqtl Sleep 13015   NULL  0.000                                                  245634  webqtlout 127.0.0.1:38098 db_webqtl Sleep 23180   NULL  0.000
+```
+
+This is quite informative:
+
+=> https://programmer.group/analysis-of-mysql-process-in-waiting-for-table-flush.html
+
+it suggests that the backup can be the root of the problem.
+
+And then
+
+=> https://www.thegeekdiary.com/troubleshooting-mysql-query-hung-waiting-for-table-flush/
+
+suggests
+
+* Wait for the long-running queries which are blocking the FLUSH TABLE to complete;
+* Identify the long-running queries and kill them;
+* Restart the server
+
+and that is somewhat amusing.
+
+Stripping out all reqular queries we get:
+
+```
+grep localhost test.out |grep -vi probesetfreeze|grep -vi species
+255559  webqtlout       localhost       NULL    Query   13092   Waiting for table flush FLUSH NO_WRITE_TO_BINLOG TABLES0.000
+256351  webqtlout       localhost       db_webqtl       Field List      1588    Waiting for table flush NULL    0.000
+256383  webqtlout       localhost       db_webqtl       Query   0       Init    SHOW FULL PROCESSLIST   0.000
+```
+
+and it appears everyone is waiting for id 255559. Let's kill that.
+
+```
+kill 255559;
+```
+
+and inspect
+
+```
+mysql -u webqtlout -pwebqtlout db_webqtl -A -e "show processlist;"|less
+```
+
+it started processing again. To speed up recovery back to:
+
+```
+systemctl restart mysql
+```
+
+of course that stopped the running backup. But processing is back in business.
+
+My first conclusion is that this problem was triggered by the backup procedure. Interestingly, it happens irregularly. We also have seen this issue before this backup procedure was instated, so I figure it has to do with Mariadb.
+
+The version on production is from 2017 - we should update that soon:
+
+Server version: 10.3.27-MariaDB-0+deb10u1-log Debian 10
+
+we have been running a more recent version of mariadb on luna. Still, that is unlikely to fix this issue because I think it really has to do with myisam and locking of large tables. Switching to innodb does away with global locks and is the default on mariadb (there are less and less people using myisam).
+
+
+## Mariadb table locked
 
 Arthur reports: MariaDB is not responding Saturday, July 24 2021 at 10:48 pm. I tried to enter data to the table ProbeSetXRef.pValue and when normally takes few seconds, now is more than 10 minutes without completion/responding.
 
