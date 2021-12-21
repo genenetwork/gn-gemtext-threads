@@ -1,0 +1,5 @@
+# gemtext cheatsheet
+
+=> gemini://gemini.circumlunar.space/docs/cheatsheet.gmi
+
+=> https://gemini.circumlunar.space/docs/cheatsheet.gmi proxy
