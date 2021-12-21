@@ -26,6 +26,22 @@ guix build: error: build of `/gnu/store/l5hb8bfz3di3zga93963arlka03lijn8-genenet
 
 ```
 
+Some missing bits from the build log:
+
+```
+Compiling '/gnu/store/n2w3bdka4zfl3jw0iqk49km1hgl8i7g5-genenetwork2-3.11-guix-fe345c9/lib/python3.9/site-packages/wqflask/utility/redis_tools.py'...
+Compiling '/gnu/store/n2w3bdka4zfl3jw0iqk49km1hgl8i7g5-genenetwork2-3.11-guix-fe345c9/lib/python3.9/site-packages/wqflask/utility/startup_config.py'...
+Compiling '/gnu/store/n2w3bdka4zfl3jw0iqk49km1hgl8i7g5-genenetwork2-3.11-guix-fe345c9/lib/python3.9/site-packages/wqflask/utility/svg.py'...
+***   File "/gnu/store/n2w3bdka4zfl3jw0iqk49km1hgl8i7g5-genenetwork2-3.11-guix-fe345c9/lib/python3.9/site-packages/wqflask/utility/svg.py", line 113
+    True = 1
+        ^
+        SyntaxError: cannot assign to True
+
+Compiling '/gnu/store/n2w3bdka4zfl3jw0iqk49km1hgl8i7g5-genenetwork2-3.11-guix-fe345c9/lib/python3.9/site-packages/wqflask/utility/temp_data.py'...
+Compiling '/gnu/store/n2w3bdka4zfl3jw0iqk49km1hgl8i7g5-genenetwork2-3.11-guix-fe345c9/lib/python3.9/site-packages/wqflask/utility/tools.py'...
+
+```
+
 This starts happening (not yet comfirmed) when python is bumped up
 from 3.8 to 3.9
 
@@ -40,3 +56,4 @@ In addition, there are some dependencies of genenetwork2 which FTBFS, due to inc
  phase `sanity-check' failed after 0.1 seconds¬
 ```
 
+This was fixed by reverting the update to python-pingouin, dropping it back to 0.3.12.
