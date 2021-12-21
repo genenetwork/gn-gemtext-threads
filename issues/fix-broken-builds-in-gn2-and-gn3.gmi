@@ -5,7 +5,7 @@ gn3 and gn2.
 
 ## Tasks
 
-* assigned: bonfacekilz
+* assigned: bonfacekilz, efraim
 
 ### Notes
 
@@ -28,3 +28,15 @@ guix build: error: build of `/gnu/store/l5hb8bfz3di3zga93963arlka03lijn8-genenet
 
 This starts happening (not yet comfirmed) when python is bumped up
 from 3.8 to 3.9
+
+In addition, there are some dependencies of genenetwork2 which FTBFS, due to incorrect versions of inputs.
+
+```
+ starting phase `sanity-check'¬
+ validating 'pingouin' /gnu/store/dpy5ln4zjgv53l8jpm1qalwn45cagxfm-python-pingouin-0.5.0/lib/python3.9/site-packages¬
+ ...checking requirements: ERROR: pingouin==0.5.0 (statsmodels 0.11.1 (/gnu/store/ab8k9bwmaml2bplq4bd9xkg08z7bn8fr-python-statsmodels-0.11.1/lib/python3.9/site-packages), Requirement.parse('statsmodels>=0.12.0'), {'pingouin'})¬
+ error: in phase 'sanity-check': uncaught exception:¬
+ %exception #<&invoke-error program: "python" arguments: ("/gnu/store/nwwr89v2vyg1hs48i49m083vhczsgh3m-sanity-check.py" "/gnu/store/dpy5ln4zjgv53l8jpm1qalwn45cagxfm-python-pingouin-0.5.0/lib/python3.9/site-packages") exit-status: 1 term-signal: #f stop-signal: #f>▸¬
+ phase `sanity-check' failed after 0.1 seconds¬
+```
+
