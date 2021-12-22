@@ -70,3 +70,59 @@ That needs to be improved.
 - Fixed excel issue described here:
 
 => https://github.com/genenetwork/genenetwork2/compare/testing...BonfaceKilz:bug/fix-excel-adding-new-line?expand=1
+
+### Wed 22 Dec 2021
+
+Consider the case where a user deletes, updates, or modifies data from
+Genenetwork using the csv download the got from the data-upload page.
+In the event they do not approve the data, and they upload that csv
+file again, we have a case in gn2 where data needs to be deleted,
+inserted, or modified twice.  In the case of deletions, or insertions,
+an error will be generated because you cannot remove or insert that
+same data twice.  Also, the count that's displayed as a flash message
+will not be correct (visually) since-- at the time of this writing--
+we count the number of edits from a CSV file.  A working patch will be
+sent later today(or tomorrow).
+
+Also, the GN2 build is not working.  With that in mind below I outline
+how I've plugged in pudb, inspired by jgarte's demo:
+
+=> https://git.genenetwork.org/jgart/qc_crlf_demo
+
+- First, in *wqflask/runserver*, I removed Flask DebugToolbar(this
+  somehow made Flask crash, and I haven't investigated it).  Here is
+  how the diff looks:
+
+```
+modified   wqflask/runserver.py
+@@ -23,9 +23,7 @@ app_config()
+ werkzeug_logger = logging.getLogger('werkzeug')
+ 
+ if WEBSERVER_MODE == 'DEBUG':
+-    from flask_debugtoolbar import DebugToolbarExtension
+     app.debug = True
+-    toolbar = DebugToolbarExtension(app)
+     app.run(host='0.0.0.0',
+             port=SERVER_PORT,
+             debug=True,
+
+```
+
+- As a work-around for the failing gn2 build, install pudb in it's own profile
+
+```
+guix install pudb -p ~/opt/pudb
+```
+
+- Add pudb to your python path in *bin/genenetwork2* as show in this
+  diff:
+
+```
+-# We may change this one:
+-export PYTHONPATH=$PYTHON_GN_PATH:$GN2_BASE_DIR/wqflask:$GN3_PYTHONPATH:$PYTHONPATH
++# We may change this one: 
++export PYTHONPATH=$GN2_BASE_DIR/wqflask:/home/bonface/opt/pudb/lib/python3.9/site-packages/:/home/bonface/projects/genenetwork3:$PYTHONPATH
+```
+
+- To use pudb, just stick `import pudb; pu.db` wherever you fancy.
+  Happy debugging!
