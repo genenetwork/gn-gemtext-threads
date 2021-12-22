@@ -1,0 +1,22 @@
+# Profiling Python code
+
+As part of improving the system, there is need to identify and fix/improve the performance bottlenecks in the code. This document details examples of how one would run various profilers, for both GeneNetwork2 and GeneNetwork3
+
+## GeneNetwork3
+
+### cProfile
+
+Syntax:
+
+* env [various-env-vars] python3 -m cProfile the-script.py
+
+where
+
+* `[various-env-vars]` is a number of environment variables that might be needed for the running of the script, e.g. `SQL_URI` which is used to define how to connect to the database.
+* `the-script.py` is the name of the python script to be run under the profiler
+
+The output can be redirected, e.g.
+
+* env [various-env-vars] python3 -m cProfile the-script.py 2>error.log 1>performance.log
+
+which should help will separating errors from the performance data, for easier analysis
