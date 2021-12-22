@@ -74,7 +74,7 @@ That needs to be improved.
 ### Wed 22 Dec 2021
 
 Consider the case where a user deletes, updates, or modifies data from
-Genenetwork using the csv download the got from the data-upload page.
+Genenetwork using the csv download they got from the data-upload page.
 In the event they do not approve the data, and they upload that csv
 file again, we have a case in gn2 where data needs to be deleted,
 inserted, or modified twice.  In the case of deletions, or insertions,
