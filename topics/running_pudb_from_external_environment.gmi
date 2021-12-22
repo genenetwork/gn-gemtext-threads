@@ -1,0 +1,22 @@
+# Running pudb From an External Environment
+
+Currently (22nd December 2021), it is a tad difficult to get pudb running under the various guix environments without having to update a lot of stuff. This documents a workaround that seems to work for me (@fredm).
+
+## GeneNetwork3
+
+1) Install pudb in a virtual environment:
+
+* $ python -m venv pudb_env
+
+2) Activate the environment and install pudb:
+
+* $ source pudb_env/bin/activate
+* $ pip install pudb
+
+3) Run the GN3 container, exposing the new virtual environment with something like:
+
+* env GUIX_PACKAGE_PATH=~/genenetwork/guix-bioinformatics/ ~/.config/guix/current/bin/guix environment -C --network --expose="$HOME/genotype_files/"="${HOME}/genotype_files" --expose="${HOME}/genenetwork/pudb_env/"="${HOME}/pudb_env" --load=guix.scm
+
+4) Inside the container, run the debugger with something like:
+
+* env PYTHONPATH="${PYTHONPATH}:${HOME}/pudb_env/lib/python3.8/site-packages" ... python3 -m pudb script.py
