@@ -96,3 +96,16 @@ Some extra notes on UI that were not noted down:
 There's some UI setup code after selection of the traits to use for the partial correlation. The UI setup code will probably be migrated to GN2, leaving the heavy-lifting "Partial Correlations" code, that I assume exists, for migration to GN3.
 
 For GN3, it seems like we can simply reuse some of the trait-retrieval code migrated over when working on the clustered heatmaps.
+
+
+### 2021-12-22: fredm: Analysis of profiling information
+
+The greatest amount of time is spent in the database accessing code. The two biggest culprits are:
+
+* ~gn3.db.traits.retrieve_trait_info~
+* ~gn3.db.datasets.retrieve_trait_dataset~
+
+Possible optimisation ideas are as follows:
+
+* Most traits share common datasets. For all traits sharing a common dataset, it does not make sense to fetch the dataset multiple times. Instead, we should be able to fetch it once and share among all the traits that are from that dataset.
+* We can also try fetching the traits in a single call, instead of looping through them, fetching one at a time.
