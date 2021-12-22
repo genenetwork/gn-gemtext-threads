@@ -1,0 +1,47 @@
+# Quality Control Checks
+
+1. ProbeSetId (Affymetrix format):
+
+We favour using Illumina, Affimetrix, and other platform formats.
+
+Custom formats require a new annotation file to be created.
+
+We usually use Ensemble ID or Gene IDs.
+
+1.1 Ensemble transcript IDs usually have duplicates that need to be pruned.
+
+ENSMBL1234
+
+## Example Gene Symbol to ProbeSetId
+
+AFFX-BkGr-GC03_st -> TCO500002136.mm.2
+
+2. Inbred Strain names should prefer long form:
+
+B6 -> C57BL/6
+D2 -> DBA/2
+
+3. Probeset IDs that don't have any values should be pruned:
+
+For example an Affymetrix data set might have ~28,000 entries and the data set that
+is allowed into the GeneNetwork will be 22,000 entries.
+
+4. The standard error between male and female mice has to be computed.
+
+5. SE values have to be computed to 6 or greater decimal places.
+
+6. The average between male and female mice has to be computed to 3 decimal places.
+
+7. Datasets/studies having the same ProbeSetID should be grouped together.
+
+8. There should be no trailing spaces in data cells.
+
+9. Entries should have the same capitalization style.
+
+10. Assesing Phenotypes for normality with Shapiro-Wilk Test.
+
+11. Check for annotations file.
+
+12. Check for CRLF.
+
+13. Check for UTF-8 encoding.

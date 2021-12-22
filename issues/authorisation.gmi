@@ -2,13 +2,28 @@
 
 Look at Chris' authorisation code:
 
-=> https://github.com/chfi/gn-proxy
+=> https://github.com/genenetwork/gn-proxy
 
 Atm genenetwork2's handling of
 authorisation is a bit clunky; Since @Bonface is working on the data
 data up-loader, and it requires authorisation, this is a good time to
 clean up authorisation.
 
+# Tags
+
+* assigned: bonfacem, pjotrp, zachs
+
+# TODO
+
+- [x] Make user able to delete/ add extra value
+
+- [x] Fetch complete list of samples from database and genotype file
+  instead of only fetching that list from the database.  Look at trait
+  page for reference.
+
+- [ ] Extend idea of csv generation to probeset data.  Get data from
+  the genotype file and work out how to update the values from the
+  database.
 
 # Notes
 

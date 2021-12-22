@@ -1,0 +1,21 @@
+# GeneNetwork documentation
+
+GeneNetwork requires an online 'wiki' and a place for documentation. Both of these can be maintained in markdown and/or gemini gemtext. We are using a repo:
+
+=> https://github.com/genenetwork/gn-docs
+
+What we need to do is render documents from markdown (as is done with the facilities page)
+
+=> https://github.com/genenetwork/gn-docs/blob/master/general/help/facilities.md
+
+the markdown is rendered on github, which makes it easy to edit for most users, so it should be the default.
+
+## Tags
+
+* assigned: pjotrp
+
+## Tasks
+
+=> storyboards
+
+## Info

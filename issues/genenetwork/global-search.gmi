@@ -1,0 +1,12 @@
+# Global search problems
+
+Global search is the top bar of GN2
+
+## Tags
+
+* assigned: pjotrp, zsloan
+
+## Tasks
+
+* [ ] BRCA2 does not render results in table
+* [ ] 'Brca2' with quotes gives a SQL error

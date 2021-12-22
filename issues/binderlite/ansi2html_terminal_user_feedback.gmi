@@ -1,0 +1,36 @@
+# ansi2html terminal user feedback
+
+* ongoing
+* feature-request
+* assigned: jgart
+
+https://builds.sr.ht/~sircmpwn/job/610711
+
+https://builds.sr.ht/~sircmpwn/job/611028
+
+This issue proposes an alternative way to generate terminal output to the browser
+from a process that does not dependent on js libraries but still looks great.
+
+Drew Devault uses this method in builds.sr.ht, the continuous integration
+system/app that is part of the SourceHut suite.
+
+builds.sr.ht generates terminal output using jinja templates and a relatively
+small python library called ansi2html. It is already packaged by guix upstream
+as python-ansi2html (It could use an update).
+
+https://github.com/pycontribs/ansi2html
+https://pypi.org/project/ansi2html/
+
+Here are two examples of it in action at builds.sr.ht:
+
+https://builds.sr.ht/~sircmpwn/job/610711
+
+https://builds.sr.ht/~sircmpwn/job/611028
+
+And, the relevant places in builds.sr.ht code base:
+
+https://git.sr.ht/~sircmpwn/builds.sr.ht/tree/master/item/buildsrht/templates/job.html#L117
+
+https://git.sr.ht/~sircmpwn/builds.sr.ht/tree/master/item/buildsrht/blueprints/jobs.py#L333
+
+I've added a diagram showing how it will integrate with binderlite.

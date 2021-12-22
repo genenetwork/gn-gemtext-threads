@@ -1,0 +1,33 @@
+# Each shepherd service needs its own guix profile.
+
+Currently there are a bunch of shepherd services (on Penguin2, as user shepherd) who are using the global shepherd guix profile and loading guix-bioinformatics at service start time to start their services. This is bad because:
+
+* we aren't using per-service guix-bioinformatics worktrees, so the branch changes between service refreshes
+* service start times are high because we have to rebuild the service (due to above)
+* services which are restarted are in an "untested" state until they work
+
+## Services which need to be migrated:
+
+* covid19-pubseq (uses shared (broken!) guix profile, uses shared config directory)(currently running by hand by Pjotr)
+* hrdp-project (uses shared (broken!) guix profile) (upstream source is gone)
+* ratspub (uses own guix profile, uses shared guix-bioinformatics)(deprecated(?))
+* pluto (uses own guix profile, uses shared config directory)(currently disabled)
+
+## Services which need to be monitored:
+
+* genenetwork1 (uses own guix profile, uses shared config directory)
+* genome_browser (uses own guix profile, uses shared config directory)
+* mcron (uses shared guix profile, probably OK)
+* virtuoso (uses shared guix profile, probably OK)
+
+## Services which already have their own profile:
+
+* bnw
+* cronjob-gitea
+* cronjob-pubmed (genecup)
+* genecup
+* gitea
+* ipfs
+* power
+* rn6app
+* singlecell

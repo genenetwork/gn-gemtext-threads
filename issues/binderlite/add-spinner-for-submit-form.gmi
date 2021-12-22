@@ -13,3 +13,15 @@ a container to be built? A spinning guix gnu logo could be cool.
 https://www.w3schools.com/howto/howto_css_loader.asp
 
 https://spin.js.org/https://spin.js.org/
+
+
+## Solution
+
+We're using ansi2html now.
+
+See the following issue:
+
+=> ./ansi2html_terminal_user_feedback.gmi
+
+* closed
+

@@ -1,0 +1,26 @@
+# Handle Configuration Files
+
+How we handle our configuration is a mess; and this makes deployment a
+hassle.  In genenetwork2, our configs live in different places, and it
+takes some fiddling tinged with a bit of domain (gn2) knowledge to
+work out what setting live where.  With the introduction of blueprints
+in our code-base, this duplication became a necessary evil because
+most of the settings QC checks happen in a "utility/tools.py" which
+unfortunately imports the "app" object.  This import leads to circular
+imports whenever we use blueprints.  Unfortunately, a huge chunk of
+the code base uses "utility/tools.py" to get configuration
+settings; and removing this would make gn2 as is disfunctional.
+
+# Tags
+
+* assigned: bonfacem
+
+# Notes
+
+Here's an example of how to use json as our settings:
+
+=> https://stackoverflow.com/questions/15122312/how-to-import-from-config-file-in-flask
+
+Here's Flask's official documentation on handling configuration:
+
+=> https://flask.palletsprojects.com/en/1.1.x/config/

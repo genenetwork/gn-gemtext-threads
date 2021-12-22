@@ -1,0 +1,41 @@
+# UI Design
+
+1. Input/Receive Data in UI (drag and drop/upload submit form)
+
+2. Select Mouse
+
+"What type of Group are you using?" 
+
+> (AKXD, BXH, Mouse Diversity Panel, BXD)
+
+3. "What is your platform?"
+
+> (Aff, Ilumina, ...)
+
+If Affymetrix (Aff) is selected then there should be various options
+like Clarion S.
+
+If the platform you chose is not available:
+
+  Tell PI that they should solicit for their platform to be added to the list.
+  
+  They can contact us via email.
+
+4. Allow excel file upload?
+
+## More Example UI Interactions and Checks
+
+"If your dataset does not comply with GN then you can try uploading your
+dataset so that we can inspect it."
+
+"Your dataset has two erroneous entries: Gene Accession Gene."
+
+"The last two columns have the wrong format for the strain name."
+
+"Here's our format of how your dataset should look like."
+
+> ProbeSetID Strains ...
+
+"Inbred Set ID 1 is the same as BXD"
+
+> These are the strains: ...

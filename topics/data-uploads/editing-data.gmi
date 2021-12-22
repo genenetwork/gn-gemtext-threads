@@ -1,3 +1,7 @@
+## Tags
+
+* assigned: bonfacem
+
 ### Introduction
 
 At the moment, you can edit metadata related to a published phenotype and a probeset. When an edit is done, the diff data is stored in a table, `metadata_audit` in json format that looks something like:
@@ -60,3 +64,9 @@ After editing traits, you could see changes in a diff format at the very top of 
 That needs to be improved.
 
 - For Probeset data, atm some tables aren't yet updated(unfortunately those tables aren't used anywhere). I need to figure that out.
+
+#### Tue 23 Nov 2021
+
+- Fixed excel issue described here:
+
+=> https://github.com/genenetwork/genenetwork2/compare/testing...BonfaceKilz:bug/fix-excel-adding-new-line?expand=1

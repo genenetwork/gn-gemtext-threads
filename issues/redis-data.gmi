@@ -1,0 +1,6 @@
+# Document redis data
+
+ATM how we store data in redis is undocumented.  Without this, it's
+hard for contributors to work out how to modify some things.  For
+example, PJ would want to add himself to the editors group.  Doing
+this was non-trivial for him.

@@ -50,3 +50,5 @@ http://localhost/49761/?token=f6269bbf48ee5c9887732f5bc76d32f37e1f25483195ae88
 
 The next step is to get jupyter to accept the generated token on the first 
 request without needing to input it manually first.
+
+* closed

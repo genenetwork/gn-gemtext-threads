@@ -14,3 +14,11 @@ support.
 I am not sure. Pjotr is of the philosophy that we should keep the text as unstructured and unrestrictive as possible, and I agree with this philosophy. Linters are likely to annoy users more than help them. They might discourage casual use of the issue tracker. Especially with tags, we don't really want to restrict the user from coming up with new tags.
 
 WDYT? Am I missing some scenario where the linter could be essential?
+
+Nope, it was just something I thought could be convenient if we wanted to restrict 
+the format for tags, etc...
+
+If we'd like to "keep the text as unstructured and unrestrictive as possible" I'm
+fine with that too.
+
+I was just worried about using "invalid" tags. Now, I know it's ok :)

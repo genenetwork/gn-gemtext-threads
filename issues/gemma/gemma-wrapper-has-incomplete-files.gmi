@@ -1,0 +1,42 @@
+# gemma-wrapper has incomplete files
+
+Gemma wrapper caches files - but it can happen a cached file is incomplete and never updated again. The problem appears when GNU parallel is invoked and hits an error. The task here is to make gemma-wrapper transactional.
+
+## Tags
+
+* assigned: pjotrp, zachs
+
+## Tasks
+
+* [X] parse parallel job log for failed tasks and remove the output files.
+* [X] create a (global) lock file for gemma-wrapper
+
+## Info
+
+GNU parallel can fail, but does not tell how individual processes did. Need to check if it can return a thread (number). If not we have the option of checking the GEMMA status file and/or see if the output file is complete (by counting number of lines).
+
+The 'obvious' fix would be to create an error handler in GEMMA itself that would clean up output files on error exit. E.g. using
+
+=> https://www.cplusplus.com/reference/exception/set_terminate/
+
+The problem is that it is NOT a catch all. If there is a hardware fault or a problem in a library, such as openblas, there is no guarantee that the terminate handler will be called. Another complication is that a terminate handler needs to be aware of the files being output - i.e., we need to carry the state down somehow. I think we can probably address these issues as much is handled in the GEMMA PARAM class, but it is not worth the effort (I'll take care of it in a GEMMA rewrite).
+
+It turns out that GNU parallel can keep track of jobs in a job log - and even rerun the ones missing using the `--joblog` and `--resume` switches. The last we don't need because we are using a cache. But we can use the log file to remove any incomplete output files! To me this is the obvious solution because 'parallel' is monitoring outside the GEMMA process and is a hardened piece of software. On failure it simply designates runs that way and we can clean up any (partly) produced files followed by a safe rerun. The lock routine below ascertains no processes are creating the same output at the same time.
+
+## Delete files on failure
+
+Implemented in
+
+=> https://github.com/genetics-statistics/gemma-wrapper/commit/624ed0d805f29ab682cffbe46bc104dffd0d713c
+
+## Dealing with locks
+
+There is another parallel issue (pun intended) where gemma-wrapper is invoked twice for the same job. This is quite possible when people get impatient waiting for a first job to finish.
+
+One solution is to write a lock file using the inputs as a hash. The lock file can contain a PID and we can check if that is still alive. I should do the same for sheepdog locks(!)
+
+=> https://github.com/genetics-statistics/gemma-wrapper/commit/e7e516ec5a6ffc5b398302fa204685a40e76e171 Added locking support
+
+I added the same code to replace sheepdog locks. Sheepdog is running every minute on our machines so it is a great test case.
+
+=> https://github.com/pjotrp/deploy/commit/4790b81ee897c8244280169edb3cac751eb0a9b3 sheepdog locking

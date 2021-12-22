@@ -1,0 +1,15 @@
+# Arthur mentioned last meet that GeneNetwork2 does not redirect http urls to https.
+
+He'd like http to redirect to https.
+
+http://genenetwork.org/ -> https://genenetwork.org/
+
+# nginx snippet
+
+```
+if ($scheme = http) {
+    return 301 https://$server_name$request_uri;
+}
+```
+
+* assigned: pjotr, arthur, jgart

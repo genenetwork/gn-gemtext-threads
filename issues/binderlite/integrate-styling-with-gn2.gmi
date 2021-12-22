@@ -1,0 +1,11 @@
+# Integrate styling of app with GN2
+
+* ongoing
+* assigned: jgart
+
+Currently using antiweb for styling with modifications.
+
+=> https://git.sr.ht/~sircmpwn/antiweb antiweb
+
+Copying nav bar and fonts from GN2 will make the app look more integrated with
+GN2 UI.

@@ -1,0 +1,23 @@
+# GN1 symbols
+
+# Tags
+
+* assigned: pjotrp, arthurc
+
+# Tasks
+
+* [ ] fix font issue
+* [ ] fix linked webqtl images
+
+# Info
+
+The fonts differ on
+
+=> http://gn1-lily.genenetwork.org/webqtl/main.py?FormID=sharinginfo&GN_AccessionId=2
+=> http://gn1.genenetwork.org/webqtl/main.py?FormID=sharinginfo&GN_AccessionId=2
+
+There is a deeper problem. When you click on one of the symbols it wants to show, for example:
+
+=> http://www.webqtl.org/array_images/S092UM-1F2.png
+
+This fails both for GN1 and Lily. Do we still want to show those images, or simply disable? If we want to show them, where are they?
