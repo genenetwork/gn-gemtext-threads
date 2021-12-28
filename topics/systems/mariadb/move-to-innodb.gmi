@@ -304,6 +304,7 @@ Let's try OPTIMIZE
 OPTIMIZE NO_WRITE_TO_BINLOG TABLE ProbeSetSE;
 ```
 
+Ah, now the size is similar to myisam and loading the mapping page is slighty faster.
 
 ## Run tests again
 
