@@ -18,6 +18,58 @@ Initial good candidates are (from issues/database-not-responding):
 
 I am starting with the two SE tables first - because they are small.
 
+## Report
+
+With the SQL database we need to move from myisam to innodb format,
+mostly to stop the problem of full table locks. Also I expect the
+occasional crashes we see to go away.
+
+Today, as a start, I moved the ProbeSetSE table to innodb. The result
+is that the disk representation is 3x the size and a full table scan
+takes 3x the time (somewhat unsurprising). This may impact
+correlation, i.e. those routines that go through all the data. We'll
+have to test that carefully. For the SE I don't think we do that, so
+it is no biggie.
+
+There are no real performance gains that I can tell, though for the
+mapping page I see no slowing down either.
+
+I'll need to free up space on the NVME storage to do the larger
+tables.
+
+I also took the opportunity to add a primary key because InnoDB
+requires it and I changed the *table* language from latin1-sweden to
+utf8. These are major upgrades.
+
+There are no real performance gains that I can tell, though for the
+mapping page I see no slowing down either.
+
+I'll need to free up space on the NVME storage to do the larger
+tables.
+
+I also took the opportunity to add a primary key because InnoDB
+requires it and I changed the *table* language from latin1-sweden to
+utf8. These are major upgrades.
+
+In the coming week I'll have to reboot the server to add a disk, move
+stuff across to free up space on the NVME, and convert a few more
+tables. I aim to get the largest tables done - because these are the
+one that hurt when locked:
+
+* Good candidates with update times
+  + 2.1G Dec  4 22:15 ProbeSetXRef.MYD
+  + 2.3G Dec 18 14:56 ProbeSet.MYD - with fulltext column
+  + 2.6G Aug 27  2019 ProbeSE.MYD
+  + 7.1G Nov  2 05:07 ProbeSetSE.MYD
+  +  11G Aug 27  2019 ProbeData.MYD
+  +  63G Dec  4 22:15 ProbeSetData.MYD
+
+(note each is about double that size because of indexes)
+
+ProbeSetSE is done. So ProbeData and ProbeSetData are the main
+candidates right now.
+
+
 ## Check database
 
 ```
@@ -207,7 +259,17 @@ SHOW CREATE TABLE ProbeSetSE;
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 |
 ```
 
-Looking good!
+Looking good! Now there are two indexes which are the same to
+
+```
+MariaDB [db_webqtl]> DROP INDEX DataId ON ProbeSetSE;
+```
+
+```
+MariaDB [db_webqtl]> show index from ProbeSetSE;
+2 rows in set (0.000 sec)
+```
+
 
 ### Convert to innodb
 
@@ -236,6 +298,13 @@ The new file sizes are:
 
 So the has tripled (including a new index) and during conversion it has both the old and the new on disk. I'll need to make space for this baby.
 
+Let's try OPTIMIZE
+
+```
+OPTIMIZE NO_WRITE_TO_BINLOG TABLE ProbeSetSE;
+```
+
+
 ## Run tests again
 
 What about performance?
@@ -250,7 +319,7 @@ MariaDB [db_webqtl]> select count(*) from ProbeSetSE where strainid<20 and error
 1 row in set (3 min 22.958 sec)
 ```
 
-Whoah. 3 times slower - which makes sense if you know the physical size of the data.
+Whoah. 3 times slower - which makes sense if you know the physical size of the data. Full table scans should be rare, but we need to make sure we don't slow them down that much!
 
 Again I exported the CSV from
 
