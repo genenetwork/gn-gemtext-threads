@@ -1,0 +1,368 @@
+We are going to move from myisam to innodb. Penguin2 has been happily running innodb for some time.
+
+Main problem are fulltext columns, the text from Trello is captured below. This is for the following tables
+
+* ProbeSet
+* GeneRIF_BASIC
+* pubmedsearch
+
+Initial good candidates are (from issues/database-not-responding):
+
+* Good candidates
+  + 2.1G Dec  4 22:15 ProbeSetXRef.MYD
+  + 2.3G Dec 18 14:56 ProbeSet.MYD - with fulltext column
+  + 2.6G Aug 27  2019 ProbeSE.MYD
+  + 7.1G Nov  2 05:07 ProbeSetSE.MYD
+  +  11G Aug 27  2019 ProbeData.MYD
+  +  63G Dec  4 22:15 ProbeSetData.MYD
+
+I am starting with the two SE tables first - because they are small.
+
+## Check database
+
+```
+time mysqlcheck -c -u webqtlout -pwebqtlout db_webqtl
+```
+
+To check one single table Probe
+
+```
+root@tux01:/var/lib/mysql/db_webqtl# mysqlcheck -c db_webqtl -u webqtlout -pwebqtlout Probe
+db_webqtl.Probe                                    OK
+```
+
+Make sure we have not a FULLTEXT column we do not know about (note it needs backquotes around ls):
+
+```
+root@tux01:/var/lib/mysql/db_webqtl# for x in ls -1 *.MYD|sed -e 's,\.MYD,,' ; do echo $x ; mysql -u webqtlout -pwebqtlout db_webqtl -e "select group_concat(distinct column_name) from information_schema.STATISTICS where table_schema = 'db_webqtl' and table_name = '$x' and index_type = 'FULLTEXT'" ; done|less
+GeneRIF_BASIC
+ProbeSet
+pubmedsearch
+```
+
+still the same.
+
+## Create a test
+
+Start with ProbeSetSE
+
+```
+-rw-rw---- 1 mysql mysql 8.1G Dec 28 08:39 ProbeSetSE.MYI
+-rw-rw---- 1 mysql mysql 7.1G Nov  2 05:07 ProbeSetSE.MYD
+-rw-rw---- 1 mysql mysql 8.5K Feb  3  2021 ProbeSetSE.frm
+```
+
+```
+MariaDB [db_webqtl]> select * from ProbeSetSE limit 2;
++--------+----------+----------+
+| DataId | StrainId | error    |
++--------+----------+----------+
+|      1 |        1 | 0.681091 |
+|      1 |        2 | 0.361151 |
++--------+----------+----------+
+2 rows in set (0.001 sec)
+
+MariaDB [db_webqtl]> select count(*) from ProbeSetSE limit 2;
++-----------+
+| count(*)  |
++-----------+
+| 688744613 |
++-----------+
+1 row in set (0.000 sec)
+```
+
+```
+MariaDB [db_webqtl]> flush tables ProbeSetSE;
+Query OK, 0 rows affected (0.002 sec)
+```
+
+```
+MariaDB [db_webqtl]> select count(*) from ProbeSetSE where error<0.36;
++-----------+
+| count(*)  |
++-----------+
+| 601603553 |
++-----------+
+1 row in set (1 min 1.189 sec)
+```
+
+Some testing shows strainid and error are not indexed. Test query on myisam:
+
+```
+MariaDB [db_webqtl]> select count(*) from ProbeSetSE where strainid<20 and error<0.10;
++----------+
+| count(*) |
++----------+
+| 61625074 |
++----------+
+1 row in set (58.301 sec)
+```
+
+Check index and primary key (PK):
+
+```
+SHOW CREATE TABLE ProbeSetSE;
+
+| ProbeSetSE | CREATE TABLE "ProbeSetSE" (
+  "DataId" int(10) unsigned NOT NULL DEFAULT 0,
+  "StrainId" smallint(5) unsigned NOT NULL DEFAULT 0,
+  "error" float NOT NULL,
+  UNIQUE KEY "DataId" ("DataId","StrainId")
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 |
+```
+
+Note the latin1 we don't need. Also innodb needs a primary key.
+
+The mapping page retrieves SE through a call to
+
+```
+retrieve_sample_data(this_trait, dataset)
+```
+
+we also have an API endpoint
+
+```
+@app.route("/api/v_{}/sample_data/<path:dataset_name>".format(version))
+@app.route("/api/v_{}/sample_data/<path:dataset_name>.<path:file_format>".format(version))
+def all_sample_data(dataset_name, file_format="csv"):
+```
+
+But I can't get it to work for a trait.
+
+```
+curl "http://genenetwork.org/api/v_pre1/sample_data/1427571_at"
+```
+
+so, instead, I exported the CSV from
+
+=> http://genenetwork.org/show_trait?trait_id=1427571_at&dataset=HC_M2_0606_P
+
+This is our test 'setup'.
+
+## Backup and convert table
+
+On Tux01 the database is hosted on a drive with 111 GB free. Not enough for all conversions. There should be an extra drive in there which requires configuration with reboot. But first we can convert this small table. Backups we have already automated. But I'll add
+
+```
+tar cvzf /home/wrk/ProbeSetSE.tgz ProbeSetSE*
+```
+
+To convert to InnoDB we should:
+
+* ascertain primary key
+* change charset
+* set page size to 4K
+* change engine to InnoDB
+* make space on disk drive(s)
+
+### Set primary key
+
+For ProbeSetSE note the UNIQUE key was already defined. So set a primary key:
+
+```
+ALTER TABLE ProbeSetSE
+  ADD PRIMARY KEY(DataId,StrainId);
+Query OK, 688744613 rows affected (15 min 13.830 sec)
+Records: 688744613  Duplicates: 0  Warnings: 0
+```
+
+Unsurprisingly the index grew
+
+```
+-rw-rw---- 1 mysql mysql  16G Dec 28 11:06 ProbeSetSE.MYI
+```
+
+### Change charset
+
+```
+MariaDB [db_webqtl]> SHOW CHARACTER SET LIKE 'utf8mb4';
++---------+---------------+--------------------+--------+
+| Charset | Description   | Default collation  | Maxlen |
++---------+---------------+--------------------+--------+
+| utf8mb4 | UTF-8 Unicode | utf8mb4_general_ci |      4 |
++---------+---------------+--------------------+--------+
+1 row in set (0.000 sec)
+```
+
+```
+MariaDB [db_webqtl]> ALTER TABLE ProbeSetSE CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+Stage: 2 of 2 'Enabling keys'      0% of stage done
+Query OK, 688744613 rows affected (15 min 14.380 sec)
+Records: 688744613  Duplicates: 0  Warnings: 0
+```
+
+For this table it has no effect since there are not text fields. Still this looks good:
+
+```
+SHOW CREATE TABLE ProbeSetSE;
+| ProbeSetSE | CREATE TABLE "ProbeSetSE" (
+  "DataId" int(10) unsigned NOT NULL DEFAULT 0,
+  "StrainId" smallint(5) unsigned NOT NULL DEFAULT 0,
+  "error" float NOT NULL,
+  PRIMARY KEY ("DataId","StrainId"),
+  UNIQUE KEY "DataId" ("DataId","StrainId")
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 |
+```
+
+Looking good!
+
+### Convert to innodb
+
+So, on to converting to innodb
+
+=> https://mariadb.com/kb/en/converting-tables-from-myisam-to-innodb/
+
+=> https://dataedo.com/kb/query/mysql/list-innodb-tables Show existing innodb tables
+
+Unfortunately we can't swith to 4k page tables because we have existing tables. We'll do that later some day in a controlled fashion.
+
+```
+MariaDB [db_webqtl]> ALTER TABLE ProbeSetSE ENGINE = InnoDB;
+```
+
+The new file sizes are:
+
+
+## Run tests again
+
+```
+MariaDB [db_webqtl]> select count(*) from ProbeSetSE where strainid<20 and error<0.10;
+```
+
+Again I exported the CSV from
+
+=> http://genenetwork.org/show_trait?trait_id=1427571_at&dataset=HC_M2_0606_P
+
+and it shows the ...
+
+## Notes captured from Trello:
+
+In an earlier track I wrote how to deal with Fulltext fields
+
+pjotrp 16 Oct 2019 at 10:47
+
+Fulltext
+
+To list fulltext info for one table do:
+
+```
+select group_concat(distinct column_name) from information_schema.STATISTICS where table_schema = 'db_webqtl' and table_name = 'Probeset' and index_type = 'FULLTEXT';
+```
+
+Or
+
+```
+SHOW CREATE TABLE ProbeSet;
+
+E.g.
+
+  FULLTEXT KEY `SEARCH_GENE_IDX` (`Symbol`,`alias`),
+  FULLTEXT KEY `SEARCH_FULL_IDX` (`Name`,`description`,`Symbol`,`alias`,`GenbankId`,`UniGeneId`,`Probe_Target_Description`),
+  FULLTEXT KEY `RefSeq_FULL_IDX` (`RefSeq_TranscriptId`)
+```
+
+To see all:
+
+```
+root@tux02:/var/lib/mysql/db_webqtl# for x in ls -1 *.MYD|sed -e 's,\.MYD,,' ; do echo $x ; mysql -u webqtlout -pwebqtlout db_webqtl -e "select group_concat(distinct column_name) from information_schema.STATISTICS where table_schema = 'db_webqtl' and table_name = '$x' and index_type = 'FULLTEXT'" ; done
+```
+
+So we have to fix only
+
+```
+ProbeSet
+GeneRIF_BASIC
+pubmedsearch
+```
+
+```
+REPAIR TABLE ProbeSet QUICK;
+REPAIR TABLE GeneRIF_BASIC QUICK;
+REPAIR TABLE pubmedsearch QUICK;
+```
+
+Note that GN1 search only appears to use ProbeSet. Reindexing takes
+about 10 minutes on Tux02.
+
+After updating to ProbeSet to innodb the following query failed
+
+
+```
+SELECT distinct ProbeSet.Name as TNAME, 0 as thistable, ProbeSetXRef.Mean as TMEAN, ProbeSetXRef.LRS as TLRS, ProbeSetXRef.PVALUE as TPVALUE, ProbeSet.Chr_num as TCHR_NUM, ProbeSet.Mb as TMB, ProbeSet.Symbol as TSYMBOL, ProbeSet.name_num as TNAME_NUM FROM ProbeSetXRef, ProbeSet WHERE ((MATCH (ProbeSet.Name, ProbeSet.description, ProbeSet.symbol, alias, GenbankId, UniGeneId, Probe_Target_Description) AGAINST ('shh' IN BOOLEAN MODE)) or (MATCH (ProbeSet.symbol) AGAINST ('"Hx" "ShhNC" "9530036O11Rik" "Dsh" "Hhg1" "Hxl3" "M100081"' IN BOOLEAN MODE))) and ProbeSet.Id = ProbeSetXRef.ProbeSetId and ProbeSetXRef.ProbeSetFreezeId = 112 ORDER BY ProbeSet.symbol ASC;
+```
+
+with
+
+```
+ERROR 1191 (HY000): Can't find FULLTEXT index matching the column list
+```
+
+The shorter version works
+
+```
+SELECT distinct ProbeSet.Name as TNAME, 0 as thistable, ProbeSetXRef.Mean as TMEAN, ProbeSetXRef.LRS as TLRS, ProbeSetXRef.PVALUE as TPVALUE, ProbeSet.Chr_num as TCHR_NUM, ProbeSet.Mb as TMB, ProbeSet.Symbol as TSYMBOL, ProbeSet.name_num as TNAME_NUM FROM ProbeSetXRef, ProbeSet WHERE ((MATCH (ProbeSet.Name, ProbeSet.description, ProbeSet.symbol, alias, GenbankId, UniGeneId, Probe_Target_Description) AGAINST ('"Shh" "ShhNC" "9530036O11Rik" "Dsh" "Hhg1"' IN BOOLEAN MODE))) and ProbeSet.Id = ProbeSetXRef.ProbeSetId and ProbeSetXRef.ProbeSetFreezeId = 112;
+```
+
+when you remove any column in the MATCH statement we get this
+error. Which kinda makes sense I suppose. We need to add an index
+for the single ProbeSet.symbol match. Create it with
+
+```
+CREATE FULLTEXT INDEX ft_ProbeSet_Symbol ON ProbeSet(Symbol);
+```
+
+Now we have
+
+```
+FULLTEXT KEY `SEARCH_GENE_IDX` (`Symbol`,`alias`),
+FULLTEXT KEY `SEARCH_FULL_IDX` (`Name`,`description`,`Symbol`,`alias`,`GenbankId`,`UniGeneId`,`Probe_Target_Description`),
+FULLTEXT KEY `RefSeq_FULL_IDX` (`RefSeq_TranscriptId`),
+FULLTEXT KEY `ft_ProbeSet_Symbol` (`Symbol`)
+```
+
+and the query works.
+
+pjotrp 16 Oct 2019 at 09:24 (edited)
+
+Full text search is the least straightforward, see
+
+and
+
+Now for ProbeSet - one of the critical locked tables we need this.
+
+pjotrp 15 Oct 2019 at 16:38 (edited)
+
+```
+time mysqlcheck -c -u webqtlout -pwebqtlout db_webqtl
+db_webqtl.Docs
+warning : 1 client is using or hasn't closed the table properly
+status : OK
+
+real 16m52.567s
+```
+
+## Convert to InnoDB
+
+The largest tables are
+
+```
+1.6G Aug 27  2019 Probe.MYD
+2.1G Aug 27  2019 LCorrRamin3.MYD
+2.1G Dec  4 22:15 ProbeSetXRef.MYD
+2.3G Dec 18 14:56 ProbeSet.MYD
+2.6G Aug 27  2019 ProbeSE.MYD
+7.1G Nov  2 05:07 ProbeSetSE.MYD
+8.3G Aug 28  2019 SnpPattern.MYD
+ 11G Aug 27  2019 ProbeData.MYD
+ 11G May 22  2020 GenoData.MYD
+ 11G Aug 27  2019 SnpAll.MYD
+ 63G Dec  4 22:15 ProbeSetData.MYD
+```
+
+On Penguin2 we are already runing ProbeSetData as
+
+```
+238G Jul 10  2020 ProbeSetData.ibd
+```
+
+which is pretty massive! It includes the index, which is 180G, so the difference is not that great. Also we should try a 4kb page size. Also make sure to enable innodb_file_per_table.
