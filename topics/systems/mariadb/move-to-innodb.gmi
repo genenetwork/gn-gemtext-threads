@@ -137,6 +137,9 @@ so, instead, I exported the CSV from
 
 => http://genenetwork.org/show_trait?trait_id=1427571_at&dataset=HC_M2_0606_P
 
+It took the server 2.02924s seconds to process this page.
+It took your browser 1.577 second(s) to render this page.
+
 This is our test 'setup'.
 
 ## Backup and convert table
@@ -218,22 +221,46 @@ Unfortunately we can't swith to 4k page tables because we have existing tables. 
 
 ```
 MariaDB [db_webqtl]> ALTER TABLE ProbeSetSE ENGINE = InnoDB;
+Query OK, 688744613 rows affected (1 hour 51 min 36.273 sec)
+Records: 688744613  Duplicates: 0  Warnings: 0
 ```
+
+2 hours for a lousy table conversion!
 
 The new file sizes are:
 
+```
+-rw-rw---- 1 mysql mysql 1.5K Dec 28 11:33 ProbeSetSE.frm
+-rw-rw---- 1 mysql mysql  51G Dec 28 13:25 ProbeSetSE.ibd
+```
+
+So the has tripled (including a new index) and during conversion it has both the old and the new on disk. I'll need to make space for this baby.
 
 ## Run tests again
 
+What about performance?
+
 ```
 MariaDB [db_webqtl]> select count(*) from ProbeSetSE where strainid<20 and error<0.10;
++----------+
+| count(*) |
++----------+
+| 61625074 |
++----------+
+1 row in set (3 min 22.958 sec)
 ```
+
+Whoah. 3 times slower - which makes sense if you know the physical size of the data.
 
 Again I exported the CSV from
 
 => http://genenetwork.org/show_trait?trait_id=1427571_at&dataset=HC_M2_0606_P
 
-and it shows the ...
+It took the server 1.46351s seconds to process this page.
+It took your browser 2.119 second(s) to render this page
+
+and it shows practically the same results.
+
 
 ## Notes captured from Trello:
 
