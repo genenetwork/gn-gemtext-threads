@@ -1,0 +1,64 @@
+# Common Lisp Condition Handling
+
+> One of Lisp's great features is its condition system.
+
+> Every Common Lisp implementation has a condition system.
+
+> ... conditions are more general than exceptions in that a condition can
+> represent any occurrence during a program's execution that may be of
+> interest to code at different levels on the call stack.
+
+The following three quotes are from abridged from a conversation with
+Ed Langley over #common-lisp:matrix.org (Thu Dec 23 07:46:30 PM EST 2021)
+
+=> https://github.com/fiddlerwoaroof Ed Langley's GitHub
+
+Why is condition handling special in common lisp compared to other languages?
+    
+> Because code can define recovery strategies without handling the condition.
+
+> Any bit of code can be wrapped with restart-case to define a
+> restart. This restart defines a way you could continue from any condition
+> that’is signaled within the dynamic extent of the restart-case.
+
+> Your condition handler can do something like (find-restart ‘continue
+> c) to find the CONTINUE restart associated with condition C. If the
+> restart exists, it can use invoke-restart to jump to the restart which
+> runs and then execution continues like normal after the restart-case form.
+
+* end of coversation
+
+# Restarts, restarts, restarts: interactive choices in the debugger
+
+> Restarts are the choices we get in the debugger, which always has
+> the RETRY and ABORT ones.  By handling restarts we can start over the
+> operation as if the error didn't occur (as seen in the stack).
+
+```
+(divide 3 0)
+;; Y can not be zero. Please change it
+;;    [Condition of type SIMPLE-ERROR]
+;;
+;; Restarts:
+;;  0: [CONTINUE] Retry assertion with new value for Y.  <--- new restart
+;;  1: [RETRY] Retry SLIME REPL evaluation request.
+;;  …
+```
+
+# Video References
+
+=> https://www.youtube.com/watch?v=9K5YVbeatHs Common Lisp Study Group: Conditions and Restarts
+=> https://www.youtube.com/watch?v=ErlheGSQ2kk Common Lisp Tutorial 5a: Condition System
+=> https://www.youtube.com/watch?v=FsNzDC0vaks Common Lisp Tutorial 5b: Condition System Part 2
+=> https://www.youtube.com/watch?v=5xprY8GCxFQ Integrating independent condition systems
+=> https://www.youtube.com/watch?v=zp0OEDcAro0 Condition Systems in an Exceptional Language
+=> https://www.youtube.com/watch?v=B42IrH8cfMM Little bits of lisp - Inspecting a condition
+=> https://www.youtube.com/watch?v=pkqQq2Hwt5o Immutable Conversations
+
+# Internet, Blog, Book, and Article References
+
+=> https://devpoga.org/post/2021-04-25_common_lisp_condition_system/
+=> http://www.lispworks.com/documentation/HyperSpec/Body/f_find_r.htm#find-restart find-restart
+=> https://lispcookbook.github.io/cl-cookbook/error_handling.html define-condition in the cl-cookbook
+=> https://www.nhplace.com/kent/Papers/Condition-Handling-2001.html Condition Handling in the Lisp Language Family
+=> https://gigamonkeys.com/book/beyond-exception-handling-conditions-and-restarts.html Conditions and Restarts
