@@ -8,7 +8,7 @@
 > represent any occurrence during a program's execution that may be of
 > interest to code at different levels on the call stack.
 
-The following three quotes are from abridged from a conversation with
+The following three quotes are abridged from a conversation with
 Ed Langley over #common-lisp:matrix.org (Thu Dec 23 07:46:30 PM EST 2021)
 
 => https://github.com/fiddlerwoaroof Ed Langley's GitHub
