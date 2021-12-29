@@ -1,0 +1,40 @@
+# Lisp For Schemers
+
+## iota
+
+### In Scheme
+
+```
+scheme@(guile-user)> (iota 12)
+
+$1 = (0 1 2 3 4 5 6 7 8 9 10 11)
+```
+
+### In Common Lisp
+
+```
+CL-USER: (loop for i below 12 collect i)
+
+(0 1 2 3 4 5 6 7 8 9 10 11)
+
+CL-USER: (macroexpand '(loop for i below 12 collect i))
+
+(BLOCK NIL
+  (LET ((I 0))
+    (DECLARE (IGNORABLE I)
+             (TYPE (AND NUMBER REAL) I))
+    (SB-LOOP::WITH-LOOP-LIST-COLLECTION-HEAD (#:LOOP-LIST-HEAD-493
+                                              #:LOOP-LIST-TAIL-494)
+      (TAGBODY
+       SB-LOOP::NEXT-LOOP
+        (WHEN (>= I '12) (GO SB-LOOP::END-LOOP))
+        (SB-LOOP::LOOP-COLLECT-RPLACD
+         (#:LOOP-LIST-HEAD-493 #:LOOP-LIST-TAIL-494) (LIST I))
+        (SB-LOOP::LOOP-DESETQ I (1+ I))
+        (GO SB-LOOP::NEXT-LOOP)
+       SB-LOOP::END-LOOP
+        (RETURN-FROM NIL
+          (SB-LOOP::LOOP-COLLECT-ANSWER #:LOOP-LIST-HEAD-493))))))
+T
+```
+
