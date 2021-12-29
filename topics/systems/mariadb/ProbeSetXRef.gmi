@@ -1,0 +1,99 @@
+## Table ProbeSetXRef
+
+Prototocol from
+
+=> ./move-to-innodb.gmi
+
+### Check table structure
+
+```
+SHOW CREATE TABLE ProbeSetXRef;
+```
+
+```
+| ProbeSetXRef | CREATE TABLE 'ProbeSetXRef' (
+  'ProbeSetFreezeId' smallint(5) unsigned NOT NULL DEFAULT 0,
+  'ProbeSetId' int(10) unsigned NOT NULL DEFAULT 0,
+  'DataId' int(10) unsigned NOT NULL DEFAULT 0,
+  'Locus_old' char(20) DEFAULT NULL,
+  'LRS_old' double DEFAULT NULL,
+  'pValue_old' double DEFAULT NULL,
+  'mean' double DEFAULT NULL,
+  'se' double DEFAULT NULL,
+  'Locus' varchar(50) DEFAULT NULL,
+  'LRS' double DEFAULT NULL,
+  'pValue' double DEFAULT NULL,
+  'additive' double DEFAULT NULL,
+  'h2' float DEFAULT NULL,
+  UNIQUE KEY 'ProbeSetId' ('ProbeSetFreezeId','ProbeSetId'),
+  UNIQUE KEY 'DataId_IDX' ('DataId'),
+  KEY 'Locus_IDX' ('Locus')
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 |
+```
+
+For every probe set (read dataset measuring point):
+
+
+```
+select * from ProbeSetXRef limit 2;
+| ProbeSetFreezeId | ProbeSetId | DataId | Locus_old  | LRS_old            | pValue_old | mean             | se                  | Locus      | LRS              | pValue | additive           | h2   |
++------------------+------------+--------+------------+--------------------+------------+------------------+---------------------+------------+------------------+--------+--------------------+------+
+|                1 |          1 |      1 | 10.095.400 |   13.3971627898894 |      0.163 | 5.48794285714286 | 0.08525787814808819 | rs13480619 |  12.590069931048 |  0.269 |        -0.28515625 | NULL |
+|                1 |          2 |      2 | D15Mit189  | 10.042057464356201 |      0.431 | 9.90165714285714 |  0.0374686634976217 | rs29535974 | 10.5970737900941 |  0.304 | -0.116783333333333 | NULL |
++------------------+------------+--------+------------+--------------------+------------+------------------+---------------------+------------+------------------+--------+--------------------+------+
+```
+
+where ProbeSetFreezeId is the dataset (experiment). ProbesetId refers
+to the probe set information (measuring point). DataId points to the
+data point. The other values are used for search.
+
+```
+MariaDB [db_webqtl]> select count(*) from ProbeSetXRef;
++----------+
+| count(*) |
++----------+
+| 48076905 |
++----------+
+```
+
+### Check GN1,2,3 code for use of table
+
+```
+rg ProbeSetXRef --color=always |less -R
+```
+
+### Create test
+
+Some select statement and maybe a page of GN2.
+
+### Create primary key
+
+```
+ALTER TABLE ProbeSetXRef
+  ADD PRIMARY KEY(col1,col2);
+```
+
+### Create indices
+### Convert to innodb
+
+```
+ALTER TABLE ProbeSetXRef ENGINE = InnoDB;
+```
+
+### Change charset
+
+```
+ALTER TABLE ProbeSetSE CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+```
+
+### Update fulltext
+
+For those cases see bottom of move-to-innodb.gmi.
+
+### Run optimiser
+
+```
+OPTIMIZE NO_WRITE_TO_BINLOG TABLE ProbeSetXRef;
+```
+
+### Check test

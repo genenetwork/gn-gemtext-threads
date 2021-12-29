@@ -11,12 +11,14 @@ Initial good candidates are (from issues/database-not-responding):
 * Good candidates
   + 2.1G Dec  4 22:15 ProbeSetXRef.MYD
   + 2.3G Dec 18 14:56 ProbeSet.MYD - with fulltext column
-  + 2.6G Aug 27  2019 ProbeSE.MYD
-  + 7.1G Nov  2 05:07 ProbeSetSE.MYD
-  +  11G Aug 27  2019 ProbeData.MYD
+  + 2.6G Aug 27  2019 ProbeSE.MYD (used?)
+  + 7.1G Nov  2 05:07 ProbeSetSE.MYD (done)
+  +  11G Aug 27  2019 ProbeData.MYD (used?)
   +  63G Dec  4 22:15 ProbeSetData.MYD
 
 I am starting with the two SE tables first - because they are small.
+
+Actually ProbeData and ProbeSE (containing the Affy data) are not referenced in GN2. I need to check that.
 
 ## Report
 
@@ -69,6 +71,14 @@ one that hurt when locked:
 ProbeSetSE is done. So ProbeData and ProbeSetData are the main
 candidates right now.
 
+Note I set buffers to 16GB for now
+
+```
++innodb_buffer_pool_size=16G
++innodb_ft_min_token_size=3
++# innodb_use_sys_malloc=0
++innodb_file_per_table=ON
+```
 
 ## Check database
 
@@ -206,7 +216,6 @@ To convert to InnoDB we should:
 
 * ascertain primary key
 * change charset
-* set page size to 4K
 * change engine to InnoDB
 * make space on disk drive(s)
 
@@ -331,6 +340,73 @@ It took your browser 2.119 second(s) to render this page
 
 and it shows practically the same results.
 
+## Table template
+
+Prototocol from
+
+=> ./move-to-innodb.gmi
+
+Every table update has to follow the template:
+
+### Check table structure
+
+```
+SHOW CREATE TABLE MYTABLE;
+```
+
+```
+select * from MYTABLE limit 2;
+```
+
+```
+select count(*) from MYTABLE;
+```
+
+### Check GN1,2,3 code for use of table
+
+```
+rg MYTABLE --color=always |less -R
+```
+
+### Create test
+
+Some select statement and maybe a page of GN2.
+
+### Create primary key
+
+```
+ALTER TABLE MYTABLE
+  ADD PRIMARY KEY(col1,col2);
+```
+
+### Create indices
+### Convert to innodb
+
+```
+ALTER TABLE MYTABLE ENGINE = InnoDB;
+```
+
+### Change charset
+
+```
+ALTER TABLE ProbeSetSE CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+```
+
+### Update fulltext
+
+For those cases see bottom of move-to-innodb.gmi.
+
+### Run optimiser
+
+```
+OPTIMIZE NO_WRITE_TO_BINLOG TABLE MYTABLE;
+```
+
+### Check test
+
+## ProbeSetXRef
+
+=> ProbeSetXRef.gmi
 
 ## Notes captured from Trello:
 
