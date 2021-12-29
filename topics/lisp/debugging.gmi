@@ -1,5 +1,8 @@
 # Debugging Lisp
 
+> The ability to recompile code at runtime is just one of the many
+> incredible features provided by Common Lisp
+
 Some links
 
 => https://malisper.me/debugging-lisp-part-1-recompilation/ Debug Common Lisp (CL)
