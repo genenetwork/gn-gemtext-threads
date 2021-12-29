@@ -12,6 +12,10 @@ $1 = (0 1 2 3 4 5 6 7 8 9 10 11)
 
 ### In Common Lisp
 
+The Common Lisp loop macro is not without its problems. See the paper "Don't Loop, Iterate" linked below. The paper compares different iteration mechanisms and promotes the author's own iterate macro. Personally, I think Scheme's approach with SRFI-1 is much cleaner. Explicit iteration is often distracting. Recursion is often what the programmer really wants.
+
+=> https://common-lisp.net/project/iterate/doc/Don_0027t-Loop-Iterate.html Don't Loop, Iterate
+
 ```
 CL-USER: (loop for i below 12 collect i)
 
