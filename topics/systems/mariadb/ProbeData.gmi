@@ -1,0 +1,36 @@
+Probe level data is used to examine the correlation structure among the
+N probes that have the same nominal target. Sometimes several probes
+are badly behaved or contain SNPs or indels.
+The well-behaved probes were then be used in GN1, at the user's
+discretion, to make an eigengene that  sometimes performs quite a bit
+better than the Affymetrix probeset. Essentially, the user could design
+their own probesets. And the probe level data is quite fascinating to
+dissect some types of cis-eQTLs—the COMT story I have attached is a
+good example. Here is figure 1 that exploits this unique feature:
+
+Ideally, the probe level data would be in GN2 with the same basic
+functions as in GN1.
+
+All we need in GN2/3 is a new table to display the probe level
+expression (mean) with their metadata (melting temperature, sequence,
+location, etc). The probeset ID is the Table header and name (the
+parent), and the probes in the table are the children. Using our now
+standard DataTable format should work well.
+We have a similar parent-child relation among traits with peptides and
+proteins. All of the  peptides of a single protein are should have
+the same parent probeset/protein. And peptides could be entered as
+"probes" in the same way that we did for Affymetrix.
+
+Arun—I wonder whether this hierarchy could be usefully combined to
+handle time-series data. Probably not ;-)
+In the case of probes and probesets there is almost never any overlap
+of probe sequence—all are disjoint. That is also usually true of
+peptides and proteins.
+
+Pjotr, the reason we have not added much probe level data to GN1 or GN2
+is because we did not have the bandwidth. Arthur simply did not have
+time and I did not push the issue. Instead we just started loading the
+probe level data separately as if they were probesets. This is what we
+have done for peptide data and the reason that there are now "parallel"
+data sets—one labeled "protein" and another as "peptide"  or as "gene
+level" and "exon level". We just collapse the hierarchy.

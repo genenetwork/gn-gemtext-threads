@@ -340,6 +340,7 @@ It took your browser 2.119 second(s) to render this page
 
 and it shows practically the same results.
 
+
 ## Table template
 
 Prototocol from
@@ -352,6 +353,27 @@ Every table update has to follow the template:
 
 * [ ] ascertain there is a backup
 * [ ] copy original files
+
+### Make temporary table
+
+If you have enough space, you can create a copy of the actual table and do the work on that:
+
+```
+CREATE TABLE new_tbl [AS] SELECT * FROM MYTABLE;
+```
+
+Then you can change the column as desired:
+
+```
+ALTER TABLE tbl_name MODIFY COLUMN col_name BIGINT AUTO_INCREMENT;
+```
+
+Once the process is done, you can rename the tables:
+
+```
+DROP MYTABLE;
+RENAME TABLE tbl_name TO new_tbl_name, tbl_name2 TO MYTABLE;
+```
 
 ### Check table structure
 

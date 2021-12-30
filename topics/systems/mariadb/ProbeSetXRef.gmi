@@ -1,6 +1,14 @@
 ## Table ProbeSetXRef
 
-Prototocol from
+Juggling indexes and transforming to InnoDB led to a massive speed increase for typical ProbeSetXRef queries increasing data from 3.3GB to 5.4GB (1.6x).
+
+It also turned out that a join on a mixed latin1 and utf8 field does not work which makes sense when you think about it. Locus joins against geno.name.
+
+The short of it is that it is ill advised to change the charset table by table! So, we'll stick with latin1 until we convert all tables. Needs proper testing anyway.
+
+Some optimisation is still possible - removing the Old columns and perhaps the Locus VARCHAR column can be reduced.
+
+Using prototocol from
 
 => ./move-to-innodb.gmi
 
@@ -87,7 +95,15 @@ The combination of
 select count(distinct ProbeSetFreezeId,ProbeSetId) from ProbeSetXRef limit 10;
 ```
 
-is unique.
+is unique. Now we should also notice that DataId is unique and will make a smaller primary index. It is wort trying to split the combined ('ProbeSetFreezeId','ProbeSetId') into two indices. I'll do that once we are on innodb. Oh wait, I have to set the primary key first, I don't think I can change that. Let's create a new table for testing:
+
+```
+CREATE TABLE mytest AS SELECT * FROM ProbeSetXRef;
+ALTER TABLE mytest ADD PRIMARY KEY(DataId);
+ALTER TABLE mytest ADD KEY(ProbeSetFreezeId);
+ALTER TABLE mytest ADD KEY(ProbeSetId);
+SHOW CREATE TABLE mytest;
+```
 
 
 ### Create test
@@ -112,7 +128,27 @@ MariaDB [db_webqtl]> select count(*) from ProbeSetXRef where ProbeSetFreezeId<30
 1 row in set (13.781 sec)
 ```
 
-Note the second query traverses the full file.
+And InnoDB mytest has a 3x speedup for the real query:
+
+```
+MariaDB [db_webqtl]>  select count(*) from ProbeSetXRef where ProbeSetFreezeId<200 and ProbeSetId<1000 and pValue>0.5;
++----------+
+| count(*) |
++----------+
+|    19068 |
++----------+
+1 row in set (1.748 sec)
+
+MariaDB [db_webqtl]>  select count(*) from mytest where ProbeSetFreezeId<200 and ProbeSetId<1000 and pValue>0.5;
++----------+
+| count(*) |
++----------+
+|    19068 |
++----------+
+1 row in set (0.445 sec)
+```
+
+Note the second query traverses the full file and the mytest version is the same speed.
 
 ### Create primary key
 
@@ -120,8 +156,6 @@ Note the second query traverses the full file.
 ALTER TABLE ProbeSetXRef
   ADD PRIMARY KEY(ProbeSetFreezeId,ProbeSetId);
 ```
-
-@@
 
 ```
 MariaDB [db_webqtl]> DROP INDEX ProbeSetId ON ProbeSetXRef;
@@ -138,9 +172,14 @@ ALTER TABLE ProbeSetXRef ENGINE = InnoDB;
 
 ### Change charset
 
+There are some text fields for locus, I think it is safe to translate those to utf8.
+
 ```
-ALTER TABLE ProbeSetSE CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+ALTER TABLE mytest CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+ALTER TABLE mytest ADD KEY(Locus(5));
 ```
+
+Note I specified a size for Locus to keep the index nimble.
 
 ### Update fulltext
 
@@ -149,7 +188,170 @@ For those cases see bottom of move-to-innodb.gmi.
 ### Run optimiser
 
 ```
-OPTIMIZE NO_WRITE_TO_BINLOG TABLE ProbeSetXRef;
+OPTIMIZE NO_WRITE_TO_BINLOG TABLE mytest;
 ```
 
+### Final table
+
+```
+RENAME TABLE ProbeSetXRef TO ProbeSetXRef2, mytest TO ProbeSetXRef;
+```
+
+```
+| mytest | CREATE TABLE 'mytest' (
+  'ProbeSetFreezeId' smallint(5) unsigned NOT NULL DEFAULT 0,
+  'ProbeSetId' int(10) unsigned NOT NULL DEFAULT 0,
+  'DataId' int(10) unsigned NOT NULL DEFAULT 0,
+  'Locus_old' char(20) DEFAULT NULL,
+  'LRS_old' double DEFAULT NULL,
+  'pValue_old' double DEFAULT NULL,
+  'mean' double DEFAULT NULL,
+  'se' double DEFAULT NULL,
+  'Locus' varchar(50) DEFAULT NULL,
+  'LRS' double DEFAULT NULL,
+  'pValue' double DEFAULT NULL,
+  'additive' double DEFAULT NULL,
+  'h2' float DEFAULT NULL,
+  PRIMARY KEY ('DataId'),
+  KEY 'ProbeSetFreezeId' ('ProbeSetFreezeId'),
+  KEY 'ProbeSetId' ('ProbeSetId'),
+  KEY 'Locus_2' ('Locus'(5))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 |
+```
+
+
 ### Check test
+
+```
+MariaDB [db_webqtl]> select count(*) from ProbeSetXRef where ProbeSetFreezeId<200 and ProbeSetId<1000 and pValue>0.5;
++----------+
+| count(*) |
++----------+
+|    19068 |
++----------+
+1 row in set (0.058 sec)
+```
+
+Now I had 3 pages open
+
+=> http://genenetwork.org/show_trait?trait_id=1427571_at&dataset=HC_M2_0606_P
+=> http://genenetwork.org/search?species=mouse&group=BXD&type=Hippocampus+mRNA&dataset=HC_M2_0606_P&search_terms_or=shh&search_terms_and=&FormID=searchResult
+=> http://genenetwork.org/gsearch?type=gene&terms=brca2
+
+The first two pages loaded the same. But the third (global search) took much longer than the 15 seconds it did before I modified ProbeSetXRef. Doh! It should be
+
+```
+It took the server 15.71517s seconds to process this page.
+It took your browser 0.598 second(s) to render this page
+```
+
+The query timed out, so I could look in the slow query log we have.
+
+(But first I added a standard test on sheepdog to make sure we see these regressions.)
+
+```
+vim /var/log/mysql/mysql-slow.log
+
+ # Time: 211230  8:20:36
+ # User@Host: webqtlout[webqtlout] @ localhost []
+ # Thread_id: 11771  Schema: db_webqtl  QC_hit: No
+ # Query_time: 470.965035  Lock_time: 0.000258  Rows_sent: 1017  Rows_examined: 115097830
+ # Rows_affected: 0  Bytes_sent: 253724
+SELECT ProbeSetFreeze.'Name', ProbeSetFreeze.'FullName', ProbeSet.'Name', ProbeSet.'Symbol', CAST(ProbeSet.'description' AS BINARY), CAST(ProbeSet.'Probe_Target_Description' AS BINARY), ProbeSet.'Chr', ProbeSet.'Mb', ProbeSetXRef.'Mean', ProbeSetXRef.'LRS', ProbeSetXRef.'Locus', ProbeSetXRef.'pValue', ProbeSetXRef.'additive', Geno.'Chr' as geno_chr, Geno.'Mb' as geno_mb FROM Species
+  INNER JOIN InbredSet ON InbredSet.'SpeciesId'= Species.'Id'
+  INNER JOIN ProbeFreeze ON ProbeFreeze.'InbredSetId' = InbredSet.'Id' INNER JOIN Tissue ON ProbeFreeze.'TissueId' = Tissue.'Id'
+  INNER JOIN ProbeSetFreeze ON ProbeSetFreeze.'ProbeFreezeId' = ProbeFreeze.'Id'
+  INNER JOIN ProbeSetXRef ON ProbeSetXRef.'ProbeSetFreezeId' = ProbeSetFreeze.'Id'
+  INNER JOIN ProbeSet ON ProbeSet.'Id' = ProbeSetXRef.'ProbeSetId'
+  LEFT JOIN Geno ON ProbeSetXRef.'Locus' = Geno.'Name' AND Geno.'SpeciesId' = Species.'Id'
+  WHERE ((((MATCH (ProbeSet.Name, ProbeSet.description, ProbeSet.symbol, alias, GenbankId, UniGeneId, Probe_Target_Description) AGAINST ('sh*' IN BOOLEAN MODE))) AND ProbeSet.Id = ProbeSetXRef.ProbeSetId and ProbeSetXRef.ProbeSetFreezeId = 112 )) and ProbeSet.Id = ProbeSetXRef.ProbeSetId and ProbeSetXRef.ProbeSetFreezeId = 112 ORDER BY ProbeSet.symbol ASC;
+```
+
+this is a different query which logs after a >60s query (it is one of my monitors looking for 'sh*'. This is an interesting one to look at, but it does not match my query.
+
+The actual query showed up as
+
+```
+SELECT
+                Species.'Name' AS species_name,
+                InbredSet.'Name' AS inbredset_name,
+                Tissue.'Name' AS tissue_name,
+                ProbeSetFreeze.Name AS probesetfreeze_name,
+                ProbeSetFreeze.FullName AS probesetfreeze_fullname,
+                ProbeSet.Name AS probeset_name,
+                ProbeSet.Symbol AS probeset_symbol,
+                CAST(ProbeSet.'description' AS BINARY) AS probeset_description,
+                ProbeSet.Chr AS chr,
+                ProbeSet.Mb AS mb,
+                ProbeSetXRef.Mean AS mean,
+                ProbeSetXRef.LRS AS lrs,
+                ProbeSetXRef.'Locus' AS locus,
+                ProbeSetXRef.'pValue' AS pvalue,
+                ProbeSetXRef.'additive' AS additive,
+                ProbeSetFreeze.Id AS probesetfreeze_id,
+                Geno.Chr as geno_chr,
+                Geno.Mb as geno_mb
+                FROM Species
+                INNER JOIN InbredSet ON InbredSet.'SpeciesId'=Species.'Id'
+                INNER JOIN ProbeFreeze ON ProbeFreeze.InbredSetId=InbredSet.'Id'
+                INNER JOIN Tissue ON ProbeFreeze.'TissueId'=Tissue.'Id'
+                INNER JOIN ProbeSetFreeze ON ProbeSetFreeze.ProbeFreezeId=ProbeFreeze.Id
+                INNER JOIN ProbeSetXRef ON ProbeSetXRef.ProbeSetFreezeId=ProbeSetFreeze.Id
+                INNER JOIN ProbeSet ON ProbeSet.Id = ProbeSetXRef.ProbeSetId
+                LEFT JOIN Geno ON ProbeSetXRef.Locus = Geno.Name AND Geno.SpeciesId = Species.Id
+                WHERE ( MATCH (ProbeSet.Name,ProbeSet.description,ProbeSet.symbol,ProbeSet.alias,ProbeSet.GenbankId, ProbeSet.UniGeneId, ProbeSet.Probe_Target_Description) AGAINST ('brca2' IN BOOLEAN MODE) )
+                AND ProbeSetFreeze.confidentiality < 1
+                AND ProbeSetFreeze.public > 0
+                ORDER BY species_name, inbredset_name, tissue_name, probesetfreeze_name, probeset_name
+                LIMIT 6000;
+```
+
+which looks somewhat similar. There are some joins and I think my index size restriction of Locus(5) may be the problem here. The INNER JOIN keyword selects records that have matching values in both tables, so maybe the Locus has trouble matching.
+
+Add a full index:
+
+```
+ALTER TABLE ProbeSetXRef ADD KEY(Locus);
+```
+
+The alternative is that mixed innodb and myisam joins are expensive, or more likely the mixed charsets are not playing well. I can try the EXPLAIN statement next.
+
+Well, it turned out that a join on a mixed latin1 and utf8 field does not work which makes sense when you think about it. It joins against geno.name. Now in GN geno.name is usally compared against a string or ProbeSetXRef.locus.
+
+The short of it is that it is ill advised to change the charset table by table! So, we'll stick with latin1 until we convert all tables. Grrrr.
+
+
+```
+SELECT
+                Species.`Name` AS species_name,
+                InbredSet.`Name` AS inbredset_name,
+                Tissue.`Name` AS tissue_name,
+                ProbeSetFreeze.Name AS probesetfreeze_name,
+                ProbeSetFreeze.FullName AS probesetfreeze_fullname,
+                ProbeSet.Name AS probeset_name,
+                ProbeSet.Symbol AS probeset_symbol,
+                CAST(ProbeSet.`description` AS BINARY) AS probeset_description,
+                ProbeSet.Chr AS chr,
+                ProbeSet.Mb AS mb,
+                mytest.Mean AS mean,
+                mytest.LRS AS lrs,
+                mytest.`Locus` AS locus,
+                mytest.`pValue` AS pvalue,
+                mytest.`additive` AS additive,
+                ProbeSetFreeze.Id AS probesetfreeze_id,
+                Geno.Chr as geno_chr,
+                Geno.Mb as geno_mb
+                FROM Species
+                INNER JOIN InbredSet ON InbredSet.`SpeciesId`=Species.`Id`
+                INNER JOIN ProbeFreeze ON ProbeFreeze.InbredSetId=InbredSet.`Id`
+                INNER JOIN Tissue ON ProbeFreeze.`TissueId`=Tissue.`Id`
+                INNER JOIN ProbeSetFreeze ON ProbeSetFreeze.ProbeFreezeId=ProbeFreeze.Id
+                INNER JOIN mytest ON mytest.ProbeSetFreezeId=ProbeSetFreeze.Id
+                INNER JOIN ProbeSet ON ProbeSet.Id = mytest.ProbeSetId
+                LEFT JOIN Geno ON mytest.Locus = Geno.Name AND Geno.SpeciesId = Species.Id
+                WHERE ( MATCH (ProbeSet.Name,ProbeSet.description,ProbeSet.symbol,ProbeSet.alias,ProbeSet.GenbankId, ProbeSet.UniGeneId, ProbeSet.Probe_Target_Description) AGAINST ("brca2" IN BOOLEAN MODE) )
+                AND ProbeSetFreeze.confidentiality < 1
+                AND ProbeSetFreeze.public > 0
+                ORDER BY species_name, inbredset_name, tissue_name, probesetfreeze_name, probeset_name
+                LIMIT 600;
+```
