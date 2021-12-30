@@ -355,3 +355,5 @@ SELECT
                 ORDER BY species_name, inbredset_name, tissue_name, probesetfreeze_name, probeset_name
                 LIMIT 600;
 ```
+
+Should run 600 rows in set (11.638 sec)
