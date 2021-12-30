@@ -60,18 +60,74 @@ MariaDB [db_webqtl]> select count(*) from ProbeSetXRef;
 
 ```
 rg ProbeSetXRef --color=always |less -R
+rg ProbeSetXRef --type=py -l|fzf --preview="rg --color=always -A 20 ProbeSetXRef {}" --preview-window=right:85%:wrap
 ```
+
+In SQL where statements these are usually combined
+
+ProbeSetXRef.ProbeSetFreezeId
+ProbeSetXRef.ProbeSetId
+
+and sometimes
+
+ProbeSetXRef.DataId
+ProbeSetXRef.Locus
+
+As can be seen from above table definition the indices are matching
+
+```
+  UNIQUE KEY 'ProbeSetId' ('ProbeSetFreezeId','ProbeSetId'),
+  UNIQUE KEY 'DataId_IDX' ('DataId'),
+  KEY 'Locus_IDX' ('Locus')
+```
+
+The combination of
+
+```
+select count(distinct ProbeSetFreezeId,ProbeSetId) from ProbeSetXRef limit 10;
+```
+
+is unique.
+
 
 ### Create test
 
 Some select statement and maybe a page of GN2.
 
+```
+MariaDB [db_webqtl]> select count(*) from ProbeSetXRef where ProbeSetFreezeId<200 and ProbeSetId<1000 and pValue>0.5;
++----------+
+| count(*) |
++----------+
+|    19068 |
++----------+
+1 row in set (1.752 sec)
+
+MariaDB [db_webqtl]> select count(*) from ProbeSetXRef where ProbeSetFreezeId<300 and ProbeSetId<1000 and pValue>0.5;
++----------+
+| count(*) |
++----------+
+|    19068 |
++----------+
+1 row in set (13.781 sec)
+```
+
+Note the second query traverses the full file.
+
 ### Create primary key
 
 ```
 ALTER TABLE ProbeSetXRef
-  ADD PRIMARY KEY(col1,col2);
+  ADD PRIMARY KEY(ProbeSetFreezeId,ProbeSetId);
 ```
+
+@@
+
+```
+MariaDB [db_webqtl]> DROP INDEX ProbeSetId ON ProbeSetXRef;
+MariaDB [db_webqtl]> show index from ProbeSetXRef;
+```
+
 
 ### Create indices
 ### Convert to innodb

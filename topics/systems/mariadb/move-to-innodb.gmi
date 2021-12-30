@@ -348,6 +348,11 @@ Prototocol from
 
 Every table update has to follow the template:
 
+### Check recent backups
+
+* [ ] ascertain there is a backup
+* [ ] copy original files
+
 ### Check table structure
 
 ```
@@ -366,6 +371,7 @@ select count(*) from MYTABLE;
 
 ```
 rg MYTABLE --color=always |less -R
+rg MYTABLE --type=py -l|fzf --preview="rg --color=always -A 20 MYTABLE {}" --preview-window=right:85%:wrap
 ```
 
 ### Create test
@@ -380,6 +386,12 @@ ALTER TABLE MYTABLE
 ```
 
 ### Create indices
+
+```
+SHOW INDEX FROM MYTABLE;
+DROP INDEX ProbeSetId ON MYTABLE;
+```
+
 ### Convert to innodb
 
 ```
