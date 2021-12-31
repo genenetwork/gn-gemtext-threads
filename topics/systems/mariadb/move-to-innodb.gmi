@@ -389,6 +389,8 @@ select * from MYTABLE limit 2;
 select count(*) from MYTABLE;
 ```
 
+Do this also on Penguin2.
+
 ### Check GN1,2,3 code for use of table
 
 ```

@@ -1,12 +1,24 @@
 ## Table ProbeSetXRef
 
-Juggling indexes and transforming to InnoDB led to a massive speed increase for typical ProbeSetXRef queries increasing data from 3.3GB to 5.4GB (1.6x).
+Juggling indexes and transforming to InnoDB led to a massive speed increase for typical ProbeSetXRef queries. Global search for brca2 went down from 13s to 4s! Try
 
-It also turned out that a join on a mixed latin1 and utf8 field does not work which makes sense when you think about it. Locus joins against geno.name.
+=> http://genenetwork.org/gsearch?type=gene&terms=brca2
+
+Not only global search is faster, *all* search is significantly faster.
+
+=> http://genenetwork.org/search?species=mouse&group=BXD&type=Hippocampus+mRNA&dataset=HC_M2_0606_P&search_terms_or=sh*&search_terms_and=&FormID=searchResult
+
+File data size increased from 3.3GB to 5.4GB (1.6x).
+
+Note that the full wildcard '*' search throws an error or empty results. That needs a fix.
+
+A primary key index was introduced (required by innodb) and joined indexes were split in two. I also reduced the text index to 5 characters for each locus to reduce the data pump.
+
+It turned out that a join on a mixed latin1 and utf8 field does not work which makes sense when you think about it. Here ProbeSetXRef.locus joins against geno.name.
 
 The short of it is that it is ill advised to change the charset table by table! So, we'll stick with latin1 until we convert all tables. Needs proper testing anyway.
 
-Some optimisation is still possible - removing the Old columns and perhaps the Locus VARCHAR column can be reduced.
+Some optimisation is still possible - removing the Old columns and perhaps the Locus VARCHAR column can be reduced in size.
 
 Using prototocol from
 
@@ -194,7 +206,7 @@ OPTIMIZE NO_WRITE_TO_BINLOG TABLE mytest;
 ### Final table
 
 ```
-RENAME TABLE ProbeSetXRef TO ProbeSetXRef2, mytest TO ProbeSetXRef;
+RENAME TABLE ProbeSetXRef TO ProbeSetXRef_old, mytest TO ProbeSetXRef;
 ```
 
 ```
@@ -318,33 +330,33 @@ The alternative is that mixed innodb and myisam joins are expensive, or more lik
 
 Well, it turned out that a join on a mixed latin1 and utf8 field does not work which makes sense when you think about it. It joins against geno.name. Now in GN geno.name is usally compared against a string or ProbeSetXRef.locus.
 
-The short of it is that it is ill advised to change the charset table by table! So, we'll stick with latin1 until we convert all tables. Grrrr.
+The short of it is that it is ill advised to change the charset table by table! So, we'll stick with latin1 until we convert all tables.
 
 
 ```
 SELECT
-                Species.`Name` AS species_name,
-                InbredSet.`Name` AS inbredset_name,
-                Tissue.`Name` AS tissue_name,
+                Species.'Name' AS species_name,
+                InbredSet.'Name' AS inbredset_name,
+                Tissue.'Name' AS tissue_name,
                 ProbeSetFreeze.Name AS probesetfreeze_name,
                 ProbeSetFreeze.FullName AS probesetfreeze_fullname,
                 ProbeSet.Name AS probeset_name,
                 ProbeSet.Symbol AS probeset_symbol,
-                CAST(ProbeSet.`description` AS BINARY) AS probeset_description,
+                CAST(ProbeSet.'description' AS BINARY) AS probeset_description,
                 ProbeSet.Chr AS chr,
                 ProbeSet.Mb AS mb,
                 mytest.Mean AS mean,
                 mytest.LRS AS lrs,
-                mytest.`Locus` AS locus,
-                mytest.`pValue` AS pvalue,
-                mytest.`additive` AS additive,
+                mytest.'Locus' AS locus,
+                mytest.'pValue' AS pvalue,
+                mytest.'additive' AS additive,
                 ProbeSetFreeze.Id AS probesetfreeze_id,
                 Geno.Chr as geno_chr,
                 Geno.Mb as geno_mb
                 FROM Species
-                INNER JOIN InbredSet ON InbredSet.`SpeciesId`=Species.`Id`
-                INNER JOIN ProbeFreeze ON ProbeFreeze.InbredSetId=InbredSet.`Id`
-                INNER JOIN Tissue ON ProbeFreeze.`TissueId`=Tissue.`Id`
+                INNER JOIN InbredSet ON InbredSet.'SpeciesId'=Species.'Id'
+                INNER JOIN ProbeFreeze ON ProbeFreeze.InbredSetId=InbredSet.'Id'
+                INNER JOIN Tissue ON ProbeFreeze.'TissueId'=Tissue.'Id'
                 INNER JOIN ProbeSetFreeze ON ProbeSetFreeze.ProbeFreezeId=ProbeFreeze.Id
                 INNER JOIN mytest ON mytest.ProbeSetFreezeId=ProbeSetFreeze.Id
                 INNER JOIN ProbeSet ON ProbeSet.Id = mytest.ProbeSetId
@@ -352,8 +364,30 @@ SELECT
                 WHERE ( MATCH (ProbeSet.Name,ProbeSet.description,ProbeSet.symbol,ProbeSet.alias,ProbeSet.GenbankId, ProbeSet.UniGeneId, ProbeSet.Probe_Target_Description) AGAINST ("brca2" IN BOOLEAN MODE) )
                 AND ProbeSetFreeze.confidentiality < 1
                 AND ProbeSetFreeze.public > 0
-                ORDER BY species_name, inbredset_name, tissue_name, probesetfreeze_name, probeset_name
-                LIMIT 600;
+                ORDER BY species_name, inbredset_name, tissue_name, probesetfreeze_name,  probeset_name LIMIT 600;
 ```
 
 Should run 600 rows in set (11.638 sec)
+
+Changing the index now does 6000 rows in set (0.240 sec)!
+
+The new table structure is
+
+```
+| ProbeSetXRef | CREATE TABLE 'ProbeSetXRef' (
+  'ProbeSetFreezeId' smallint(5) unsigned NOT NULL DEFAULT 0,
+  'ProbeSetId' int(10) unsigned NOT NULL DEFAULT 0,
+  'DataId' int(10) unsigned NOT NULL DEFAULT 0,
+  'Locus_old' char(20) DEFAULT NULL,
+  'LRS_old' double DEFAULT NULL,
+  'pValue_old' double DEFAULT NULL,
+  'mean' double DEFAULT NULL,
+  'se' double DEFAULT NULL,                                                                                              'Locus' varchar(50) DEFAULT NULL,                                                                                      'LRS' double DEFAULT NULL,
+  'pValue' double DEFAULT NULL,
+  'additive' double DEFAULT NULL,                                                                                        'h2' float DEFAULT NULL,
+  PRIMARY KEY ('DataId'),
+  KEY 'ProbeSetFreezeId' ('ProbeSetFreezeId'),
+  KEY 'ProbeSetId' ('ProbeSetId'),
+  KEY 'Locus_2' ('Locus'(5))
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 |
+```
