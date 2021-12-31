@@ -1,0 +1,170 @@
+# ProbeSetData
+
+This is by far the largest table (~100Gb). I need to add disk space to be able to host it on the NVME.
+
+Prototocol from
+
+=> ./move-to-innodb.gmi
+
+Every table update has to follow the template:
+
+### Check recent backups
+
+* [X] ascertain there is a backup
+* [ ] copy original files
+
+### Make temporary table
+
+If you have enough space, you can create a copy of the actual table and do the work on that:
+
+```
+CREATE TABLE mytest AS SELECT * FROM ProbeSetData;
+```
+
+Then you can change the column as desired:
+
+```
+ALTER TABLE tbl_name MODIFY COLUMN col_name BIGINT AUTO_INCREMENT;
+```
+
+Once the process is done, you can rename the tables:
+
+```
+DROP ProbeSetData;
+RENAME TABLE tbl_name TO new_tbl_name, tbl_name2 TO ProbeSetData;
+```
+
+### Check table structure
+
+```
+SHOW CREATE TABLE ProbeSetData;
+```
+
+A really simple table
+
+```
+| ProbeSetData | CREATE TABLE 'ProbeSetData' (
+  'Id' int(10) unsigned NOT NULL DEFAULT 0,
+  'StrainId' int(20) NOT NULL,
+  'value' float NOT NULL,
+  UNIQUE KEY 'DataId' ('Id','StrainId'),
+  KEY 'strainid' ('StrainId')
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 |
+```
+
+```
+MariaDB [db_webqtl]> select * from ProbeSetData limit 2;
++----+----------+-------+
+| Id | StrainId | value |
++----+----------+-------+
+|  1 |        1 | 5.742 |
+|  1 |        2 | 5.006 |
++----+----------+-------+
+2 rows in set (0.000 sec)
+```
+
+But large
+
+```
+MariaDB [db_webqtl]> select count(*) from ProbeSetData;
++------------+
+| count(*)   |
++------------+
+| 5141631478 |
++------------+
+1 row in set (0.000 sec)
+
+```
+
+Do this also on Penguin2.
+
+```
+| ProbeSetData | CREATE TABLE 'ProbeSetData' (
+  'Id' int(10) unsigned NOT NULL DEFAULT 0,
+  'StrainId' smallint(5) unsigned NOT NULL DEFAULT 0,
+  'value' float NOT NULL,
+  UNIQUE KEY 'DataId' ('Id','StrainId')
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 |
+```
+
+The table layout is a bit puzzling.
+
+```
+MariaDB [db_webqtl]> select max(StrainId) from ProbeSetData;
++---------------+
+| max(StrainId) |
++---------------+
+|         65777 |
++---------------+
+MariaDB [db_webqtl]> select max(Id) from ProbeSetData;
++----------+
+| max(Id)  |
++----------+
+| 91406791 |
++----------+
+```
+
+For StrainID MediumInt is a better fit with unsigned range is 0 to 16777215 and Id should be a INT (instead of BIGINT for the time being). That will make the table+indices smaller and faster.
+
+### Check GN1,2,3 code for use of table
+
+```
+rg ProbeSetData --color=always |less -R
+rg ProbeSetData --type=py -l|fzf --preview="rg --color=always -A 20 ProbeSetData {}" --preview-window=right:85%:wrap
+```
+
+No surprises from the code scan.
+
+### Create test
+
+Some select statement and maybe a page of GN2.
+
+The tests we can share from ProbeSetXRef.
+
+Page of GN2 is the mapping page, e.g.
+
+=> http://genenetwork.org/show_trait?trait_id=1427571_at&dataset=HC_M2_0606_P
+
+### Create primary key
+
+```
+ALTER TABLE ProbeSetData
+  ADD PRIMARY KEY(col1,col2);
+```
+
+### Create indices
+
+```
+SHOW INDEX FROM ProbeSetData;
+DROP INDEX ProbeSetId ON ProbeSetData;
+```
+
+### Convert to innodb
+
+```
+ALTER TABLE ProbeSetData ENGINE = InnoDB;
+```
+
+### Change charset
+
+```
+ALTER TABLE ProbeSetSE CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+```
+
+### Update fulltext
+
+For those cases see bottom of move-to-innodb.gmi.
+
+### Run optimiser
+
+```
+OPTIMIZE NO_WRITE_TO_BINLOG TABLE ProbeSetData;
+```
+
+After running the optimiser rename the tables
+
+```
+RENAME TABLE orig TO orig_old, mytest TO orig;
+```
+
+### Check test

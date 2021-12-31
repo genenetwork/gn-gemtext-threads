@@ -438,6 +438,12 @@ For those cases see bottom of move-to-innodb.gmi.
 OPTIMIZE NO_WRITE_TO_BINLOG TABLE MYTABLE;
 ```
 
+After running the optimiser rename the tables
+
+```
+RENAME TABLE orig TO orig_old, mytest TO orig;
+```
+
 ### Check test
 
 ## ProbeSetXRef
