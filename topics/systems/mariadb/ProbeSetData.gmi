@@ -106,6 +106,8 @@ MariaDB [db_webqtl]> select max(Id) from ProbeSetData;
 
 For StrainID MediumInt is a better fit with unsigned range is 0 to 16777215 and Id should be a INT (instead of BIGINT for the time being). That will make the table+indices smaller and faster.
 
+When a value overflows MariaDB will throw an error. So even if we grow out of values we can quickly resize the table in, say, 10 years. That is, if we are still using SQL.
+
 ### Check GN1,2,3 code for use of table
 
 ```
