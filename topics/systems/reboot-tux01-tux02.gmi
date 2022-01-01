@@ -1,0 +1,40 @@
+# Rebooting the GN production machine(s)
+
+I needed to add the hard disks in the BIOS to make them visible - one of the annoying aspects of these Dell machines. First on Tux02 I cheched the borg backups to see if we have a recent copy of MariaDB, GN2 etc. The DB is from 2 days ago and the genotypes of GN2 are a week old (because of a permission problem). I'll add a copy by hand of both - an opportunity to test the new 10Gbs router.
+
+# Tasks
+
+Before rebooting
+
+On Tux02:
+
+* [X] Check backups of DB and services
+* [X] Copy trees between machines
+
+On both:
+
+* [X] Check network interface definitions (what happens on reboot)
+* [X] Check IPMI access - should get serial login
+
+
+# Info
+
+## Routing
+
+On tux02 eno2d1 is the 10Gbs network interface. Unfortunately I can't get it to connect at 10Gbs with Tux01 because the latter is using that port for the outside world.
+
+Playing with 10Gbs on Tux01 sent the hardware in a tail spin, what to think of this solution on
+
+```
+bnxt_en 0000:01:00.1 (unnamed net_device) (uninitialized): Error (timeout: 500015) msg {0x0 0x0} len:0
+
+Solution was to power down the server(s) and *remove* power cords for 5 minutes.
+```
+
+=> https://www.dell.com/community/PowerEdge-Hardware-General/Critical-network-bnxt-en-module-crashes-on-14G-servers/td-p/6031769
+
+The Linux kernel shows some fixes that are not on Tux01 yet
+
+=> https://lkml.org/lkml/2021/2/17/970
+
+In our case a simple reboot worked, fortunately.

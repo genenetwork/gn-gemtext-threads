@@ -1,13 +1,24 @@
 # Octopus sysmaintenance
 
-## Tags
+# Tags
 
 * assigned: pjotrp, efraimf, erikg
 
-## Tasks
+# Tasks
 
 * [X] install sheepdog
 * [X] run borg backup
 * [X] propagate backup to rabbit
 * [X] fix redis updates - use rev tunnel
 * [X] check other dirs
+
+# Info
+
+Intermediate routing on Octopus08
+
+```
+default via 172.23.16.1 dev ens1f0np0
+172.23.16.0/21 dev ens1f0np0 proto kernel scope link src 172.23.17.24
+172.23.16.0/21 dev eno1 proto kernel scope link src 172.23.18.68
+172.23.16.0/21 dev eno2 proto kernel scope link src 172.23.17.134
+```
