@@ -9,10 +9,10 @@ Main problem are fulltext columns, the text from Trello is captured below. This 
 Initial good candidates are (from issues/database-not-responding):
 
 * Good candidates
-  + 2.1G Dec  4 22:15 ProbeSetXRef.MYD
+  + 2.1G Dec  4 22:15 ProbeSetXRef.MYD (done!)
   + 2.3G Dec 18 14:56 ProbeSet.MYD - with fulltext column
   + 2.6G Aug 27  2019 ProbeSE.MYD (used?)
-  + 7.1G Nov  2 05:07 ProbeSetSE.MYD (done)
+  + 7.1G Nov  2 05:07 ProbeSetSE.MYD (done!)
   +  11G Aug 27  2019 ProbeData.MYD (used?)
   +  63G Dec  4 22:15 ProbeSetData.MYD
 
