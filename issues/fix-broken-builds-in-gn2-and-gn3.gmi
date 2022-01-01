@@ -3,6 +3,8 @@
 Right now, for both gn2 and gn3, we have broken builds(red) for both
 gn3 and gn2.
 
+Note: Pjotr made the build work again. Pushed to guix-bioinformatics.
+
 ## Tasks
 
 * assigned: bonfacekilz, efraim
