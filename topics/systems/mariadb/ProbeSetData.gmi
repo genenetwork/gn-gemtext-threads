@@ -6,6 +6,31 @@ I disabled these and they need to be restored:
 
 * [ ] binary log
 * [ ] backup script
+* [ ] flush db
+* [ ] cron system-check
+* [ ] systemd MYSQLD_OPTS setting
+
+The following fetches the data to be used for mapping:
+
+SELECT
+                            Strain.Name, ProbeSetData.value, ProbeSetSE.error, NStrain.count, Strain.Name2
+                    FROM
+                            (ProbeSetData, ProbeSetFreeze,
+                             Strain, ProbeSet, ProbeSetXRef)
+                    left join ProbeSetSE on
+                            (ProbeSetSE.DataId = ProbeSetData.Id AND ProbeSetSE.StrainId = ProbeSetData.StrainId)
+                    left join NStrain on
+                            (NStrain.DataId = ProbeSetData.Id AND
+                            NStrain.StrainId = ProbeSetData.StrainId)
+                    WHERE
+                            ProbeSet.Name = '4336695' AND ProbeSetXRef.ProbeSetId = ProbeSet.Id AND
+                            ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id AND
+                            ProbeSetFreeze.Name = 'UMUTAffyExon_0209_RMA' AND
+                            ProbeSetXRef.DataId = ProbeSetData.Id AND
+                            ProbeSetData.StrainId = Strain.Id
+                    Order BY
+                            Strain.Name;
+
 
 Prototocol from
 
@@ -27,6 +52,14 @@ Every table update has to follow the template:
 
 ### Make temporary table
 
+```
+mysql 1.5K Jun 27  2021 ProbeSetData.frm
+mysql  63G Dec  4 22:15 ProbeSetData.MYD
+mysql 118G Dec 28 08:52 ProbeSetData.MYI
+mysql 1.5K Jan  1 20:45 mytest.frm
+mysql  20G Jan  1 21:34 mytest.ibd
+```
+
 If you have enough space, you can create a copy of the actual table and do the work on that:
 
 Original:
@@ -47,7 +80,7 @@ New:
 DROP table mytest;
 CREATE table mytest(
   Id INT unsigned NOT NULL DEFAULT 0,
-  StrainId MediumINT unsigned NOT NULL,
+  StrainId MediumINT unsigned NOT NULL DEFAULT 0,
   value float NOT NULL,
   primary key(Id,StrainId),
   key (StrainId)) CHARACTER SET utf8mb4;
@@ -56,10 +89,10 @@ CREATE table mytest(
 And fill it killing quite a few birds with one stone :). You may want to disable the binary logger before running:
 
 ```
-INSERT INTO mytest (Id,StrainId,value) SELECT Id,StrainId,value FROM ProbeSetData;
+INSERT INTO mytest1 (Id,StrainId,value) SELECT Id,StrainId,value FROM ProbeSetData LIMIT 51631478;
 ```
 
-(it may be faster to use mysqldump for this!).
+Makes a table at 1% of size - a table of 2.3GB. I wonder why the full thing took up 330Gb before we ran out of disk space.
 
 Once the process is done, you can rename the tables:
 
@@ -218,3 +251,7 @@ RENAME TABLE orig TO orig_old, mytest TO orig;
 ```
 
 ### Check test
+
+## Notes
+
+I found it is a bad idea to remove large .ibd files by hand because mariadb wants to recreate them to play the transaction log.
