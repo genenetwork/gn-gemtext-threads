@@ -8,7 +8,7 @@ This time I failed porting to InnoDB. Next time:
 * [ ] Run second instance of mariadb, upgrade too
 * [ ] Export a small version of ISAM to ISAM
 * [ ] Try different sizes of innodb exports
-* [ ] Make conversion and test performance
+* [ ] Make (ordered) conversion and test performance
 * [ ] Muck out ibdata1 and transaction logs
 
 I disabled these and they need to be restored:
