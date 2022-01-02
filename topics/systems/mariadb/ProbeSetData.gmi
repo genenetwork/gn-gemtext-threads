@@ -4,14 +4,15 @@ This is by far the largest table (~100Gb). I need to add disk space to be able t
 
 I disabled these and they need to be restored:
 
-* [ ] binary log
-* [ ] backup script
-* [ ] flush db
-* [ ] cron system-check
-* [ ] systemd MYSQLD_OPTS setting
+* [X] binary log
+* [X] backup script
+* [ ] flush db - leave that off for now
+* [X] cron system-check
+* [X] systemd MYSQLD_OPTS setting
 
 The following fetches the data to be used for mapping:
 
+```
 SELECT
                             Strain.Name, ProbeSetData.value, ProbeSetSE.error, NStrain.count, Strain.Name2
                     FROM
@@ -30,7 +31,7 @@ SELECT
                             ProbeSetData.StrainId = Strain.Id
                     Order BY
                             Strain.Name;
-
+```
 
 Prototocol from
 
@@ -77,22 +78,34 @@ Original:
 New:
 
 ```
-DROP table mytest;
-CREATE table mytest(
+DROP table mytest2;
+CREATE table mytest2(
   Id INT unsigned NOT NULL DEFAULT 0,
-  StrainId MediumINT unsigned NOT NULL DEFAULT 0,
+  StrainId MEDIUMINT unsigned NOT NULL DEFAULT 0,
   value float NOT NULL,
   primary key(Id,StrainId),
-  key (StrainId)) CHARACTER SET utf8mb4;
+  key (StrainId)) CHARACTER SET utf8mb4 ;
 ```
+
+Note loading latin1 is slower than utf8! I tried.
 
 And fill it killing quite a few birds with one stone :). You may want to disable the binary logger before running:
 
 ```
-INSERT INTO mytest1 (Id,StrainId,value) SELECT Id,StrainId,value FROM ProbeSetData LIMIT 51631478;
+INSERT INTO mytest2 (Id,StrainId,value) SELECT Id,StrainId,value FROM ProbeSetData LIMIT 51631478;
 ```
 
+
 Makes a table at 1% of size - a table of 2.3GB. I wonder why the full thing took up 330Gb before we ran out of disk space.
+
+Show progress
+
+```
+SELECT TABLE_SCHEMA,TABLE_NAME,DATA_LENGTH,AVG_ROW_LENGTH,TABLE_ROWS FROM information_schema.TABLE
+S WHERE DATA_LENGTH>1000000000 order by data_length;
+```
+
+May add order by Id,StrainID next time.
 
 Once the process is done, you can rename the tables:
 
