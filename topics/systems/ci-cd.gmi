@@ -56,7 +56,10 @@ Below are some possible steps (and tasks) to undertake for automated deployment
 
 - Triggered by a commit to "main" branch (for now)
 - Trigger build of the package
-- Run unit tests as part of the build: maybe the testing phase should be added to the genenetwork3 definition
+- Run unit tests as part of the build:
+  - This has been done with the laminar scripts under `scripts/laminar` in genenetwork3
+  - Maybe just change the command to ensure only specific tests are run,
+    especially when we add in non-functional tests and the like
 - If the build fails (tests fail, other failures): abort and send notifications to development team
 - If build succeeds, go to STEP 02
 
