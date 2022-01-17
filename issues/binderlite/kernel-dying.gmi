@@ -1,0 +1,83 @@
+# R Kernel Dying
+
+```
+[I 08:45:24.502 NotebookApp] Writing notebook-signing key to /home/jgart/.local/share/jupyter/notebook_secret
+[W 08:45:24.515 NotebookApp] Notebook 2020-05-08/solberg-rat-analysis.ipynb is not trusted
+[I 08:45:28.461 NotebookApp] Kernel started: fa3a1499-1eeb-405a-aca9-14087083a678, name: ir
+OpenBLAS blas_thread_init: pthread_create failed for thread 25 of 56: Resource temporarily unavailable
+OpenBLAS blas_thread_init: RLIMIT_NPROC 1031389 current, 1031389 max
+[W 08:45:28.585 NotebookApp] No session ID specified
+[I 08:45:31.460 NotebookApp] KernelRestarter: restarting kernel (1/5), new random ports
+[I 08:45:34.473 NotebookApp] KernelRestarter: restarting kernel (2/5), new random ports
+[I 08:45:37.485 NotebookApp] KernelRestarter: restarting kernel (3/5), new random ports
+[I 08:45:40.498 NotebookApp] KernelRestarter: restarting kernel (4/5), new random ports
+[W 08:45:43.509 NotebookApp] KernelRestarter: restart failed
+[W 08:45:43.510 NotebookApp] Kernel fa3a1499-1eeb-405a-aca9-14087083a678 died, removing from map.
+[W 08:45:49.650 NotebookApp] No session ID specified
+[W 08:45:49.651 NotebookApp] 404 GET /53107/api/kernels/fa3a1499-1eeb-405a-aca9-14087083a678/channels (127.0.0.1): Kernel does not exist: fa3a1499-1eeb-405a-aca9-14087083a678
+[W 08:45:49.668 NotebookApp] 404 GET /53107/api/kernels/fa3a1499-1eeb-405a-aca9-14087083a678/channels (127.0.0.1) 21.160000ms referer=None
+[W 08:45:51.860 NotebookApp] No session ID specified
+[W 08:45:51.861 NotebookApp] 404 GET /53107/api/kernels/fa3a1499-1eeb-405a-aca9-14087083a678/channels (127.0.0.1): Kernel does not exist: fa3a1499-1eeb-405a-aca9-14087083a678
+[W 08:45:51.863 NotebookApp] 404 GET /53107/api/kernels/fa3a1499-1eeb-405a-aca9-14087083a678/channels (127.0.0.1) 5.490000ms referer=None
+[W 08:45:55.993 NotebookApp] No session ID specified
+[W 08:45:55.994 NotebookApp] 404 GET /53107/api/kernels/fa3a1499-1eeb-405a-aca9-14087083a678/channels (127.0.0.1): Kernel does not exist: fa3a1499-1eeb-405a-aca9-14087083a678
+[W 08:45:55.996 NotebookApp] 404 GET /53107/api/kernels/fa3a1499-1eeb-405a-aca9-14087083a678/channels (127.0.0.1) 5.340000ms referer=None
+[W 08:46:04.263 NotebookApp] No session ID specified
+[W 08:46:04.263 NotebookApp] 404 GET /53107/api/kernels/fa3a1499-1eeb-405a-aca9-14087083a678/channels (127.0.0.1): Kernel does not exist: fa3a1499-1eeb-405a-aca9-14087083a678
+[W 08:46:04.266 NotebookApp] 404 GET /53107/api/kernels/fa3a1499-1eeb-405a-aca9-14087083a678/channels (127.0.0.1) 5.980000ms referer=None
+```
+
+# Python Kernel Dying
+
+[W 08:46:20.401 NotebookApp] No session ID specified
+[W 08:46:20.401 NotebookApp] 404 GET /53107/api/kernels/fa3a1499-1eeb-405a-aca9-14087083a678/channels (127.0.0.1): Kernel does not exist: fa3a1499-1eeb-405a-aca9-14087083a678
+[W 08:46:20.404 NotebookApp] 404 GET /53107/api/kernels/fa3a1499-1eeb-405a-aca9-14087083a678/channels (127.0.0.1) 6.010000ms referer=None
+```
+
+```
+/[W 08:47:56.695 NotebookApp] No session ID specified
+[W 08:47:56.695 NotebookApp] 404 GET /53107/api/kernels/fa3a1499-1eeb-405a-aca9-14087083a678/channels (127.0.0.1): Kernel does not exist: fa3a1499-1eeb-405a-aca9-14087083a678
+[W 08:47:56.697 NotebookApp] 404 GET /53107/api/kernels/fa3a1499-1eeb-405a-aca9-14087083a678/channels (127.0.0.1) 3.750000ms referer=None
+[I 08:48:00.242 NotebookApp] Writing notebook server cookie secret to /home/jgart/.local/share/jupyter/runtime/notebook_cookie_secret
+[I 08:48:00.242 NotebookApp] Authentication of /metrics is OFF, since other authentication is disabled.
+[W 08:48:00.483 NotebookApp] All authentication is disabled.  Anyone who can connect to this server will be able to run code.
+[I 08:48:00.486 NotebookApp] Serving notebooks from local directory: /tmp/notebooks/jgarte/tsaf-analysis-of-bxd-mouse-colonies
+[I 08:48:00.486 NotebookApp] Jupyter Notebook 6.3.0 is running at:
+[I 08:48:00.486 NotebookApp] http://localhost:44619/44619/
+[I 08:48:00.486 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[I 08:48:00.831 NotebookApp] 302 GET /44619 (127.0.0.1) 1.220000ms
+127.0.0.1 - - [17/Jan/2022 02:48:00] "POST / HTTP/1.1" 302 -
+[I 08:48:00.995 NotebookApp] 302 GET /44619/notebooks/ (127.0.0.1) 1.620000ms
+[I 08:48:11.629 NotebookApp] Writing notebook-signing key to /home/jgart/.local/share/jupyter/notebook_secret
+[W 08:48:11.632 NotebookApp] Notebook BXD Analysis.ipynb is not trusted
+[I 08:48:13.077 NotebookApp] Kernel started: 4d7dfb56-df7c-4c8e-9a97-9c126b8c4d06, name: python3
+[W 08:48:13.201 NotebookApp] No session ID specified
+[I 08:48:37.077 NotebookApp] KernelRestarter: restarting kernel (1/5), keep random ports
+WARNING:root:kernel 4d7dfb56-df7c-4c8e-9a97-9c126b8c4d06 restarted
+[W 08:49:05.417 NotebookApp] Notebook BXD Analysis.ipynb is not trusted
+[I 08:49:05.827 NotebookApp] Saving file at /BXD Analysis.ipynb
+[W 08:49:06.107 NotebookApp] Trusting notebook /BXD Analysis.ipynb
+[I 08:49:18.394 NotebookApp] Starting buffering for 4d7dfb56-df7c-4c8e-9a97-9c126b8c4d06:7eaaafc6-b1e04e4b26ee404ea8a74af2
+[W 08:49:21.510 NotebookApp] No session ID specified
+OpenBLAS blas_thread_init: pthread_create failed for thread 47 of 56: Resource temporarily unavailable
+OpenBLAS blas_thread_init: RLIMIT_NPROC 1031389 current, 1031389 max
+OpenBLAS blas_thread_init: pthread_create failed for thread 48 of 56: Resource temporarily unavailable
+OpenBLAS blas_thread_init: RLIMIT_NPROC 1031389 current, 1031389 max
+OpenBLAS blas_thread_init: pthread_create failed for thread 49 of 56: Resource temporarily unavailable
+OpenBLAS blas_thread_init: RLIMIT_NPROC 1031389 current, 1031389 max
+OpenBLAS blas_thread_init: pthread_create failed for thread 50 of 56: Resource temporarily unavailable
+OpenBLAS blas_thread_init: RLIMIT_NPROC 1031389 current, 1031389 max
+OpenBLAS blas_thread_init: pthread_create failed for thread 51 of 56: Resource temporarily unavailable
+OpenBLAS blas_thread_init: RLIMIT_NPROC 1031389 current, 1031389 max
+OpenBLAS blas_thread_init: pthread_create failed for thread 52 of 56: Resource temporarily unavailable
+OpenBLAS blas_thread_init: RLIMIT_NPROC 1031389 current, 1031389 max
+OpenBLAS blas_thread_init: pthread_create failed for thread 53 of 56: Resource temporarily unavailable
+OpenBLAS blas_thread_init: RLIMIT_NPROC 1031389 current, 1031389 max
+OpenBLAS blas_thread_init: pthread_create failed for thread 54 of 56: Resource temporarily unavailable
+OpenBLAS blas_thread_init: RLIMIT_NPROC 1031389 current, 1031389 max
+OpenBLAS blas_thread_init: pthread_create failed for thread 55 of 56: Resource temporarily unavailable
+OpenBLAS blas_thread_init: RLIMIT_NPROC 1031389 current, 1031389 max
+[I 08:49:31.089 NotebookApp] KernelRestarter: restarting kernel (1/5), keep random ports
+WARNING:root:kernel 4d7dfb56-df7c-4c8e-9a97-9c126b8c4d06 restarted
+```
+
