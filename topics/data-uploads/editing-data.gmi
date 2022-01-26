@@ -126,3 +126,20 @@ guix install pudb -p ~/opt/pudb
 
 - To use pudb, just stick `import pudb; pu.db` wherever you fancy.
   Happy debugging!
+
+### Wed 26 Jan 2022
+
+Fixed precision point errors.  During file upload, excel appended
+extra values; so instead of `BXD1,18.8,x,x`, you'd have
+`BXD1,18.8000001,20,x`.  There are 2 parts to fixing this:
+
+- During generating the json file(when creating the diff), ignore
+  modifications where |ε| > 0.0001.
+
+- When listing diffs, ignore modification entries where |ε| > 0.0001.
+
+For this fix, the second bit was ignored, because it'll lead to
+unnecessarily complicated code, given that only one person has really
+been testing the system.
+
+
