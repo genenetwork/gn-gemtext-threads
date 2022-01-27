@@ -1,0 +1,163 @@
+## Tags
+
+* assigned: bonfacem, zachs
+
+### Introduction
+
+The current uploader work documented in `editing-data.gmi` only caters
+for the following operations by people with the right access:
+
+- Editing phenotype and probeset metadata
+
+- Editing sample data from a published phenotype
+
+- Deleting sample data from published phenotypes
+
+- Inserting data from strains that already exist in a ".geno" file
+
+However, one of our beta users ran into a problem when attempting to
+insert new trait data for BDL_10001.  ATM, we can't add new samples.
+Also, adding case attributes for new samples is a manual process.  New
+samples cannot be added because new genotype files need to be
+generated when new strains/ samples are added.  Addition of these
+genotype files has always been manual.  We can add strain data
+(inserting new strains into the Strain table(s) if it's not already
+there) by hacking existing code.  However, this will show up-- the
+strains-- in a separate "sample group" on the trait page and won't be
+used for mapping until the new .geno file containing the new strains
+is generated.
+
+How is this genotype file generated?
+
+[From Rob] Genotypes should be added by code.  For some species like
+humans, this won't happen; but for experimental animals and plant,
+many families may grow and spread e.g. BXDs grow to the BXD Dax, then
+they expand tot he BXDx Collaborative Cross DAX.
+
+New strains are added by entering strains based on groups(InbredSetId) and SpeciesId.  This is why we have the "StrainXRef" table.  This is demonstrated below:
+
+```
+MariaDB [db_webqtl]> desc Strain;
+
++-----------+----------------------+------+-----+---------+----------------+
+
+| Field     | Type                 | Null | Key | Default | Extra          |
+
++-----------+----------------------+------+-----+---------+----------------+
+
+| Id        | int(20)              | NO   | PRI | NULL    | auto_increment |
+
+| Name      | varchar(100)         | YES  | MUL | NULL    |                |
+
+| Name2     | varchar(100)         | YES  |     | NULL    |                |
+
+| SpeciesId | smallint(5) unsigned | NO   |     | 0       |                |
+
+| Symbol    | varchar(20)          | YES  | MUL | NULL    |                |
+
+| Alias     | varchar(255)         | YES  |     | NULL    |                |
+
++-----------+----------------------+------+-----+---------+----------------+
+
+6 rows in set (0.001 sec)
+
+MariaDB [db_webqtl]> desc StrainXRef;
+
++------------------+----------------------+------+-----+---------+-------+
+
+| Field            | Type                 | Null | Key | Default | Extra |
+
++------------------+----------------------+------+-----+---------+-------+
+
+| InbredSetId      | smallint(5) unsigned | NO   | PRI | 0       |       |
+
+| StrainId         | int(20)              | NO   | PRI | NULL    |       |
+
+| OrderId          | int(20)              | YES  |     | NULL    |       |
+
+| Used_for_mapping | char(1)              | YES  |     | N       |       |
+
+| PedigreeStatus   | varchar(255)         | YES  |     | NULL    |       |
+
++------------------+----------------------+------+-----+---------+-------+
+
+5 rows in set (0.001 sec)
+
+MariaDB [db_webqtl]> select max(Id) from Strain;
+
++---------+
+
+| max(Id) |
+
++---------+
+
+|   66085 |
+
++---------+
+
+1 row in set (0.000 sec)
+
+MariaDB [db_webqtl]> insert into Strain (Name,
+Name2,SpeciesId,Symbol,Alias) value ("Test1","Test1",30,"Test1","Test1");
+
+Query OK, 1 row affected (0.000 sec)
+
+MariaDB [db_webqtl]> select max(Id) from Strain;
+
++---------+
+
+| max(Id) |
+
++---------+
+
+|   66086 |
+
++---------+
+
+1 row in set (0.000 sec)
+
+MariaDB [db_webqtl]> select * from Strain where Id=66086;
+
++-------+-------+-------+-----------+--------+-------+
+
+| Id    | Name  | Name2 | SpeciesId | Symbol | Alias |
+
++-------+-------+-------+-----------+--------+-------+
+
+| 66086 | Test1 | Test1 |        30 | Test1  | Test1 |
+
++-------+-------+-------+-----------+--------+-------+
+
+1 row in set (0.000 sec)
+
+```
+
+### Problems
+
+- Integration with genotype files complicates things e.g. we can only
+  generate individual BXD genotypes from the "main" BXD genotype files
+  iff when we have the strains of each individual stored somewhere.
+
+- CaseAttributes need to be updated manually.  One option is to enable
+  this using the UI.  ATM we need to query the Case Attribute tables
+  to look the BXD strain for each individual when generating the
+  genotype files.
+
+- We should ideally be able to generate a set of genotype files or a
+  set of DB tables with all possible 20,000 BXD family genomes.  As a
+  reference see David's smoothed WGS-based genotype files.
+
+- Genotype files will most likely not be static.  Soon, we should be
+  able to support the need for them to change during runtime.
+
+- When the sample list for BDL_10001 is updated, will the sample list
+  for all other records be synchronized automatically.
+
+
+### Goal
+
+- (Low hanging fruit) Ability to add insert new strains.
+
+- There are 1000s of mice with computable genomes that have never been
+  born yet.  Can we compute their phenotype?  This is as difficult as
+  getting to Mars.
