@@ -380,6 +380,35 @@ List recent updates.
                             " tasks done")))
   (newline))
 
+(define (print-issue-to-gemtext issue-number issue)
+  "Print ISSUE with number ISSUE-NUMBER to gemtext."
+  (format #t "# ~a" (issue-title issue))
+  (unless (null? (issue-keywords issue))
+    (format #t " [~a]"
+            (string-join (issue-keywords issue)
+                         ", ")))
+  (unless (null? (issue-assigned issue))
+    (format #t " (assigned: ~a)"
+            (string-join (issue-assigned issue)
+                         ", ")))
+  (when (> (issue-posts issue) 1)
+    (format #t " [~a posts]" (issue-posts issue)))
+  (newline)
+  (format #t "~a opened ~a by ~a"
+          issue-number
+          (issue-created-relative-date issue)
+          (issue-creator issue))
+  (when (> (issue-posts issue) 1)
+    (format #t ", last updated ~a by ~a"
+            (issue-last-updated-relative-date issue)
+            (issue-last-updater issue)))
+  (unless (zero? (issue-tasks issue))
+    (format #t "; ~a/~a tasks done"
+            (issue-completed-tasks issue)
+            (issue-tasks issue)))
+  (newline)
+  (newline))
+
 (define gnbug-list
   (match-lambda*
     (("--help")
@@ -387,6 +416,7 @@ List recent updates.
 List issues.
 
   --assigned=ASSIGNED    only list issues assigned to ASSIGNED
+  --format=FORMAT        output in FORMAT (either text or gemtext, and text by default)
 
 "
              (command-line-program)))
@@ -394,10 +424,18 @@ List issues.
      (let ((args (args-fold args
                             (list (option (list "assigned") #t #f
                                           (lambda (opt name arg loads)
-                                            (acons 'assigned arg loads))))
+                                            (acons 'assigned arg loads)))
+                                  (option (list "format") #t #f
+                                          (lambda (opt name arg loads)
+                                            (acons 'format
+                                                   (cond
+                                                    ((string=? arg "text") 'text)
+                                                    ((string=? arg "gemtext") 'gemtext)
+                                                    (else (error "Unknown format" arg)))
+                                                   loads))))
                             invalid-option
                             invalid-operand
-                            '())))
+                            '((format . text)))))
        (format #t "~%total ~a~%"
                (list-transduce (compose (tenumerate 1)
                                         (tfilter (match-lambda
@@ -408,7 +446,10 @@ List issues.
                                                                      (issue-assigned issue)))))))
                                         (tlog (match-lambda*
                                                 ((_ (index . issue))
-                                                 (print-issue index issue)))))
+                                                 ((case (assq-ref args 'format)
+                                                    ((text) print-issue)
+                                                    ((gemtext) print-issue-to-gemtext))
+                                                  index issue)))))
                                rcount
                                (issues)))))))
 
