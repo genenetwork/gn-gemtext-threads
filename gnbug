@@ -283,7 +283,7 @@ terminal."
 (define magenta-background (cut color 45 <>))
 (define cyan-background (cut color 46 <>))
 
-(define (invalid-option name arg loads)
+(define (invalid-option opt name arg loads)
   (error "Invalid option" name))
 
 (define (invalid-operand arg loads)
