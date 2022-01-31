@@ -1,0 +1,5 @@
+# Sort gnbug issues most recent first
+
+Add a command-line option --sort=(newest-first|oldest-first) to gnbug that determines the order the issues are listed. oldest-first is useful for command-line usage where you don't want to scroll up to see the most recent issue. newest-first is useful when generating gemtext/web pages where you don't want to scroll down to see the most recent issue.
+
+* assigned: bonfacem
