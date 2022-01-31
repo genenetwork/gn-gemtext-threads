@@ -31,24 +31,6 @@ even if it exits non-locally. Return the value returned by PROC."
                                    (zero? return-value))
                         (error "Invocation of program failed" (cons program args))))))))
 
-(define* (find-files directory #:optional (pred (const #t)))
-  "Recursively find all files under DIRECTORY that satisfy PRED."
-  (define (do-nothing name stat result)
-    result)
-
-  (file-system-fold (const #t)
-                    (lambda (name stat result)
-                      (if (pred name stat)
-                          (cons name result)
-                          result))
-                    do-nothing
-                    do-nothing
-                    do-nothing
-                    (lambda (name stat errno result)
-                      (error (strerror errno) name))
-                    '()
-                    directory))
-
 (define-record-type <issue>
   (issue file title creator created-date created-relative-date
          last-updater last-updated-date last-updated-relative-date
@@ -74,36 +56,39 @@ even if it exits non-locally. Return the value returned by PROC."
   ;; Get all gemini files except README.gmi and hidden files. Text
   ;; editors tend to create hidden files while editing, and we want to
   ;; avoid them.
-  (sort (map (lambda (file)
-               (let* ((file-details (file-details file))
-                      (all-keywords (hashtable-ref file-details 'keywords '())))
-                 (issue file
-                        ;; Fallback to filename if title has no alphabetic
-                        ;; characters.
-                        (let ((title (hashtable-ref file-details 'title "")))
-                          (if (string-any char-set:letter title) title file))
-                        (hashtable-ref file-details 'creator #f)
-                        (hashtable-ref file-details 'created-date #f)
-                        (hashtable-ref file-details 'created-relative-date #f)
-                        (hashtable-ref file-details 'last-updater #f)
-                        (hashtable-ref file-details 'last-updated-date #f)
-                        (hashtable-ref file-details 'last-updated-relative-date #f)
-                        (hashtable-ref file-details 'assigned '())
-                        ;; "closed" is a special keyword to indicate
-                        ;; the open/closed status of an issue.
-                        (delete "closed" all-keywords)
-                        (not (member "closed" all-keywords))
-                        (hashtable-ref file-details 'tasks 0)
-                        (hashtable-ref file-details 'completed-tasks 0)
-                        (hashtable-ref file-details 'posts #f))))
-             (find-files "."
-                         (lambda (name _)
-                           (and (string-suffix? ".gmi" name)
-                                (not (string=? (basename name) "README.gmi"))
-                                (not (string-prefix? "." (basename name)))))))
-        (lambda (issue1 issue2)
-          (< (issue-created-date issue1)
-             (issue-created-date issue2)))))
+  (sort (call-with-input-pipe
+         (lambda (port)
+           (port-transduce
+            (tfilter-map (lambda (file)
+                           (and (string-suffix? ".gmi" file)
+                                (not (string=? (basename file) "README.gmi"))
+                                (not (string-prefix? "." (basename file)))
+                                (let* ((file-details (file-details file))
+                                       (all-keywords (hashtable-ref file-details 'keywords '())))
+                                  (issue file
+                                         ;; Fallback to filename if title has no alphabetic
+                                         ;; characters.
+                                         (let ((title (hashtable-ref file-details 'title "")))
+                                           (if (string-any char-set:letter title) title file))
+                                         (hashtable-ref file-details 'creator #f)
+                                         (hashtable-ref file-details 'created-date #f)
+                                         (hashtable-ref file-details 'created-relative-date #f)
+                                         (hashtable-ref file-details 'last-updater #f)
+                                         (hashtable-ref file-details 'last-updated-date #f)
+                                         (hashtable-ref file-details 'last-updated-relative-date #f)
+                                         (hashtable-ref file-details 'assigned '())
+                                         ;; "closed" is a special keyword to indicate
+                                         ;; the open/closed status of an issue.
+                                         (delete "closed" all-keywords)
+                                         (not (member "closed" all-keywords))
+                                         (hashtable-ref file-details 'tasks 0)
+                                         (hashtable-ref file-details 'completed-tasks 0)
+                                         (hashtable-ref file-details 'posts #f))))))
+            rcons get-line port))
+         "git" "ls-files")
+   (lambda (issue1 issue2)
+     (< (issue-created-date issue1)
+        (issue-created-date issue2)))))
 
 (define (hashtable-append! hashtable key new-values)
   "Append NEW-VALUES to the list of values KEY is associated to in
