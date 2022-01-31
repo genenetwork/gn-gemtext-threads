@@ -1,0 +1,5 @@
+# Hide stale issues in gnbug
+
+Our list of issues are growing by the day. And, for some reason, we are not eager to close many of them. :-P This makes the command-line output long. Maybe, hide stale issues by default, and show them only if some --all flag is passed. Stale issues are tentatively defined as those issues that have been inactive for more than 6 months.
+
+* assigned: bonfacem, aruni
