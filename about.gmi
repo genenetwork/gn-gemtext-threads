@@ -1,1 +1,5 @@
-About stub!
+# About our issue tracker
+
+We are leaving the github issue tracker in favour of one that is built on git+gemtext. The reasons and conventions are listed at
+
+=> issues/README.gmi
