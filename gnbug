@@ -367,7 +367,7 @@ List recent updates.
 
 (define (print-issue-to-gemtext issue-number issue)
   "Print ISSUE with number ISSUE-NUMBER to gemtext."
-  (format #t "=> ~a" (issue-title issue))
+  (format #t "=> ~a ~a" (issue-file issue) (issue-title issue))
   (unless (null? (issue-keywords issue))
     (format #t " [~a]"
             (string-join (issue-keywords issue)
