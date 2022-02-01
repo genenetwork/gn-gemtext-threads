@@ -1,0 +1,17 @@
+.title   { text-align: center; font-family: Lucida Sans Typewriter,Lucida Console,monaco,Bitstream Vera Sans Mono,monospace; margin: 1px 1px 10px 1px; font-size: 300%; font-weight: bold; }
+.table-of-contents { font-family: monospace; color: red; }
+.timestamp { font-family: monospace; color: darkgreen; }
+
+h1,h2 { font-family: Lucida Sans Typewriter,Lucida Console,monaco,Bitstream Vera Sans Mono,monospace; color:black;background-color:#F0F8FF; }
+h2,h3,h4 { color: darkblue; }
+body {font-family: Palatino, 'Palatino Linotype', serif; color:black; font-size: large }
+
+div.banner { background-color: #336699; color: white ; margin: -10px; }
+div.menu { background-color: #d5d5d5; }
+div.footer { color: #336699; background-color: white }
+div.verbatim { color: black; background-color: lightyellow; border-style:outset; font-family: palatino font, monospace; border-width: 2px ; font-size:110%;  font-weight:bold; }
+div.quote { font-family: palatino font, monospace; font-weight: bold; color: darkblue ;  font-size:90%; border-left: 4px solid rgb(4, 170, 109); }
+div.quotation { font-family: palatino font, monospace; font-size:80%; }
+pre { margin: 15px; }
+pre.example { font-family: prestige, monospace; color:black; font-size:70%; background-color: lightyellow;  }
+pre.src { font-family: prestige, monospace; font-weight: bold; color:white; font-size:80%; background-color: black;  }
