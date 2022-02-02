@@ -2,10 +2,13 @@
 
 Find all larger tables
 
+```
 SELECT TABLE_SCHEMA,TABLE_NAME,DATA_LENGTH FROM information_schema.TABLES WHERE DATA_LENGTH>10000;
+```
 
 The following 4 mysql tables live in
 
+```
 MariaDB [mysql]> SELECT TABLE_SCHEMA,TABLE_NAME,DATA_LENGTH FROM information_schema.TABLES WHERE ENGINE = 'InnoDB';
 +--------------+----------------------+-------------+
 | TABLE_SCHEMA | TABLE_NAME           | DATA_LENGTH |
@@ -23,5 +26,8 @@ MariaDB [mysql]> SELECT TABLE_SCHEMA,TABLE_NAME,DATA_LENGTH FROM information_sch
 | mysql        | gtid_slave_pos       |       16384 |
 +--------------+----------------------+-------------+
 11 rows in set (0.008 sec)
+```
 
+```sh
 for x in innodb_index_stats innodb_table_stats gtid_slave_pos transaction_registry ; do echo $x ; mysqldump -u webqtlout -pwebqtlout mysql $x > /export3/$x.sql ; done
+```
