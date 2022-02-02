@@ -8,6 +8,7 @@ body {font-family: Palatino, 'Palatino Linotype', serif; color:black; font-size:
 
 div.banner { background-color: #336699; color: white ; margin: -10px; }
 div.menu { background-color: #d5d5d5; }
+div.edit { text-align: right; }
 div.footer { color: #336699; background-color: white }
 div.verbatim { color: black; background-color: lightyellow; border-style:outset; font-family: palatino font, monospace; border-width: 2px ; font-size:110%;  font-weight:bold; }
 div.quote { font-family: palatino font, monospace; font-weight: bold; color: darkblue ;  font-size:90%; border-left: 4px solid rgb(4, 170, 109); }
@@ -15,3 +16,33 @@ div.quotation { font-family: palatino font, monospace; font-size:80%; }
 pre { margin: 15px; }
 pre.example { font-family: prestige, monospace; color:black; font-size:70%; background-color: lightyellow;  }
 pre.src { font-family: prestige, monospace; font-weight: bold; color:white; font-size:80%; background-color: black;  }
+
+
+.github-btn-container {
+    margin: 13px 0px;
+    display: flex;
+    width: 95vw;
+    justify-content: flex-end;
+}
+
+.github-btn {
+    display: flex;
+    justify-content: center;
+    border: 2px solid #357ebd;
+    background: lightgrey;
+    padding: 0px 2px;
+    width: 130px;
+    border-radius: 16px;
+}
+
+.github-btn a {
+    align-self: center;
+    font-weight: bold;
+    color: #357ebd;
+}
+
+.github-btn a img {
+    height: 40px;
+    width: 40px;
+    padding-left:5px;
+}
