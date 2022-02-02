@@ -24,7 +24,7 @@ where someone is rude and lacks obvious knowledge about the free software effort
 
 With our new gemini tracker we own the issue reporting space. People can submit a request to report an issue and we can decide whether it belongs there or not. Takes a little more effort on the submitter too! But not too much - you have to know git or edit, fork or clone in github. The downside may be that some normal users feel they need to do too much. In that case one can always send an E-mail to the mailing list instead - or we create a web form that does that. In the next step we can file E-mails as issues ourselves.
 
-Key point is that the issue tracker is to track issues.
+Key point is that the issue tracker is meant to track issues owned by the project.
 
 ## Example
 
