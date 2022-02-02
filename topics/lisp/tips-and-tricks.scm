@@ -1,0 +1,16 @@
+# Defining a scheme sexp comment with a reader macro
+
+=> http://clhs.lisp.se/Body/f_set__1.htm SET-DISPATCH-MACRO-CHARACTER
+
+```
+CL-USER(1): (set-dispatch-macro-character #\# #\; (lambda (s c n) c n (read s t nil t) (values)))
+
+CL-USER(2): (+ 3 (+ 2 3) 1)
+
+9
+CL-USER(3): (+ 3 #;(+ 2 3) 1)
+
+4
+```
+
+Special thanks to Ed Langley on #common-lisp:matrix.org.
