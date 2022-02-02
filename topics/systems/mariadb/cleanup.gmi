@@ -6,7 +6,7 @@ Find all larger tables
 SELECT TABLE_SCHEMA,TABLE_NAME,DATA_LENGTH FROM information_schema.TABLES WHERE DATA_LENGTH>10000;
 ```
 
-The following 4 mysql tables live in
+The following four tables live in
 
 ```
 MariaDB [mysql]> SELECT TABLE_SCHEMA,TABLE_NAME,DATA_LENGTH FROM information_schema.TABLES WHERE ENGINE = 'InnoDB';
