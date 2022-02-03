@@ -11,6 +11,8 @@ div.menu { background-color: #d5d5d5; }
 div.edit { text-align: right; }
 div.footer { color: #336699; background-color: white }
 div.gemini { text-align: right; font-size: 75% }
+div.text {  font-family: Sans-Serif; }
+div.list {  font-family: Sans-Serif; }
 div.verbatim { color: black; background-color: lightyellow; border-style:outset; font-family: palatino font, monospace; border-width: 2px ; font-size:110%;  font-weight:bold; }
 div.quote { font-family: palatino font, monospace; font-weight: bold; color: darkblue ;  font-size:90%; border-left: 4px solid rgb(4, 170, 109); }
 div.quotation { font-family: palatino font, monospace; font-size:80%; }
