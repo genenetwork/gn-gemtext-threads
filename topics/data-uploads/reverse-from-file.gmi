@@ -1,0 +1,8 @@
+## Tags
+
+* assigned: bonfacem, zachs
+
+### Introduction
+
+Given a diff file, we should be able to reverse the operations that
+were ran on it.
