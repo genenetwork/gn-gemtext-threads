@@ -1,6 +1,7 @@
 ---
 home:
   url: https://genenetwork.org/
+gemini: gemini://thebird.nl
 repo: gn-gemtext-threads
 git-home: https://github.com/genenetwork/gn-gemtext-threads
 git-edit-prefix: https://github.com/genenetwork/gn-gemtext-threads/edit/main

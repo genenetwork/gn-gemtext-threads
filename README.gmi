@@ -1,5 +1,7 @@
 # GeneNetwork Gemini Issue Tracker
 
+=> ./static/git-icon.png We all rely on git
+
 We have decided to move our existing issue trackers and kanban board to one gemini powered repository! Reasons are:
 
 * Decentralised management
@@ -13,7 +15,11 @@ We have decided to move our existing issue trackers and kanban board to one gemi
 
 Issues are simple gemini documents that grow downwards - dating of additions is managed through git. We'll add a proxy to display these documents. The kanban is managed through a directory and symbolic links. A quick index file can be found here:
 
-=> index.gmi
+=> index.gmi generated index
+
+The tracker 
+
+=> tracker.gmi generated tracker
 
 => https://github.com/genenetwork/gn-gemtext-threads/blob/main/issues/database-not-responding.gmi Example issue tracker
 
@@ -24,6 +30,7 @@ We will soon add a web readable version of
 
 Other discussions on leaving github
 
+=> issues/README.gmi
 => https://github.com/bitcoin-core/bitcoin-devwiki/wiki/GitHub-alternatives-for-Bitcoin-Core
 
 ## gnbug
