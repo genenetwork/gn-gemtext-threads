@@ -33,40 +33,38 @@ Other discussions on leaving github
 => issues/README.gmi
 => https://github.com/bitcoin-core/bitcoin-devwiki/wiki/GitHub-alternatives-for-Bitcoin-Core
 
-## gnbug
+## tissue
 
-You may peruse the issues in this repository using the provided gnbug command-line interface. gnbug requires guile. Please install guile before running gnbug.
+You may peruse the issues in this repository using the tissue command-line interface.
 
 List all open issues.
 ```
-./gnbug list
+tissue list
 ```
 
 Only list open issues assigned to pjotrp.
 ```
-./gnbug list --assigned=pjotrp
+tissue list --assigned=pjotrp
 ```
 
 Print an issue, say issue 7, on the command line.
 ```
-./gnbug show 7
+tissue show 7
 ```
 
 Edit an issue, say issue 9. This opens the relevant gemtext file in your favourite editor as defined by the EDITOR environment variable.
 ```
-./gnbug edit 9
+tissue edit 9
 ```
 
-List issues that were created or updated in the last 3 days, in the last week or month respectively. The --since argument is passed directly to `git log`. Therefore, gnbug understands any --since argument that `git log` understands.
+List issues that were created or updated in the last 3 days, in the last week or month respectively. The --since argument is passed directly to `git log`. Therefore, tissue understands any --since argument that `git log` understands.
 ```
-./gnbug news --since='3 days'
-./gnbug news --since='1 week'
-./gnbug news --since='1 month'
-```
-
-To learn more about gnbug, please use the built-in help feature.
-```
-./gnbug --help
+tissue news --since='3 days'
+tissue news --since='1 week'
+tissue news --since='1 month'
 ```
 
-Using `direnv` with `gnbug` allows the user to drop the `./` in the command.
+To learn more about tissue, please use the built-in help feature.
+```
+tissue --help
+```
