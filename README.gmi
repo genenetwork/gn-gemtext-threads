@@ -35,7 +35,10 @@ Other discussions on leaving github
 
 ## tissue
 
-You may peruse the issues in this repository using the tissue command-line interface.
+You may peruse the issues in this repository using the tissue command-line interface. You can drop into a shell with tissue using
+```
+guix shell tissue
+```
 
 List all open issues.
 ```
