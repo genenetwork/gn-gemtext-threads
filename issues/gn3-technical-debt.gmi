@@ -1,0 +1,10 @@
+## Tags
+
+* assigned: bonfacem
+
+### Introduction
+
+Here I log some technical debt in gn3 as a checklist.
+
+- [ ] Clean up gn3/db/traits.py: Some of those functions are long, and
+  repetitive.  Also, we have no tests for most of them.
