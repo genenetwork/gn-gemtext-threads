@@ -1,0 +1,18 @@
+## Tags
+
+* assigned: bonfacem
+
+### Introduction
+
+When editing data, given the following data:
+
+```
+Strain Name,Value,SE,Count
+BXD1,18.8,19.7,x
+```
+
+When editing either the "Value", "SE", or "Count" fields to a "0", in
+gn2 the value still remains as "x" and isn't updated in the database.
+
+Also, ATM you cannot edit a value to "x", which is similar to removing
+a field in the database.
