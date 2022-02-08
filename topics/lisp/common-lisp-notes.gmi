@@ -1,4 +1,28 @@
-
-List of common lisp packages:
+# List of common lisp packages:
 
 => https://github.com/CodyReichert/awesome-cl
+
+# Books
+
+http://cliki.net/Lisp+Books
+
+# Practice
+
+https://github.com/google/lisp-koans
+https://exercism.io/tracks/common-lisp
+
+# Getting Help / Asking Questions
+
+## Libera Chat
+
+```
+#clschool
+#commonlisp
+```
+
+## Matrix
+
+```
+#common-lisp:matrix.org
+```
+
