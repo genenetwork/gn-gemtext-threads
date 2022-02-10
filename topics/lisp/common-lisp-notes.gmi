@@ -11,6 +11,12 @@ http://cliki.net/Lisp+Books
 https://github.com/google/lisp-koans
 https://exercism.io/tracks/common-lisp
 
+# Documentation
+
+The nonguix channel provides an emacs package for the Common Lisp HyperSpec:
+
+=> https://gitlab.com/nonguix/nonguix/-/blob/master/nongnu/packages/emacs.scm#L26 clhs
+
 # Getting Help / Asking Questions
 
 ## Libera Chat
