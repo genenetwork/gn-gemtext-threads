@@ -26,8 +26,8 @@ That gives you a list of hits.
 
 ## Tags
 
-* assigned: fredm
-* migration, in progress
+* assigned: fredm, zsloan, robw
+* migration, in progress, deployed, under test
 
 ## Notes
 
