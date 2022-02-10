@@ -1,0 +1,89 @@
+# Automated Testing
+
+## Tags
+
+* assigned: fredm bonfacem alex
+
+## Introduction
+
+As part of the
+=> ../systems/ci-cd.gmi CI/CD effort
+there is need for automated tests to ensure that the system is working as expected.
+
+This document is meant to track the implementation of the automated tests and possibly the related infrastructure for running the tests.
+
+## Genenetwork 3
+
+### Unit Tests
+
+There is a collection of unit tests in the *tests/unit* in the
+=> https://github.com/genenetwork/genenetwork3 Genenetwork 3 repository
+
+### Integration
+
+There is (as of 2022-Feb-10) an
+=> https://github.com/genenetwork/genenetwork3/tree/main/tests/integration integration tests directory
+in the Genenetwork 3 repository.
+
+The tests there, however, are technically unit tests. Each test seems to test a single logical unit of the system e.g. correlations, gemma, etc.
+
+There is no test that seems to check for interactions among the logical units/modules of the system e.g.
+
+* authorisation <==> file-upload <==> correlations
+* partial-correlations <==> trait-editting <==> gemma analysis
+
+etc.
+
+### API Tests
+
+There is need for tests to ensure that all expected endpoints are up and running.
+
+Maybe even check that the data is correct.
+
+### Performance and Responsiveness
+
+There is a need to ensure that the system does not take forever to compute stuff.
+
+There is a single performance tests module in
+=> https://github.com/genenetwork/genenetwork3/tree/main/tests/performance the performance tests directory
+for Genenetwork 3 but it is run manually, and mostly tests a very specific query that might or might not have been used in the code.
+
+The performance tests in GN3 should probably be focussed on checking the following (among others):
+
+* Each API endpoint responds within a specified amount of time
+* Select computation-heavy functions respond within a specified amount of time for given data
+* Database-querying functions used in the system respond within specified amount of time
+
+etc.
+
+This is relevant since GN3 is behind Nginx which defines a timeout.
+
+### Regression Tests
+
+Checks that previously working features are not broken. These can be added as we go along
+
+## Genenetwork 2
+
+### Unit Tests
+
+Present under the
+=> https://github.com/genenetwork/genenetwork2/tree/testing/wqflask/tests/unit unit tests directory
+in the GN2 repository.
+
+### Integration
+
+Genenetwork 2 has a "Mechanical Rob" testing system that is under construction whose purpose (as far as I - fredm - can tell) is to "walk" some common paths that have multiple logical units working together, thus performing some form of integration testing.
+
+The only issue I (fredm) find in that as it is currently, it will not be able to test javascript interactions that are crucial to some operations in certain flows.
+
+### Performance and Responsiveness
+
+Since GN2 is not meant to handle computations itself, the bigger concern here is responsiveness.
+
+There might need to be checks for responsiveness built in.
+
+### Regression Tests
+
+Checks that previously working features are not broken. These can be added as we go along
+
+## [[OTHER SYSTEMS GO HERE]]

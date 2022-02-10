@@ -17,6 +17,9 @@ deployment cycle to help with quick iteration of the code.
 
 ## Tasks
 
+As part of the CI/CD effort, it is necessary that there is
+=> ../testing/automated-testing.gmi automated testing.
+
 #### Ideas
 
 GeneNetwork is interested in doing two things on every commit (or
