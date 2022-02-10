@@ -86,4 +86,6 @@ There might need to be checks for responsiveness built in.
 
 Checks that previously working features are not broken. These can be added as we go along
 
-## [[OTHER SYSTEMS GO HERE]]
+## Testing interface
+
+Tests in different categories should be grouped into different command-line endpoints. For example, unit tests could be run by "python3 setup.py check", integration tests could be run by "python3 setup.py integration-check", performance tests could be run by "python3 setup.py performance-check", and so on. This way, the CI will have to be configured only once, and then committers will be able to add new tests without requesting for a CI reconfiguration each time. We won't have to wait on others to respond. Less coordination will be required leading to smoother work for everyone.
