@@ -26,7 +26,7 @@ Why is condition handling special in common lisp compared to other languages?
 > restart exists, it can use invoke-restart to jump to the restart which
 > runs and then execution continues like normal after the restart-case form.
 
-* end of coversation
+-- end of coversation
 
 # Restarts, restarts, restarts: interactive choices in the debugger
 
@@ -44,6 +44,16 @@ Why is condition handling special in common lisp compared to other languages?
 ;;  1: [RETRY] Retry SLIME REPL evaluation request.
 ;;  …
 ```
+
+# Can the condition system be used in both production and for debugging?
+> both, production code and debugging. Every fault that you handle manually
+> using the debugger can be written down into some Lisp code; put that code
+> inside a handler function and wrap a handler-bind around your toplevel and
+> bam, you have achieved automatic error handling with a bit of clever
+> design. You never even need to kill your program to add new handlers. It
+> can simply keep on running™
+
+- phoe (#common-lisp:matrix.org, feb 10)
 
 # Video References
 
