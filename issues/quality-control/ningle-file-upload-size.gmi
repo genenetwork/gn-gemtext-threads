@@ -3,3 +3,10 @@
 https://github.com/fukamachi/ningle/issues/39
 
 * assigned: jgart
+* closed
+
+I was able to fix the issue by using woo instead of hunchentoot.
+
+Hunchentoot handles POST content naively, and it puts all data in memory.
+
+Woo does the "right thing" out of the box.
