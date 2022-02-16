@@ -1,0 +1,5 @@
+# file upload size limit
+
+https://github.com/fukamachi/ningle/issues/39
+
+* assigned: jgart
