@@ -91,3 +91,5 @@ GSL ERROR: function value is not finite in newton.c at line 88 errno 9
 ```
 
 @hrwang had a good suggestion to make sure that the output for the SNP is made invalid and to continue processing. Disabling the error handler let GEMMA continue. I added a check for the status flag to make sure output was set to invalid (nan). In the test set 178 out of 72732 SNPs failed.
+
+* closed

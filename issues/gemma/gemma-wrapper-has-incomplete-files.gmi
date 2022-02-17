@@ -40,3 +40,5 @@ One solution is to write a lock file using the inputs as a hash. The lock file c
 I added the same code to replace sheepdog locks. Sheepdog is running every minute on our machines so it is a great test case.
 
 => https://github.com/pjotrp/deploy/commit/4790b81ee897c8244280169edb3cac751eb0a9b3 sheepdog locking
+
+* closed
