@@ -1,0 +1,3 @@
+Currently search terms involving hyphens don't work properly, because the hyphen is treated like a special character, with the characters to both sides of it being treated as separate terms.
+
+The regular expression in parser.py probably needs to be changed to account for this.
