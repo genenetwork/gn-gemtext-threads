@@ -1,0 +1,3 @@
+There appears to be a bug where adding marker traits to a collection from the mapping results page isn't working properly.
+
+It might have something to do with HMAC creation, since I'm getting the "Data Tampering?" error, but not sure why yet.
