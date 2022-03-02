@@ -1,0 +1,34 @@
+A user recently notified me of an error when doing a correlation of a BXD phenotype trait against other BXD phenotypes.
+
+The error is somehow being caused by the metadata caching (it's an error when loading the cached metadata JSON file), but it's not clear to me what the issue is (and I'm not sure how to locate it within such a large file, since the error message only gives the character position).
+
+The error in question is pasted below (I have the JSON file in question):
+
+
+(GeneNetwork error: Extra data: line 1 column 6765450 (char 6765449))
+
+GeneNetwork tux01:gene:2.11-rc2-testing-c71218d92 
+Extra data: line 1 column 6765450 (char 6765449) (error)
+To check if this already a known issue, search the issue tracker.
+
+  GeneNetwork tux01:gene:2.11-rc2-testing-c71218d92  http://www.genenetwork.org/corr_compute ( 6:54PM UTC Mar 02, 2022) 
+Traceback (most recent call last):
+File "/usr/local/guix-profiles/gn-latest-20220122/lib/python3.9/site-packages/flask/app.py", line 1513, in full_dispatch_request
+rv = self.dispatch_request()
+File "/usr/local/guix-profiles/gn-latest-20220122/lib/python3.9/site-packages/flask/app.py", line 1499, in dispatch_request
+return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+File "/home/gn2/production/gene/wqflask/wqflask/views.py", line 949, in corr_compute_page
+correlation_results = set_template_vars(request.form, correlation_results)
+File "/home/gn2/production/gene/wqflask/wqflask/correlation/show_corr_results.py", line 54, in set_template_vars
+table_json = correlation_json_for_table(correlation_data,
+File "/home/gn2/production/gene/wqflask/wqflask/correlation/show_corr_results.py", line 96, in correlation_json_for_table
+(file_path, dataset_metadata) = fetch_all_cached_metadata(
+File "/home/gn2/production/gene/wqflask/wqflask/correlation/pre_computes.py", line 18, in fetch_all_cached_metadata
+dataset_metadata = json.load(file_handler)
+File "/gnu/store/p5fgysbcnnp8b1d91mrvjvababmczga0-python-3.9.6/lib/python3.9/json/init.py", line 293, in load
+return loads(fp.read(),
+File "/gnu/store/p5fgysbcnnp8b1d91mrvjvababmczga0-python-3.9.6/lib/python3.9/json/init.py", line 346, in loads
+return _default_decoder.decode(s)
+File "/gnu/store/p5fgysbcnnp8b1d91mrvjvababmczga0-python-3.9.6/lib/python3.9/json/decoder.py", line 340, in decode
+raise JSONDecodeError("Extra data", s, end)
+json.decoder.JSONDecodeError: Extra data: line 1 column 6765450 (char 6765449)
