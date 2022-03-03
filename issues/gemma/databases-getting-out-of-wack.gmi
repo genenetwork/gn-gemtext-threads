@@ -7,8 +7,20 @@
 * bug
 
 Zachary:
-> Yeah, I think you'd want to get the mean (which is simple) + run qtlreaper
-> (which I think would need to be run in the background) after a change.
+> If we're using GEMMA, we'll need to recalculate all other trait Max LRS scores using 
+> GEMMA as well (so I think we should just do this with qtlreaper for now). Otherwise 
+> we'll just have a bunch of qtlreaper scores mixed with GEMMA scores without the user
+> having any way of knowing the difference. Also, storing the full results (what Rob 
+> calls the "full vector model") will require some sort of fundamental change to the 
+> way we store this data and should be postponed for later (since the high priority
+> immediate issue is to ensure that the stored Max LRS values aren't wrong)
+
+> As for Mean, that should be simple, since it's just taking the average of sample values 
+> immediately after an update.
+
+> The main thing I'm uncertain how to do (though I know is possible since Bonface already
+> did something like this with GEMMA) is making the code run in the background after an
+> update. It's probably more simple than I'm thinking, though.
 
 Pjotr:
 > Current qtlreaper runs in one of Arthur's scripts globally.
