@@ -1,0 +1,25 @@
+# Databases Getting Out of Wack
+
+## Let's use Gemma instead of Reaper
+
+* assigned: Bonface, Zach, jgart
+* priority: high
+* bug
+
+Zachary:
+> Yeah, I think you'd want to get the mean (which is simple) + run qtlreaper
+> (which I think would need to be run in the background) after a change.
+
+Pjotr:
+> Current qtlreaper runs in one of Arthur's scripts globally.
+
+Rob:
+> Yes, that and more. These values are displayed in search results and used
+> to sort by expression mean and peak LRS (using pathetically old code and
+> genotypes). Now if GEMMA were wicked fast we could recompute the 60 million
+> BXD vector results and store that as a big juicy TRANSFORMATIVE blob of
+> data. A big paper in doing just that. Reaper is just wrong at this
+> point. We have LMM: We should use it.
+
+
+
