@@ -1,0 +1,9 @@
+# Document API endpoints for GeneNetwork3
+
+Here's a simple way that SourceHut documents their API endpoints with markdown.
+
+=> https://git.sr.ht/~sircmpwn/sr.ht-docs/tree/master/builds.sr.ht/api.md
+
+## Tags
+
+* docs
