@@ -1,0 +1,5 @@
+# Resurrect Mechanical Rob
+
+We need to run Mechanical Rob tests as part of our continuous integration tests. Mechanical Rob has not been run in a while, and I'm not sure the Mechanical Rob code in the genenetwork2 repository is complete. Get it running again and document the process.
+
+* assigned: bonfacem, aruni
