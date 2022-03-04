@@ -25,6 +25,9 @@ Zachary:
 Pjotr:
 > Current qtlreaper runs in one of Arthur's scripts globally.
 
+> When we recompute on uploading the data we can use GEMMA. That is the
+> plan. But let the team do qtlreaper first. Don't want too many moving parts.
+
 Rob:
 > Yes, that and more. These values are displayed in search results and used
 > to sort by expression mean and peak LRS (using pathetically old code and
