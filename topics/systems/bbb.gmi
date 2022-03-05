@@ -12,4 +12,13 @@ wget -qO- https://ubuntu.bigbluebutton.org/bbb-install.sh | bash -s -- -w -a -v 
 
 https://github.com/bigbluebutton/bbb-install/issues/325
 https://github.com/bigbluebutton/bbb-install/issues/314
-               
+
+## How NixNet deploys their BBB
+
+> jgart‎: amolith, how hard was it to set up BBB?  
+>‎03/05/2022 | 02:18:05 AM  ‎jgart‎: did you use the bbb-install script? https://github.com/bigbluebutton/bbb-install  
+>‎03/05/2022 | 02:18:18 AM  ‎jgart‎: any advice is much appreciated  
+> arethian‎: <a​molith/tg> jgart, yep I used the script. It takes care of everything  
+> ‎03/05/2022 | 08:02:02 AM  ‎arethian‎: <a​molith/tg> Note, that you will need an additional sever for TURN but it can be pretty lightweight  
+>‎03/05/2022 | 12:30:35 PM  ‎jgart‎: amolith, THNX! It is much appreciated and thank you for providing such awesome services to the community
+
