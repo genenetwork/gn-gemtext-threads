@@ -1,0 +1,15 @@
+# BBB
+
+## Install script
+
+https://github.com/bigbluebutton/bbb-install
+
+```
+wget -qO- https://ubuntu.bigbluebutton.org/bbb-install.sh | bash -s -- -w -a -v bionic-24 -s meet.genenetwork.org -e info@example.com
+```                                                                                                                  ^^^ email used for Let's Encrypt
+
+## Installing with Debian
+
+https://github.com/bigbluebutton/bbb-install/issues/325
+https://github.com/bigbluebutton/bbb-install/issues/314
+               
