@@ -1,6 +1,6 @@
 # BBB
 
-## Install script
+## BASH script to install BigBlueButton in 30 minutes. 
 
 https://github.com/bigbluebutton/bbb-install
 
