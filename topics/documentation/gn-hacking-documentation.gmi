@@ -1,0 +1,78 @@
+# GeneNetwork Hacking Documentation
+
+In addition to the user/client documentation, we need documentation for would be contributors to the project. This documentation can also reside in the
+
+=> https://github.com/genenetwork/gn-docs GeneNetwork Documentation repository
+
+This document is concerned with the system design and the documentation of the system that is relevant te the implementation of the system. It explores some areas of GeneNetwork that might be unclear, or require some documentation. It is a discussion document to help with clarifying some concepts and critiquing the documentation.
+
+The goal of this document is to encourage and track the documentation that assist with the development of the system.
+
+## Tags
+
+* assigned: fredm
+
+
+## Unifying Principles
+
+Like GNU Guix has the concepts of Packages, Monads, G-Expressions and the like as some of the unifying principles that help with understanding, contributing to and extending the project, GeneNetwork has some, albeit undocumented, principles unifying the system. Understanding these principles is crucial for the would-be contributor.
+
+As far as I (fredm) can tell [as of 2022-03-11], the unifying principles for the system are:
+
+* datasets
+* traits
+
+### Datasets
+
+Datasets 'contain' or organise traits. The do not have much in terms of direct operations on them - most operations against a dataset operate agaist the traits within that dataset.
+
+They can be envisioned as a bag of traits.
+
+### Traits
+
+A trait is a abstract concept - with the somewhat concrete forms being
+
+* Genotype
+* ProbeSet
+* Publish
+* Temp
+
+Here, my understanding is spotty.
+
+What are the differences between these?
+
+The genotype traits probably have something to do with actual genes.
+
+What is a ProbeSet Trait?
+
+What is a Publish Trait?
+
+What is a Temp Trait?
+
+The thing that seems common among all trait types is that they have:
+
+* samples/strains - some sort of name e.g. BXD12
+* value - a numerical value corresponding to the sample/strain
+* variance - a numerical value corresponding to the sample/strain
+* ndata - a numerical value
+
+the trait properties above are the ones I have run into that seem to be used in computations mostly.
+
+There are other properties like:
+
+* mb (Megabases?)
+* chr (Chromosome?)
+
+that are used less often.
+
+Each of the different types of the traits then has other properties, that thus far, seem to be used for display purposes only, e.g. "pre_publication_description" in "Publish" traits.
+
+When doing computations, it is unnecessary to load the display-only properties of a trait, deferring this to when/if we need to display such to the user/client.
+
+### Molecular data vs. Phenotypes
+
+How do these factor into the system?
+
+According to my current understanding, these are different views into the data, and there might not be a clear distinction between them.
+
+What is the mapping between these and the traits above?
