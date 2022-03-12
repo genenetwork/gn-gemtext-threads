@@ -1,0 +1,11 @@
+# Need Guix packages
+
+This link used to show the guix packages:
+
+=> https://genenetwork.org/environments/
+
+It somehow got reverted and is out of date. Please see if we can get a list again that does not slow down the installation process.
+
+## Tags
+
+* assigned: bonfacem
