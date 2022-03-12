@@ -61,10 +61,38 @@ The geno file is massive:
 3.4M Mar 12 11:56 HSNIH-Palmer_true_snps.txt
 ```
 
-Probably best to test on a different machine! Let's move to tux02. Running luna (a half year old version of GN2) gives `**** FAILED: number of columns in the kinship file does not match the number of individuals for row = 79`. So, that does not help! I think this is a known issue that got fixed later. Next up, try and run gemma by hand for chromosome 1 after installing gemma tools with a recent GNU Guix:
+Probably best to test on a different machine! Let's move to tux02. Running luna (a half year old version of GN2) gives `**** FAILED: number of columns in the kinship file does not match the number of individuals for row = 79`. So, that does not help! I think this is a known issue that got fixed later. Next up, try and run gemma by hand for (largest) chromosome 1 after installing gemma tools with a recent GNU Guix:
 
 ```
+tux02:~/tmp/gemma-cpu-lockup$ /usr/bin/time -v gemma -loco 1 -gk -g HSNIH-Palmer_true_geno.txt -p PHENO_2+FcfQiTVSC7FmmbsatUPg.txt -a HSNIH-Palmer_true_snps.txt
 
+GEMMA 0.98.5-pre1 (2021-08-14) by Xiang Zhou, Pjotr Prins and team (C) 2012-2021
+Reading Files ...
+## number of total individuals = 6147
+## number of analyzed individuals = 1306
+## number of covariates = 1
+## number of phenotypes = 1
+## leave one chromosome out (LOCO) =        1
+## number of total SNPs/var        =   134918
+## number of SNPS for K            =   121094
+## number of SNPS for GWAS         =    13824
+## number of analyzed SNPs         =   132628
+Calculating Relatedness Matrix ...
+**** INFO: Done.
+        Command being timed: "gemma -loco 1 -gk -g HSNIH-Palmer_true_geno.txt -p PHENO_2+FcfQiTVSC7FmmbsatUPg.txt -a HSNIH-Palmer_true_snps.txt"
+        User time (seconds): 3096.83
+        System time (seconds): 1435.51
+        Percent of CPU this job got: 1781%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 4:14.36
+        Maximum resident set size (kbytes): 26851444
+```
+
+That is 4 minutes wall clock time using about 26GB of RAM. The machine has 256 GB RAM, so you can see where the problem is. Gemma-wrapper should handle this gracefully, but because of overcommit the machine goes in a tail-spin.
+
+Next run lmm with
+
+```
+/usr/bin/time -v gemma -loco 1 -lmm 9 -g HSNIH-Palmer_true_geno.txt -p PHENO_2+FcfQiTVSC7FmmbsatUPg.txt -a HSNIH-Palmer_true_snps.txt -k output/result.cXX.txt
 ```
 
 Now the goal is to try and crash the server before setting overcommit.
