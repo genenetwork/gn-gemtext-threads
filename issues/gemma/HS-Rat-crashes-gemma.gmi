@@ -1,0 +1,67 @@
+# Large datasets crash gemma
+
+Running GEMMA on the NSNIH dataset in Genenetwork sends the server in a tail spin and logs `BUG: soft lockup CPU stuck` messages. This obviously is not great and appears to be a side effect of running openblas aggressively in parallel.
+
+## Tags
+
+* assigned: pjotrp, zachs
+
+## Tasks
+
+* [ ] tux02: test out-of-band-access
+* [ ] tux02: test GEMMA
+* [ ] tux02: set overcommit memory on tux02 to 2 (see below)
+* [ ] tux02: reboot and reinstate services on tux02
+* [ ] tux02: test GEMMA
+* [ ] tux02: try and optimize versions of openblas using -O2
+
+And do the same on tux01 (production)
+
+## Notes
+
+A 'soft lockup' is defined as a bug that causes the kernel to loop in kernel mode for more than 20 seconds without giving other tasks a chance to run. The watchdog daemon will send an non-maskable interrupt (NMI) to all CPUs in the system who, in turn, print the stack traces of their currently running tasks.
+
+We see
+
+```
+[2512382.403215] watchdog: BUG: soft lockup - CPU#118 stuck for 22s! [migration/118:609]
+[2512404.477219] Out of memory: Kill process 1723 (gemma) score 87 or sacrifice child
+[2512404.569158] Killed process 1723 (gemma) total-vm:44620288kB, anon-rss:25261688kB, file-rss:0kB, shmem-rss:0kB
+[2512405.788221] oom_reaper: reaped process 1723 (gemma), now anon-rss:0kB, file-rss:0kB, shmem-rss:0kB
+```
+
+It is clear parallel GEMMA is running out of RAM.
+You can make softlocks messages relax by setting `/proc/sys/kernel/watchdog_thresh` higher.
+
+Also overcommit is set to 0 on Tux01. We may want to change that to
+
+```
+vm.overcommit_memory=2
+vm.overcommit_ratio=90
+```
+
+That will make out-of-RAM problems less impactful. I have not set that before because it requires rebooting the production server.
+
+From Zach I got the K and GWA commands:
+
+```
+/usr/local/guix-profiles/gn-latest-20220122/bin/gemma-wrapper --json --loco 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,X -- -debug -g /home/zas1024/gn2-zach/genotype_files/genotype/bimbam/HSNIH-Palmer_true_geno.txt -p /home/zas1024/gn2-zach/tmp/gn2/gn2/PHENO_2+FcfQiTVSC7FmmbsatUPg.txt -a /home/zas1024/gn2-zach/genotype_files/genotype/bimbam/HSNIH-Palmer_true_snps.txt -gk > /home/zas1024/gn2-zach/tmp/gn2/gn2/HSNIH-Palmer_K_TPTFHJ.json
+
+/usr/local/guix-profiles/gn-latest-20220122/bin/gemma-wrapper --json --loco --input /home/zas1024/gn2-zach/tmp/gn2/gn2/HSNIH-Palmer_K_TPTFHJ.json -- -debug -g /home/zas1024/gn2-zach/genotype_files/genotype/bimbam/HSNIH-Palmer_true_geno.txt -p /home/zas1024/gn2-zach/tmp/gn2/gn2/PHENO_2+FcfQiTVSC7FmmbsatUPg.txt -a /home/zas1024/gn2-zach/genotype_files/genotype/bimbam/HSNIH-Palmer_true_snps.txt -lmm 9 -maf 0.05 > /home/zas1024/gn2-zach/tmp/gn2/gn2/HSNIH-Palmer_GWA_MWKKYW.json
+```
+
+The geno file is massive:
+
+```
+3.7G Mar 12 11:56 HSNIH-Palmer_true_geno.txt
+ 24K Mar 12 11:56 PHENO_2+FcfQiTVSC7FmmbsatUPg.txt
+3.4M Mar 12 11:56 HSNIH-Palmer_true_snps.txt
+```
+
+Probably best to test on a different machine! Let's move to tux02. Running luna (a half year old version of GN2) gives `**** FAILED: number of columns in the kinship file does not match the number of individuals for row = 79`. So, that does not help! I think this is a known issue that got fixed later. Next up, try and run gemma by hand for chromosome 1 after installing gemma tools with a recent GNU Guix:
+
+```
+
+```
+
+Now the goal is to try and crash the server before setting overcommit.
