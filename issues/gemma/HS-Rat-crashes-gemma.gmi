@@ -93,6 +93,31 @@ Next run lmm with
 
 ```
 /usr/bin/time -v gemma -loco 1 -lmm 9 -g HSNIH-Palmer_true_geno.txt -p PHENO_2+FcfQiTVSC7FmmbsatUPg.txt -a HSNIH-Palmer_true_snps.txt -k output/result.cXX.txt
+
+GEMMA 0.98.5-pre1 (2021-08-14) by Xiang Zhou, Pjotr Prins and team (C) 2012-2021
+Reading Files ...
+## number of total individuals = 6147
+## number of analyzed individuals = 1306
+## number of covariates = 1
+## number of phenotypes = 1
+## leave one chromosome out (LOCO) =        1
+## number of total SNPs/var        =   134918
+## number of SNPS for K            =   121094
+## number of SNPS for GWAS         =    13824
+## number of analyzed SNPs         =   132628
+Start Eigen-Decomposition...
+pve estimate =0.161934
+se(pve) =0.0355033
+================================================== 100%
+**** INFO: Done.
+        Command being timed: "gemma -loco 1 -lmm 9 -g HSNIH-Palmer_true_geno.txt -p PHENO_2+FcfQiTVSC7FmmbsatUPg.txt -a HSNIH-Palmer_true_snps.txt -k output/result.cXX.txt"
+        User time (seconds): 225.04
+        System time (seconds): 110.63
+        Percent of CPU this job got: 214%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 2:36.55
+        Maximum resident set size (kbytes): 523876
 ```
+
+Running the LMM takes only 2.5 minutes and uses less than 1GB RAM.
 
 Now the goal is to try and crash the server before setting overcommit.
