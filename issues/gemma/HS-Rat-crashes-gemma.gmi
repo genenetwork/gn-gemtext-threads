@@ -1,6 +1,8 @@
 # Large datasets crash gemma
 
-Running GEMMA on the NSNIH dataset in Genenetwork sends the server in a tail spin and logs `BUG: soft lockup CPU stuck` messages. This obviously is not great and appears to be a side effect of running openblas aggressively in parallel.
+Running GEMMA on the NSNIH dataset in Genenetwork sends the server in a tail spin and logs `BUG: soft lockup CPU stuck` messages. This obviously is not great and appears to be a side effect of running openblas aggressively in parallel (I remember seeing some evidence of that, but I can no longer find that message). Or it may be GEMMA simply runs out of RAM and the kernel is busy cleaning up using the OOM reaper. See
+
+=> https://lkml.iu.edu/hypermail/linux/kernel/2003.2/01012.html
 
 ## Tags
 
@@ -14,6 +16,7 @@ Running GEMMA on the NSNIH dataset in Genenetwork sends the server in a tail spi
 * [ ] tux02: reboot and reinstate services on tux02
 * [ ] tux02: test GEMMA
 * [ ] tux02: try and optimize versions of openblas using -O2
+* [ ] tux02: deploy GEMMA latest
 
 And do the same on tux01 (production)
 
@@ -21,7 +24,7 @@ And do the same on tux01 (production)
 
 A 'soft lockup' is defined as a bug that causes the kernel to loop in kernel mode for more than 20 seconds without giving other tasks a chance to run. The watchdog daemon will send an non-maskable interrupt (NMI) to all CPUs in the system who, in turn, print the stack traces of their currently running tasks.
 
-We see
+After a gemma lockup we see
 
 ```
 [2512382.403215] watchdog: BUG: soft lockup - CPU#118 stuck for 22s! [migration/118:609]
@@ -31,16 +34,16 @@ We see
 ```
 
 It is clear parallel GEMMA is running out of RAM.
-You can make softlocks messages relax by setting `/proc/sys/kernel/watchdog_thresh` higher.
+We can make softlocks messages relax by setting `/proc/sys/kernel/watchdog_thresh` higher. Consider the message harmless.
 
-Also overcommit is set to 0 on Tux01. We may want to change that to
+Overcommit is set to 0 on Tux01. We may want to change that to
 
 ```
 vm.overcommit_memory=2
 vm.overcommit_ratio=90
 ```
 
-That will make out-of-RAM problems less impactful. I have not set that before because it requires rebooting the production server.
+That will make out-of-RAM problems less impactful. We have been running penguin2 like this for over a year with no more OOM problems. I have not set that before on tux01 because it requires rebooting the production server.
 
 From Zach I got the K and GWA commands:
 
