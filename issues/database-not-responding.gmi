@@ -96,7 +96,14 @@ waiting for tables to flush!
 at the top of the process list we find
 
 ```
-Id  User  Host  db  Command Time  State Info  Progress                                                                 1 system user   NULL  Daemon  NULL  InnoDB purge coordinator  NULL  0.000                                              2 system user   NULL  Daemon  NULL  InnoDB purge worker NULL  0.000                                                    3 system user   NULL  Daemon  NULL  InnoDB purge worker NULL  0.000                                                    4 system user   NULL  Daemon  NULL  InnoDB purge worker NULL  0.000                                                    5 system user   NULL  Daemon  NULL  InnoDB shutdown handler NULL  0.000                                                227365  webqtlout 127.0.0.1:33950 db_webqtl Sleep 13015   NULL  0.000                                                  245634  webqtlout 127.0.0.1:38098 db_webqtl Sleep 23180   NULL  0.000
+Id  User  Host  db  Command Time  State Info  Progress
+1 system user   NULL  Daemon  NULL  InnoDB purge coordinator  NULL  0.000
+2 system user   NULL  Daemon  NULL  InnoDB purge worker NULL  0.000
+3 system user   NULL  Daemon  NULL  InnoDB purge worker NULL  0.000
+4 system user   NULL  Daemon  NULL  InnoDB purge worker NULL  0.000
+5 system user   NULL  Daemon  NULL  InnoDB shutdown handler NULL  0.000
+227365  webqtlout 127.0.0.1:33950 db_webqtl Sleep 13015   NULL  0.000
+245634  webqtlout 127.0.0.1:38098 db_webqtl Sleep 23180   NULL  0.000
 ```
 
 This is quite informative:
@@ -168,3 +175,43 @@ some ideas here
 => https://dba.stackexchange.com/questions/98725/mariadb-innodb-what-to-do-on-locks-in-status-log-but-no-locked-table-found
 
 we are still using MyISAM for these tables: a switch to InnoDB may help.
+
+## Another round of mariadb
+
+Arthur complained again that the DB is slow. The standard performance tests are not failing. The slow log shows slow queries:
+
+```
+# Thread_id: 1715564  Schema: db_webqtl  QC_hit: No
+# Query_time: 399.159339  Lock_time: 0.000000  Rows_sent: 0  Rows_examined: 0
+SET timestamp=1647055599;
+UPDATE ProbeSet SET description = REPLACE(description, ";", "") WHERE ChipId=11;
+
+# Query_time: 2006.780492  Lock_time: 0.000000  Rows_sent: 0  Rows_examined: 0
+SET timestamp=1647057611;
+update ProbeSetXRef set mean = (select AVG(value) from ProbeSetData where ProbeSetData.Id = ProbeSetXRef.DataId) where ProbeSetXRef.ProbeSetFreezeId = 385;
+
+# Query_time: 1158.804376  Lock_time: 0.000000  Rows_sent: 0  Rows_examined: 0
+use db_webqtl;
+SET timestamp=1647142312;
+update ProbeSet set description="ArfGAP with SH3 domain, ankyrin repeat and PH domain 3" where Id=1719426 AND ChipId=11;
+```
+
+so we should be able to reproduce that.
+
+* mariadb was restarted 1 week ago
+* mariadb is not eating CPU or RAM, so the general state looks healthy.
+* Disk state looks healty - but there are files in /tmp which do not belong there.
+* The ps table shows a backup is ongoing (after 3 hours).
+* There are no tables in use according to `show open tables where in_use > 1;`
+* There are no blocking prcesses according to `SHOW FULL PROCESSLIST;`
+* Number of threads is a healthy 4 with `show status where `variable_name` = 'Threads_connected';`
+
+So, no issues. And this query runs at
+
+```
+MariaDB [db_webqtl]> update ProbeSet set description="ArfGAP with SH3 domain, ankyrin repeat and PH domain 3" where Id=1719426 AND ChipId=11;
+Query OK, 1 row affected (0.210 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+```
+
+There must have been an update block. Best to do diagnostics when the system is blocking.
