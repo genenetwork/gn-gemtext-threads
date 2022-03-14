@@ -1,0 +1,10 @@
+# Replace Hard coded authentication with gn-proxy
+
+## Tags
+
+* assigned: ??
+* priority: medium
+* status: unclear
+* keywords: authentication, gn-proxy
+
+## Description

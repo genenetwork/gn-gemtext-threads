@@ -1,0 +1,10 @@
+# Put user info in the a/c name in the menu
+
+When the user signs in to GN2, there is no info on the account name in the menu.
+
+## Tags
+
+* assigned: ??
+* priority: medium
+* status: unclear
+* keywords: authentication, user info
