@@ -1,5 +1,15 @@
 # Shepherd
 
+## Tags
+
+* assigned: ??
+* type: documentation
+* keywords: system, shepherd
+* status: unclear
+* priority: unclear
+
+## Description
+
 On Debian based systems we run shepherd as a shepherd user. The service gets started up through systemd:
 
 ```
@@ -18,3 +28,7 @@ WantedBy=multi-user.target
 ```
 
 => https://git.genenetwork.org/efraim/shepherd-services Running shepherd services
+
+## Notes
+
+This seems to be documentation, and not necessarily a task, issue or enhancement to be worked on

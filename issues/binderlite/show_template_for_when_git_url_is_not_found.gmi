@@ -1,5 +1,12 @@
-* bug
-* assigned: jgart
+# Show Template for when Git URL is not Found
 
+## Tags
+
+* type: bug
+* assigned: jgart
+* priority: medium
+* keywords: binderlite, template
+
+## Description
 Let's add a template for when a url fails because the user entered the wrong 
 url or the resource is not available.

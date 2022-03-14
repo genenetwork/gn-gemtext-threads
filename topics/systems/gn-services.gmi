@@ -1,5 +1,13 @@
 # GN Services
 
+## Tags
+
+* type: documentation
+* status: in progress
+* keywords: gn services, documentation
+
+## Description
+
 In addition to gn1 and gn2 we have 3 running gn3 services:
 
 1. gn-proxy - deployed as gn3 user in production

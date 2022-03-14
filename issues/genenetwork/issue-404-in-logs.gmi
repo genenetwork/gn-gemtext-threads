@@ -4,9 +4,11 @@ We get many 404's in GN logs. Can we rewire that so no log entries appear as a f
 
 ## Tags
 
-* enhancement
-* deployment
+* type: enhancement
+* keywords: deployment, 404
 * assigned: bonfacem, pjotrp
+* status: unclear
+* priority: low
 
 ## Notes
 

@@ -8,6 +8,9 @@ Note: Pjotr made the build work again. Pushed to guix-bioinformatics.
 ## Tasks
 
 * assigned: bonfacekilz, efraim
+* type: failure
+* status: complete, closed
+* keywords: build
 
 ### Notes
 

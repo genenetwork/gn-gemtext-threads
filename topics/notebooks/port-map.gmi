@@ -6,3 +6,9 @@
 |80   |nginx      |
 |8989 |binderlite |
 |xxxx |jupyter(s) |
+
+
+## Tags
+
+* type: documentation
+* keywords: documentation, port map

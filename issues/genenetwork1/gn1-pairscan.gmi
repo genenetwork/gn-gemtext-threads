@@ -16,10 +16,11 @@ ImportError: No module named direct
 
 # Tags
 
-* critical bug
-* missing dependency
-* binary blob
+* type: bug
+* priority: critical
+* keywords: missing dependency, binary blob, GN1
 * assigned: pjotrp
+* status: unclear
 
 # Notes
 

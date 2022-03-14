@@ -4,6 +4,14 @@ Without this we can't:
 
 * programatically and reproducably use the repository to cherry-pick commits that work with shepherd services
 
+## Tags
+
+* assigned: Efraim
+* type: bug
+* keywords: guix-bioinformatics
+* status: unclear
+* priority: medium
+
 ## TODO:
 
 * Adjust the genenetwork2 package to no longer break running `guix pull` with this repository in channels.scm

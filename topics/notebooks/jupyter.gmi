@@ -1,5 +1,11 @@
 # Jupyter notebooks
 
+## Tags
+
+* type: documentation
+* keywords: documentation, jupyter, notebooks
+* status: unclear
+
 ## Run with GNU Guix
 
 Jupyter notebooks can be installed in a profile

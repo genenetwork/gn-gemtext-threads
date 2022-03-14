@@ -6,6 +6,8 @@ One spinning disk crashed on Sept. 26th. It was used for Arthur's HOME and backu
 
 * assigned: pjotrp
 * priority: medium
+* status: in progress
+* keywords: system, tux01, hard disk crash
 
 # Info
 

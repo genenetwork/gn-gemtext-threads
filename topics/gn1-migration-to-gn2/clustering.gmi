@@ -22,6 +22,8 @@ Next click on 'Cluster traits' and 'Redraw' map. This is the one we want in GN3/
 ## Tags
 
 * assigned: fredm
+* keywords: GN1, GN3, clustering, heatmaps
+* status: completed, deployed
 
 ## Useful links
 

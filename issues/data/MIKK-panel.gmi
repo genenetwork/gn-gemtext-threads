@@ -19,3 +19,6 @@ Genotyping from VCF
 ## Tags
 
 * assigned: pjotrp, acenteno
+* type: data
+* status: unclear
+* keywords: data, Medaka, MIKK

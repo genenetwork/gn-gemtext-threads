@@ -1,5 +1,13 @@
 # Guix Containers
 
+## Tags
+
+* type: bug
+* assigned: jgart
+* status: unclear
+* priority: medium
+* keywords: notebooks, guix, containers
+
 ## Bugs
 
 guix container exec command does not currently work: 

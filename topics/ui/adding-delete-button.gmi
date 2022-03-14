@@ -1,5 +1,11 @@
 # Add button to delete an entire dataset in gn2
 
-An interface for deleting data existed in gn1 but is not present in
-gn1. This is something that should be added once the authorisation
-work is finalised.
+## Tags
+
+* assigned: ??
+* type: bug
+* keywords: ui, dangerous feature, status: unclear
+
+## Description
+
+An interface for deleting data existed in gn1 but is not present in gn2. This is something that should be added once the authorisation work is finalised.

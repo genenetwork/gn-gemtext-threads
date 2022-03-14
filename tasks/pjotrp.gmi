@@ -3,6 +3,13 @@
 ## Tags
 
 * kanban: pjotrp
+* assigned: pjotrp
+* status: unclear
+* keywords: pjotrp, to remove
+
+## Notes
+
+The tasks here should probably be broken out into appropriately tagged issues, where they have not - they can be found and filtered out with tissue (formerly gnbug).
 
 ## Tasks
 

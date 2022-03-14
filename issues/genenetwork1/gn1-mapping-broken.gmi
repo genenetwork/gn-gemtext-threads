@@ -16,4 +16,8 @@ AttributeError: 'genotype' object has no attribute 'regression'
 ## Tags
 
 * assigned: zachs, pjotrp
-* bug
+* type: bug
+* priority: high
+* status: unclear
+* keywords: marker
+* status: unclear

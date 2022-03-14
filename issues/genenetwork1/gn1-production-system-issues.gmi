@@ -6,10 +6,12 @@ This list does not include stuff that needs to be ported to GN2(!). See the GN2 
 
 ## Tags
 
-* critical bug
-* in progress
-* assigned: pjotrp, zachs, robw
+* type: bug
+* priority: critical
+* keywords: GN1
+* status: in progress
 * kanban: pjotrp
+* assigned: pjotrp, zachs, robw
 
 ## List of outstanding issues
 (see also E-mail Rob 14 Sep 2021)

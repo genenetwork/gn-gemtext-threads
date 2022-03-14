@@ -1,7 +1,14 @@
 # A linter for gnbug
 
-* feature-request
-* gnbug
+## Tags
+
+* type: feature-request
+* keywords: gnbug, linter, tissue
+* assigned: ??
+* priority: low
+* status: under discussion
+
+## Description
 
 Should gnbug have a linter?
 
@@ -22,3 +29,21 @@ If we'd like to "keep the text as unstructured and unrestrictive as possible" I'
 fine with that too.
 
 I was just worried about using "invalid" tags. Now, I know it's ok :)
+
+### 2022-03-14
+
+I am thinking tissue (formerly gnbug) should deal with a list of tags of the form: 
+
+```
+* key: value[, value, ...]
+```
+
+and each instance of the issue tracker can have some config file that defines, among other things:
+
+* what tags to display
+* colouring of said tags
+* maybe what tags to allow (for those that need to restrict allowed tags)
+
+The tags could be parsed into a hashmap or an associative list, or any other similarly useful datatype, from which the values would be read for display.
+
+Tissue could determine what the context is (CLI, web, etc) and using the config, figure out what tags to display and how

@@ -1,5 +1,13 @@
-# Genetwork CLI
+# GeneNetwork CLI
 
+## Tags
+
+* assigned: ??
+* type: feature-request
+* priority: low
+* keywords: command-line interface, CLI
+
+## Description
 It would be great for GeneNetwork to have a nice command line client for doing 
 most if not all the things you can do with the html interface (GN2) and/or the 
 API (GN3). 

@@ -5,5 +5,8 @@ I've removed this option. Currently just waiting on Danny to get back to me with
 
 ## Tags
 
-* bug
-* assigned: zsloan
+* type: bug
+* assigned: zsloan, danny
+* status: in progress, halted
+* keywords: marker covariates
+* priority: medium

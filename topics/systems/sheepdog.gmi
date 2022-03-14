@@ -8,7 +8,10 @@ that need resolving at some point.
 ## Tags
 
 * assigned: pjotrp
-* enhancement
+* type: enhancement
+* status: in progress, halted
+* priority: medium
+* keywords: system, sheepdog
 
 ## Tasks
 

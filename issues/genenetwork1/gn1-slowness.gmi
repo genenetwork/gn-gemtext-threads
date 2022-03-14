@@ -1,5 +1,14 @@
 # GN1 Slowness
 
+## Tags
+
+* assigned: ??
+* type: bug
+* priority: high
+* keywords: GN1
+
+## Description
+
 GN1 needs to clean up the following
 
 ```

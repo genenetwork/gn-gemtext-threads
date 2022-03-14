@@ -1,5 +1,15 @@
 # Multivariate GEMMA hangs (issue 243)
 
+## Tags
+
+* assigned: ??
+* type: failure
+* keywords: GEMMA
+* status: unclear
+* priority: high
+
+## Description
+
 => https://github.com/genetics-statistics/GEMMA/issues/243
 
 The simulated dataset was generated.  Benjamin Chu writes: I think the main problem might be how I did the simulation. I believe it was something like

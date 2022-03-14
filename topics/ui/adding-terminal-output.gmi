@@ -6,6 +6,13 @@ GeneNetwork runs external tools. We would like to have an option for (advanced) 
 
 As GN3 (REST) API handles calling external tools it kinda make sense to handle the terminal output page through GN3 and communicate through websockets. But first I'll do a Sinatra test run.
 
+## Tags
+
+* assigned: ??
+* keywords: GN3, terminal, CLI
+* status: unclear
+* priority: low
+
 ## possible xtermjs alternative
 
 => https://github.com/joewalnes/websocketd possible xtermjs alternative

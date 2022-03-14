@@ -4,10 +4,12 @@ Status: the network graph works on production. PDF output is empty, however.
 
 ## Tags
 
-* bug
-* in progress
-* assigned: pjotrp, zachs
+* type: bug
+* priority: high
+* keywords: GN1, Network Graph
+* status: in progress
 * kanban: pjotrp
+* assigned: pjotrp, zachs
 
 ## Tracking
 

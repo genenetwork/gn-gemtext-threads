@@ -1,5 +1,10 @@
 # Julia Pluto
 
+## Tags
+
+* type: documentation
+* status: unclear
+
 ## Pluto in a Guix container
 
 We run Pluto in a container. It allows for self-install of Julia packages:

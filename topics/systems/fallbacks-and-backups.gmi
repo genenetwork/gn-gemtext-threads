@@ -4,9 +4,11 @@ As a hurricane is barreling towards our machine room in Memphis we are checking 
 
 ## Tags
 
-* enhancement
-* deploy
+* type: enhancement
 * assigned: pjotrp
+* keywords: systems, fallback, backup, deploy
+* status: in progress
+* priority: critical
 
 ## Tasks
 

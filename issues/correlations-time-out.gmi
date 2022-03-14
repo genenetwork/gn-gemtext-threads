@@ -6,10 +6,15 @@ We are seeing errors with correlations which happen for the larger requests, suc
 
 It looks like correlations don't finish - and worse the running processes take a significant chunk of RAM, around 10GB each. Eventually they disappear.
 
-## Tasks
+## Tags
 
 * assigned: pjotrp, zachs
-* keywords: critical bug, in progress
+* keywords: correlations, time out
+* type: bug
+* status: in progress
+* priority: critical
+
+## Tasks
 
 * [X] Set up OOM killer
 * [X] Prevent many GN2 threads taking too much RAM

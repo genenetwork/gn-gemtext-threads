@@ -25,6 +25,16 @@ A number of changes to different types of shepherd services (exec-command, make-
 
 => https://git.genenetwork.org/efraim/shepherd-services/commit/b3c96077c2ae3ebda05eb53d81fa6e377a55132d The commit to make genecup run in a guix environment, using shepherd.
 
+## Tags
+
+
+
+* assigned: Efraim
+* type: failure
+* keywords: genecup, penguin2
+* status: unclear
+* priority: high
+
 ## Notes
 
 * It is unclear if the environmental-variables in the shepherd service are carried over to the shell script, but it seems not

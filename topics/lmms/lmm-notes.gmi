@@ -1,5 +1,12 @@
 # LMM Notes
 
+### Tags
+
+* assigned: ??
+* keywords: LMM
+* status: unclear
+* priority: low
+
 ## Time series data
 
 FlxQTL by Saunak Sen can handle time series data in an (genetic) LMM

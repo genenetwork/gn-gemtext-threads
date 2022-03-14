@@ -12,6 +12,9 @@ clean up authorisation.
 # Tags
 
 * assigned: bonfacem, pjotrp, zachs
+* keywords: authorisation
+* status: in progress, stalled
+* priority: medium
 
 # TODO
 

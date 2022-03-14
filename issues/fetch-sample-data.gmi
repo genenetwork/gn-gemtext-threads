@@ -1,4 +1,12 @@
-# 
+#
+
+### Tags
+
+* assigned: bonifacem
+* keywords: sample data, GN2, GN3
+* status: unclear
+* priority: medium
+
 #### Fetch all Sample Data
 
 Currently we fetch all the sample data using this function:

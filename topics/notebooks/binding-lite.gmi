@@ -2,6 +2,13 @@
 
 Binder and Cocalc are tools for deploying Jupyter notebooks, R/shiny notebooks and Pluto notebooks. These binding tools do a lot more and do not leverage GNU Guix lightweight container infrastructure. In this project we want to create a binding-lite.
 
+## Tags
+
+* keywords: binder, jupyter, notebooks
+* status: unclear
+* priority: medium
+* assigned: jgart, pjotrp
+
 ## Members
 
 * jgart

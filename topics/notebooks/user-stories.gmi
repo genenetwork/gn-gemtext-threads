@@ -1,5 +1,13 @@
 # Next Steps
 
+## Tags
+
+* assigned: jgart
+* type: enhancement
+* keywords: notebooks, jupyter
+* status: unclear
+
+## Description
 Whenever we start a notebook let's generate an id (put the id in a db or in memory start) and then accept the id as
 part of the route to get to the notebook.
 

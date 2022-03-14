@@ -1,5 +1,12 @@
 # Running Virtuoso
 
+## Tags
+
+* type: documentation
+* status: unclear
+
+## Description
+
 We run instances of Virtuoso for our graph databases. Virtuoso is a remarkable software and running some really large databases, including Uniprot
 
 => https://github.com/openlink/virtuoso-opensource
@@ -17,7 +24,7 @@ guix environment --ad-hoc virtuoso-ose -- virtuoso-t -f
 
 The database is initialized from 'penguin2:/export/virtuoso/var/lib/virtuoso/db/virtuoso.ini'
 
-## Running a new instance
+### Running a new instance
 
 For testing we want to run a temporary instance. Let's start from the virtuoso.ini file:
 
@@ -58,7 +65,7 @@ ssh -L 28890:127.0.0.1:28890 -f -N myname@penguin2.genenetwork.org
 
 and surf to http://localhost:28890/conductor. A good time to change the default password (dba:dba)!
 
-## Uploading data with CURL
+### Uploading data with CURL
 
 To upload RDF I use rapper to validate the data. First delete the existing graph with something like
 
@@ -76,7 +83,7 @@ Where BioHackrXiv is the name of the graph (in this example). A python version c
 
 => https://github.com/pubseq/bh20-seq-resource/blob/master/scripts/update_virtuoso/check_for_updates.py
 
-## Virtuoso.ini
+### Virtuoso.ini
 
 What changed in $HOME/services/virtuoso/virtuoso.ini
 

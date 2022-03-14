@@ -1,6 +1,9 @@
 ## Tags
 
 * assigned: bonfacem
+* keywords: metadata
+* status: unclear
+* priority: medium
 
 ### Introduction
 

@@ -4,8 +4,11 @@ The BNW interface is broken at this point.
 
 ## Tags
 
-* bug
+* type: bug
+* priority: high
 * assigned: pjotrp
+* status: in progress
+* keywords: BNW
 
 ## Todo
 
