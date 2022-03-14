@@ -21,17 +21,9 @@ example:
 =>
 https://git.genenetwork.org/guix-bioinformatics/guix-bioinformatics/commit/e80fe4ddcf15e21004b8135cf8af34b458697f64
 
-Removing the 404's would prevent us from catching important errors if
-ever they occur. I suggest we fix the 404's; some of them have a
-cascading effect, like the font-awesome missing "webfonts" folder I
-just fixed that leads to a lot of unnecessary 404s.
+Removing the 404's would prevent us from catching important errors if ever they occur. I suggest we fix the 404's; some of them have a cascading effect, like the font-awesome missing "webfonts" folder I just fixed that leads to a lot of unnecessary 404s.
 
-For error handling, I think that will evolve with the code-base with
-time as it gets leaner. One way the aforementioned flask page
-recommends handling errors is by creating custom errors for your
-particular subject-domain needs and probably send a 5xx message that's
-more helpful. At the moment we are using one error-handler for
-everything(notice the generic "Exception")! See:
+For error handling, I think that will evolve with the code-base with time as it gets leaner. One way the aforementioned flask page recommends handling errors is by creating custom errors for your particular subject-domain needs and probably send a 5xx message that's more helpful. At the moment we are using one error-handler for everything(notice the generic "Exception")! See:
 
 ```
 @app.errorhandler(Exception)
@@ -70,5 +62,4 @@ I'll look a way for removing this:
     logger.error(traceback.format_exc())
 ```
 
-with a more sane, but probably still useful,
-log. That's where I problem IIUC lies.
+with a more sane, but probably still useful, log. That's where I problem IIUC lies.
