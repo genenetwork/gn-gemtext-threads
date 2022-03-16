@@ -1,6 +1,14 @@
-# Add convenienve templates
+# Add convenience templates
 
-* feature-request
+## Tags
+
+* assigned: jgart
+* type: feature-request
+* priority: low
+* status: in progress, discussion, stalled
+* keywords: tissue, gnbug
+
+## Description
 
 WDYT of adding a subcommand called `report` to generate a template for a bug report?
 

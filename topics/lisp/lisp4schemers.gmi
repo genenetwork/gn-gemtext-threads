@@ -1,5 +1,10 @@
 # Lisp For Schemers
 
+## Tags
+
+* type: documentation
+* keywords: LISP, Scheme, iota, loop, iterate
+
 ## iota
 
 ### In Scheme

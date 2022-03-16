@@ -31,3 +31,11 @@ Currently there are a bunch of shepherd services (on Penguin2, as user shepherd)
 * power
 * rn6app
 * singlecell
+
+## Tags
+
+* assigned: efraim
+* type: bug
+* status: unclear
+* priority: high
+* keywords: shepherd, system administration

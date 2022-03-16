@@ -25,3 +25,7 @@ wqflask/utility/authentication_tools.py
 # Tags
 
 * assigned: bonfacem, pjotrp, zachs
+* type: bug
+* priority: medium
+* status: unclear
+* keywords: proxy, configuration, settings

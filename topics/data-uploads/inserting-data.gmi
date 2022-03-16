@@ -1,6 +1,12 @@
+# Data Uploads: Inserting Data
+
 ## Tags
 
 * assigned: bonfacem, zachs
+* type: bug
+* priority: high
+* status: in progress
+* keywords: data uploads
 
 ### Introduction
 

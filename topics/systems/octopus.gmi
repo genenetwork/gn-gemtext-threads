@@ -3,6 +3,10 @@
 # Tags
 
 * assigned: pjotrp, efraimf, erikg
+* priority: high
+* status: completed, closed
+* type: system administration
+* keywords: systems, octopus
 
 # Tasks
 

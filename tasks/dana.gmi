@@ -3,6 +3,10 @@
 ## Tags
 
 * assigned: dana, pjotrp
+* priority: medium
+* type: system administration
+* status: unclear
+* keywords: system administration, octopus, gateway, tux02, tux01
 
 ## Tasks
 

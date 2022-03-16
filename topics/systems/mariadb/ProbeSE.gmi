@@ -1,3 +1,15 @@
+# ProbeSE
+
+## Tags
+
+* assigned: pjotrp
+* status: unclear
+* priority: medium
+* type: enhancement
+* keywords: database, mariadb, innodb, ProbeSE
+
+## Description
+
 Zach pointed out that ProbeSE is used on GN1 with
 
 => http://gn1.genenetwork.org/webqtl/main.py?FormID=showProbeInfo&database=HC_M2_0606_P&ProbeSetID=1427571_at&CellID=None&RISet=BXD&incparentsf1=ON

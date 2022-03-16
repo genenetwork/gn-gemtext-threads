@@ -5,6 +5,10 @@ Global search is the top bar of GN2
 ## Tags
 
 * assigned: pjotrp, zsloan
+* status: unclear
+* priority: critical
+* type: bug
+* keywords: global search, BRCA2
 
 ## Tasks
 

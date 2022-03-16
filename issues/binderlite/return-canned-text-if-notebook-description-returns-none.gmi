@@ -1,7 +1,13 @@
 # Return canned text if notebook description returns none
 
-* bug?
+## Tags
+* type: bug
 * assigned: jgart
+* priority: high
+* status: in progress
+* keywords: binderlite, notebooks
+
+## Description
 
 Notebooks that do not have a description will use python's `None` value as the 
 project's description.
@@ -23,3 +29,7 @@ if notebook.description == None:
 ```
 
 WDYT?
+
+### 2022-03-16 fredm
+
+I like the first one better

@@ -44,3 +44,11 @@ The Linux kernel shows some fixes that are not on Tux01 yet
 => https://lkml.org/lkml/2021/2/17/970
 
 In our case a simple reboot worked, fortunately.
+
+## Tags
+
+* assigned: pjotrp
+* status: unclear
+* priority: medium
+* type: system administration
+* keywords: systems, tux01, tux02, production

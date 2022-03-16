@@ -2,9 +2,14 @@
 
 ## Tags
 
-* assigned: ??
+* assigned: bonfacem
 * priority: medium
-* status: unclear
+* type: enhancement
+* status: in progress
 * keywords: authentication, gn-proxy
 
 ## Description
+
+Originally in the now deleted file `topics/authentication/auth.gmi` which was originally created by BonfaceKilz.
+
+Assigned to bonfacem for better description, and further work/reassignment as appropriate

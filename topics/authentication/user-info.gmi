@@ -4,7 +4,8 @@ When the user signs in to GN2, there is no info on the account name in the menu.
 
 ## Tags
 
-* assigned: ??
+* assigned: bonfacem
 * priority: medium
 * status: unclear
+* type: bug
 * keywords: authentication, user info

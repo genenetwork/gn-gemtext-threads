@@ -12,4 +12,10 @@ if ($scheme = http) {
 }
 ```
 
+## Tags
+
 * assigned: pjotr, arthur, jgart
+* type: bug
+* priority: medium
+* status: unclear
+* keywords: GN2, http, https

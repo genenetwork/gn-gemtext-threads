@@ -19,3 +19,8 @@ The standard pdb docs should work for pudb with one small exception.
 > exception: run is called runstatement.)
 
 => https://docs.python.org/3/library/pdb.html?highlight=pdb#module-pdb
+
+## Tags
+
+* type: documentation
+* keywords: pudb

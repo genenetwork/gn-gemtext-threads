@@ -3,6 +3,9 @@
 ## Tags
 
 * assigned: zsloan
+* keywords: global search, genewiki
+* status: unclear
+* priority: unclear
 
 ## Tasks
 

@@ -31,3 +31,11 @@ Note we could run QC through the REST API too. That would allow it to
 be run from R and Python and Jupyter notebooks. Make it part of GN3.
 
 The tricky part is still how the data is handled in escrow.
+
+## Tags
+
+* assigned: jgart
+* priority: high
+* type: feature-request
+* status: in progress, beta
+* keywords: quality control

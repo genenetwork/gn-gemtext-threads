@@ -39,6 +39,10 @@ so you can see all the different versions. The matching code bases should be the
 ## Tags
 
 * assigned: pjotrp, efraimf
+* priority: high
+* status: unclear
+* type: system administration
+* keywords: systems
 
 ## Tasks
 

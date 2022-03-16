@@ -2,10 +2,15 @@
 
 Correlations for huge data set(like the exo dataset) is very slow; and the UI crashes.
 
-## Tasks
+## Tags
 
+* type: bug
+* priority: critical
 * assigned: bonfacekilz, alex
-* keywords: critical bug, in progress
+* keywords: correlations, ui, crash
+* status: in progress
+
+## Tasks
 
 * [ ] Caching slow queries
 * [ ] Server side pagination

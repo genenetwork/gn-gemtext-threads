@@ -1,0 +1,12 @@
+# Common LISP: sly
+
+This document will collect some resources on sly
+
+## Tags
+
+* type: documentation
+* keywords: common-lisp, sly, emacs
+
+## Resources
+
+=> https://joaotavora.github.io/sly/ SLY User Manual

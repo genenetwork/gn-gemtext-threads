@@ -20,3 +20,9 @@ The output can be redirected, e.g.
 * env [various-env-vars] python3 -m cProfile the-script.py 2>error.log 1>performance.log
 
 which should help will separating errors from the performance data, for easier analysis
+
+
+## Tags
+
+* type: documentation
+* keywords: profiling, python

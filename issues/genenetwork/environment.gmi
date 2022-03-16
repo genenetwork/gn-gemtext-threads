@@ -9,3 +9,7 @@ It somehow got reverted and is out of date. Please see if we can get a list agai
 ## Tags
 
 * assigned: bonfacem
+* type: bug
+* status: unclear
+* priority: medium
+* keywords: guix, packages, environments

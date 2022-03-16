@@ -14,3 +14,9 @@ https://github.com/fonsp/Pluto.jl#built-in-package-manager
 
 https://mybinder.readthedocs.io/en/latest/tutorials/reproducibility.html#pin-dependencies
 
+## Tags
+
+* type: documentation
+* priority: medium
+* assigned: jgart
+* keywords: documentation, notebooks, reproducibility, guix

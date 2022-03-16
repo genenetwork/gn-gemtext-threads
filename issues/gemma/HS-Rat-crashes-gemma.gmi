@@ -7,6 +7,10 @@ Running GEMMA on the NSNIH dataset in Genenetwork sends the server in a tail spi
 ## Tags
 
 * assigned: pjotrp, zachs
+* status: unclear
+* type: bug
+* priority: high
+* keywords: gemma, crash
 
 ## Tasks
 

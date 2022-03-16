@@ -1,6 +1,12 @@
+# GN3: Technical Debt
+
 ## Tags
 
 * assigned: bonfacem
+* priority: medium
+* status: in progress
+* type: enhancement
+* keywords: GN3
 
 ### Introduction
 

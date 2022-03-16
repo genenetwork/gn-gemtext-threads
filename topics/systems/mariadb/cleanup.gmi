@@ -1,4 +1,14 @@
+# Clean Up
 
+## Tags
+
+* assigned: pjotrp, robw
+* status: unclear
+* priority: unclear
+* type: database administration
+* keywords: database, mariadb
+
+## Description
 
 Find all larger tables
 

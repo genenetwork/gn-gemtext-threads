@@ -1,5 +1,13 @@
 # CLI Features
 
+## Tags
+
+* assigned: jgart
+* priority: low
+* status: unclear
+* type: feature-request
+* keywords: bindelite, notebooks
+
 ## Admin
 
 * Clear Database

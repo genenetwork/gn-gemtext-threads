@@ -1,4 +1,9 @@
-# BBB
+# BigBlueButton
+
+## Tags
+
+* type: documentation
+* keywords: BigBlueButton
 
 ## BASH script to install BigBlueButton in 30 minutes. 
 

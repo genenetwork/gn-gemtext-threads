@@ -1,4 +1,18 @@
- # guix shell --root
+# Guix: Using guix shell with root file
+
+## Tags
+
+* assigned: jgart
+* type: unclear
+* status: unclear
+* priority: low
+* keywords: guix, guix shell, root file
+
+## Description
+
+```
+guix shell --root
+```
 
  Let's benchmark and test these options to see if it helps the speed/times
  with building a new container.

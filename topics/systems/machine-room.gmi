@@ -3,6 +3,10 @@
 ## Tags
 
 * assign: pjotrp, dana
+* type: system administration
+* priority: high
+* keywords: systems
+* status: unclear
 
 ## Tasks
 

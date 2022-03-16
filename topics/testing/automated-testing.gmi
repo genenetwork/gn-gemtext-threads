@@ -2,7 +2,11 @@
 
 ## Tags
 
-* assigned: fredm bonfacem alex
+* assigned: fredm, bonfacem, alex
+* status: in progress
+* priority: medium
+* type: enhancement
+* keywords: testing, CI, CD
 
 ## Introduction
 

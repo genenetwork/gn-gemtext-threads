@@ -3,7 +3,9 @@
 ## Tags
 
 * assigned: pjotr
-* bug
+* type: bug
+* priority: critical
+* status: completed, done, closed
 
 ## Tasks
 

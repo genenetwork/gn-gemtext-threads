@@ -5,6 +5,8 @@ This is the checklist to run through when testing GN2.
 ## Tags
 
 * assigned: pjotrp
+* type: documentation
+* keywords: documentation, testing, checklist
 
 ## Tasks
 

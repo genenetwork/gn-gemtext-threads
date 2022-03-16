@@ -2,6 +2,14 @@
 
 We are no longer using that database
 
+Seems related to
+
+=> ../issues/remove-elastic-search.gmi
+
 ## Tags
 
 * assigned: bonfacem
+* type: enhancement
+* priority: low
+* status: unclear
+* keywords: elasticsearch, purge

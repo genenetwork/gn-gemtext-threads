@@ -13,7 +13,10 @@ deployment cycle to help with quick iteration of the code.
 ## Tags
 
 * assigned: bonfacem, fredm, efraimf, aruni
-* deployment
+* keywords: deployment, CI, CD, testing
+* status: in progress
+* priority: high
+* type: enhancement
 
 ## Tasks
 

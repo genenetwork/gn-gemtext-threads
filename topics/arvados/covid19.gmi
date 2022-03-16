@@ -5,3 +5,11 @@ We are setting up a Cloud HPC for COVID-19 using Arvados as the underlying infra
 ## Tasks
 
 => https://github.com/yatisht/usher Fast phylogeny
+
+## Tags
+
+* assigned: pjotrp
+* priority: unclear
+* type: system administration
+* status: unclear
+* keywords: covid-19, systems, arvados

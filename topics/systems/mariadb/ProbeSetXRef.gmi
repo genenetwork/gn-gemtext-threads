@@ -1,3 +1,13 @@
+# ProbeSetXRef
+
+## Tags
+
+* keywords: ProbeSetXRef, database, mariadb, innodb
+* type: enhancement, documentation
+* assigned: pjotrp
+* status: unclear
+* priority: medium
+
 ## Table ProbeSetXRef
 
 Juggling indexes and transforming to InnoDB led to a massive speed increase for typical ProbeSetXRef queries. Global search for brca2 went down from 13s to 4s! Try

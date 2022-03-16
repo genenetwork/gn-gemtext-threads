@@ -13,7 +13,11 @@ settings; and removing this would make gn2 as is disfunctional.
 
 # Tags
 
-* assigned: bonfacem
+* assigned: bonfacem, fredm
+* type: bug
+* priority: medium
+* status: in progress
+* keywords: GN2, configuration, deploy
 
 # Notes
 

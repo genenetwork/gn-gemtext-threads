@@ -19,5 +19,6 @@ During the presentation meeting on 2021-10-01, Rob requested that the heatmaps h
 
 ## Tags
 
-* feature
+* type: feature-request
 * assigned: fredm, zsloan
+* status: closed, completed

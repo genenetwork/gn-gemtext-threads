@@ -31,3 +31,8 @@ perform Ordered Quantile normalization43 on all phenotypes. QTL
 --
 A quantitative trait variant in Gabra2 underlies increased methamphetamine stimulant sensitivity
 ```
+
+## Tags
+
+* type: documentation
+* keywords: documentation, Shapiro Wilk test

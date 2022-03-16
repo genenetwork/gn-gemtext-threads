@@ -13,6 +13,10 @@ the markdown is rendered on github, which makes it easy to edit for most users, 
 ## Tags
 
 * assigned: pjotrp
+* status: unclear
+* type: documentation
+* priority: high
+* keywords: documentation, wiki
 
 ## Tasks
 

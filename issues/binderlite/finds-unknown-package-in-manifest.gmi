@@ -30,4 +30,10 @@ Or, should channels be managed by the sysadmin only for security reasons?
 It's probably a security risk since a guix channel can pull in arbitrary 
 packaged code that might not be audited or fully trusted.
 
-* bug
+## Tags
+
+* type: bug
+* assigned: jgart
+* status: unclear
+* keywords: binderlite, notebooks
+* priority: high

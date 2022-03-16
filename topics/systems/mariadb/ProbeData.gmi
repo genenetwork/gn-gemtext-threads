@@ -1,4 +1,14 @@
+# ProbeData
 
+## Tags
+
+* assigned: pjotrp, aruni
+* status: unclear
+* priority: medium
+* type: enhancement
+* keywords: database, mariadb, innodb, ProbeData
+
+## Description
 
 Probe level data is used to examine the correlation structure among the
 N probes that have the same nominal target. Sometimes several probes

@@ -1,8 +1,12 @@
 # ansi2html terminal user feedback
 
-* ongoing
-* feature-request
+* status: ongoing, in progress
+* type: feature-request
 * assigned: jgart
+* priority: medium
+* keywords: binderlite, notebooks, ansi2html
+
+## Description
 
 https://builds.sr.ht/~sircmpwn/job/610711
 

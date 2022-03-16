@@ -19,6 +19,9 @@ with an edit button, similar to
 ## Tags
 
 * assigned: pjotrp, zsloan
-* enhancement
+* type: enhancement
+* priority: medium
+* status: unclear
+* keywords: GN1, documentation
 
 ## Tasks

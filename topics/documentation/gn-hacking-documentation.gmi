@@ -11,6 +11,10 @@ The goal of this document is to encourage and track the documentation that assis
 ## Tags
 
 * assigned: fredm
+* type: documentation
+* status: in progress
+* priority: medium
+* keywords: traits, datasets, hacking
 
 
 ## Unifying Principles

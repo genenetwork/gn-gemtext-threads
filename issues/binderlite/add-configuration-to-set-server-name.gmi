@@ -1,8 +1,14 @@
 # Add configuration to set server name
 
-* assigned: jgart
+## Tags
 
-* feature
+* assigned: jgart
+* type: feature-request
+* status: unclear
+* priority: high
+* keywords: binderlite, notebooks, configuration
+
+## Description
 
 Let's use environment variables as configuration
 

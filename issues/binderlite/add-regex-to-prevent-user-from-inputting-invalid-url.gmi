@@ -1,6 +1,13 @@
-* bug
+# Add Regular Expression to Prevent Invalid Input
 
+## Tags
+* type: bug
 * assigned: jgart
+* status: unclear
+* keywords: binderlite, notebooks
+* priority: high
+
+## Description
 
 Add regex to the html form to prevent the user from submitting an invalid git repo
 url or other string.

@@ -1,8 +1,13 @@
+# Data Uploads: Reversing a Diff
+
 ## Tags
 
 * assigned: bonfacem, zachs
+* status: unclear
+* type: enhancement
+* priority: high
+* keywords: data uploads
 
 ### Introduction
 
-Given a diff file, we should be able to reverse the operations that
-were ran on it.
+Given a diff file, we should be able to reverse the operations that were ran on it.

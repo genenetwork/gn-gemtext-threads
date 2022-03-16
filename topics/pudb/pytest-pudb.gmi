@@ -5,3 +5,8 @@ pytest --pdbcls pudb.debugger:Debugger --pdb --capture=no
 ```
 
 => https://documen.tician.de/pudb/starting.html?highlight=pytest#usage-with-pytest 
+
+## Tags
+
+* type: documentation
+* keywords: pudb, pytest

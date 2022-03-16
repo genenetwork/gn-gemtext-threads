@@ -4,7 +4,8 @@ Here we capture some common actions
 
 ## Tags
 
-* info
+* type: info, documentation
+* keywords: mariadb, systems
 
 ## Check the transaction logs
 

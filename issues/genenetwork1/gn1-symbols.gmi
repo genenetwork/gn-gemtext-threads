@@ -3,6 +3,10 @@
 # Tags
 
 * assigned: pjotrp, arthurc
+* type: bug
+* priority: medium
+* status: unclear
+* keywords: GN1, symbols
 
 # Tasks
 

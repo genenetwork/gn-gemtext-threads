@@ -1,34 +1,40 @@
-# List of common lisp packages:
+# Common LISP: Notes
+
+## List of common lisp packages:
 
 => https://github.com/CodyReichert/awesome-cl
 
-# Books
+## Books
 
 http://cliki.net/Lisp+Books
 
-# Practice
+## Practice
 
 https://github.com/google/lisp-koans
 https://exercism.io/tracks/common-lisp
 
-# Documentation
+## Documentation
 
 The nonguix channel provides an emacs package for the Common Lisp HyperSpec:
 
 => https://gitlab.com/nonguix/nonguix/-/blob/master/nongnu/packages/emacs.scm#L26 clhs
 
-# Getting Help / Asking Questions
+## Getting Help / Asking Questions
 
-## Libera Chat
+### Libera Chat
 
 ```
 #clschool
 #commonlisp
 ```
 
-## Matrix
+### Matrix
 
 ```
 #common-lisp:matrix.org
 ```
 
+## Tags
+
+* type: documentation
+* keywords: LISP, common-lisp, packages

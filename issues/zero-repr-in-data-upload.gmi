@@ -1,6 +1,12 @@
+# Data Uploads: Zero Representation
+
 ## Tags
 
 * assigned: bonfacem
+* type: bug
+* priority: high
+* status: in progress
+* keywords: data uploads
 
 ### Introduction
 

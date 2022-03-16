@@ -45,3 +45,11 @@ is allowed into the GeneNetwork will be 22,000 entries.
 12. Check for CRLF.
 
 13. Check for UTF-8 encoding.
+
+## Tags
+
+* assigned: jgart
+* type: feature-request
+* priority: high
+* status: unclear
+* keywords: quality control

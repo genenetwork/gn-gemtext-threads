@@ -1,10 +1,14 @@
 # Databases Getting Out of Wack
 
-## Let's use Gemma instead of Reaper
+## Tags
 
 * assigned: Bonface, Zach, jgart
 * priority: high
-* bug
+* type: bug
+* status: unclear
+* keywords: database, gemma, reaper
+
+## Let's use Gemma instead of Reaper
 
 Zachary:
 > If we're using GEMMA, we'll need to recalculate all other trait Max LRS scores using 

@@ -1,5 +1,7 @@
 # Running pudb From an External Environment
 
+This documentation is now obsolete since pudb was added as a package in GNU Guix
+
 Currently (22nd December 2021), it is a tad difficult to get pudb running under the various guix environments without having to update a lot of stuff. This documents a workaround that seems to work for me (@fredm).
 
 ## GeneNetwork3
@@ -20,3 +22,9 @@ Currently (22nd December 2021), it is a tad difficult to get pudb running under 
 4) Inside the container, run the debugger with something like:
 
 * env PYTHONPATH="${PYTHONPATH}:${HOME}/pudb_env/lib/python3.8/site-packages" ... python3 -m pudb script.py
+
+## Tags
+
+* type: documentation
+* keywords: pudb
+* status: obsolete

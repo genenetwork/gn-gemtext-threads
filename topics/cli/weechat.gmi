@@ -1,5 +1,10 @@
 # Weechat
 
+## Tags
+
+* type: documentation
+* keywords: cli, weechat, documentation
+
 Weechat is a very versatile terminal chat that can handle IRC, Matrix and Slack.
 
 ## Weechat install + slack

@@ -39,3 +39,11 @@ dataset so that we can inspect it."
 "Inbred Set ID 1 is the same as BXD"
 
 > These are the strains: ...
+
+## Tags
+
+* assigned: jgart
+* type: feature-request
+* status: unclear
+* priority: medium
+* keywords: UI, quality control

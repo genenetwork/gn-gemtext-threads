@@ -1,7 +1,12 @@
 # Integrate styling of app with GN2
 
-* ongoing
+* status: ongoing, in progress
 * assigned: jgart
+* type: bug
+* priority: medium
+* keywords: binderlite, notebooks, styling, UI
+
+## Description
 
 Currently using antiweb for styling with modifications.
 

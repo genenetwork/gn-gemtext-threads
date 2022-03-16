@@ -5,6 +5,10 @@ We are going to move production to tux02 - tux01 will be the staging machine. Th
 ## Tags
 
 * assigned: pjotrp
+* status: in progress
+* priority: medium
+* type: system administration
+* keywords: systems, tux02, production
 
 ## Tasks
 

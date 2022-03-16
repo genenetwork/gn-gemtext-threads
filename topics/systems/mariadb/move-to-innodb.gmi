@@ -1,3 +1,5 @@
+# MariaDB: Move to InnoDB Engine
+
 We are going to move from myisam to innodb. Penguin2 has been happily running innodb for some time.
 
 Main problem are fulltext columns, the text from Trello is captured below. This is for the following tables
@@ -581,3 +583,12 @@ On Penguin2 we are already runing ProbeSetData as
 ```
 
 which is pretty massive! It includes the index, which is 180G, so the difference is not that great. Also we should try a 4kb page size. Also make sure to enable innodb_file_per_table.
+
+
+## Tags
+
+* assigned: pjotr
+* type: enhancement, documentation
+* status: unclear
+* priority: medium
+* keywords: database, mariadb, innodb

@@ -1,5 +1,15 @@
 # R Kernel Dying
 
+## Tags
+
+* assigned: jgart
+* type: bug
+* priority: high
+* status: unclear
+* keywords: R
+
+## Core Dump
+
 ```
 [I 08:45:24.502 NotebookApp] Writing notebook-signing key to /home/jgart/.local/share/jupyter/notebook_secret
 [W 08:45:24.515 NotebookApp] Notebook 2020-05-08/solberg-rat-analysis.ipynb is not trusted

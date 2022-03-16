@@ -7,3 +7,8 @@ Some links
 
 => https://malisper.me/debugging-lisp-part-1-recompilation/ Debug Common Lisp (CL)
 => https://www.youtube.com/watch?v=bl8jQ2wRh6k Video on CL web development
+
+## Tags
+
+* type: documentation
+* keywords: LISP, debugging

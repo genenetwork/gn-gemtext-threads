@@ -6,4 +6,5 @@ Here's a simple way that SourceHut documents their API endpoints with markdown.
 
 ## Tags
 
-* docs
+* type: documentation
+* keywords: GN3
