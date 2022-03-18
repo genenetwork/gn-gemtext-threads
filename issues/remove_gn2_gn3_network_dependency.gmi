@@ -1,0 +1,23 @@
+# Gn3 network dependency
+
+occasionally while sending requests from gn3 from gn2 
+for tools like ctl and wgcna users run into network
+errors if the gn3 server is down or other  issues.Idea
+is to use gn3 as library to avoid the above
+
+## Tags
+
+* assigned: alex
+* keywords: network_connections,ctl,wgcna
+* type: bug
+* status: in progress
+* priority: medium
+
+
+
+
+## Tasks
+
+* [] replace network connections by using gn3 as lib
+* [] package  the ctl and wgcna script in r
+
