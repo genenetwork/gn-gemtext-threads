@@ -1,0 +1,48 @@
+(use-modules (srfi srfi-26)
+             (ice-9 match)
+             (tissue issue))
+
+(define (issue-awaiting-response? person issue)
+  "Return #t if ISSUE is awaiting a response from PERSON. Else, return
+#f. An issue is considered to be awaiting a response from a person if
+
+1. That person has participated in the issue and there are newer posts
+to that issue.
+2. The issue is assigned to that person but they have not
+participated."
+  (let ((authors (map post-author
+                      (issue-posts issue))))
+    (or (and (member person authors)
+             (not (string=? person (last authors))))
+        (and (member person (issue-assigned issue))
+             (not (member person authors))))))
+
+(define (numbered-issue-listing title-format issues)
+  (subsection :title (format title-format (length issues))
+              :number #f
+    (issue-listing (reverse issues))))
+
+(define (person-section person)
+  (section :title person
+           :ident (string-map (lambda (c)
+                                (case c
+                                  ((#\space) #\-)
+                                  (else c)))
+                              (string-downcase person))
+           :number #f
+    (numbered-issue-listing "~a issues await your response"
+                            (reverse (filter (lambda (issue)
+                                               (and (issue-open? issue)
+                                                    (issue-awaiting-response? person issue)))
+                                             (issues))))
+    (numbered-issue-listing "you have been assigned ~a issues"
+                            (reverse (filter (lambda (issue)
+                                               (and (issue-open? issue)
+                                                    (member person (issue-assigned issue))))
+                                             (issues))))))
+
+(document :title "GeneNetwork team agenda view"
+  (toc)
+  (map (lambda (author)
+         (person-section author))
+       (authors)))
