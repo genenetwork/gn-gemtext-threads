@@ -2,8 +2,8 @@
 
 occasionally while sending requests from gn3 from gn2 
 for tools like ctl and wgcna users run into network
-errors if the gn3 server is down or other related issues
-
+errors if the gn3 server is down or other  issues.Idea
+is to use gn3 as library to avoid the above
 
 ## Tags
 

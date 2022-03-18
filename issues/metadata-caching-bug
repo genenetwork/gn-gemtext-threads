@@ -1,3 +1,5 @@
+# metadata caching bug
+
 A user recently notified me of an error when doing a correlation of a BXD phenotype trait against other BXD phenotypes.
 
 The error is somehow being caused by the metadata caching (it's an error when loading the cached metadata JSON file), but it's not clear to me what the issue is (and I'm not sure how to locate it within such a large file, since the error message only gives the character position).
@@ -32,3 +34,21 @@ return _default_decoder.decode(s)
 File "/gnu/store/p5fgysbcnnp8b1d91mrvjvababmczga0-python-3.9.6/lib/python3.9/json/decoder.py", line 340, in decode
 raise JSONDecodeError("Extra data", s, end)
 json.decoder.JSONDecodeError: Extra data: line 1 column 6765450 (char 6765449)
+
+
+
+
+## Tags
+
+* assigned: alex, zachs
+* keywords: correlation,caching,metadata
+* type: bug
+* status: completed 
+* priority: medium
+
+
+
+## Tasks
+
+* [X] fix for caching empty json files
+* [X] delete invalid files and recreate new ones
