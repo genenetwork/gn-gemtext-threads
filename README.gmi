@@ -23,10 +23,10 @@ The tracker
 
 => https://github.com/genenetwork/gn-gemtext-threads/blob/main/issues/database-not-responding.gmi Example issue tracker
 
-We will soon add a web readable version of
+We have a web readable version at
 
-=> https://genenetwork.org/issues Issue tracker
-=> https://genenetwork.org/kanban Kanban board
+=> https://issues.genenetwork.org Issue tracker
+=> https://issues.genenetwork.org/team.html Kanban board
 
 Other discussions on leaving github
 
