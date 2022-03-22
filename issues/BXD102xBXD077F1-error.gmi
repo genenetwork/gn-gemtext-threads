@@ -1,0 +1,33 @@
+# BXD102xBXD077F1 Error
+
+## Tags
+
+* assigned: zsloan
+* type: bug
+* priority: critical
+* status: unclear
+* keywords: correlations, from github
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork2/issues/612 From GitHub
+
+> Hi,
+>
+> There is an error when I click on Compute in Calculate Correlations. It does not load the correlations. This is the error:
+> GeneNetwork tux01:gene:2.11-rc2-testing-c16e361c4
+> 'BXD102xBXD077F1' (error)
+>
+> Is this a server issue? Thanks!
+>
+> jacs123
+
+
+
+
+> It is this https://www.genenetwork.org/show_trait?trait_id=1448231_at&dataset=HC_M2_0606_P
+>
+> jacs123
+
+
+I (fredm) tried this out, and it seems there is still an issue here.
