@@ -1,0 +1,26 @@
+# Global search does not return results
+
+## Tags
+
+* priority: critical
+* type: bug
+* assigned: zsloan, pjotrp
+* status: unclear
+* keywords: global search, from github
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork2/issues/629 From GitHub
+
+> Try a search for Brca2
+> 
+> I am trying to add an example to this storyboard:
+> 
+> => https://github.com/genenetwork/gn-docs/blob/master/story-boards/starting-from-known-gene/starting-from-known-gene.md#use-the-search-page
+> 
+> 
+> Interestingly luna does no better:
+> 
+> => http://luna.genenetwork.org/gsearch?type=gene&terms=brca2
+
+@pjotr @zsloan, it seems to me this might be fixed, but please have a look and fix it in case it is not
