@@ -13,3 +13,5 @@ Add a command-line option --sort=(newest-first|oldest-first) to gnbug that deter
 # INFO
 
 It seems to me that the default is newest-first for gemtext and oldest-first for terminal output. No need for a switch.
+
+* closed
