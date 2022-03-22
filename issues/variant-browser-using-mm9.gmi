@@ -1,0 +1,26 @@
+# Variant Browser seems to be using mm9
+
+## Tags
+
+* assigned:
+* priority: unclear
+* type: bug
+* status: stalled
+* keywords: variant browser, mm9, from github
+
+## Members
+
+* acenteno
+* robw
+* pjotrp
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork2/issues/581 From GitHub
+
+When looking for SNPs in GN2, the gene annotations (and, I think, the SNPs) of the results do not match the query.
+Searching for a gene gives correct coordinates in the search box at http://www.genenetwork.org/snp_browser, but the results are for the same coordinates in mm9 (see screenshot).
+
+The example is for a search for 'Snx6' (chr12 54.746356 - 54.795662).
+
+=> https://user-images.githubusercontent.com/35666678/119680694-b6906480-be41-11eb-9070-9f4c2dffb499.png Screenshot
