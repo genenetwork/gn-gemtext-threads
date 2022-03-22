@@ -1,0 +1,50 @@
+# 'TempDataSet' object has no attribute 'query_for_group' (error)
+
+## Tags
+
+* assigned: zsloan, bonfacem
+* priority: high
+* type: bug
+* status: unclear
+* keywords: TempDataSet, from github
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork2/issues/592 From GitHub
+
+After successful entry of new BXD trait data (both my own data and the example BXD set from the website), I tried to correlate the trait with the BXD phenotypes, by clicking the correlate button. This produced the error below:
+
+GeneNetwork tux01:gene:2.11-rc2-staging-427071fc7 http://www.genenetwork.org/corr_compute (12:29PM UTC Jul 16, 2021)
+'TempDataSet' object has no attribute 'query_for_group' (error)
+File "/export/local/home/gn2/production/gene/wqflask/base/data_set.py", line 334, in init
+dataset.query_for_group)
+
+
+
+
+Hi Rob and Zachary,
+
+Thanks for getting back so quickly. There is no urgency for me. I managed
+to upload the trait as a batch file in the old version of genenetwork.
+
+The trait data that I tried to upload and check on GN2 was the
+median-lateral position of the representation of visual space on V1. It was
+old data that we had, but never uploaded, because we were investigating a
+specific cross for another location trait with an interesting QTL. Rob,
+your email spiked my interest again. I'll send a reply in the next few days.
+
+For testing purposes, the trait sequence was : X X X 0.3391 0.2467 0.6381 X
+0.244 X 0.5926 0.3004 0.6346 0.3103 0.3372 X 0.4933 0.4008 0.404 X 0.4062 X
+0.484 X X X 0.3358 0.3724 0.2757 X 0.2401 0.3712 0.2365 0.3328 X 0.3525 X X
+0.3288 0.3354 X 0.4069 X X X X X X X X X X X X X X X X X X X X X X X X X X
+X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X
+X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X
+X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X
+X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X X
+X X X X X X X X X X X X X X X X X X X X X
+but also the sample from the website did not work for me.
+
+
+
+
+@bonfacem might also be interested in this issue
