@@ -23,7 +23,7 @@ Next click on 'Cluster traits' and 'Redraw' map. This is the one we want in GN3/
 
 * assigned: fredm
 * keywords: GN1, GN3, clustering, heatmaps
-* status: completed, deployed
+* status: closed, completed, deployed
 
 ## Useful links
 
