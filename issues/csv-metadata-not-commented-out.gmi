@@ -1,0 +1,33 @@
+# csv export meta data are not commented out
+
+## Tags
+
+* assigned: zsloan
+* priority: high
+* type: bug
+* status: unclear
+* keywords: CSV, from github, meta data
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork2/issues/594 From GitHub
+
+csv export data can't be read using the example R code
+The csv looks like this:
+
+```
+Phenotype ID: 11320
+Phenotype URL: http://genenetwork.org/show_trait?trait_id=11320&dataset=BXDPublish
+Group: BXD
+"Phenotype: Central nervous system"","" pharmacology"","" behavior: Morphine response (50 mg/kg ip)"","" locomotion from 45-60 min after injection in an activity chamber for males [n beam breaks]"
+"Authors: Philip VM, Ansah TA, Blaha CD, Cook MN, Hamre KM, Lariviere WR, Matthews DB, Mittleman G, Goldowitz D, Chesler EJ"
+Title: High-throughput behavioral phenotyping in the expanded panel of BXD recombinant inbred strains
+"Journal: Genes, Brain & Behavior"
+Dataset Link: http://gn1.genenetwork.org/webqtl/main.py?FormID=sharinginfo&InfoPageName=BXDPublish
+
+Name,Value,SE,N
+BXD1,3125.333,803.776,6
+BXD2,540.167,448.724,6
+```
+
+The metadata need to be commented out and the empty line needs to be removed. R expects the first line to be the header.
