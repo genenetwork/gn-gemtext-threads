@@ -1,0 +1,43 @@
+# Fetch trait names for phenotypes
+
+## Tags
+
+* assigned:
+* status: pending
+* priority: unclear
+* type: feature-request, enhancement
+* keywords: phenotype, from github
+
+## Members
+
+* robw
+* rupertoverall
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork2/issues/564 From GitHub
+
+The 'Fetch Trait Info' query returns detailed information for transcript expression traits, but not for traits from the 'Publish' database.
+
+### Describe the solution you'd like
+
+For example, downloading the data as CSV via the web interface includes the following header information:
+
+```
+
+Record ID,10620
+Symbol,WMZTrgtQuadTime
+Description,"Central nervous system, behavior, learning and memory: Morris water maze search-time preference, amount of time spent in the trained quadrant of the pool minus mean time in the alternative quadrants [seconds]"
+
+```
+
+Whereas via the API, only information on pre-computed QTL mapping is returned:
+
+```
+
+       additive   id      locus              lrs
+10620 4.7790005 1382 rs32197605 9.39579775800466
+
+```
+
+It would be great to be able to access trait names and descriptions programatically as is already possible for transcript expression traits.
