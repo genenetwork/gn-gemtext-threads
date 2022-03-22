@@ -9,3 +9,7 @@ Our list of issues are growing by the day. And, for some reason, we are not eage
 * status: unclear
 * priority: low
 * keywords: tissue, gnbug
+
+The home page of the generated web page now shows "forgotten issues" separately. For now, forgotten issues are those that have been inactive for more than 90 days (approximately 3 months).
+
+* closed
