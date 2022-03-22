@@ -90,6 +90,51 @@ There might need to be checks for responsiveness built in.
 
 Checks that previously working features are not broken. These can be added as we go along
 
+### Notes from Email Correspondence
+
+Selenium (and other browser-automation tools) were said to be too complicated, and are to be avoided as much as possible. It is better to use headless Firefox/Chromium and fetch pages with Mechanical Rob.
+
+Selenium had been previously introduced in GN2 and then swiftly removed.
+
+
+=> https://github.com/genenetwork/gn-docs/blob/master/scripts/screenshot.rb sample script to create screen shots
+
+
+=> https://github.com/genenetwork/gn-deploy-servers/blob/master/scripts/rabbit/monitor_websites.sh tests currently run to monitor GN2 and end points
+
+We should cover the GN2/GN3 ones.
+
+
+For GN2 we should write scripts that test:
+
+* [ ] main menu selector
+* [ ] search
+* [ ] global search
+* [ ] search with wild cards
+* [ ] select items and add to shopping basket/collections
+* [ ] mapping page
+* [ ] run R/qtl mapping
+* [ ] run GEMMA mapping
+* [ ] run correlations
+* [ ] Run the functions on the shopping basket/collections, such as CTL, network graph
+ 
+
+> Please don't emulate hitting browser buttons (selenium style). Simply
+> find URL paths that do the job. You may have to set cookies.
+> 
+> Mechanical Rob can do that.
+> 
+> If using the browser interface is too hard, then create 'back-end'
+> tests that cover the real functionality. I am not too concerned about
+> the browser display - i.e., real Rob catches that quickly enough. I am
+> *really* worried about regressions where search etc. starts giving
+> different results.
+> 
+> See what I mean?
+>
+> Pj.
+
+
 ## Testing interface
 
 Tests in different categories should be grouped into different command-line endpoints. For example, unit tests could be run by "python3 setup.py check", integration tests could be run by "python3 setup.py integration-check", performance tests could be run by "python3 setup.py performance-check", and so on. This way, the CI will have to be configured only once, and then committers will be able to add new tests without requesting for a CI reconfiguration each time. We won't have to wait on others to respond. Less coordination will be required leading to smoother work for everyone.
