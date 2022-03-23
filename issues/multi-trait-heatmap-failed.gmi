@@ -1,0 +1,33 @@
+# Multi-trait heat map failed
+
+## Tags
+
+* assigned: zsloan
+* type: bug
+* priority: medium
+* status: stalled
+* keywords: heatmap, from github
+
+## Members
+
+* zsloan
+* pjotrp
+* echesler
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork2/issues/368 From GitHub
+
+Selected multiple traits from phenotype correlations to Ap3m2 in the hippocampus.
+Selected "Heat Map"
+
+```
+GeneNetwork tux01:gene:2.11-rc2-production-2abbf82b4 http://gn2.genenetwork.org/heatmap (11:25AM UTC Sep 17, 2019)
+reaper: the length of the strain list and the value list are different,
+
+or they are less than 8 (error)
+trait = trimmed_values)
+IndexError: reaper: the length of the strain list and the value list are different,
+```
+
+One of my traits had missing data, deselecting this trait fixed the problem. Record 20761.
