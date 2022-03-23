@@ -1,0 +1,17 @@
+# GN1 annotation page broken
+
+## Tags
+
+* assigned: zsloan, pjotrp
+* priority: high
+* status: overdue
+* type: bug
+* keywords: GN1, genenetwork1, annotation, from github
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork2/issues/421 From GitHub
+
+
+=> http://gn1.genenetwork.org/webqtl/main.py?FormID=annotation The annotations page in GN1
+is broken. An exception stack trace is displayed, instead of the annotations page content.
