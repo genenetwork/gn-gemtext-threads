@@ -1,0 +1,30 @@
+# Add search, select and export to datatables table
+
+## Tags
+
+* assigned: bonfacem, zsloan
+* priority: low
+* type: feature-request
+* status: unclear
+* keywords: datatables, UI, low priority
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork2/issues/439 From GitHub
+
+### Is your feature request related to a problem? Please describe.
+
+* I need to be able to export a list of genes as a text file or Excel file from the Interval Analyst table (the table when zoomed into an individual chromosome when mapping)
+* Sorting on some of the numerical fields is wrong-goofy again (Length, SNP count)
+* Highlight color is wrong
+* Could this have all of the cool "standard" features, like search, select, export, etc
+
+### Describe the solution you'd like
+
+* Ability to export a list of genes to a text or excel file
+* The highlight color should be [TODO]
+* I should be able to search, select, and also sort from the table
+
+### Additional context
+
+=> https://user-images.githubusercontent.com/11820306/92639605-bcaad900-f2e4-11ea-8536-1eeb221ba8df.png Screenshot
