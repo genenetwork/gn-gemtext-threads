@@ -1,0 +1,35 @@
+# Error when attempt to zoom to a chromosome after mapping a PCA trait
+
+## Tags
+
+* assigned: zsloan
+* type: bug
+* priority: high
+* status: unclear
+* keywords: PCA, from github, high priority
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork2/issues/367 From GitHub
+
+When I produced a PCA trait in GN2, I could map fine, but when I selected a particular chromosome I got the following error:
+
+```
+GeneNetwork tux01:gene:2.11-rc2-production-5c6be7a36  http://gn2.genenetwork.org/run_mapping ( 5:57PM UTC Aug 22, 2019)
+   Traceback (most recent call last):
+     File "/usr/local/guix-profiles/gn-latest-20181119/lib/python2.7/site-packages/flask/app.py", line 1639, in full_dispatch_request
+       rv = self.dispatch_request()
+     File "/usr/local/guix-profiles/gn-latest-20181119/lib/python2.7/site-packages/flask/app.py", line 1625, in dispatch_request
+       return self.view_functions[rule.endpoint](**req.view_args)
+     File "/export/local/home/gn2/production/gene/wqflask/wqflask/views.py", line 669, in mapping_results_page
+       template_vars = run_mapping.RunMapping(start_vars, temp_uuid)
+     File "/export/local/home/gn2/production/gene/wqflask/wqflask/marker_regression/run_mapping.py", line 53, in __init__
+       helper_functions.get_species_dataset_trait(self, start_vars)
+     File "/export/local/home/gn2/production/gene/wqflask/utility/helper_functions.py", line 23, in get_species_dataset_trait
+       self.dataset = data_set.create_dataset(start_vars['dataset'])
+     File "/export/local/home/gn2/production/gene/wqflask/base/data_set.py", line 68, in create_dataset
+       dataset_type = Dataset_Getter(dataset_name)
+     File "/export/local/home/gn2/production/gene/wqflask/base/data_set.py", line 120, in __call__
+       return self.datasets[name]
+   KeyError: u'Temp'
+```
