@@ -1,0 +1,50 @@
+# Adding principal component to collection returns an error
+
+## Tags
+* assigned:
+* status: unclear
+* priority: high
+* type: bug
+* keywords: collections, from github
+
+## Members
+
+* rupertoverall
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork2/issues/559 From GitHub
+
+### Describe the bug
+
+When calcuating principal components from a correlation matrix, attempting to add one or more PCs to the collection returns the following error:
+
+```
+
+      GeneNetwork tux01:gene:2.11-rc2-testing-73131a84f  http://www.genenetwork.org/collections/view?uc_id=a7e8dce1-f6a3-464d-85eb-e5a7696ce0b6 (12:12PM UTC Mar 01, 2021)
+       Traceback (most recent call last):
+         File "/usr/local/guix-profiles/gn-latest-20201216/lib/python3.8/site-packages/flask/app.py", line 1950, in full_dispatch_request
+           rv = self.dispatch_request()
+         File "/usr/local/guix-profiles/gn-latest-20201216/lib/python3.8/site-packages/flask/app.py", line 1936, in dispatch_request
+           return self.view_functions[rule.endpoint](**req.view_args)
+         File "/export/local/home/gn2/production/gene/wqflask/wqflask/collect.py", line 194, in view_collection
+           name, dataset_name = atrait.split(':')
+       ValueError: not enough values to unpack (expected 2, got 1)
+
+```
+
+### To Reproduce
+
+* Add transcript traits to a collection.
+* Calculate the correlation matrix.
+* Select One or more principal components.
+* Click 'Add' to add this to the collection.
+NOTE: This was done with the 'BXD Aged hippocampus individual data' dataset (GN712).
+
+### Expected behavior
+The PC should be treated as a normal trait and added to the collection.
+
+### Screenshots
+
+Environment setup (please complete the following information):
+Run on 'http://www.genenetwork.org/' through Firefox on MacOS Mojave.
