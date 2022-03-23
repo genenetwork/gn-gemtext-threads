@@ -1,0 +1,19 @@
+# Integrate Feed Analyser
+
+## Tags
+
+* assigned: bonfacem
+* type: feature-request
+* status: in progress
+* priority: medium
+* keywords: twitter, feed analyser, from github
+
+## Members
+
+* bonfacem
+* robw
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork2/issues/400 From GitHub
+
