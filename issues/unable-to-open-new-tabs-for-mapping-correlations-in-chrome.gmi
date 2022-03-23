@@ -1,0 +1,19 @@
+# Unable to open new tab for mapping/ correlations with Chrome
+
+## Tags
+
+* assigned: bonfacem
+* type: bug
+* status: unclear
+* priority: medium
+* keywords: mapping, correlation, google chrome, UI, from github
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork2/issues/399 From GitHub
+
+Based off
+
+=> https://github.com/genenetwork/genenetwork2/pull/394 Pull Request #394.
+
+I'd need to spec this further later
