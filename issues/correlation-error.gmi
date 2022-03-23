@@ -1,0 +1,25 @@
+# correlation error: 'NoneType' object is not iterable
+
+## Tags
+
+* type: bug
+* priority: high
+* status: unclear
+* keywords: correlations, from github, high priority
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork2/issues/374 From GitHub
+
+Dear Developer,
+
+When calculating correlation:
+
+(GeneNetwork error: 'NoneType' object is not iterable)
+
+```
+GeneNetwork tux01:gene:2.11-rc2-production-283af77a7 http://www.genenetwork.org/corr_compute ( 2:39PM UTC Feb 19, 2020)
+'NoneType' object is not iterable (error)
+  File "/export/local/home/gn2/production/gene/wqflask/wqflask/correlation/show_corr_results.py", line 473, in process_samples
+    for sample in sample_names:
+```
