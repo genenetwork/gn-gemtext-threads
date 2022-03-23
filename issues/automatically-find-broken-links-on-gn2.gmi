@@ -1,0 +1,38 @@
+# Automatically find broken links on GN2
+
+## Tags
+
+* assigned: zsloan, alex
+* type: bug
+* priority: medium
+* status: in progress
+* keywords: GN1, GN2, broken links, from github
+
+## Members
+
+* Millak
+* pjotrp
+* zsloan
+* alex
+* bonfacem
+* robw
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork2/issues/420 From GitHub
+
+@Millak found this one:
+
+=> http://www.genenetwork.org/tutorial/ppt/html/webqtl_demo2_part1.ppt.htm
+
+```
+      GeneNetwork tux01:gene:2.11-rc2-production-1e421a063  http://www.genenetwork.org/tutorial/ppt/html/webqtl_demo2_part1.ppt.htm (11:09AM UTC Aug 18, 2020)
+       Traceback (most recent call last):
+         File "/usr/local/guix-profiles/gn-latest-20200513/lib/python2.7/site-packages/flask/app.py", line 1950, in full_dispatch_request
+           rv = self.dispatch_request()
+         File "/usr/local/guix-profiles/gn-latest-20200513/lib/python2.7/site-packages/flask/app.py", line 1926, in dispatch_request
+           self.raise_routing_exception(req)
+         File "/usr/local/guix-profiles/gn-latest-20200513/lib/python2.7/site-packages/flask/app.py", line 1908, in raise_routing_exception
+           raise request.routing_exception
+       NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+```
