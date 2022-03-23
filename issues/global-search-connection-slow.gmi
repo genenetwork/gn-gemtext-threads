@@ -1,0 +1,24 @@
+# Global search does not close connections properly (and is slow)
+
+## Tags
+
+* type: bug
+* priority: medium
+* status: stalled
+* assigned: Uditgulati
+* keywords: global search, db connections, medium priority, from github
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork2/issues/418 From GitHub
+
+Global search '*' causes loads of aborted connections... I mean
+
+```
+  2020-08-15  2:53:58 140273206434560 [Warning] Aborted connection 45219 to db: 'db_webqtl' user: 'webqtlout' host: '127.0.0.1' (CLOSE_CONNECTION)
+```
+
+generating 6Mb of log file info.
+
+
+In fact, every row in the table has a SQL query that does not close the connection properly.
