@@ -1,0 +1,32 @@
+# Search results for SNP looks weird
+
+## Tags
+
+* assigned: bonfacem, zsloan
+* type: bug
+* priority: medium
+* status: in progress
+* keywords: UI, SNP, from github
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork2/issues/395
+
+
+### Description
+
+After an update using the latest datatables from GUIX from
+=> https://github.com/genenetwork/genenetwork2/pull/394 #394,
+the genotype search results for GN2 look off.
+
+Here's how it looked like in the past:
+=> https://user-images.githubusercontent.com/11820306/82554424-8e0ac600-9b6e-11ea-9a50-f53506eb44a5.png Screen Shot 2020-05-20 at 10 01 10 PM
+
+Here's how it looks like now:
+
+https://user-images.githubusercontent.com/11820306/82554452-9f53d280-9b6e-11ea-9f17-074f5091de4d.png Screen Shot 2020-05-20 at 10 03 29 PM
+
+### Questions
+
+* What version of datatables or associated extensions is being used in guix?
+* Does it differ from what was been used before?
