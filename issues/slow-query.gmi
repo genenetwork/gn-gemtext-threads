@@ -1,0 +1,46 @@
+# Slow query
+
+## Tags
+
+* assigned: Uditgulati
+* priority: high
+* status: stalled
+* keywords: slow query, from github
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork2/issues/419 From GitHub
+
+These queries take 3 minutes and are pretty insane!
+
+```
+ Query_time: 187.220555  Lock_time: 0.075028  Rows_sent: 71  Rows_examined: 21265516
+ Query_time: 188.479018  Lock_time: 0.204036  Rows_sent: 71  Rows_examined: 21202414
+```
+
+```
+(SELECT 0, PublishXRef.Id, PublishFreeze.createtime as thistable, Publication.PubMed_ID as Publication_PubMed_ID, Phenotype.Post_publication_description as Phe
+notype_Name FROM  PublishFreeze, Publication, PublishXRef, Phenotype WHERE PublishXRef.InbredSetId = 1 and  ((Phenotype.Post_publication_description REGEXP "[[
+:<:]]Gene.refGene[[:>:]]" OR Phenotype.Pre_publication_description REGEXP "[[:<:]]Gene.refGene[[:>:]]" OR Phenotype.Pre_publication_abbreviation REGEXP "[[:<:]
+]Gene.refGene[[:>:]]" OR Phenotype.Post_publication_abbreviation REGEXP "[[:<:]]Gene.refGene[[:>:]]" OR Phenotype.Lab_code REGEXP "[[:<:]]Gene.refGene[[:>:]]"
+OR Publication.PubMed_ID REGEXP "[[:<:]]Gene.refGene[[:>:]]" OR Publication.Abstract REGEXP "[[:<:]]Gene.refGene[[:>:]]" OR Publication.Title REGEXP "[[:<:]]Ge
+ne.refGene[[:>:]]" OR Publication.Authors REGEXP "[[:<:]]Gene.refGene[[:>:]]" OR PublishXRef.Id REGEXP "[[:<:]]Gene.refGene[[:>:]]"))  and PublishXRef.Phenotyp
+eId = Phenotype.Id and PublishXRef.PublicationId = Publication.Id and PublishFreeze.Id = 1)  UNION (SELECT 0, PublishXRef.Id, PublishFreeze.createtime as thist
+able, Publication.PubMed_ID as Publication_PubMed_ID, Phenotype.Post_publication_description as Phenotype_Name FROM  PublishFreeze, Publication, PublishXRef, P
+henotype WHERE PublishXRef.InbredSetId = 1 and  ((Phenotype.Post_publication_description REGEXP "[[:<:]]PIP5K1B[[:>:]]" OR Phenotype.Pre_publication_descriptio
+n REGEXP "[[:<:]]PIP5K1B[[:>:]]" OR Phenotype.Pre_publication_abbreviation REGEXP "[[:<:]]PIP5K1B[[:>:]]" OR Phenotype.Post_publication_abbreviation REGEXP "[[
+:<:]]PIP5K1B[[:>:]]" OR Phenotype.Lab_code REGEXP "[[:<:]]PIP5K1B[[:>:]]" OR Publication.PubMed_ID REGEXP "[[:<:]]PIP5K1B[[:>:]]" OR Publication.Abstract REGEX
+P "[[:<:]]PIP5K1B[[:>:]]" OR Publication.Title REGEXP "[[:<:]]PIP5K1B[[:>:]]" OR Publication.Authors REGEXP "[[:<:]]PIP5K1B[[:>:]]" OR PublishXRef.Id REGEXP "[
+[:<:]]PIP5K1B[[:>:]]"))  and PublishXRef.PhenotypeId = Phenotype.Id and PublishXRef.PublicationId = Publication.Id and PublishFreeze.Id = 1)  UNION (SELECT 0,
+PublishXRef.Id, PublishFreeze.createtime as thistable, Publication.PubMed_ID as Publication_PubMed_ID, Phenotype.Post_publication_description as Phenotype_Name
+ FROM  PublishFreeze, Publication, PublishXRef, Phenotype WHERE PublishXRef.InbredSetId = 1 and  ((Phenotype.Post_publication_description REGEXP "[[:<:]]PIP5K1
+B[[:>:]]" OR Phenotype.Pre_publication_description REGEXP "[[:<:]]PIP5K1B[[:>:]]" OR Phenotype.Pre_publication_abbreviation REGEXP "[[:<:]]PIP5K1B[[:>:]]" OR P
+henotype.Post_publication_abbreviation REGEXP "[[:<:]]PIP5K1B[[:>:]]" OR Phenotype.Lab_code REGEXP "[[:<:]]PIP5K1B[[:>:]]" OR Publication.PubMed_ID REGEXP "[[:
+<:]]PIP5K1B[[:>:]]" OR Publication.Abstract REGEXP "[[:<:]]PIP5K1B[[:>:]]" OR Publication.Title REGEXP "[[:<:]]PIP5K1B[[:>:]]" OR Publication.Authors REGEXP "[
+[:<:]]PIP5K1B[[:>:]]" OR PublishXRef.Id REGEXP "[[:<:]]PIP5K1B[[:>:]]"))  and PublishXRef.PhenotypeId = Phenotype.Id and PublishXRef.PublicationId = Publicatio
+n.Id and PublishFreeze.Id = 1)  UNION (SELECT 0, PublishXRef.Id, PublishFreeze.createtime as thistable, Publication.PubMed_ID as Publication_PubMed_ID, Phenoty
+pe.Post_publication_description as Phenotype_Name FROM  PublishFreeze, Publication, PublishXRef, Phenotype WHERE PublishXRef.InbredSetId = 1 and  ((Phenotype.P
+ost_publication_description REGEXP "[[:<:]]PIP5K1B[[:>:]]" OR
+```
+
+and just keeps going on. Amazing MariaDB actually manages to do them ;)
