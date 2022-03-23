@@ -1,0 +1,30 @@
+# Capture state of phenotypes in a HASH
+
+## Tags
+
+* assigned: pjotrp, zsloan
+* type: enhancement, feature-request
+* status: in progress
+* priority: medium
+* keywords: phenotypes, REST, UI
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork2/issues/551 From GitHub
+
+To represent the state of the database we need to start using HASH values or UUIDs. For phenotypes we should create these for phenotype columns within a dataset - i.e. the column one uses for mapping. @zsloan this is metadata and I suggest we use RDF so we can have a historic view of changes in datasets. A change can be described as table - mapped to RDF:
+
+```
+dataset -> hash -> date -> submitter
+```
+
+The hash can be computed over data that is streamed over the REST API - so people van validate client side (as a feature).
+
+
+
+
+This mentions RDF - which I think
+
+* aruni
+
+was involved in. I (fredm) have tagged them here, for their evaluation of the relevance of this issue to them.
