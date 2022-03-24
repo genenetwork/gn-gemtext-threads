@@ -1,0 +1,19 @@
+# Add an 'Edit Issue' Link to Tissue
+
+## Tags
+
+* assigned:
+* priority: medium
+* type: feature-request, enhancement
+* status: open
+* keywords: tissue, edit issue, unassigned
+
+## Description
+
+Add an `Edit Issue` link on each issue that drops the user in the forge's (currently GitHub) editting mode for the selected file.
+
+For an example of what is expected, see the `edit page` link/button at
+
+=> http://gemini.thebird.nl/gemini/genenetwork/gn-gemtext-threads/topics/data-uploads/editing-data.gmi
+
+noting how it drops you straight into editting the file.
