@@ -27,7 +27,7 @@ body {
     background-color: green;
 }
 
-.tag-progress {
+.tag-progress, .tag-unassigned {
     background-color: orange;
     color: black;
 }
