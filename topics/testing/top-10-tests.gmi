@@ -1,0 +1,62 @@
+# Top 10 Things to Test
+
+## Tags
+
+* assigned: bonfacem
+* type: tests
+* keywords: documentation, testing, checklist
+
+## Introduction
+
+Important things:
+- Correctness
+- Speed (fast enough)
+- Reliability
+
+Let's do 1 test at a time and run that by everyone. If we can one test a week we'll hit good coverage soon. Preferably, let's start with "Search".
+
+## Tasks
+
+1. Computations from Genenetwork2
+
+For a test-case, consider using "UMUTAffyExon_0209_RMA" (full name "UMUTAffy Hippocampus Exon (Feb09) RMA") which appears under "Mouse -> BXD -> Hippocampus" in the drop-down. This is a very large data set. It might be computationally more efficient to start with a smaller data set: the 45,101 row-equivalent "Hippocampus Consortium M430v2 (Jun06)" data set, and then if all is good then test using the aforementioned exon-array monster [1,236,086 row-equivalents]; a 27X larger data set. Timing differences would be interesting to note.
+
+* GEMMA mapping.
+* Running Correlations on a huge dataset.
+* Partial Correlations.
+* Results of heavy computations [Datatables].
+* Running statistics on edited values in genenetwork2.
+
+2. "Local"/ "Global"/ "Wild card" Search
+
+Test search with some horrid strings to see how resilient Search is to odd characters and those that MariaDB may want to treat as special strings: extra spaces, underscores, semicolons, Greek letters, tabs, etc.
+
+3. Collections
+
+Collections should involve user or code-generated synthetic traits, such as the residuals of a partial correlation, or an eigenvector trait. This is actually a key feature of network analysis-- part of the dimensional reduction game. Collections should also include genotypes. We need to check behaviour if the same trait vector values are entered twice under different (or the same) ID since this can torture the code for computing correlations such as "All-zeros vector?"
+
+* Adding items to a collection
+* Removing items from that Collection
+* Importing/ Exporting data from this collection
+* Running CTL: Work with Danny Arends on this
+* Running a network graph
+
+4. Data Tables With Huge Results Set
+
+5. Correct Menu generation (Main Page)
+
+6. Editing Data (Published Phenotypes)
+
+* Insert/ Delete Published Phenotypes
+* Insert/ Delete/ Add Case Attributes
+
+7. Broken [External] Links
+
+8. Working Jupyter Notebooks
+
+This should be reliable enough. Use Case/ Perspective: Students are given assignments.
+
+9. Authentication
+
+
+
