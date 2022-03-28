@@ -32,6 +32,12 @@ Datasets 'contain' or organise traits. The do not have much in terms of direct o
 
 They can be envisioned as a bag of traits.
 
+Common dataset traits are:
+
+* dataset_name <string>: Name of the dataset
+* dataset_type <string>: Type of dataset. Valid values are 'Temp', 'Publish', 'ProbeSet' and 'Genotype'
+* group_name <string>: ??
+
 ### Traits
 
 A trait is a abstract concept - with the somewhat concrete forms being
@@ -41,21 +47,38 @@ A trait is a abstract concept - with the somewhat concrete forms being
 * Publish
 * Temp
 
-Here, my understanding is spotty.
+From the GeneNetwork2 repository, specifically the `wqflask.base.trait` module:
 
-What are the differences between these?
+```
+... a trait in webqtl, can be either Microarray, Published phenotype, genotype,
+or user input trait
+```
 
-The genotype traits probably have something to do with actual genes.
+From the `wqflask.base.trait.GeneralTrait` class, the common properties for all the trait types above are:
 
-What is a ProbeSet Trait?
+* dataset <Dataset>: a pointer to the dataset that the trait is a member of
+* trait_name <string>: the name of the trait
+* cellid <?>: ?
+* identification: <string?>: ?
+* haveinfo <boolean>: ?
+* sequence <?>: ?
+* data <dict>: ? - In GN2, retrieval of this is indirect, via the dataset but it is a trait property.
+* view <boolean>: ?
+* locus <None or ?>: ?
+* lrs <None or real number?>: Lifetime reproductive success?
+* pValue <None or real number?>: ?
+* mean <None or real number?>: ?
+* additive <None or real number?>: ?
+* num_overlap <None or integer?>: ?
+* strand_probe <None or ?>: ?
+* symbol <None or ?>: ?
+* display_name <string>: a name to use in the display of the trait on the UI
+* LRS_score_repr <string>: ?
 
-What is a Publish Trait?
 
-What is a Temp Trait?
+The *data* property of a trait has items with at least the following important properties:
 
-The thing that seems common among all trait types is that they have:
-
-* samples/strains - some sort of name e.g. BXD12
+* sample/strain name- some sort of name e.g. BXD12
 * value - a numerical value corresponding to the sample/strain
 * variance - a numerical value corresponding to the sample/strain
 * ndata - a numerical value
@@ -64,12 +87,22 @@ the trait properties above are the ones I have run into that seem to be used in 
 
 There are other properties like:
 
-* mb (Megabases?)
-* chr (Chromosome?)
+* mb <?>: Megabases?
+* chr <?>: Chromosome?
+* location <?>: ?
 
 that are used less often.
 
-Each of the different types of the traits then has other properties, that thus far, seem to be used for display purposes only, e.g. "pre_publication_description" in "Publish" traits.
+Some extra properties for 'ProbeSet' traits:
+
+* description <None or string>: ?
+* probe_target_description <None or string>: ?
+
+Some extra properties for 'Publish' traits:
+
+* confidential <?>: ?
+* pre_publication_description <string>: ?
+* post_publication_description <string>: ?
 
 When doing computations, it is unnecessary to load the display-only properties of a trait, deferring this to when/if we need to display such to the user/client.
 
