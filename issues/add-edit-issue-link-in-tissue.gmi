@@ -2,10 +2,10 @@
 
 ## Tags
 
-* assigned:
+* assigned: aruni
 * priority: medium
 * type: feature-request, enhancement
-* status: open
+* status: open, in progress
 * keywords: tissue, edit issue, unassigned
 
 ## Description
