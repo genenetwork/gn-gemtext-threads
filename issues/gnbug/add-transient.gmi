@@ -1,0 +1,15 @@
+# Add a transient interface for tissue
+
+## Tags
+
+* type: feature-request
+* keywords: linter, tissue
+* assigned: bonfacem
+* priority: low
+* status: under discussion
+
+## Description
+
+Add a transient interface for GNU Emacs for tissue. Check out transient:
+
+=> https://github.com/magit/transient
