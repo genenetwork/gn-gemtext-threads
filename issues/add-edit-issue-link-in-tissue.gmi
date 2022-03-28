@@ -6,7 +6,7 @@
 * priority: medium
 * type: feature-request, enhancement
 * status: open, in progress
-* keywords: tissue, edit issue, unassigned
+* keywords: tissue, edit issue
 
 ## Description
 
