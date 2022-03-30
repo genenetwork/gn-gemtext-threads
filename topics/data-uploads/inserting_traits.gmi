@@ -1,0 +1,29 @@
+I think this is a distinct topic from the inserting_data one, since that just mentions add new samples (or case attributes) to existing traits.
+
+Rob just mentioned adding the functionality (that apparently exists in GN1)
+to add Temp traits (through the Submit Trait page, though we could create
+a new interface) and then convert those traits to permanent traits.
+
+Below are some criteria he mentioned and comments about the existing GN1 system:
+
+- In GN1 I believe you can only do this with phenotype traits. From the
+Submit Trait page (https://genenetwork.org/submit_trait) you only select
+a group (not a specific dataset), so if you permanently add that trait
+it's just entered as a phenotype. This is probably the main (if not only)
+way people would use this feature, though, so that might be fine.
+
+- For GN2 we will need to add a curation step. GN1 actually doesn't have
+one - any logged in user could add traits! We were just lucky no one abused
+this.
+
+- The curation can probably borrow from Bonface's existing work, though there
+will need to be an extra step where it e-mails (or otherwise notifies) curator(s)
+to notify them of the change. Rob says this can just be him. It might work to
+have it just e-mail Rob, but also let the changes be viewable through an interface
+like the "datasets/diffs one" (maybe a separate "datasets/inserts" or something).
+
+- This feature should also be tied in with authentication. When a user adds a
+trait, access should automatically be restricted to just them until they open
+it up to the public. I don't think this should be that difficult; when the
+trait is inserted it's simple to run the Redis command setting them as the
+owner and the default privileges as private.
