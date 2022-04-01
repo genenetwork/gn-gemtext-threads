@@ -1,0 +1,19 @@
+# Fix Case Attribute Work
+
+## Tags
+
+* assigned: bonfacem
+* type: bug
+* keywords: case attributes, data editing
+
+## Tasks
+
+* [ ] Parse things in "brackets"
+* [ ] When editing columns with the same header:
+* [ ] Check whether there's an ID. If so:
+* [ ] Get the case attribute ID in brackets when in caseattributeXRef
+* [ ] Else, do the fetching in SQL
+* [ ] Check whether there's an
+* [ ] Rollbacks ("conn.rollback()")
+* [ ] Consecutive inserts with same values
+* [ ] Consecutive deletions
