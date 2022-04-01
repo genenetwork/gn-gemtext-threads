@@ -11,5 +11,9 @@ Seems related to
 * assigned: bonfacem
 * type: enhancement
 * priority: low
-* status: unclear
+* status: closed, done
 * keywords: elasticsearch, purge
+
+### Notes
+
+Removed in #44bf8ee and #03caa57a in GN2.
