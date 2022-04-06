@@ -1,5 +1,24 @@
 (import (tissue tissue))
 
+(define %github-repo-uri
+  "https://github.com/genenetwork/gn-gemtext-threads")
+
+(define %repo-branch
+  "main")
+
+(define (genenetwork-gemtext-reader file)
+  (lambda (port)
+    (match ((gemtext-reader) port)
+      ((? eof-object? eof) eof)
+      (('document body ...)
+       `(document
+         (ref #:url ,(string-append %github-repo-uri "/edit/" %repo-branch "/" file)
+              #:text "Edit this page")
+         " | "
+         (ref #:url ,(string-append %github-repo-uri "/blame/" %repo-branch "/" file)
+              #:text "Blame")
+         ,@body)))))
+
 (tissue-configuration
  #:project "GeneNetwork issue tracker"
  #:aliases '(("Alexander Kabui" "alex")
@@ -27,5 +46,5 @@
                                                               "README.gmi"))
                                                (file (replace-extension filename "html")
                                                      (gemtext-exporter filename
-                                                                       (gemtext-reader)))))
+                                                                       (genenetwork-gemtext-reader filename)))))
                                         (git-tracked-files)))))
