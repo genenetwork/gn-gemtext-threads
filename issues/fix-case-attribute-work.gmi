@@ -1,19 +1,35 @@
-# Fix Case Attribute Work
+# Fix Case Attribute Work (Same Columns)
 
 ## Tags
 
 * assigned: bonfacem
 * type: bug
-* keywords: case attributes, data editing
+* keywords: case attributes, data editing, done
 
 ## Tasks
 
-* [ ] Parse things in "brackets"
-* [ ] When editing columns with the same header:
-* [ ] Check whether there's an ID. If so:
-* [ ] Get the case attribute ID in brackets when in caseattributeXRef
-* [ ] Else, do the fetching in SQL
-* [ ] Check whether there's an
-* [ ] Rollbacks ("conn.rollback()")
-* [ ] Consecutive inserts with same values
-* [ ] Consecutive deletions
+* [x] Parse things in "brackets"
+* [x] When editing columns with the same header:
+* [x] Check whether there's an ID. If so:
+* [x] Get the case attribute ID in brackets when in caseattributeXRef
+* [x] Else, do the fetching in SQL
+* [x] Check whether there's an
+* [x] Rollbacks ("conn.rollback()")
+* [-] Consecutive inserts with same values
+* [-] Consecutive deletions
+
+### Notes: 06/04/22
+
+Most of these issues have been addressed in these 2 PRs:
+
+=> https://github.com/genenetwork/genenetwork3/pull/90
+=> https://github.com/genenetwork/genenetwork2/pull/695
+
+The last 2 elements in the tasks have been moved out to their own tasks.
+
+=> https://github.com/genenetwork/gn-gemtext-threads/commit/a75b726a008012b83c1ad25b330d43aabd711ee3
+
+Also, wrt UI issues see:
+
+=> https://issues.genenetwork.org/issues/metadata-edits-improvements.html
+
