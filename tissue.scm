@@ -1,7 +1,7 @@
 (import (tissue tissue))
 
 (tissue-configuration
- #:project "GeneNetwork"
+ #:project "GeneNetwork issue tracker"
  #:aliases '(("Alexander Kabui" "alex")
              ("Arun Isaac" "aruni")
              ("BonfaceKilz" "bonfacem")
