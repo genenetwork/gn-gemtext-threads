@@ -1,0 +1,23 @@
+# Fix Case Attribute Work (Same Columns)
+
+## Tags
+
+* assigned: bonfacem
+* type: bug
+* keywords: case attributes, data editing
+
+## Tasks
+
+* [ ] Consecutive inserts with same values
+* [ ] Consecutive deletions
+
+## Description
+
+What happens in the following scenarios:
+
+- A user uploads data.
+- Before the data is approved, they upload the same data but modified in the upload page.
+- Someone tries to merge the changes consecutively.
+
+Above, there will be a race-condition.
+
