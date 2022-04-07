@@ -1,0 +1,19 @@
+# DOL group mapping issues
+
+## Tags
+
+* assigned: zsloan
+* type: bug
+* priority: medium
+* status: in-progress
+* keywords: mapping
+
+## Description
+
+After generating the genotype files for the Diversity Outbred Lung (DOL) group for Jacco Boon*, there were issues with GEMMA and R/qtl mapping.
+
+These issues seem to have been caused by a couple mitochondrial markers having a position of 0Mb. For now, I've addressed this by changing their positions to 0.000001 and 0.000002Mb respectively.
+
+There's also an issue that hasn't been addressed yet with displaying mitochondrial markers in the GN2 figure. GEMMA is outputting the results, so I suspect this is because mitochondria isn't included in the databased list of chromosomes associated with Mouse.
+
+* as described here - https://kbroman.org/qtl2/pages/prep_do_data.html
