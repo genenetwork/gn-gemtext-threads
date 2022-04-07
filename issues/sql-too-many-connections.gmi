@@ -1,0 +1,18 @@
+# MySQLdb._exceptions.OperationalError: (1040, 'Too many connections')
+
+## Tags
+
+* assigned: bonfacem, fredm, aruni
+* type: bug
+* keywords: mysql, database
+
+## Tasks
+
+* [ ] Figure out root cause
+* [ ] Send patch
+
+## Description
+
+See the strack trace present in this page:
+
+=> https://ci.genenetwork.org/jobs/genenetwork2/214
