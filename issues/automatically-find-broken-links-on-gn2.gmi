@@ -5,7 +5,7 @@
 * assigned: zsloan, alex
 * type: bug
 * priority: medium
-* status: in progress
+* status: completed
 * keywords: GN1, GN2, broken links, from github
 
 ## Members
@@ -36,3 +36,10 @@
            raise request.routing_exception
        NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
 ```
+
+
+##  update on finding broken links
+
+moved to complete the;gn2 CI runs on the background
+for any background searchng for any broken link which
+are then underlined and marked with red font
