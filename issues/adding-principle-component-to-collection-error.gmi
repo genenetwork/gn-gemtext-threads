@@ -1,7 +1,7 @@
 # Adding principal component to collection returns an error
 
 ## Tags
-* assigned:
+* assigned: alex
 * status: unclear
 * priority: high
 * type: bug
