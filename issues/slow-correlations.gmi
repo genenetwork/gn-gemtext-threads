@@ -110,3 +110,13 @@ time to compute.
 According to Rob, GN1 does not rely on a cache. Instead it is
 computing from a materialized view of the database that is
 intentionally designed for a fast web service.
+
+
+## Update 
+
+implementation of caching for huge datasets done.Moreover
+this has also been implemented for  metadata hence speeding
+up the correlation immensely.
+
+Code for  correlation has also undergone refactoring to optimise
+the datastrcutures used
