@@ -6,7 +6,7 @@
 * type: bug
 * priority: critical
 * status: unclear
-* keywords: correlations, from github
+* keywords: correlations, from github, closed
 
 ## Description
 
@@ -31,3 +31,5 @@
 
 
 I (fredm) tried this out, and it seems there is still an issue here.
+
+This appears to no longer be an issue; it was probably addressed along with the other correlation issues a while back.
