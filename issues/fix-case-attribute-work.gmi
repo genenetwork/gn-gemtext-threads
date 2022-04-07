@@ -4,7 +4,7 @@
 
 * assigned: bonfacem
 * type: bug
-* keywords: case attributes, data editing, done
+* keywords: case attributes, data editing, closed
 
 ## Tasks
 
