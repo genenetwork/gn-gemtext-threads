@@ -4,7 +4,7 @@
 
 * type: bug
 * priority: high
-* status: unclear
+* status: completed
 * keywords: correlations, from github, high priority
 
 ## Description
@@ -23,3 +23,9 @@ GeneNetwork tux01:gene:2.11-rc2-production-283af77a7 http://www.genenetwork.org/
   File "/export/local/home/gn2/production/gene/wqflask/wqflask/correlation/show_corr_results.py", line 473, in process_samples
     for sample in sample_names:
 ```
+
+
+## notes
+
+codebase for gn2 correlation had a rewrite
+and this is no longer an issue
