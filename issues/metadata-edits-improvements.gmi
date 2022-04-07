@@ -4,30 +4,41 @@
 
 * assigned: bonfacem, zachs, robw
 * type: ui
-* priority: critical
-* status: unclear
+* priority: medium
+* status: in progress
 * keywords: metadata, phenotypes
 
 ## Tasks
 
-- [ ] All headers should be left justified. Please avoid centering headers of any type.  Why: Because all windows are made smaller from the right to the left.  Centered headers therefore "squirrel" about depending on window width.  We are not designing wedding invitations.
+- [X] All headers should be left justified. Please avoid centering headers of any type.  Why: Because all windows are made smaller from the right to the left.  Centered headers therefore "squirrel" about depending on window width.  We are not designing wedding invitations.
 
-- [ ] Do not use ":" in general do symbol after headers [Unclear]
+- [X] Do not use ":" in general do symbol after headers [Unclear]
 
-- [ ] Careful please with the left margin. There must always be some white space at the far left.
+- [X] Careful please with the left margin. There must always be some white space at the far left.
 
 - [ ] New request: Could we have a new field called "*Curator Notes*" We have been using the "*Abstract*" field for curation notes but this is unwise since the Abstract will erase the notes. Here is an example of how Suheeta and I use the Abstract field inappropriately.
 
-- [ ] It would be great to "populate" the fields with sample text (greyed out perhaps) so that users know how to enter the Authors and other fields.  Authors should be entered as shown here (NCBI format: Roy S, Ingels J, Bohl CJ, McCarty M, Lu L, Mulligan MK, Mozhui K, Centeno A, Williams EG, Auwerx J, Williams RW), but nine times out of ten new users use their own format.
+- [X] It would be great to "populate" the fields with sample text (greyed out perhaps) so that users know how to enter the Authors and other fields.  Authors should be entered as shown here (NCBI format: Roy S, Ingels J, Bohl CJ, McCarty M, Lu L, Mulligan MK, Mozhui K, Centeno A, Williams EG, Auwerx J, Williams RW), but nine times out of ten new users use their own format.
 
 - [ ] Along the lines of item 5 -- each field should have a "help" button to provide guidance on format. For example, how does one enter *Units*? What the heck is the difference between *Pre Publication* and *Post Publication* *Descriptions* and *Abbreviations? *What is the difference between *Submitter* and *Owner *and* Authorized Users* in terms of priviledges? How many *Owners* can there be? Does the submitter name have to GN-recognized email or is *sroy12* good enough?
 
 - [ ] If the user enters 100 traits for a study, are those 100 traits all linked in some way that they can easily be edited jointly?  GN1 did this and if the user updated the *PubMed ID* for one record then all records with the same PubMed ID received the matched data (for example *Journal*, *Pages*, *Month*, *Year*, *Title*, *Abstract*.  Now this is tricky and could require the user to manually enter the *PubMed ID* 100 times and we want to avoid that. For this reason we need to add a new field on the *Experiment ID* so that all 100 traits are assigned the same *Experiment ID *upon original entry and long before there is a *PubMed ID.*
 
-- [ ] Note the the "m" in PubMed should be capitalized. And ideally there would be a hot link for the *PubMed ID* in our *Edit Trait for Published Database*
+- [X] Note the "m" in PubMed should be capitalized. And ideally there would be a hot link for the *PubMed ID* in our *Edit Trait for Published Database*
 
-- [ ] Hmm, this header is not very good-- *Edit Trait for Published Database.* a. We mean the word "edit" as a verb, but status of this word is ambiguous.  b. Published Database is also not right, since the intent is to allow the user/owner to control access. Maybe this header would be better-- *Trait Metadata and Data Editing Form*
+- [X] Hmm, this header is not very good-- *Edit Trait for Published Database.* a. We mean the word "edit" as a verb, but status of this word is ambiguous.  b. Published Database is also not right, since the intent is to allow the user/owner to control access. Maybe this header would be better-- *Trait Metadata and Data Editing Form*
 
-- [ ] The *Submit* and *Reset* buttons are the same color and much to close together. Easy to click on the wrong button and waste your time. Please use green and red colors to make this less equivocal.  And put the buttons on the page at both the top and at the bottom as in GN1 to save the user time.
+- [X] The *Submit* and *Reset* buttons are the same color and much to close together. Easy to click on the wrong button and waste your time. Please use green and red colors to make this less equivocal.  And put the buttons on the page at both the top and at the bottom as in GN1 to save the user time.
 
 - [ ] The section of the page in which the user uploads the vector of data is a case study of extreme subtlety and also a mess in Safari. The data entry is obviously critical and should be available at the TOP and BOTTOM of the page.  And note some other strange formatting in the footer.
+
+## Notes: 07/04/22 (Munyoki)
+
+- "Curator Notes" and "Abstract"; we'd have to add a new column for this.
+- For the help button, I'll reach out to Zach and see if there's a "description" field somewhere we can use.
+- Working with Safari is challenging... Also, for the upload button, I'll check that later... What happens if someone uses both buttons? I haven't investigated that.
+
+Fixes [so far]:
+
+=> https://github.com/genenetwork/genenetwork2/pull/696
+=> https://github.com/genenetwork/genenetwork2/commit/36d2cbc96bd5219e044ce1728f750ceefd0fa5f6
