@@ -1,0 +1,21 @@
+# Miscellaneous UI issues
+
+This is a collection of UI issues mentioned by Rob in e-mails.
+
+# Tags
+
+* assigned: zachs
+* keywords: user-interface
+* status: in progress
+* priority: high
+
+#TODO
+
+- [ ] Change following drop-down menu items:
+* Diversity Outbred -> DO Gatti Blood n=742 (2014, no mapping)
+* Diversity Outbred Lung -> DO Boon Lung Infection n=194 (Apr22)
+* Heterogeneous Stock Collaborative Cross -> DO Hitzemann Striatum mRNA  n=90 (Feb11, no mapping)
+- [ ] Fix issue with one sample not being in the DOL .geno file
+- [ ] Add group code to mapping loading page metadata
+- [ ] Move mapping figure options to the left
+
