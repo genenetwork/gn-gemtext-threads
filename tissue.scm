@@ -21,7 +21,7 @@
 
 (tissue-configuration
  #:project "GeneNetwork issue tracker"
- #:aliases '(("Alexander Kabui" "alex")
+ #:aliases '(("Alexander Kabui" "Alexander" "alex")
              ("Arun Isaac" "aruni")
              ("BonfaceKilz" "bonfacem")
              ("Efraim Flashner" "efraimf")
