@@ -1,0 +1,66 @@
+# Building Guix packages for RISC-V
+
+To build a Guix package, say the hello package, for RISC-V, run
+```
+$ guix build --target=riscv64-linux-gnu hello
+/gnu/store/75avrx7adq07zddzsmpyin1ri6sjpv0j-hello-2.12
+```
+
+If you don't have access to RISC-V hardware, you can run hello using QEMU like so.
+```
+$ guix shell qemu -- qemu-riscv64 $(guix build --target=riscv64-linux-gnu hello)/bin/hello
+Hello, world!
+```
+`guix shell qemu' provides a temporary environment in which qemu is installed. You can think of it as a python "virtual environment", but for all packages, instead of just python packages!
+
+The hello executable above is dynamically linked. But, you might want a statically linked hello for running in more limited environments such as the spike RISC-V ISA simulator. To build a statically linked hello, you need a modified package definition. Unfortunately, each package is different, and it is not possible to automagically create statically linked versions of any given Guix package. For the hello package however, this is very simple, and the following package definition will do.
+=> https://github.com/riscv-software-src/riscv-isa-sim spike RISC-V ISA simulator
+
+```
+(use-modules (gnu packages base)
+             (guix build-system gnu))
+
+(static-package hello)
+```
+
+To build this statically linked hello, put the above code in a file, say hello-static.scm, and run
+```
+$ guix build --target=riscv64-linux-gnu -f hello-static.scm
+/gnu/store/xdg0wgaz0403vdzjsiv68xsfrhbvyk07-hello-2.12
+```
+
+Run it in spike like so.
+```
+$ guix shell spike -- spike $(guix build riscv-pk)/bin/pk $(guix build --target=riscv64-linux-gnu -f hello-static.scm)/bin/hello
+bbl loader
+Hello, world!
+```
+
+It works!
+
+## Statically linked packages from the guix-bioinformatics channel
+
+The guix-bioinformatics channel provides statically linked versions of smithwaterman and wfmash.
+=> https://git.genenetwork.org/guix-bioinformatics/guix-bioinformatics guix-bioinformatics channel
+=> https://github.com/ekg/smithwaterman smithwaterman
+=> https://github.com/ekg/wfmash wfmash
+
+To use the guix-bioinformatics channel, drop the following into your ~/.config/guix/channels.scm and run a `guix pull'.
+```
+(use-modules (guix ci))
+
+(list (channel
+       (name 'gn-bioinformatics)
+       (url "https://git.genenetwork.org/guix-bioinformatics/guix-bioinformatics.git")
+       (branch "master"))
+      (channel-with-substitutes-available
+       %default-guix-channel "https://ci.guix.gnu.org"))
+```
+
+After a `guix pull', you should be able to build smithwaterman-static, wfmash-static, etc. for RISC-V like so.
+```
+$ guix build --target=riscv64-linux-gnu smithwaterman-static
+/gnu/store/441iz5mql3821g5d7h45qh6aw2agjjbb-smithwaterman-static-0.0.0-2.2610e25
+$ guix build --target=riscv64-linux-gnu wfmash-static
+/gnu/store/3mpi9rw4gcjf7567qdr7mxxfcqiljafh-wfmash-static-0.8.1
+```
