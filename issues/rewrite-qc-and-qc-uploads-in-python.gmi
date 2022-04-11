@@ -63,3 +63,13 @@ The requirement
 * check line endings to make sure they are Unix and not DOS
 
 seems a little unnecessary if the files are not used for anything else. Most programming languages these days have facilities for translating the line endings appropriately, and so, we really should not add the manual cognitive overhead to the users, unless it is an absolute necessity, and even then, we will probably be doing something wrong. Is this requirement absolutely necessary?
+
+
+#### Question 03
+
+Can there be zero values, i.e.
+
+* "0.000", "00.000", ... etc. for average files
+* "0.000000, "00.00000000", ... etc. for standard error files
+
+in the files?
