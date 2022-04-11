@@ -22,10 +22,30 @@ The screenshot:
 
 ## Tasks
 
-- [ ] Reproduce the issue
+- [X] Reproduce the issue
 
-- [ ] Check if database is affected in any way
+- [X] Check if database is affected in any way
 
 - [ ] Send a patch to fix
 
 - [ ] Notify every relevant user
+
+## Notes
+
+### Mon 11 Apr 2022 13:19:14 EAT:
+
+The CSV file is technically fine. In that database, some characters are inserted with control sequences that need to be stripped out. Here's a current snip of how that looks like:
+
+```
+JL00005,896.000000,x,x,896,4/22/04,,4OHPBN_J,Oct,,0^M,M,JL,1,2004
+JL00006,1077.000000,x,x,1077,4/22/04,,4OHPBN_J,Apr,,0^M,M,JL,1,2004
+JL00007,790.000000,x,x,790,4/22/04,,4OHPBN_J,Jun,,0^M,M,JL,1,2004
+JL00032,916.000000,x,x,916,4/21/04,2017.06,Cont_04_J,Oct,M,2^M,M,JL,0,2004
+JL00033,1099.000000,x,x,1099,4/21/04,,Cont_04_J,Apr,,0^M,M,JL,0,2004
+```
+
+Notice the "^M" represents a carriage return. See:
+
+=> https://en.wikipedia.org/wiki/ANSI_escape_code#C0_control_codes
+
+When storing case attributes, values with control sequences are also stored, and when you download that data for use, they were not being stripped out. As a consequence, opening the csv file in Excel (or similar) software resulted in data that seems jumbled up.
