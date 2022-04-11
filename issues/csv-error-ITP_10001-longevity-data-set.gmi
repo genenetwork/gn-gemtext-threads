@@ -1,0 +1,28 @@
+# Editing Metadata [Improvements to Make]
+
+## Tags
+
+* assigned: bonfacem
+* type: bug
+* priority: critical
+* keywords: critical bug, in progress
+* keywords: metadata, phenotypes
+
+## Description
+
+[From Suheeta]:
+
+"I downloaded the sample csv file for ITP_10001 to add a couple of attributes to it. What I see is that the csv file is somewhat messed up. The values for
+Sex, Site, Tx, and Year have shifted down to next row for each sample (see screenshot below). Not sure if this is the case for everyone or did something
+malfunction for me?"
+
+The screenshot:
+
+=> https://github.com/genenetwork/gn-gemtext-threads/blob/main/pictures/ITP_10001-error.png
+
+## Tasks
+
+- [ ] Reproduce the issue
+- [ ] Check if database is affected in any way
+- [ ] Send a patch to fix
+- [ ] Notify every relevant user
