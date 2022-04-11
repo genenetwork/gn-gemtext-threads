@@ -1,0 +1,10 @@
+# Zoomed mapping result are empty for certain traits
+
+For the following trait, if you zoom into a range for a specific Chromosome by clicking the top pink bar ("8x expanded WebQTL map") no points are displayed: https://genenetwork.org/show_trait?trait_id=NM_029911&dataset=UTHSC_BXD_WB_RNASeq1112
+
+# Tags
+
+* assigned: zachs
+* keywords: bug
+* status: in progress
+* priority: high
