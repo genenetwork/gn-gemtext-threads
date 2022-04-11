@@ -18,4 +18,8 @@ This is a collection of UI issues mentioned by Rob in e-mails.
 - [ ] Fix issue with one sample not being in the DOL .geno file
 - [ ] Add group code to mapping loading page metadata
 - [ ] Move mapping figure options to the left
-
+- [ ] Remove error bars from bar chart when there's no SE
+- [ ] Add N in white text to bar chart when applicable
+- [ ] Change High P in Collection to Peak LOD or Peak –logP.   
+- [ ] Make Collection and Search tables the same style (at least as much as possible; alignment should at least be the same)
+- [ ] Fix Partial Correlation button when screen is narrow
