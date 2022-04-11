@@ -1,0 +1,64 @@
+# Rewrite qc and qc-uploads in Python3
+
+## Tags
+
+* type: rewrite
+* priority: high
+* assigned: fredm
+* status: in progress
+* keywords: quality control
+
+
+## Description
+
+Since the quality control application will mostly be maintained outside active GeneNetwork development, and might actually be handed off to other maintainers, there is a need for it to be in an "accessible" language, so that it is easy to hand it off. This rewrite was therefore found to be necessary.
+
+The original QC app(s) were developed by
+
+* jgart
+
+and were written in Common-Lisp. The two applications are:
+
+=> https://git.genenetwork.org/jgart/qc QC library
+=> https://git.genenetwork.org/jgart/qc-uploads QC App Front-end
+
+In this document, the discussions of what is necessary to get the application in an acceptable state will be detailed and discussions to get there will also be included.
+
+
+### Requirements
+
+* The first row contains the headings, and determines the number of columns
+* no empty data cells
+* no data cells with spurious characters like `eeeee`, `5.555iloveguix`, etc...
+* decimal numbers must conform to the following criteria:
+* * when checking an average file decimal numbers must contain exactly three places to the right side of the dot.
+* * when checking a standard error file decimal numbers must contain six or greater places to the right side of the dot.
+* * there must be a number to the left side of the dot (e.g. 0.55555 is allowed but .55555 is not).
+* check line endings to make sure they are Unix and not DOS
+* check strain headers against a source of truth (see strains.csv)
+
+## Questions Awaiting Feedback
+
+* Arthur
+* jgart
+
+The following questions require some feedback on your part for further clarity on the requirements.
+
+Please just add the answer below the question.
+
+#### Question 01
+
+In the requirement
+
+* no data cells with spurious characters like `eeeee`, `5.555iloveguix`, etc...
+
+I see us encountering an issue with that requirement, if the first field is ever anything other than a number. For now, the first field is a *ProbeSet ID* which is numerical. If a field is ever, say, something like *Publish ID*, which can take a form like `ILM304582` then this assumption that all fields are numerical would break, and the application would be doing the wrong thing.
+Is there a possibility for the first field ever changing?
+
+#### Question 02
+
+The requirement
+
+* check line endings to make sure they are Unix and not DOS
+
+seems a little unnecessary if the files are not used for anything else. Most programming languages these days have facilities for translating the line endings appropriately, and so, we really should not add the manual cognitive overhead to the users, unless it is an absolute necessity, and even then, we will probably be doing something wrong. Is this requirement absolutely necessary?
