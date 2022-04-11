@@ -8,7 +8,7 @@ It looks like correlations don't finish - and worse the running processes take a
 
 ## Tags
 
-* assigned: pjotrp, zachs
+* assigned: pjotrp, zachs, alexm
 * keywords: correlations, time out
 * type: bug
 * status: in progress
@@ -19,6 +19,12 @@ It looks like correlations don't finish - and worse the running processes take a
 * [X] Set up OOM killer
 * [X] Prevent many GN2 threads taking too much RAM
 * [ ] Disable URL messages
+
+## Duplicate
+
+* duplicate
+
+=> slow-correlations.gmi
 
 ## OOM Killer
 
