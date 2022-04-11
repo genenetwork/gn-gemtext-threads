@@ -20,6 +20,7 @@ The original QC app(s) were developed by
 and were written in Common-Lisp. The two applications are:
 
 => https://git.genenetwork.org/jgart/qc QC library
+
 => https://git.genenetwork.org/jgart/qc-uploads QC App Front-end
 
 In this document, the discussions of what is necessary to get the application in an acceptable state will be detailed and discussions to get there will also be included.
