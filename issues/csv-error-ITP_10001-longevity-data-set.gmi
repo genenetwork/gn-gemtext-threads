@@ -23,6 +23,9 @@ The screenshot:
 ## Tasks
 
 - [ ] Reproduce the issue
+
 - [ ] Check if database is affected in any way
+
 - [ ] Send a patch to fix
+
 - [ ] Notify every relevant user
