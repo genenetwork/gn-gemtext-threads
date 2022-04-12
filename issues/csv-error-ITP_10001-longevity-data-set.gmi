@@ -4,9 +4,9 @@
 
 * assigned: bonfacem
 * type: bug
+* status: closed
 * priority: critical
-* keywords: critical bug, in progress
-* keywords: metadata, phenotypes
+* keywords: critical bug, in progress, metadata, phenotypes
 
 ## Description
 
@@ -26,9 +26,11 @@ The screenshot:
 
 - [X] Check if database is affected in any way
 
-- [ ] Send a patch to fix
+- [X] Send a patch to fix
 
-- [ ] Notify every relevant user
+- [X] Notify every relevant user
+
+- [X] Update case-attr page with links
 
 ## Notes
 
@@ -49,3 +51,11 @@ Notice the "^M" represents a carriage return. See:
 => https://en.wikipedia.org/wiki/ANSI_escape_code#C0_control_codes
 
 When storing case attributes, values with control sequences are also stored, and when you download that data for use, they were not being stripped out. As a consequence, opening the csv file in Excel (or similar) software resulted in data that seems jumbled up.
+
+### Tue 12 Apr 2022 13:33:31 EAT
+
+The relevant fixes:
+
+=> https://github.com/genenetwork/genenetwork2/pull/697
+
+=> https://github.com/genenetwork/genenetwork3/pull/91
