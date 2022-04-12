@@ -16,3 +16,12 @@
 See the strack trace present in this page:
 
 => https://ci.genenetwork.org/jobs/genenetwork2/214
+
+
+### Debug notes
+
+The function decorated with `@app.before_requests` is called before every request, even ones retrieving static files like CSS and JS files. This executes the `sqlalchemy.create_engine(...)' statement many times for each page.
+
+I started by checking whether the request is to a *static* or *js* endpoint, and if it is, we do not bother trying to create the engine in that case.
+
+This does not resolve the issue per-se, but it does reduce a lot of the noise when logging.
