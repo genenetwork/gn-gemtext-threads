@@ -2,8 +2,9 @@
 
 From RWW: For the following trait, if you zoom into a range for a specific Chromosome by clicking the top pink bar ("8x expanded WebQTL map") no points are displayed: https://genenetwork.org/show_trait?trait_id=NM_029911&dataset=UTHSC_BXD_WB_RNASeq1112
 
-# Tags: Mapping UX failure
-
+# Tags: 
+* source: robwwilliams
+* type: mapping user interface display failure
 * assigned: zachs
 * keywords: bug
 * status: in progress
