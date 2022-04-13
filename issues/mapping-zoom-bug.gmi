@@ -11,4 +11,4 @@ From RWW: For the following trait, if you zoom into a range for a specific Chrom
 * priority: high
 
 This issue appears to be caused by marker namees being duplicated. If a marker name appears in an earlier chromosome, it ends up displayed first in the GEMMA results for a later chromosome. 
-For example, if rs0000000071 is in both chromosome 1 and chromosome 7, it will show up first in the chromosome 7 result file even if it's position is 122Mb. This causes a problem in the mapping display code, since the loop is set to break when the marker position is > the end position set by the user (in this case by selecting a specific Mb interval).
+For example, if rs0000000071 is in both chromosome 1 and chromosome 7, it will show up first in the chromosome 7 result file even if its position is 122Mb. This causes a problem in the mapping display code, since the loop is set to break when the marker position is > the end position set by the user (in this case by selecting a specific Mb interval).
