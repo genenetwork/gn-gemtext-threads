@@ -1,29 +1,46 @@
+
 # Slow Correlations and UI crashes
 
-Correlations for huge data set(like the exo dataset) is very slow; and the UI crashes.
+Correlation in gn2 has regressed when compared  gn1
+
+Issue experienced by users include
+
+* Correlation being slow 
+
+* Browser crush and timeout for huge datasets like (exo dataset)
+
+
 
 ## Tags
 
 * type: bug
 * priority: critical
-* assigned: bonfacekilz, alex
+* assigned: alexm, bonfacekilz
 * keywords: correlations, ui, crash
 * status: in progress
 
 ## Tasks
 
-* [ ] Caching slow queries
-* [ ] Server side pagination
+[x] separation of concerns
+split between correlation code and code to database part
+for easier debug
 
-## Background
+[x] optimize db queries
 
-First, what we've done:
+[x] Cache for huge datasets in text files
 
-- Optimised a bunch of SQL.
-- https://mariadb.com/kb/en/query-cache/  
-- General code clean-up in some places.
-- Futile experiments with code parallelisation.
-- Add a "test compute" button. More on this later.
+[x] Cache for traits metadata
+
+[x] refactor data structures used
+
+[x] limit number of results rendered to user
+
+[] implement parralel computation for correlation
+
+[] Server side pagination
+
+
+### Background on the issue
 
 As Rob has pointed out before, gn2 is much much slower than
 gn1. Before, we mistakenly thought that it was because that it only
@@ -97,9 +114,11 @@ mechanism which he can feel free to try out: Separate the actual
 "computation" and the "pre-fetching" in code. And see what takes
 time.
 
-# Notes
 
-#### Mon 18 Oct 2021 12:42:17 PM EAT
+
+# Updates
+
+### Mon 18 Oct 2021 12:42:17 PM EAT
 
 Atm GN2 is un-usable for Rob for basic tours and show-and-tells, and
 it is a persistent problem that is getting worse the more he
@@ -112,11 +131,24 @@ computing from a materialized view of the database that is
 intentionally designed for a fast web service.
 
 
-## Update 
 
-implementation of caching for huge datasets done.Moreover
-this has also been implemented for  metadata hence speeding
-up the correlation immensely.
 
-Code for  correlation has also undergone refactoring to optimise
-the datastrcutures used
+# Notes
+
+### Tue, 12 April 2022
+
+Most of the above issue have been addressed
+
+correlation speed has greatly improved no complain't
+on the issue as of 12/04/2022
+
+for example the dataset below no longer crashes for this datashe computa
+
+=> http://gn2.genenetwork.org/show_trait?trait_id=ENSG00000244734&dataset=GTEXv8_Wbl_tpm_0220
+
+Also, wrt to parralel computation
+implementation in python leads
+to memory error for forked processes and
+is best implemented in a different
+language if the issue arises
+
