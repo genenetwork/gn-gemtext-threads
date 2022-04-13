@@ -29,6 +29,7 @@ In this document, the discussions of what is necessary to get the application in
 ### Requirements
 
 * The first row contains the headings, and determines the number of columns
+* Each heading in the first row MUST appear in the first row ONLY ONE time
 * no empty data cells
 * no data cells with spurious characters like `eeeee`, `5.555iloveguix`, etc...
 * decimal numbers must conform to the following criteria:
