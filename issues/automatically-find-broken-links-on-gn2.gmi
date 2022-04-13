@@ -37,9 +37,25 @@
        NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
 ```
 
+## Tasks
 
-##  update on finding broken links
+* [x] code to search for broken links in  web pages
+* [x] run gn2 on CI as a background task to search for broken links
 
-moved to complete the;gn2 CI runs on the background
-for any background searchng for any broken link which
-are then underlined and marked with red font
+
+
+### Notes
+
+
+
+the bug above no longer exists.
+
+gn2 CI runs on the background after for any push
+raises an error if any broken link is found
+On gn2 web pages all missing links that are found
+are underlined and highlighted with red for later fix
+
+
+### Update
+
+we no longer use github CI this should be moved the new gn2 CI
