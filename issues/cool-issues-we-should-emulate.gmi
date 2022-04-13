@@ -1,0 +1,27 @@
+# Cool Interfaces We Should Emulate
+
+## Tags
+
+* assigned: bonfacem, zachs, robw
+* type: ui
+* status: stalled
+* priority: low
+* keywords: ui
+
+## Description
+
+[From RW]
+
+We have talked about upgrading our correlation matrix.  Here is one display that I think Dave created that looks awesome when the number of vectors ranges from 2 to 12.
+
+=> https://github.com/genenetwork/gn-gemtext-threads/blob/main/pictures/much-better-scatterplot-display.png
+
+I don't think this would work well much beyond 12, but there might be some ways to simplify as a function of N.  Note that in this display, there is also a cofactor (sex). That will often NOT apply to GN data sets. By the way, I think these data may be in GN (at least for the BXDs).
+
+The idea is to converge as much as possible from the user's point of view on interfaces between GN, MPD, PhenoGen, and GeneWeaver. Having some common displays and icons would be a good easy start and make it way easier for users to learn the ropes.
+
+If you have not watched Molly's presentation from [this past] Friday, then I highly recommend it.
+
+=> https://youtu.be/--2c-LWOMRk
+
+The Mouse Phenome Project has a quite sophisticated Study Intake Form that we definitely should review. I do not mind that we reinvent the wheels a few times to make sure it is really round. Learning from others will help.
