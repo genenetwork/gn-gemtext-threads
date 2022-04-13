@@ -43,7 +43,7 @@ json.decoder.JSONDecodeError: Extra data: line 1 column 6765450 (char 6765449)
 * assigned: alex, zachs
 * keywords: correlation,caching,metadata
 * type: bug
-* status: completed 
+* status: closed, completed 
 * priority: medium
 
 
@@ -52,3 +52,11 @@ json.decoder.JSONDecodeError: Extra data: line 1 column 6765450 (char 6765449)
 
 * [X] fix for caching empty json files
 * [X] delete invalid files and recreate new ones
+
+
+## Notes
+
+The above issue  has been addressed in this PR:
+
+=> https://github.com/genenetwork/genenetwork2/pull/679/
+
