@@ -4,7 +4,7 @@
 
 * type: bug
 * priority: high
-* status: completed
+* status: closed, completed
 * keywords: correlations, from github, high priority
 
 ## Description
