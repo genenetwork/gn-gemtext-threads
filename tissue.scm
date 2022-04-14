@@ -21,6 +21,10 @@
 
 (tissue-configuration
  #:project "GeneNetwork issue tracker"
+ #:issue-files (remove (lambda (filename)
+                         (string=? (basename filename)
+                                   "README.gmi"))
+                       (gemtext-files-in-directory "issues"))
  #:aliases '(("Alexander Kabui" "Alexander" "alex")
              ("Arun Isaac" "aruni")
              ("BonfaceKilz" "bonfacem")
