@@ -25,3 +25,9 @@ If you have not watched Molly's presentation from [this past] Friday, then I hig
 => https://youtu.be/--2c-LWOMRk
 
 The Mouse Phenome Project has a quite sophisticated Study Intake Form that we definitely should review. I do not mind that we reinvent the wheels a few times to make sure it is really round. Learning from others will help.
+
+#### Thu 14 Apr 2022 16:08:54 EAT
+
+[Zach] Was this [shared above] figure generated with some tool, or manually?
+
+[Dave] All plots/visualizations/tools in the Mouse Phenome Database are dynamic and interactive, written in either D3.js or with HighCharts, depending on the complexity of the plot.
