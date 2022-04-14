@@ -33,6 +33,8 @@ to it."
 
 (document :title "GeneNetwork issue tracker"
   (ref :url "team.html" :text "Team agenda view")
+  " | "
+  (ref :url "topics.html" :text "Topics")
   (numbered-issue-listing "~a unanswered issues"
                           (filter (lambda (issue)
                                     (and (issue-open? issue)

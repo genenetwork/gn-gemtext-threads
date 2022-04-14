@@ -43,6 +43,8 @@
                           (skribe-exporter "index.skb"))
                     (file "team.html"
                           (skribe-exporter "team.skb"))
+                    (file "topics.html"
+                          (skribe-exporter "topics.skb"))
                     (append (tag-pages)
                             (filter-map (lambda (filename)
                                           (and (string-suffix? ".gmi" filename)
