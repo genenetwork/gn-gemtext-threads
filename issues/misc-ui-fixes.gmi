@@ -17,7 +17,7 @@ This is a collection of UI issues mentioned by Rob in e-mails.
 * Heterogeneous Stock Collaborative Cross -> DO Hitzemann Striatum mRNA  n=90 (Feb11, no mapping)
 - [ ] Fix issue with one sample not being in the DOL .geno file
 
-- [X] Add group code to mapping loading page metadata - 059bd7f954bf08a6e1d87b2cde40fe231fbc0be3
+- [X] Add group code to mapping loading page metadata - 7bb9067585616f2759add72c668d666c9ac73aa8
 
 - [X] Move mapping figure options to the left - 059bd7f954bf08a6e1d87b2cde40fe231fbc0be3
 
