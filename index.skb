@@ -32,6 +32,9 @@ to it."
     (issue-listing (reverse issues))))
 
 (document :title "GeneNetwork issue tracker"
+  (ref :url "https://github.com/genenetwork/gn-gemtext-threads/new/main/issues"
+       :text "Create new issue")
+  " | "
   (ref :url "team.html" :text "Team agenda view")
   " | "
   (ref :url "topics.html" :text "Topics")
