@@ -3,6 +3,7 @@
 ## Tags
 
 * assigned: bonfacem
+* status: in progress
 * type: bug
 * keywords: case attributes, data editing
 
