@@ -1,0 +1,17 @@
+# Create a new UI language for gn2
+
+## Tags
+
+* assigned: robw, zachs, bonfacem
+* type: ui
+* status: unclear
+* priority: low
+* keywords: ui
+
+## Introduction
+
+New UI keeps spring up in the genenetwork eco-system. To make gn2 consistent, we need to come up with a [simple] visual language that is easy for developers to use.
+
+## Tasks
+
+- [ ] (bonfacem) Consult on how to do this
