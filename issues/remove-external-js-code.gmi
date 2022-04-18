@@ -1,0 +1,20 @@
+# Remove externally loaded JS
+
+## Tags
+
+* assigned: bonfacem, alex
+* type: ui, enhancement
+* status: unclear
+* priority: medium
+* keywords: ui, guix
+
+## Description
+
+`jquery-ui` is still loaded from a CDN. This needs to be packaged and loaded from our GNU Guix profile.
+
+## Tasks
+
+- [ ] Package `jquery-ui`.
+- [ ] Replace `jquery-ui` cdn with a link from the GNU Guix profile.
+- [ ] Check and report if there are other js files we load from a CDN.
+
