@@ -1,3 +1,5 @@
+# Effect size for GEMMA is a MUST
+
 To: @Zach, @Pjotr
 From: robwwilliams
 Regarding: Getting a readout of effect size and polarity of effect from GEMMA
