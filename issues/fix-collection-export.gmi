@@ -1,0 +1,15 @@
+# Fix Collection Export
+
+## Tags
+
+* assigned: zsloan
+* type: bug
+* priority: high
+* status: in-progress
+* keywords: collections
+
+## Description
+
+The export function from "collection" has not been working for a while. You can still export from within the trait page, but there's one limitation.
+For example, http://genenetwork.org/show_trait?trait_id=ENSMUST00000115420&dataset=UTHSC-BXD-Harv_Liv-1019
+If you go to this page, there are columns with important info (e.g., strain, sex, age, diet). If you click "export", you only get the individual name and trait value. There is no easy way for users to link the "name" back to the strain. (I've done it but it was extremely difficult copy and paste section by section).
