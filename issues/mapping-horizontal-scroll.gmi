@@ -1,0 +1,12 @@
+# Mapping figure can't be horizontally scrolled
+
+## Tags
+
+* assigned: zsloan
+* priority: medium
+* status: in-progress
+* keywords: mapping
+
+## Description
+
+The mapping figure can't be horizontally scrolled, which is apparently annoying for people using small browser windows.
