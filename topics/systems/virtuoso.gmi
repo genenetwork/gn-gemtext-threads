@@ -24,9 +24,44 @@ guix environment --ad-hoc virtuoso-ose -- virtuoso-t -f
 
 The database is initialized from 'penguin2:/export/virtuoso/var/lib/virtuoso/db/virtuoso.ini'
 
-### Running a new instance
+### Running virtuoso in a guix system container
 
-For testing we want to run a temporary instance. Let's start from the virtuoso.ini file:
+We have a Guix virtuoso service in the guix-bioinformatics channel. The easiest way to run virtuoso is to use the virtuoso service to run it in a guix system container. The only downside of this method is that, since guix system containers require root privileges to start up, you will need root priviliges on the machine you are running this on.
+
+Here is a basic guix system configuration that runs virtuoso listening on port 8891, and with its HTTP server listening on port 8892. Among other things, the HTTP server provides a SPARQL endpoint to interact with.
+```
+(use-modules (gnu)
+             (gn services databases))
+
+(operating-system
+  (host-name "virtuoso")
+  (timezone "UTC")
+  (locale "en_US.utf8")
+  (bootloader (bootloader-configuration
+               (bootloader grub-bootloader)
+               (targets (list "/dev/sdX"))))
+  (file-systems (cons (file-system
+                        (device "root")
+                        (mount-point "/")
+                        (type "ext4"))
+                      %base-file-systems))
+  (users %base-user-accounts)
+  (packages %base-packages)
+  (services (cons (service virtuoso-service-type
+                           (virtuoso-configuration
+                            (server-port 8891)
+                            (http-server-port 8892)))
+                  %base-services)))
+```
+
+You can write the above configuration to a file, say virtuoso-os.scm, build a container with it, and run it with the command below. Everything inside the container is ephemeral and vanishes when the container is stopped. In order to persist the database, we mount a host directory /tmp/virtuoso-state at /var/lib/virtuoso in the container. /var/lib/virtuoso is the default state directory used by the Guix virtuoso service.
+```
+sudo $(guix system container --network --share=/tmp/virtuoso-state=/var/lib/virtuoso virtuoso-os.scm)
+```
+
+### Running virtuoso by invoking it on the command line
+
+You may also choose to run virtuoso the traditional way by invoking it on the command line. Managing long-running instances started from the command line is messy. So, this method works best for temporary instances. Let's start from the virtuoso.ini file:
 
 ```
 mkdir -p ~/services/virtuoso
