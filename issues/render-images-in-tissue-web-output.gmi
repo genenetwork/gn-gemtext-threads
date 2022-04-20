@@ -1,0 +1,6 @@
+# Render images in tissue web output
+
+* keywords: tissue, feature request
+* assigned: aruni
+
+Links in gemtext that point to images should render as images rather than as links. This way it will be possible to inline images in issues.
