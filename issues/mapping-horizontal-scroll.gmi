@@ -4,9 +4,13 @@
 
 * assigned: zsloan
 * priority: medium
-* status: in-progress
+* status: closed
 * keywords: mapping
 
 ## Description
 
 The mapping figure can't be horizontally scrolled, which is apparently annoying for people using small browser windows.
+
+## Updates
+
+- Fixed in c2f620ed1103527a547d3ae69fa10acedea7ab66
