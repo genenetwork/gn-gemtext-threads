@@ -1,0 +1,24 @@
+# Add "Target" (Y) Column in Partial Correlations Selection Table
+
+## Tags
+
+* assigned: fredm
+* priority: medium
+* type: migration, feature-request
+* status: pending
+* keywords: partial correlations, datatables
+
+## Description
+
+Currently, the partial correlations in GN2 are run against a selected dataset, and not against a selection of specific traits.
+
+The problem with this arises in the fact that the region of interest in any experiment might fall outside of the cutoff selection (top 100, 200, 500, 1000, 10000, etc) and there is no real way of knowing that beforehand.
+
+There is a need, therefore, to run partial correlations against a target that is a list of user-selected traits.
+
+GN1 allows this with the "Target" (Y) Column.
+
+### Requirements
+
+* Add a new "Target (Y)" column to the table
+* Have all traits be targets by default, rather than ignored
