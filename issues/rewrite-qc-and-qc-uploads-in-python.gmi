@@ -37,7 +37,7 @@ In this document, the discussions of what is necessary to get the application in
 * * when checking a standard error file decimal numbers must contain six or greater places to the right side of the dot.
 * * there must be a number to the left side of the dot (e.g. 0.55555 is allowed but .55555 is not).
 * check line endings to make sure they are Unix and not DOS
-* check strain headers against a source of truth (see strains.csv)
+* check strain headers against a source of truth (see strains.csv): get the values from 'Name' and 'Name2' fields
 
 ## Questions Awaiting Feedback
 
