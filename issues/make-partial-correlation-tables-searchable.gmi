@@ -1,0 +1,17 @@
+# Make Partial Correlations Table Searchable
+
+## Tags
+
+* assigned: fredm
+* priority: medium
+* type: migration, feature-request
+* status: pending
+* keywords: partial correlations, datatables
+
+## Description
+
+@robw notes, correctly that the table in the "Partial Correlations" workflow, where the user selects the "Primary", "Control" and (to be implemented) "Target" traits does not provide the user with a facility to search through the contents of the table to quickly find the traits that the user wants. The user is thus left to slowly and painstakingly go down the items in the table to find and select the traits that they need.
+
+This is a frustrating (for the user) and error-prone process and thus needs improvement.
+
+It is also possible that this same issue might be present in other tables in this workflow. If so, all the tables should be improved to allow search.
