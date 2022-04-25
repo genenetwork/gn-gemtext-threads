@@ -1,0 +1,46 @@
+# Implementing parallel correlation with rust
+
+### Notes
+
+In an attempt to speed the current gn2 correlation
+we are doing an reimplentation in rust to support
+parralel computation
+
+
+## Tags
+
+* assigned:alexm
+* type: upgrade
+* priority: medium
+* status: in progress
+* keywords: correlation,rust,parralel
+
+
+## Tasks
+
+- [X] implementation of basic pearson and spearman correlation in rust
+
+- [ ] add unittests
+
+- [ ] loading datasets;format
+
+- [ ] add parralel computation
+
+
+- [ ] code optimization: modularization,lazy_loading,iterator,
+
+
+- [ ] python support:importing rust code from python as a lib
+
+- [ ]  gn2 integration
+
+
+
+
+
+## Notes
+
+code can be found here:
+
+- https://github.com/Alexanderlacuna/correlation_rust.git
+
