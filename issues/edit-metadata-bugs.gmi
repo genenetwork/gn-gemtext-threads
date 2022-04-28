@@ -10,10 +10,13 @@
 #TODO
 
 - [ ] I cannot edit the PMID number
+
 - [ ] There is inadequate feedback on whether or not changes have been accepted (PMID: 24640950. Publication below)
 
 => https://pubmed.ncbi.nlm.nih.gov/24640950/
 
 - [ ] I am unable to add the Abstract for the paper
+
 - [ ] There is no place to enter the volume number of the journal. Please see GN1.
+
 - [ ] I cannot change the "authors" text.
