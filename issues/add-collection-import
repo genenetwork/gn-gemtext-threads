@@ -1,0 +1,13 @@
+## Add Collection Import/Export
+
+## Tags
+
+* assigned: zsloan
+* type: bug
+* priority: medium
+* status: in-progress
+* keywords: collections
+
+## Description
+
+One feature from GN1 that is still missing from GN2 is the ability to export/import collections (so they can be shared with other people). This is being added here https://github.com/genenetwork/genenetwork2/pull/701
