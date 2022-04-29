@@ -93,25 +93,44 @@ ssh -L 28890:127.0.0.1:28890 -f -N myname@penguin2.genenetwork.org
 ```
 and surf to http://localhost:28890/conductor. A good time to change the default password (dba:dba)!
 
-### Uploading data with CURL
+## Loading data into virtuoso
 
-To upload RDF I use rapper to validate the data. First delete the existing graph with something like
+Virtuoso supports at least three different ways to load RDF.
 
+### Bulk loading using the isql command-line client
+
+=> http://vos.openlinksw.com/owiki/wiki/VOS/VirtBulkRDFLoader Bulk loading using the isql command-line client
+Bulk loading using the isql command-line client is usually the fastest. But, it requires correct handling of file system permissions, and cannot work on remote servers.
+
+### SPARQL 1.1 Update
+
+The standard SPARQL protocol allows update of RDF too.
+=> https://www.w3.org/TR/sparql11-update/ SPARQL 1.1 Update
+
+### SPARQL 1.1 Graph Store HTTP Protocal
+
+For ease of implementation, SPARQL 1.1 also specifies an additional REST-like API to update data.
+=> https://www.w3.org/TR/sparql11-http-rdf-update/ SPARQL 1.1 Graph Store HTTP Protocol
+The virtuoso documentation shows examples of using this protocol with cURL.
+=> http://vos.openlinksw.com/owiki/wiki/VOS/VirtGraphProtocolCURLExamples Virtuoso SPARQL 1.1 Graph Store HTTP Protocol examples using cURL
+We recap the same here. First delete the existing graph with something like
 ```
 curl -v --digest --user dba:password --verbose --url -G http://localhost:28890/sparql-graph-crud-auth --data-urlencode graph=https://BioHackrXiv.org/graph -X DELETE
 ```
-
 Next update the graph with
-
 ```
 curl -v -X PUT --digest -u dba:password -H Content-Type:text/turtle -T test/data/biohackrxiv.ttl -G http://localhost:28890/sparql-graph-crud-auth --data-urlencode graph=https://BioHackrXiv.org/graph
 ```
-
-Where BioHackrXiv is the name of the graph (in this example). A python version can be found in
-
+where BioHackrXiv is the name of the graph (in this example). A python version can be found in
 => https://github.com/pubseq/bh20-seq-resource/blob/master/scripts/update_virtuoso/check_for_updates.py
 
-### Virtuoso.ini
+## Validate data using rapper
+
+TODO
+
+## Virtuoso.ini
+
+TODO: Elaborate.
 
 What changed in $HOME/services/virtuoso/virtuoso.ini
 
