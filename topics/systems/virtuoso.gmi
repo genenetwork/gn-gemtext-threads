@@ -77,23 +77,19 @@ penguin2:~/services/virtuoso [env]$ /gnu/store/9aqd4jmkafhkdm095hnmxpxzws3ym3wd-
 ```
 
 Now the server should respond to
-
 ```
 curl localhost:28890/sparql
 ```
 
 and the admin interface on
-
 ```
 curl localhost:28890/conductor
 ```
 
 To use the service from your remote machine use ssh tunnels:
-
 ```
 ssh -L 28890:127.0.0.1:28890 -f -N myname@penguin2.genenetwork.org
 ```
-
 and surf to http://localhost:28890/conductor. A good time to change the default password (dba:dba)!
 
 ### Uploading data with CURL
