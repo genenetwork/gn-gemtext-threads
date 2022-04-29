@@ -17,6 +17,11 @@ guix environment --ad-hoc virtuoso-ose -- virtuoso-t -f
 
 The database is initialized from 'penguin2:/export/virtuoso/var/lib/virtuoso/db/virtuoso.ini'
 
+## Virtuoso users and setting their passwords
+
+The most important virtuoso user is the `dba` user. The default password of the `dba` user is `dba`. You can change passwords using the isql command-line client.
+=> http://docs.openlinksw.com/virtuoso/defpasschange/ Virtuoso users and how to set their passwords
+
 ### Running virtuoso in a guix system container
 
 We have a Guix virtuoso service in the guix-bioinformatics channel. The easiest way to run virtuoso is to use the virtuoso service to run it in a guix system container. The only downside of this method is that, since guix system containers require root privileges to start up, you will need root priviliges on the machine you are running this on.
