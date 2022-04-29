@@ -8,3 +8,5 @@ Request Type: New feature for GEMMA, User requires these data
 Main Message: Let's Just Do It. Can be done as a kludge. Just plot the beta of the regression equation of the SNP status (ususally two or three states codes as 0, 1, 2 or -1,0, +1) against the phenotype.
 The slope is roughly the effect size. This is good enough for most users. The only got-you is slight inflation of due to kinship structure and the Beavis effect when the sample size is low.
 QUESTION—can I upload an image from Amelie Baud's talk on effect size?
+
+=> /pictures/effect-size-for-gemma.png
