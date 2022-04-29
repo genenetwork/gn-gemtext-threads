@@ -10,7 +10,7 @@ On Penguin2 virtuoso is running by default as a shepherd servive, see
 => ./shepherd.gmi
 
 ```
-guix environment --ad-hoc virtuoso-ose -- virtuoso-t -f
+guix shell virtuoso-ose -- virtuoso-t -f
 ```
 
 => https://git.genenetwork.org/efraim/shepherd-services/src/branch/master/shepherd/init.d/virtuoso.scm penguin2:/home/shepherd/shepherd-services/shepherd/init.d/virtuoso.scm
@@ -70,10 +70,8 @@ cp /export/virtuoso/var/lib/virtuoso/db/virtuoso.ini .
 and edit it to change paths and ports - use non-priviliged ports(!). A full diff is below. Start the server in a screen or tmux (it may ask for creating ./db):
 
 ```
-penguin2:~/services/virtuoso$ ~/.config/guix/current/bin/guix environment --ad-hoc virtuoso-ose glibc-locales
-
-penguin2:~/services/virtuoso$ /gnu/store/9aqd4jmkafhkdm095hnmxpxzws3ym3wd-virtuoso-ose-7.2.5/bin/virtuoso-t +foreground +configfile virtuoso.ini
-
+penguin2:~/services/virtuoso$ ~/.config/guix/current/bin/guix shell virtuoso-ose glibc-locales
+penguin2:~/services/virtuoso [env]$ /gnu/store/9aqd4jmkafhkdm095hnmxpxzws3ym3wd-virtuoso-ose-7.2.5/bin/virtuoso-t +foreground +configfile virtuoso.ini
 03:34:50 HTTP/WebDAV server online at 28890
 03:34:50 Server online at 21111 (pid 57078)
 ```
