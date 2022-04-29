@@ -47,10 +47,17 @@
                           (skribe-exporter "topics.skb"))
                     (append (tag-pages)
                             (filter-map (lambda (filename)
-                                          (and (string-suffix? ".gmi" filename)
-                                               (not (string=? (basename filename)
-                                                              "README.gmi"))
-                                               (file (replace-extension filename "html")
-                                                     (gemtext-exporter filename
-                                                                       (genenetwork-gemtext-reader filename)))))
+                                          (cond
+                                           ((and (string-suffix? ".gmi" filename)
+                                                 (not (string=? (basename filename)
+                                                                "README.gmi")))
+                                            (file (replace-extension filename "html")
+                                                  (gemtext-exporter filename
+                                                                    (genenetwork-gemtext-reader filename))))
+                                           ((or (string-suffix? ".jpg" filename)
+                                                (string-suffix? ".png" filename)
+                                                (string-suffix? ".svg" filename))
+                                            (file filename
+                                                  (copier filename)))
+                                           (else #f)))
                                         (git-tracked-files)))))
