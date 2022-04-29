@@ -1,11 +1,4 @@
-# Running Virtuoso
-
-## Tags
-
-* type: documentation
-* status: unclear
-
-## Description
+# Virtuoso
 
 We run instances of Virtuoso for our graph databases. Virtuoso is a remarkable software and running some really large databases, including Uniprot
 
