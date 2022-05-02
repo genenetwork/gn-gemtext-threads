@@ -5,19 +5,22 @@ When editing some ITP case attributes, changes either haven't worked or have cau
 ## Description
 There are several issues I've noticed:
 
-* This is the most confusing and is a bit hard to explain without directly showing, but I've identified what seems to be causing the problem (though I can't find why in the code). Attempts to fix this via editing didn't work until I figured out the apparent cause, but my temporary "fix" just involve removing the problematic case attribute values.
+### Issue 1
+This is the most confusing and is a bit hard to explain without directly showing, but I've identified what seems to be causing the problem (though I can't find why in the code). Attempts to fix this via editing didn't work until I figured out the apparent cause, but my temporary "fix" just involve removing the problematic case attribute values.
 
-  An image showing one of the diffs is linked here:
-  => /pictures/diffs_1.png
+An image showing one of the diffs is linked here:
+=> /pictures/diffs_1.png
 
-  As can be seen, all the case attributes for some samples were set to 2018.08.
+As can be seen, all the case attributes for some samples were set to 2018.08.
 
-  The cause of this issue seems to be either "M13" or "M14" being the case attribute value for the "Date Geno" Case Attribute (which can also be seen in the figure). After a while, I realized that this is apparently because "M13" and "M14" are both parts of strain names (for example "UM13988"). 
-  I was able to temporarily "fix" the issue by removing all M13s and M14s. But I have no idea *why* this is happening. At some point in the code it must be searching for the casee attribute value across thee entire CSV row, but I can't find where that's happening (or why it results in the same case attribute value being duplicated across all case attributes for that row).
+The cause of this issue seems to be either "M13" or "M14" being the case attribute value for the "Date Geno" Case Attribute (which can also be seen in the figure). After a while, I realized that this is apparently because "M13" and "M14" are both parts of strain names (for example "UM13988"). 
+I was able to temporarily "fix" the issue by removing all M13s and M14s. But I have no idea *why* this is happening. At some point in the code it must be searching for the casee attribute value across thee entire CSV row, but I can't find where that's happening (or why it results in the same case attribute value being duplicated across all case attributes for that row).
 
-* The "Tx" attribute (an attribute that exists twice in the CaseAttribute table and requires an ID in the CSV file) was throwing an error related to not having an ID, even though the ID was included in the CSV file. This is the relevant part of the code (where _id isn't set and it throws an error about "Tx" not being a unique Name) - https://github.com/genenetwork/genenetwork3/blob/65adda3923760252dd1dc94e8b5c894310885a69/gn3/db/sample_data.py#L176-L198
+### Issue 2
+The "Tx" attribute (an attribute that exists twice in the CaseAttribute table and requires an ID in the CSV file) was throwing an error related to not having an ID, even though the ID was included in the CSV file. This is the relevant part of the code (where _id isn't set and it throws an error about "Tx" not being a unique Name) - https://github.com/genenetwork/genenetwork3/blob/65adda3923760252dd1dc94e8b5c894310885a69/gn3/db/sample_data.py#L176-L198
 
-* When Suheeta was trying to add two new case attributes, I manually added them to the CaseAttribute table (with (id,name) of (48, 'MBS2022') and (49, 'DA2022') respectively), but they weren't added when I submitted a CSV with those two extra columns.
+### Issue 3
+When Suheeta was trying to add two new case attributes, I manually added them to the CaseAttribute table (with (id,name) of (48, 'MBS2022') and (49, 'DA2022') respectively), but they weren't added when I submitted a CSV with those two extra columns.
 ## Tags
 
 * assigned: bonfacem, zachs
