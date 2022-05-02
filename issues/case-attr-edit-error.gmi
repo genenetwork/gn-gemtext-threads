@@ -1,0 +1,23 @@
+# Case Attribute Editing Problems
+
+When editing some ITP case attributes, something strange happened that caused all the case attributes for a number of samples to be changed to the same (wrong) value. A relevant trait is the following (though it applies to any HET3-ITP traits) - https://genenetwork.org/show_trait?trait_id=10001&dataset=HET3-ITPPublish
+
+## Description
+
+This is a bit hard to explain without directly showing, but I've identified what seems to be causing the problem (though I can't find why in the code). Attempts to fix this via editing didn't work until I figured out the apparent cause, but my temporary "fix" just involve removing the problematic case attribute values.
+
+An image showing one of the diffs is linked here:
+=> /pictures/diffs_1.png
+
+As can be seen, all the case attributes for some samples were set to 2018.08.
+
+The cause of this issue seems to be either "M13" or "M14" being the case attribute value for the "Date Geno" Case Attribute (which can also be seen in the figure). After a while, I realized that this is apparently because "M13" and "M14" are both parts of strain names (for example "UM13988"). 
+I was able to temporarily "fix" the issue by removing all M13s and M14s. But I have no idea *why* this is happening. At some point in the code it must be searching for the casee attribute value across thee entire CSV row, but I can't find where that's happening (or why it results in the same case attribute value being duplicated across all case attributes for that row).
+
+## Tags
+
+* assigned: bonfacem, zachs
+* keywords: metadata, case-attributes
+* type: bug
+* status: in progress
+* priority: high
