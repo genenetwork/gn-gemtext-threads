@@ -18,21 +18,21 @@ parralel computation
 
 ## Tasks
 
-- [X] implementation of basic pearson and spearman correlation in rust
+* [X] implementation of basic pearson and spearman correlation in rust
 
-- [ ] add unittests
+* [X] add unittests
 
-- [ ] loading datasets;format
+* [X] loading datasets;format
 
-- [ ] add parralel computation
-
-
-- [ ] code optimization: modularization,lazy_loading,iterator,
+* [ ] add parralel computation
 
 
-- [ ] python support:importing rust code from python as a lib
+* [ ] code optimization: modularization,lazy_loading,iterator,
 
-- [ ]  gn2 integration
+
+* [ ] python support:importing rust code from python as a lib
+
+* [ ]  gn2 integration
 
 
 
@@ -42,5 +42,5 @@ parralel computation
 
 code can be found here:
 
-- https://github.com/Alexanderlacuna/correlation_rust.git
+=> https://github.com/Alexanderlacuna/correlation_rust.git
 
