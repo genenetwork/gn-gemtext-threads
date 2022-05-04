@@ -49,3 +49,7 @@
 - No need to edit the case attribute names that are similar in the db. I'll need to find a way to infer this using existing information. This means to remove this hack: Sex(3), Sex(14). Notice the id's embedded in the names.
 
 - Set up a meet with Suheeta. See how she uploads the data.
+
+- Typos: "Pre" is not a word on it's own. "Pre Publication" should be "Pre-publication". Key idea here is to correct typos when spotted, and not to leave this to the hands of the end-user.
+
+- Hints on certain forms. When the authors form is empty, the user is showed a grayed templet of the input format for the authors. For other form element, if feasible, collaborate with Rob to see what useful hints we can provide the end-user.
