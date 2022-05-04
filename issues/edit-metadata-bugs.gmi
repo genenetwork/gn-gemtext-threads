@@ -20,3 +20,32 @@
 - [ ] There is no place to enter the volume number of the journal. Please see GN1.
 
 - [ ] I cannot change the "authors" text.
+
+# Notes
+### Wed 04 May 2022 23:02:12 EAT
+
+- Links should be in blue and highlighted ("History").
+
+- Make important things stand out in a user-friendly way. Right now, the most important thing, editing metadata from by downloading a file is at the very bottom.
+
+- Editing the pubmed id should have a cascading fx on the related traits .i.e. editing the pudmed id of one trait should update the pubmed id for all the related traits.
+
+- Hide the "reset" button.
+
+- "Sequence" should not be part of the form.
+
+- Historical reasons for the "pre-*" field e.g. pre-publication was explained in detail. They are there to mark a sort of "confidential" not-yet-ready data.
+
+- The word "sample data file" is confusing to users.
+
+- When adding case-attributes, new columns should be added on the fly.
+
+- Useful idea: For small datasets, allow edits on UI. For large datasets, or data that has new case-attributes, provide excel files.
+
+- There are some fields which are important, but not really used much: "lab code", "Authorised Users".
+
+- UI tweaks: left justify buttons.
+
+- No need to edit the case attribute names that are similar in the db. I'll need to find a way to infer this using existing information. This means to remove this hack: Sex(3), Sex(14). Notice the id's embedded in the names.
+
+- Set up a meet with Suheeta. See how she uploads the data.
