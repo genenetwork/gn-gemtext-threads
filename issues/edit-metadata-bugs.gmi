@@ -26,7 +26,7 @@
 
 - Links should be in blue and highlighted ("History").
 
-- Make important things stand out in a user-friendly way. Right now, the most important thing, editing metadata from by downloading a file is at the very bottom.
+- Make important things stand out in a user-friendly way. Right now, the most important thing: editing metadata by downloading a file is at the very bottom.
 
 - Editing the pubmed id should have a cascading fx on the related traits .i.e. editing the pudmed id of one trait should update the pubmed id for all the related traits.
 
