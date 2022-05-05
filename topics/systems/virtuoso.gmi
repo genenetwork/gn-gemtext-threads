@@ -5,11 +5,6 @@ We run instances of virtuoso for our graph databases. Virtuoso is remarkable sof
 => https://github.com/openlink/virtuoso-opensource
 => https://www.uniprot.org/sparql/
 
-## Virtuoso users and setting their passwords
-
-The most important virtuoso user is the `dba` user. The default password of the `dba` user is `dba`. You can change passwords using the isql command-line client.
-=> http://docs.openlinksw.com/virtuoso/defpasschange/ Virtuoso users and how to set their passwords
-
 ## Running virtuoso
 ### Running virtuoso in a guix system container
 
@@ -74,6 +69,11 @@ In particular, consider setting NumberOfBuffers and MaxDirtyBuffers as described
 => http://vos.openlinksw.com/owiki/wiki/VOS/VirtRDFPerformanceTuning Performance tuning virtuoso
 
 For a working configuration file, you can also look at /export/virtuoso/var/lib/virtuoso/db/virtuoso.ini in penguin2.
+
+## Set passwords for virtuoso users
+
+After running virtuoso, you will want to change the default password of the `dba` user. The default password of the `dba` user is `dba`. You can change passwords using the isql command-line client. See
+=> http://docs.openlinksw.com/virtuoso/defpasschange/ Virtuoso users and how to set their passwords
 
 ## Loading data into virtuoso
 
