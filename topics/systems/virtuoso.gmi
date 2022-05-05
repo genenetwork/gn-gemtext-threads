@@ -1,21 +1,9 @@
 # Virtuoso
 
-We run instances of Virtuoso for our graph databases. Virtuoso is a remarkable software and running some really large databases, including Uniprot
+We run instances of virtuoso for our graph databases. Virtuoso is remarkable software and runs some really large databases, including Uniprot. Virtuoso can sometimes feel old and clunky. But, we still prefer it to other shiny new ones because it is the only large one not written in Java. Java packages are almost impossible to package in Guix.
 
 => https://github.com/openlink/virtuoso-opensource
 => https://www.uniprot.org/sparql/
-
-On Penguin2 virtuoso is running by default as a shepherd servive, see
-
-=> ./shepherd.gmi
-
-```
-guix shell virtuoso-ose -- virtuoso-t -f
-```
-
-=> https://git.genenetwork.org/efraim/shepherd-services/src/branch/master/shepherd/init.d/virtuoso.scm penguin2:/home/shepherd/shepherd-services/shepherd/init.d/virtuoso.scm
-
-The database is initialized from 'penguin2:/export/virtuoso/var/lib/virtuoso/db/virtuoso.ini'
 
 ## Virtuoso users and setting their passwords
 
