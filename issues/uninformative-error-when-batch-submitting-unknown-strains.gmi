@@ -1,0 +1,13 @@
+# Uninformative error when batch submitting unknown strains
+
+# Tags
+
+* assigned: bonfacem,zachs
+* keywords: metatadata
+* status: unclear
+* priority: medium
+
+## Description
+
+When batch submitting temporary traits, the upload will sometimes fail with the error `The format of the file is incorrect, or it contains unknown strains.` In my case, it is because I have data for strains that don't yet have GN genotypes (BXD224, BXD226). It would be pretty helpful when working out which strains to drop (or spell correctly) to have the offending strings reported. Is this possible?
+
