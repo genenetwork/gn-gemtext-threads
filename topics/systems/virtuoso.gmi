@@ -113,20 +113,24 @@ For ease of implementation, SPARQL 1.1 also specifies an additional REST-like AP
 => https://www.w3.org/TR/sparql11-http-rdf-update/ SPARQL 1.1 Graph Store HTTP Protocol
 The virtuoso documentation shows examples of using this protocol with cURL.
 => http://vos.openlinksw.com/owiki/wiki/VOS/VirtGraphProtocolCURLExamples Virtuoso SPARQL 1.1 Graph Store HTTP Protocol examples using cURL
-We recap the same here. First delete the existing graph with something like
-```
-curl -v --digest --user dba:password --verbose --url -G http://localhost:28890/sparql-graph-crud-auth --data-urlencode graph=https://BioHackrXiv.org/graph -X DELETE
-```
-Next update the graph with
-```
-curl -v -X PUT --digest -u dba:password -H Content-Type:text/turtle -T test/data/biohackrxiv.ttl -G http://localhost:28890/sparql-graph-crud-auth --data-urlencode graph=https://BioHackrXiv.org/graph
-```
-where https://BioHackrXiv.org/graph is the name of the graph (in this example). A python version can be found in
-=> https://github.com/pubseq/bh20-seq-resource/blob/master/scripts/update_virtuoso/check_for_updates.py
+We recap the same here.
 
-## Validate data using rapper
+When uploading data, the virtuoso server often does not report errors properly. It simply freezes up. So, it is very helpful to validate your RDF before uploading. For this, use rapper from the raptor2 package. To validate data.ttl, a turtle file, run
+```
+rapper --input turtle --count data.ttl
+```
+Then, upload it to a virtuoso SPARQL endpoint running at port 8892
+```
+curl -v -X PUT --digest -u dba:password -T data.ttl -G http://localhost:8892/sparql-graph-crud-auth --data-urlencode graph=http://example.org
+```
+where http://example.org is the name of the graph.
 
-TODO
+The PUT method deletes the existing data in the graph before loading the new one. So, there is no need to manually delete old data before loading new data. However, virtuoso is slow at deleting millions of triples, resulting in an apparent freeze-up. So, it is preferable to handle such deletes manually using a lower-level SQL statement issued via the isql client.
+```
+$ isql
+SQL> DELETE FROM rdf_quad WHERE g = iri_to_id('http://example.org');
+```
+=> http://vos.openlinksw.com/owiki/wiki/VOS/VirtTipsAndTricksGuideDeleteLargeGraphs How can I delete graphs containing large numbers of triples from the Virtuoso Quad Store?
 
 ## Virtuoso.ini
 
