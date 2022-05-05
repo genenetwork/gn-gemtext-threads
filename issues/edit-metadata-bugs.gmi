@@ -22,7 +22,7 @@
 - [ ] I cannot change the "authors" text.
 
 # Notes
-### Wed 04 May 2022 23:02:12 EAT
+### Wed 04 May 2022 23:02:12 EAT (Munyoki)
 
 - Links should be in blue and highlighted ("History").
 
@@ -53,3 +53,57 @@
 - Typos: "Pre" is not a word on it's own. "Pre Publication" should be "Pre-publication". Key idea here is to correct typos when spotted, and not to leave this to the hands of the end-user.
 
 - Hints on certain forms. When the authors form is empty, the user is showed a grayed templet of the input format for the authors. For other form element, if feasible, collaborate with Rob to see what useful hints we can provide the end-user.
+
+### Thu 05 May 2022 10:56:53 EAT (Munyoki)
+
+A note about some confusion about PublicationId and PubMed_ID pointed out by Zach:
+
+```
+There might be some confusion over the "PublicationId" vs "PubMed_ID"; the
+latter isn't in PublishXRef and is only in the Publication table, while the
+former is the foreign key you mention in the PublishXRef table
+corresponding to Publication.Id
+
+What happened in this situation is that Suheeta tried to change the
+PubMed_ID for a trait when that PubMed_ID was already associated with a
+different PublicationId. So when the UPDATE query was executed, the DB
+threw an error because it was trying to assign a value to
+Publication.PubMed_ID that already existed in another Publication row.
+
+The change in logic I'm suggesting is that, if a user tries to change a
+trait's PubMed_ID to one that already exists (but is associated with a
+different Publication), its PublicationId (in the PublishXRef table) should
+be changed to the PublicationId already associated with that PubMed_ID
+(because there was likely a mistake at some point where a new Publication
+row was created when the trait should have been assigned to one that
+already existed). It probably also makes sense to remove the former
+Publication row if no other traits are associated with it.
+
+To maybe help clarify further, in this case there were at least 3 traits
+that should all have been associated with the same Publication. But
+instead, the situation was like this:
+BXD_18435 -> PublishXRef.PublicationId = 14055 / Publication.PubMed_ID =
+34552269
+BXD_18441 -> PublishXRef.PublicationId = 14055 / Publication.PubMed_ID =
+34552269
+BXD_21473 -> PublishXRef.PublicationId = 24165 (wrong, should have been
+14055, and when the user tries to set the PubMed_ID to 34552269 for 24165,
+the DB will throw an error since that value is already associated with
+14055)
+```
+
+Some useful feedback from Suheeta:
+
+```
+[...]
+
+Instead of just throwing an error message back about duplicates, it will be better if it recognizes the existing PubMed_ID and
+reverts to it.
+
+Also, [Rob's suggestion of] secondary PMID makes sense since many of our publications are now using the same or part of the same dataset. For individual BXD
+data, we have a case attribute that lists the samples used for a particular publication (KM20, SR21, KM21, EW21), would it make sense to link the respective
+PMIDs with those attributes? Like a clickable link that would take you to that publication in PubMed.
+
+[...]
+
+```
