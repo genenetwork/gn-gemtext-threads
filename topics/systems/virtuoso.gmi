@@ -60,38 +60,32 @@ sudo $(guix system container --network --share=/tmp/virtuoso-state=/var/lib/virt
 
 ### Running virtuoso by invoking it on the command line
 
-You may also choose to run virtuoso the traditional way by invoking it on the command line. Managing long-running instances started from the command line is messy. So, this method works best for temporary instances. Let's start from the virtuoso.ini file:
+You may also choose to run virtuoso the traditional way by invoking it on the command line. Managing long-running instances started from the command line is messy. So, this method works best for temporary instances.
 
+First, we create a new directory for virtuoso and change into it. We will run virtuoso from this directory, and virtuoso will store all its state in this directory.
 ```
-mkdir -p ~/services/virtuoso
-cd services/virtuoso
-cp /export/virtuoso/var/lib/virtuoso/db/virtuoso.ini .
+mkdir virtuoso
+cd virtuoso
 ```
+Then, we create a configuration file---virtuoso.ini. A basic configuration need only specify the ports to listen on. Here we specify port 8891 for the virtuoso server and port 8892 for the HTTP server that includes the SPARQL endpoint.
+```
+[Parameters]
+ServerPort = localhost:8891
 
-and edit it to change paths and ports - use non-priviliged ports(!). A full diff is below. Start the server in a screen or tmux (it may ask for creating ./db):
-
+[HTTPServer]
+ServerPort = localhost:8892
 ```
-penguin2:~/services/virtuoso$ ~/.config/guix/current/bin/guix shell virtuoso-ose glibc-locales
-penguin2:~/services/virtuoso [env]$ /gnu/store/9aqd4jmkafhkdm095hnmxpxzws3ym3wd-virtuoso-ose-7.2.5/bin/virtuoso-t +foreground +configfile virtuoso.ini
-03:34:50 HTTP/WebDAV server online at 28890
-03:34:50 Server online at 21111 (pid 57078)
+Finally, we start virtuoso.
 ```
-
-Now the server should respond to
-```
-curl localhost:28890/sparql
+virtuoso-t +foreground +configfile virtuoso.ini
 ```
 
-and the admin interface on
-```
-curl localhost:28890/conductor
-```
+Detailed documentation of the virtuoso configuration file format is at
+=> http://docs.openlinksw.com/virtuoso/dbadm/#configsrvstupfiles Virtuoso configuration file
+In particular, consider setting NumberOfBuffers and MaxDirtyBuffers as described at
+=> http://vos.openlinksw.com/owiki/wiki/VOS/VirtRDFPerformanceTuning Performance tuning virtuoso
 
-To use the service from your remote machine use ssh tunnels:
-```
-ssh -L 28890:127.0.0.1:28890 -f -N myname@penguin2.genenetwork.org
-```
-and surf to http://localhost:28890/conductor. A good time to change the default password (dba:dba)!
+For a working configuration file, you can also look at /export/virtuoso/var/lib/virtuoso/db/virtuoso.ini in penguin2.
 
 ## Loading data into virtuoso
 
@@ -131,25 +125,3 @@ $ isql
 SQL> DELETE FROM rdf_quad WHERE g = iri_to_id('http://example.org');
 ```
 => http://vos.openlinksw.com/owiki/wiki/VOS/VirtTipsAndTricksGuideDeleteLargeGraphs How can I delete graphs containing large numbers of triples from the Virtuoso Quad Store?
-
-## Virtuoso.ini
-
-TODO: Elaborate.
-
-What changed in $HOME/services/virtuoso/virtuoso.ini
-
-```
-+DatabaseFile                   = $HOME/services/virtuoso/db/virtuoso.db
-+ErrorLogFile                   = $HOME/services/virtuoso/db/virtuoso.log
-+LockFile                       = $HOME/services/virtuoso/db/virtuoso.lck
-+TransactionFile                = $HOME/services/virtuoso/db/virtuoso.trx
-+xa_persistent_file             = $HOME/services/virtuoso/db/virtuoso.pxa
-+DatabaseFile                   = $HOME/services/virtuoso/db/virtuoso-temp.db
-+TransactionFile                = $HOME/services/virtuoso/db/virtuoso-temp.trx
--ServerPort                     = 1111
-+ServerPort                     = 21111
-+NumberOfBuffers                = 340000
-+MaxDirtyBuffers                = 250000
-+ServerPort                     = 28890
-+ServerRoot                     = $HOME/services/virtuoso/vsp
-```
