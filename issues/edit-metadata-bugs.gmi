@@ -107,3 +107,17 @@ PMIDs with those attributes? Like a clickable link that would take you to that p
 [...]
 
 ```
+
+### Fri 06 May 2022 12:44:54 EAT (Munyoki)
+
+See:
+
+=> https://github.com/genenetwork/genenetwork2/pull/705
+
+- [X] Fix Typos
+- [X] Remove some form fields (Sequence)
+- [X] Adjust the size of some form fields
+- [X] Remove the "Reset" button
+- [X] Move the update history to it's own page
+- [X] Re-order form fields to match common citation styles
+- [-] Re-design the button for uploading the forms
