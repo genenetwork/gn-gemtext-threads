@@ -1,0 +1,20 @@
+# Developer links
+
+## Git repositories
+
+These are the git repositories currently in use.
+
+=> https://github.com/genenetwork/genenetwork2 GeneNetwork2
+=> https://github.com/genenetwork/genenetwork3 GeneNetwork3
+=> https://git.genenetwork.org/fredmanglis/gnqc_py Quality control
+=> https://git.genenetwork.org/guix-bioinformatics/guix-bioinformatics guix-bioinformatics Guix channel
+=> https://git.genenetwork.org/arunisaac/dump-genenetwork-database Code to dump GeneNetwork database to plain text
+=> https://git.genenetwork.org/arunisaac/genenetwork-machines Guix configuration for GeneNetwork machines
+
+## Continuous Integration/Deployment
+
+=> https://ci.genenetwork.org/jobs Continuous integration jobs
+=> https://gn2dev.genenetwork.org/ GeneNetwork2 continuous deployment
+=> https://gn3dev.genenetwork.org/ GeneNetwork3 continuous deployment
+=> https://ci.genenetwork.org/archive/dump-genenetwork-database/latest/sql.svg Continuous SQL schema visualization
+=> https://ci.genenetwork.org/archive/dump-genenetwork-database/latest/rdf.svg Continuous RDF schema visualization

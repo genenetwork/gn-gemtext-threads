@@ -38,6 +38,8 @@ to it."
   (ref :url "team.html" :text "Team agenda view")
   " | "
   (ref :url "topics.html" :text "Topics")
+  " | "
+  (ref :url "/topics/links.html" :text "Links")
   (numbered-issue-listing "~a unanswered issues"
                           (filter (lambda (issue)
                                     (and (issue-open? issue)
