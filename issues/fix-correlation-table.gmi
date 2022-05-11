@@ -1,0 +1,17 @@
+# Fix some display issue with the Correlation Results table (plus add column resizing)
+
+## Description
+
+The correlation table appears to have a couple issues:
+* When you click inside the table and scroll left/right with the arrow keys on your keyboard, headers become unaligned with the row contents (I can reproduce this)
+* Scrolling (presumably with the arrows keys as well?) sometimes skips rows (I haven't been able to reproduce this)
+
+Since these issues don't appear to occur in the search results table, I'm going to try to just use the same code for both tables (which includes adding resizable columns).
+
+## Tags
+
+* assigned: zsloan
+* priority: medium
+* type: bug, feature-enhancement
+* status: in progress
+* keywords: correlation, datatables, javascript
