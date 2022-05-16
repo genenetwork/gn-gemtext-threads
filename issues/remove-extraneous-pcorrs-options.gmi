@@ -1,0 +1,30 @@
+# Remove Extra Partial Correlations Options
+
+## Tags
+
+* assigned: fredm
+* keywords: partial correlations
+* status: in progress
+* type: bug
+* priority: high
+
+## Description
+
+When running the partial correlations feature against an entire dataset, the "Compute" element gives the following options, from which the user can select:
+
+* Genetic Correlation, Pearson's r
+* Genetic Correlation, Spearman's rho
+* SGO Literature Correlation
+* Tissue Correlation, Pearson's r
+* Tissue Correlation, Spearman's rho
+
+@robw was of the opinion that this is too much, and is entirely unnecessary, suggesting the provision of only two options:
+
+* Pearson's r
+* Spearman's rho
+
+This will have corresponding changes in code to get rid of all the code dealing with the differences that were inherent in the former 5 options.
+
+## Related Issues and Topics
+
+=> ../topics/gn1-migration-to-gn2/partial-correlations.gmi

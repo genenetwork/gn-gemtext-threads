@@ -28,7 +28,7 @@ That gives you a list of hits.
 
 * assigned: fredm, zsloan, robw
 * keywords: migration, partial correlations, GN3, GN1
-* status: in progress, deployed, under test
+* status: closed
 * type: feature-migration
 * priority: medium
 
