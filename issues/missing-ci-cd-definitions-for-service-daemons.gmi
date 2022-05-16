@@ -1,0 +1,22 @@
+# Missing CI/CD Definitions for "Service" Daemons
+
+## Tags
+* keywords: ci-cd, service daemons, GN3
+* status: pending
+* priority: medium
+* type: bug
+* assigned:
+
+## Description
+
+The ~sheepdog/worker.py~ in the GeneNetwork3 repository is used to launch long-running computations (mostly partial correlations at this point) in order to allow the API (and correspondingly, the GN2 UI) to be responsive to the user as the computation happens in the background.
+
+The CI/CD system in
+=> https://git.genenetwork.org/arunisaac/genenetwork-machines
+as of commit ~92a0cc4a43a82668afc9ce2f257bc3aa39c8c082~ is lacking definitions for such "service daemons" which means that the deployed service will have parts of itself not exactly working as expected.
+
+These definitions need to be added, such that the "service daemons" are started and stopped with the corresponding service for each commit that makes it to deployment.
+
+## TODOs
+
+* [ ] Assign yourself the issue when you pick it up
