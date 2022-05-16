@@ -1,0 +1,25 @@
+# Improve Menu Generation and Move it to GN3
+
+## Tags
+
+* assigned: fredm
+* type: bug
+* priority: medium
+* status: pending
+* keywords: menu generation, GN2, GN3
+
+## Description
+
+The
+=> https://github.com/genenetwork/genenetwork2/blob/testing/wqflask/wqflask/api/gen_menu.py#L6-L17 gen_dropdown_json
+function calls functions that make queries to the database within loops.
+
+This ruins the performance of the system significantly.
+
+The queries should be reworked, and the code should be moved to GN3 since it does database access.
+
+### TODOs
+
+* [ ] Rework the queries: don't run queries inside loops
+* [ ] Move the code to GN3
+* [ ] Provide results of function at an endpoint in GN3
