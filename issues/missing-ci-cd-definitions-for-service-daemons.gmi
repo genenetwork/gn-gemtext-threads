@@ -2,10 +2,10 @@
 
 ## Tags
 * keywords: ci-cd, service daemons, GN3
-* status: pending
+* status: closed
 * priority: medium
 * type: bug
-* assigned:
+* assigned: fredm
 
 ## Description
 
@@ -19,4 +19,11 @@ These definitions need to be added, such that the "service daemons" are started 
 
 ## TODOs
 
-* [ ] Assign yourself the issue when you pick it up
+* [x] Assign yourself the issue when you pick it up
+
+## Updates
+
+This has been made obsolete by the changes in the following commits
+=> https://github.com/genenetwork/genenetwork3/commit/a657b502e6ed46ea0887b5febb89a7408f163820
+=> https://github.com/genenetwork/genenetwork3/commit/0b161341083fdaad9bd187ea74bf4e8b9631eef4
+which eliminated the need for a daemon.
