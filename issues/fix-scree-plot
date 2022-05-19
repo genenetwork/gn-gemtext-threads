@@ -1,0 +1,13 @@
+# Scree Plot appears to be incorrect
+
+## Description
+
+Saunak Sen (a statistician here at UTHSC) mentioned that the scree plot on the correlation matrix page appears to be incorrect. I noticed that the results differ from GN1's Scree Plot, but I haven't verified with Saunak yet whether GN1's results are correct (if they are, it can be used to verify GN2's Scree Plot).
+
+## Tags
+
+* assigned: zsloan, alexm
+* type: bug
+* priority: medium
+* status: in-progress
+* keywords: correlations, pca, scree-plot
