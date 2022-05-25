@@ -5,7 +5,7 @@
 * assigned: bonfacem
 * type: bug
 * priority: high
-* status: in progress
+* status: closed
 * keywords: data uploads
 
 ### Introduction
@@ -22,3 +22,7 @@ gn2 the value still remains as "x" and isn't updated in the database.
 
 Also, ATM you cannot edit a value to "x", which is similar to removing
 a field in the database.
+
+#### Wed 25 May 2022 22:01:44 EAT
+
+This was fixed in #a4ae3a4d1bb680f8a0d38d37f8ceffe0f3a1b2a9 in GN3

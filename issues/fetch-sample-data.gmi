@@ -4,7 +4,7 @@
 
 * assigned: bonifacem
 * keywords: sample data, GN2, GN3
-* status: unclear
+* status: closed
 * priority: medium
 
 #### Fetch all Sample Data
@@ -67,3 +67,7 @@ currently hard-coded in webqtlUtil.py.
 
 [1] * Tasks, Guix
 :ARCHIVE: /home/bonface/Self/org/archive/2021_guix.org_archive::
+
+#### Wed 25 May 2022 21:59:52 EAT
+
+Closing this because this issue is stale. Also, the sample data is fetched just fine.

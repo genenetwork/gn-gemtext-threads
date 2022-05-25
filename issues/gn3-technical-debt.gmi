@@ -4,7 +4,7 @@
 
 * assigned: bonfacem
 * priority: medium
-* status: in progress
+* status: closed
 * type: enhancement
 * keywords: GN3
 
@@ -12,5 +12,9 @@
 
 Here I log some technical debt in gn3 as a checklist.
 
-- [ ] Clean up gn3/db/traits.py: Some of those functions are long, and
+- [x] Clean up gn3/db/traits.py: Some of those functions are long, and
   repetitive.  Also, we have no tests for most of them.
+
+#### Wed 25 May 2022 22:07:35 EAT
+
+This issue is too general in scope so I'm going ahead to close it.
