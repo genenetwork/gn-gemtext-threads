@@ -5,7 +5,7 @@
 * assigned: fredm
 * priority: medium
 * type: migration, feature-request
-* status: pending
+* status: closed, completed
 * keywords: partial correlations, datatables
 
 ## Description
@@ -22,3 +22,9 @@ GN1 allows this with the "Target" (Y) Column.
 
 * Add a new "Target (Y)" column to the table
 * Have all traits be targets by default, rather than ignored
+
+
+## Update: 2022-05-26
+
+This feature is complete, and has even made its way to
+=> https://genenetwork.org/ production
