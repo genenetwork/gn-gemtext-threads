@@ -1,0 +1,109 @@
+# Using PDB to Troubleshoot Python Code
+
+# Tags
+* date: 2022-05-17T00:00:00+03:00
+* draft: false
+* tags: debugging, python
+* author: bonfacem
+
+
+Historically, debugging GeneNetwork code has been a bit of a pain where you would have `print' and `logging' statements to help view offending code chunks.  This is not efficient, and we can do better!  One painful side-effect wrt logging worth mentioning is that our logs grow quite fast and we need to rotate them, atm manually:
+
+Here are examples of some logging that we do:
+
+```
+@app.route("/n/logout")
+def logout():
+    logger.debug("Logging out...")
+    UserSession().delete_session()
+    flash("You are now logged out. We hope you come back soon!")
+    response = make_response(redirect(url_for('index_page')))
+    # Delete the cookie
+    response.set_cookie(UserSession.user_cookie_name, '', expires=0)
+    return response
+```
+
+```
+@app.route("/tmp/<img_path>") def
+tmp_page(img_path): logger.info("In tmp_page")
+logger.info("img_path:", img_path)
+logger.info(request.url) initial_start_vars =
+request.form logger.info("initial_start_vars:",
+initial_start_vars) imgfile =
+open(GENERATED_IMAGE_DIR + img_path, 'rb') imgdata
+= imgfile.read() imgB64 =
+base64.b64encode(imgdata) bytesarray =
+array.array('B', imgB64) return
+render_template("show_image.html",
+img_base64=bytesarray)
+```
+
+Earlier this year, one of our members introduced us to pudb---a graphical based logging utility for Python.  I have gravitated away from this because it adds yet another dependency in our toolchain; in addition to it being ncurses-based, lacking guarantees in how it behaves in different terminals.  It also lacks support in different OS'es, thereby forcing end-users to SSH into one of our remote servers to troubleshoot.
+
+Python PDB ships with Python, and as such, works well in different setups. There are multiple ways of getting into a pdb session, the easiest being to set a `breakpoint()'. Assume we are trouble-shooting this function:
+
+```
+from typing import List
+
+
+def avg(numbers: List) -> int:
+    return sum(numbers)/len(numbers)
+
+
+print(avg([20, 21]))
+```
+
+This will fail for a list that contains non-integer value, say a list containing ["1", "2"]. The first step to troubleshoot, assuming we have no test would be to set a `breakpoint()' as such:
+
+```
+from typing import List
+
+
+def avg(numbers: List) -> int:
+    breakpoint()
+    return sum(numbers)/len(numbers)
+
+
+print(avg([20, "21"]))
+```
+
+Useful commands while you are in pdb that are useful:
+
+* "l ." --- show where you are in the context
+* "n" --- go to the next line
+* "s" --- step into a function
+* "c" --- continues execution until a breakpoint is encountered
+* "p" --- print a variable
+* "pp" --- pretty print a variable
+
+When we step into our debug session, we can view all the variables in a local scope using: "locals()"; and the global scope using: "globals()". With this information, we can quickly work out where our problem is by just inspecting the variables we have at hand.
+
+Another cool trick/pattern when debugging is to tell pdb to jump to where the error occured in a try/except block using `import pdb; pdb.post_mortem()' like so:
+
+```
+from typing import List
+
+
+def avg(numbers: List) -> int:
+    try:
+        return sum(numbers)/len(numbers)
+    except Exception:
+        import pdb; pdb.post_mortem()
+
+
+print(avg([20, "21"]))
+```
+
+With regards to testing, pdb is also integrated with test-runners. To use pdb with pytest, simply run:
+
+,----
+| pytest --pdb
+`----
+
+
+### Useful Tutorials
+
+To learn more about pdb, you can check out:
+
+=> https://www.youtube.com/watch?v=0LPuG825eAk python debugger crash course: pdb/breakpoint
+=> https://www.youtube.com/watch?v=s8Nx2frW4ps postmortem debugging in python
