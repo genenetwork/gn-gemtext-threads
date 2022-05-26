@@ -1,11 +1,8 @@
 # Using PDB to Troubleshoot Python Code
 
 # Tags
-* date: 2022-05-17T00:00:00+03:00
-* draft: false
-* tags: debugging, python
-* author: bonfacem
-
+* type: documentation
+* keywords: debugging, python
 
 Historically, debugging GeneNetwork code has been a bit of a pain where you would have `print' and `logging' statements to help view offending code chunks.  This is not efficient, and we can do better!  One painful side-effect wrt logging worth mentioning is that our logs grow quite fast and we need to rotate them, atm manually:
 
