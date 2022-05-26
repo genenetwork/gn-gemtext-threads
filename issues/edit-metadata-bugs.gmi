@@ -15,11 +15,11 @@
 
 => https://pubmed.ncbi.nlm.nih.gov/24640950/
 
-- [ ] I am unable to add the Abstract for the paper
+- [X] I am unable to add the Abstract for the paper
 
-- [ ] There is no place to enter the volume number of the journal. Please see GN1.
+- [X] There is no place to enter the volume number of the journal. Please see GN1.
 
-- [ ] I cannot change the "authors" text.
+- [X] I cannot change the "authors" text.
 
 # Notes
 ### Wed 04 May 2022 23:02:12 EAT (Munyoki)
