@@ -1,0 +1,19 @@
+# Genotype database
+
+GeneNetwork has been using a plain text file format to store genotypes. We are now moving to a fast read-optimized genotype database file format built on LMDB.
+=> https://www.symas.com/lmdb Lightning Memory-Mapped Database
+
+To convert a plain text GeneNetwork genotype file `BXD.geno` to a genodb genotype database `bxd`, use the `genodb` CLI tool from cl-gn like so.
+```
+./genodb import BXD.geno bxd
+```
+=> https://git.genenetwork.org/GeneNetwork/cl-gn cl-gn
+
+genenetwork3 includes a tiny Python library to read the built genodb database. Here is a sample invocation reading row 17 from a database at `/tmp/bxd`.
+```
+from gn3 import genodb
+
+with genodb.GenotypeDatabase('/tmp/bxd') as db:
+    matrix = db.matrix()
+    print(matrix.row(17))
+```
