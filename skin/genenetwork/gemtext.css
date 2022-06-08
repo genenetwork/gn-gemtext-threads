@@ -8,7 +8,8 @@ body {font-family: Palatino, 'Palatino Linotype', serif; color:black; font-size:
 
 div.banner { background-color: #336699; color: white ; margin: -10px; }
 div.menu { background-color: #d5d5d5; }
-div.edit { text-align: right; }
+div.uri:before { content: "⇒"; }
+
 div.footer { color: #336699; background-color: white }
 div.gemini { text-align: right; font-size: 75% }
 div.text {  font-family: Sans-Serif; }
