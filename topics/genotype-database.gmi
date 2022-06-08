@@ -9,11 +9,12 @@ To convert a plain text GeneNetwork genotype file `BXD.geno` to a genodb genotyp
 ```
 => https://git.genenetwork.org/GeneNetwork/cl-gn cl-gn
 
-genenetwork3 includes a tiny Python library to read the built genodb database. Here is a sample invocation reading row 17 from a database at `/tmp/bxd`.
+genenetwork3 includes a tiny Python library to read the built genodb database. Here is a sample invocation reading row 17 and column 13 from a database at `/tmp/bxd`.
 ```
 from gn3 import genodb
 
 with genodb.GenotypeDatabase('/tmp/bxd') as db:
     matrix = db.matrix()
     print(matrix.row(17))
+    print(matrix.column(13))
 ```
