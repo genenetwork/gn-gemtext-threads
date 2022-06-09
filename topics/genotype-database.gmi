@@ -13,8 +13,8 @@ genenetwork3 includes a tiny Python library to read the built genodb database. H
 ```
 from gn3 import genodb
 
-with genodb.GenotypeDatabase('/tmp/bxd') as db:
-    matrix = db.matrix()
-    print(matrix.row(17))
-    print(matrix.column(13))
+with genodb.open('/tmp/bxd') as db:
+    matrix = genodb.matrix(db)
+    print(genodb.row(matrix, 17))
+    print(genodb.column(matrix, 13))
 ```
