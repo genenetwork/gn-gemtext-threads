@@ -39,6 +39,8 @@ to it."
   " | "
   (ref :url "topics.html" :text "Topics")
   " | "
+  (ref :url "https://ci.genenetwork.org" :text "Continuous Integration")
+  " | "
   (ref :url "/topics/links.html" :text "Links")
   (numbered-issue-listing "~a unanswered issues"
                           (filter (lambda (issue)
