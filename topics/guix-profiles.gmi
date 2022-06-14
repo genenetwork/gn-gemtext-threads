@@ -1,0 +1,29 @@
+# Guix profiles for development
+
+## Executive summary
+
+Put the following into a channels.scm file.
+```
+(list (channel
+       (name 'gn-bioinformatics)
+       (url "/home/arun/Projects/genenetwork/guix-bioinformatics")
+       (branch "master")))
+```
+Build a profile using
+```
+$ guix pull -C channels.scm -p ~/.guix-extra-profiles/genenetwork
+```
+Activate the newly built profile using
+```
+$ export GUIX_PROFILE=~/.guix-extra-profiles/genenetwork
+$ . $GUIX_PROFILE/.guix-extra-profiles/genenetwork
+```
+Hack away on any GeneNetwork repository as usual. Now, any development environment you create with `guix shell` will be identical to what others on the team and the continuous integration system are using. This development environment is guaranteed to not break regardless of the latest changes to Guix upstream or other externalities.
+
+## Rationale
+
+From time to time, updates to upstream Guix break our guix-bioinformatics channel. As a result, `guix pull` breaks and our work comes to a standstill for a few days until this can be fixed. While it is important to gradually move towards the latest and greatest, we would like to avoid being at the mercy of externalities and would prefer to update in a more controlled way without interrupting everyone's work.
+
+To this end, we hard-code the guix-bioinformatics channel to depend on a specific commit of upstream Guix. This is why the recommended channels.scm file above does not include a %default-guix-channel. However, this comes with the drawback that your entire system will be stuck at that specific commit of upstream Guix. You will not be able to move forward until we decide to update the hard-coded upstream Guix commit in guix-bioinformatics. You may have other work that needs the latest Guix and this might not be what you want. So, we highly recommend using a separate `guix pull` profile specifically for GeneNetwork work, as described above.
+
+This scheme also comes with the added bonus that all members on the team and the continuous integration system will be using exactly the same Guix.
