@@ -72,15 +72,20 @@ In particular, consider setting NumberOfBuffers and MaxDirtyBuffers as described
 
 For a working configuration file, you can also look at /export/virtuoso/var/lib/virtuoso/db/virtuoso.ini in penguin2.
 
-### Running Queries using isql
+### Running SPARQL Queries using isql
 
-Assuming your "server-port" is 8891, you can access it inside isql by running:
+The straight-forward way of running SPARQL queries
+is using the web-interface:
+
+=> http://localhost:<server-port>/sparql/
+
+To use a CLI tool, you can utilise isql by running:
 
 ```
-guix shell virtuoso-ose -- isql 8891
+guix shell virtuoso-ose -- isql <server-port>
 ```
 
-Queries look like:
+Queries look within isql look like:
 
 ```
 SQL> SPARQL SELECT * WHERE {?s ?p ?o};
