@@ -66,6 +66,20 @@ In particular, consider setting NumberOfBuffers and MaxDirtyBuffers as described
 
 For a working configuration file, you can also look at /export/virtuoso/var/lib/virtuoso/db/virtuoso.ini in penguin2.
 
+### Running Queries using isql
+
+Assuming your "server-port" is 8891, you can access it inside isql by running:
+
+```
+guix shell virtuoso-ose -- isql 8891
+```
+
+Queries look like:
+
+```
+SQL> SPARQL SELECT * WHERE {?s ?p ?o};
+```
+
 ## Set passwords for virtuoso users
 
 After running virtuoso, you will want to change the default password of the `dba` user. The default password of the `dba` user is `dba`. You can change passwords using the isql command-line client. See
