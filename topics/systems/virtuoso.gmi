@@ -44,6 +44,8 @@ When running the above command, you will be given the container's PID. Should yo
 sudo nsenter -t PID -m -p -i -u (readlink -f $HOME/.guix-profile/bin/zsh)
 ```
 
+Also, in this set-up, note that the conductor web interface is not supported in the GUIX Service that's part of guix-bioinformatics. It isn't required for using virtuoso as a SPARQL server and only adds to the confusion.
+
 ### Running virtuoso by invoking it on the command line
 
 You may also choose to run virtuoso the traditional way by invoking it on the command line. Managing long-running instances started from the command line is messy. So, this method works best for temporary instances.
