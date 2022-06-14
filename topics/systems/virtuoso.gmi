@@ -37,6 +37,12 @@ You can write the above configuration to a file, say virtuoso-os.scm, build a co
 sudo $(guix system container --network --share=/tmp/virtuoso-state=/var/lib/virtuoso virtuoso-os.scm)
 ```
 
+When running the above command, you will be given the container's PID. Should you want to inspect the container, you can run:
+
+```
+sudo nsenter -t PID -m -p -i -u (readlink -f $HOME/.guix-profile/bin/zsh)
+```
+
 ### Running virtuoso by invoking it on the command line
 
 You may also choose to run virtuoso the traditional way by invoking it on the command line. Managing long-running instances started from the command line is messy. So, this method works best for temporary instances.
