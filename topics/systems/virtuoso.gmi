@@ -21,6 +21,7 @@ Here is a basic guix system configuration that runs virtuoso listening on port 8
   (locale "en_US.utf8")
   (bootloader (bootloader-configuration
                (bootloader grub-bootloader)
+	       ;; It doesn't matter what "/dev/sdX" is
                (targets (list "/dev/sdX"))))
   (file-systems %base-file-systems)
   (users %base-user-accounts)
