@@ -41,6 +41,8 @@
                           (copier "style.css"))
                     (file "index.html"
                           (skribe-exporter "index.skb"))
+                    (file "closed.html"
+                          (skribe-exporter "closed.skb"))
                     (file "team.html"
                           (skribe-exporter "team.skb"))
                     (file "topics.html"

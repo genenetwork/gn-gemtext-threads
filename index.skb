@@ -58,5 +58,11 @@ to it."
                                          (not (forgotten-issue? issue))
                                          (not (unanswered-issue? issue))))
                                   (issues)))
-  (numbered-issue-listing "~a closed issues"
-                          (remove issue-open? (issues))))
+  (ref :url "/closed.html"
+       :text (format "~a closed issues"
+                     (fold (lambda (issue result)
+                             (if (issue-open? issue)
+                                 result
+                                 (1+ result)))
+                           0
+                           (issues)))))
