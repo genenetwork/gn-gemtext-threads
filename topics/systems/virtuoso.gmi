@@ -39,9 +39,12 @@ sudo $(guix system container --network --share=/tmp/virtuoso-state=/var/lib/virt
 ```
 
 When running the above command, you will be given the container's PID. Should you want to inspect the container, you can run:
-
 ```
 sudo nsenter -at PID /run/current-system/profile/bin/bash
+```
+If you have only one shepherd process running on your system, you may use the following quick hack to get the PID.
+```
+sudo nsenter -at $(pgrep shepherd) /run/current-system/profile/bin/bash
 ```
 
 Also, in this set-up, note that the conductor web interface is not supported in the GUIX Service that's part of guix-bioinformatics. It isn't required for using virtuoso as a SPARQL server and only adds to the confusion.
