@@ -20,19 +20,20 @@ parralel computation
 
 * [X] implementation of basic pearson and spearman correlation in rust
 
-* [X] add unittests
+* [X] add unittests and benchmarks
 
 * [X] loading datasets;format
+
+* [X] package the library as a guix package
+
 
 * [ ] add parralel computation
 
 
-* [ ] code optimization: modularization,lazy_loading,iterator,
+* [ ] code optimization and minor fixes
 
 
-* [ ] python support:importing rust code from python as a lib
-
-* [ ]  gn2 integration
+* [ ]  gn2 integration(WIP)
 
 
 
@@ -40,7 +41,23 @@ parralel computation
 
 ## Notes
 
+You can call the lib as an external process from any language or directly call
+it in a rust cargo
+
+
+
 code can be found here:
 
 => https://github.com/Alexanderlacuna/correlation_rust.git
+
+
+added a documentation for correlation rust
+
+=> https://github.com/Alexanderlacuna/correlation_rust/blob/main/README.md
+
+
+PR for integrating to genenetwork:
+
+=> https://github.com/genenetwork/genenetwork3/pull/93
+
 
