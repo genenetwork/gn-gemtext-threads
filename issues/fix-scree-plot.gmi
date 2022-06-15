@@ -4,6 +4,8 @@
 
 Saunak Sen (a statistician here at UTHSC) mentioned that the scree plot on the correlation matrix page appears to be incorrect. I noticed that the results differ from GN1's Scree Plot, but I haven't verified with Saunak yet whether GN1's results are correct (if they are, it can be used to verify GN2's Scree Plot).
 
+See [Jupyter notebook gist](https://gist.github.com/sens/195214c1833d435b3406fa55abf2b6f4) on a demo on what it should look like using the GN API.
+
 ## Tags
 
 * assigned: zsloan, alexm
