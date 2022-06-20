@@ -2,34 +2,36 @@
 
 This is a collection of UI issues mentioned by Rob in e-mails.
 
-# Tags
+## Tags
 
-* assigned: zachs, ethan, bonfacem
+* type: ui
 * keywords: user-interface
+* assigned: zachs, ethan, bonfacem
 * status: in-progress
 * priority: low
 
-#TODO
+## TODO
 
 - [X] Change following drop-down menu items:
 * Diversity Outbred -> DO Gatti Blood n=742 (2014, no mapping)
 * Diversity Outbred Lung -> DO Boon Lung Infection n=194 (Apr22)
 * Heterogeneous Stock Collaborative Cross -> DO Hitzemann Striatum mRNA  n=90 (Feb11, no mapping)
-- [ ] Fix issue with one sample not being in the DOL .geno file
+
+- [-] Fix issue with one sample not being in the DOL .geno file
 
 - [X] Add group code to mapping loading page metadata - 7bb9067585616f2759add72c668d666c9ac73aa8
 
 - [X] Move mapping figure options to the left - 059bd7f954bf08a6e1d87b2cde40fe231fbc0be3
 
-- [ ] Remove error bars from bar chart when there's no SE
+- [-] Remove error bars from bar chart when there's no SE
 
-- [ ] Add N in white text to bar chart when applicable
+- [-] Add N in white text to bar chart when applicable
 
-- [ ] Change High P in Collection to Peak LOD or Peak –logP.
+- [-] Change High P in Collection to Peak LOD or Peak –logP.
 
-- [ ] Make Collection and Search tables the same style (at least as much as possible; alignment should at least be the same)
+- [-] Make Collection and Search tables the same style (at least as much as possible; alignment should at least be the same)
 
-- [ ] Fix Partial Correlation button when screen is narrow
+- [-] Fix Partial Correlation button when screen is narrow
 
 ### Mon 20 Jun 2022 14:42:09 EAT
 
