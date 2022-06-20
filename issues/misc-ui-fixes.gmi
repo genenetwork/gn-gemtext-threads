@@ -4,10 +4,10 @@ This is a collection of UI issues mentioned by Rob in e-mails.
 
 # Tags
 
-* assigned: zachs
+* assigned: zachs, ethan, bonfacem
 * keywords: user-interface
-* status: in progress
-* priority: high
+* status: in-progress
+* priority: low
 
 #TODO
 
