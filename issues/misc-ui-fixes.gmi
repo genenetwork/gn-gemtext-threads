@@ -30,3 +30,11 @@ This is a collection of UI issues mentioned by Rob in e-mails.
 - [ ] Make Collection and Search tables the same style (at least as much as possible; alignment should at least be the same)
 
 - [ ] Fix Partial Correlation button when screen is narrow
+
+### Mon 20 Jun 2022 14:42:09 EAT
+
+@Ethan is integrating is integrating this:
+
+=> https://github.com/validator/validator
+
+and he'll be submit a series of PRs to clean up the HTML on all of the pages. There's a lot of render time performance to be had (probably hundreds of ms in the worst cases) just by cleaning up the HTML.
