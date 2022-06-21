@@ -19,3 +19,67 @@ with genodb.open('/tmp/bxd') as db:
     print(genodb.row(matrix, 17))
     print(genodb.column(matrix, 13))
 ```
+
+The rest of this document describes the design and layout of genodb.
+
+## Database layout
+
+genodb is an immutable functional database built on the LMDB key-value store. An immutable database may sound like an oxymoron, but is indeed possible and practical. More precisely, in an immutable database, values once put in are never mutated. When a value needs to be changed, a new modified copy of the value is created. The old value is never touched. This immutability means that we can happily pass along and operate on values without worrying whether it may have changed in the underlying database.
+
+To learn the basics of functional databases, see the following talks:
+
+=> https://github.com/matthiasn/talk-transcripts/blob/master/Hickey_Rich/FunctionalDatabase.md The Functional Database
+=> https://github.com/matthiasn/talk-transcripts/blob/master/Hickey_Rich/DeconstructingTheDatabase.md Deconstructing the Database
+
+Being a functional database, genodb can store multiple versions of the genotype matrix. These versions are stored efficiently on disk optimizing for disk usage. Two additional copies of the most recent version of the matrix are stored in read-optimized form for fast retrieval.
+
+### Encoding
+
+LMDB maps octet vector keys to octet vector values. Any data we put into a LMDB database needs to be encoded to octets. genodb supports the following three data types with their respective encodings.
+
+- integer: little-endian encoded 64-bit unsigned integer
+- string: UTF-8 encoded without a terminating null character
+- octet vector: no encoding required, written verbatim
+
+### Blobs
+
+The basic unit of storage in the database is a blob. A BLOB is an octet vector PAYLOAD with associated METADATA. To store a blob in the database, we first compute its HASH, and then put PAYLOAD into the database as a <HASH, PAYLOAD> key-value pair. HASH is the SHA256 hash of BLOB (both the octet vector payload and its associated metadata). To compute HASH, we first serialize BLOB into a series of octets, and then hash the resulting octet vector. Precisely, if BLOB contains PAYLOAD and is associated with (KEY, VALUE),... pairs of metadata, then hash(BLOB) is given by
+```
+BLOB = blob(payload=PAYLOAD, metadata=[(KEY, VALUE),...])
+hash(BLOB) = SHA256(concatenate(length(BLOB.payload), BLOB.payload, [length(BLOB.metadata.KEY), BLOB.metadata.KEY, length(BLOB.metadata.VALUE), BLOB.metadata.VALUE],...))
+```
+This encoding of BLOB into octets is one-to-one. So, assuming there are no hash collisions, every BLOB is uniquely mapped to a HASH.
+
+Each piece (KEY, VALUE) of METADATA is stored as a <concatenate(HASH, ":", KEY), VALUE> key-value pair. KEY is a string identifying that piece of metadata. VALUE is a string, an integer, or an octet vector representing the value of that piece of metadata, and is encoded accordingly.
+
+### Matrix storage
+
+We store every version of the genotype matrix in the database, each version as a blob. To construct a MATRIX blob, we first store each ROW and COLUMN of the MATRIX as a separate blob. Each row and column is encoded into an octet vector with one octet corresponding to one element of the genotype matrix. Then, MATRIX is constructed as a blob whose octet vector is the concatenation of the hashes of all the row and column blobs. In addition, the number of rows and columns of MATRIX are also stored as metadata.
+```
+ROW = blob(payload=ROW-VECTOR, metadata=[])
+COLUMN = blob(payload=COLUMN-VECTOR, metadata=[])
+MATRIX = blob(payload=concatenate(concatenate(hash(ROW1), hash(ROW2),...), concatenate(hash(COLUMN1), hash(COLUMN2),...)), metadata=[("nrows", NUMBER-OF-ROWS), ("ncols", NUMBER-OF-COLUMNS)])
+```
+We repeat this for every version of the genotype matrix, and associate the concatenated hashes of all the matrix blobs with the "all-versions" key by mutation.
+```
+put(key="all-versions", value=concatenate(hash(MATRIX1), hash(MATRIX2),...))
+```
+
+### Fast storage for the current matrix
+
+We store two additional copies of the current matrix for fast retrieval. This read-optimized version of the matrix is, essentialy, the matrix in its row-major and column-major forms. The row-major form facilitates fast row reads, and the column-major form facilitates fast column reads. If MATRIX0 is the most recent matrix, then the blob CURRENT_MATRIX stored in the database is given by the following.
+```
+CURRENT_MATRIX = blob(concatenate(row-major-encoding(MATRIX0), row-major-encoding(transpose(MATRIX0))), metadata=[("matrix", hash(MATRIX0))])
+```
+The hash of CURRENT_MATRIX is associated with the "current" key by mutation.
+```
+put(key="current", value=hash(CURRENT_MATRIX))
+```
+
+### Design notes
+
+Note that though even though genodb is a functional immutable database, the setting of the "all-versions" and "current" keys are done by mutation. This is unavoidable. Even a functional database needs to have a tiny amount of state. The trick is to manage and isolate this state so that it is manageable.
+
+The attentive reader familiar with Guix might note the similarities between the layout of the genodb database and that of Guix's /gnu/store. Indeed, both genodb and the Guix store are functional databases. genodb happens to be realized on LMDB, and the Guix store happens to be realized on the filesystem.
+
+Storing both rows and columns of older versions of the genotype matrix is redundant since the columns can be entirely derived from the rows. This is a happenstance due to the evolution of the genotype database layout, and may be removed in the future. Indeed, in the future, the older versions of the matrix could also be stored in compressed form for more efficient storage.
