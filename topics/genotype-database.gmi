@@ -45,8 +45,11 @@ LMDB maps octet vector keys to octet vector values. Any data we put into a LMDB 
 
 The basic unit of storage in the database is a blob. A BLOB is an octet vector PAYLOAD with associated METADATA. To store a blob in the database, we first compute its HASH, and then put PAYLOAD into the database as a <HASH, PAYLOAD> key-value pair. HASH is the SHA256 hash of BLOB (both the octet vector payload and its associated metadata). To compute HASH, we first serialize BLOB into a series of octets, and then hash the resulting octet vector. Precisely, if BLOB contains PAYLOAD and is associated with (KEY, VALUE),... pairs of metadata, then hash(BLOB) is given by
 ```
-BLOB = blob(payload=PAYLOAD, metadata=[(KEY, VALUE),...])
-hash(BLOB) = SHA256(concatenate(length(BLOB.payload), BLOB.payload, [length(BLOB.metadata.KEY), BLOB.metadata.KEY, length(BLOB.metadata.VALUE), BLOB.metadata.VALUE],...))
+BLOB = blob(payload=PAYLOAD,
+            metadata=[(KEY, VALUE),...])
+hash(BLOB) = SHA256(concatenate(length(BLOB.payload), BLOB.payload,
+                                [length(BLOB.metadata.KEY), BLOB.metadata.KEY,
+                                 length(BLOB.metadata.VALUE), BLOB.metadata.VALUE],...))
 ```
 This encoding of BLOB into octets is one-to-one. So, assuming there are no hash collisions, every BLOB is uniquely mapped to a HASH.
 
@@ -58,22 +61,29 @@ We store every version of the genotype matrix in the database, each version as a
 ```
 ROW = blob(payload=ROW-VECTOR, metadata=[])
 COLUMN = blob(payload=COLUMN-VECTOR, metadata=[])
-MATRIX = blob(payload=concatenate(concatenate(hash(ROW1), hash(ROW2),...), concatenate(hash(COLUMN1), hash(COLUMN2),...)), metadata=[("nrows", NUMBER-OF-ROWS), ("ncols", NUMBER-OF-COLUMNS)])
+MATRIX = blob(payload=concatenate(concatenate(hash(ROW1), hash(ROW2),...),
+                                  concatenate(hash(COLUMN1), hash(COLUMN2),...)),
+              metadata=[("nrows", NUMBER-OF-ROWS),
+                        ("ncols", NUMBER-OF-COLUMNS)])
 ```
 We repeat this for every version of the genotype matrix, and associate the concatenated hashes of all the matrix blobs with the "all-versions" key by mutation.
 ```
-put(key="all-versions", value=concatenate(hash(MATRIX1), hash(MATRIX2),...))
+put(key="all-versions",
+    value=concatenate(hash(MATRIX1), hash(MATRIX2),...))
 ```
 
 ### Fast storage for the current matrix
 
 We store two additional copies of the current matrix for fast retrieval. This read-optimized version of the matrix is, essentialy, the matrix in its row-major and column-major forms. The row-major form facilitates fast row reads, and the column-major form facilitates fast column reads. If MATRIX0 is the most recent matrix, then the blob CURRENT_MATRIX stored in the database is given by the following.
 ```
-CURRENT_MATRIX = blob(concatenate(row-major-encoding(MATRIX0), row-major-encoding(transpose(MATRIX0))), metadata=[("matrix", hash(MATRIX0))])
+CURRENT_MATRIX = blob(payload=concatenate(row-major-encoding(MATRIX0),
+                                          row-major-encoding(transpose(MATRIX0))),
+                      metadata=[("matrix", hash(MATRIX0))])
 ```
 The hash of CURRENT_MATRIX is associated with the "current" key by mutation.
 ```
-put(key="current", value=hash(CURRENT_MATRIX))
+put(key="current",
+    value=hash(CURRENT_MATRIX))
 ```
 
 ### Design notes
