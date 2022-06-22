@@ -10,6 +10,15 @@ body {
     font-size: large;
 }
 
+pre {
+    background-color: lightyellow;
+    font-size: 1.2em;
+    font-weight: bold;
+    border-width: 0.1em;
+    border-style: outset;
+    padding: 0.5em;
+}
+
 .tag {
     padding: 0.25em 0.4em;
     color: white;
