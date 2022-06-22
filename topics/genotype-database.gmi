@@ -37,9 +37,9 @@ Being a functional database, genodb can store multiple versions of the genotype 
 
 LMDB maps octet vector keys to octet vector values. Any data we put into a LMDB database needs to be encoded to octets. genodb supports the following three data types with their respective encodings.
 
-- integer: little-endian encoded 64-bit unsigned integer
-- string: UTF-8 encoded without a terminating null character
-- octet vector: no encoding required, written verbatim
+* integer: little-endian encoded 64-bit unsigned integer
+* string: UTF-8 encoded without a terminating null character
+* octet vector: no encoding required, written verbatim
 
 ### Blobs
 
