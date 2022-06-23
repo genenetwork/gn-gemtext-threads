@@ -74,3 +74,29 @@ Can there be zero values, i.e.
 * "0.000000, "00.00000000", ... etc. for standard error files
 
 in the files?
+
+
+## Update 2022-06-23
+
+The rewrite of the data verification part is mostly done.
+
+@Arthur hints that the next step is the quality-control proper, where, if the file(s) pass the verification stage, the user can attach some extra information to the data, such as:
+* Species
+* Group
+* Platform
+* Study ID
+etc. that will be used when adding the data to the database, to link it properly.
+
+### Answers to Questions
+
+#### Question 01
+
+The first field will be treated as text, and will not undergo any verification
+
+#### Question 02
+
+The line-endings will be handled when the data is being entered into the database. This means there is no need to handle it in this application.
+
+#### Question 03
+
+There can be zero values, and they have been handled in the code.
