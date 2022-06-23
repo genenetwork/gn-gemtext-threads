@@ -5,7 +5,7 @@
 * assigned: fredm
 * type: bug
 * priority: medium
-* status: in progress
+* status: closed, completed
 * keywords: menu generation, GN2, GN3
 
 ## Description
@@ -21,7 +21,7 @@ The queries should be reworked, and the code should be moved to GN3 since it doe
 ### TODOs
 
 * [ ] Rework the queries: don't run queries inside loops
-* [ ] Move the code to GN3
+* [x] Move the code to GN3
 * [x] Provide results of function at an endpoint in GN3
 
 ## Update: 2022-05-26
@@ -33,3 +33,14 @@ Commits
 enable the fetching of the menu items from GN3. They also report in case of any errors fetching the data from the server.
 
 There is still a need to remove the code from GN2 but it might be a while since it is seemingly used in more than one place.
+
+## Update: 2022-06-23
+
+Commits
+=> https://github.com/genenetwork/genenetwork3/commit/236d9236c794d7870258eab9e087f990c557462a
+=> https://github.com/genenetwork/genenetwork2/commit/98367087f262c0d0cdd7aae691989f90f4d40dcc
+move the menu generation code to GN3, and have GN2 only handle the display.
+
+I have also made changes to some of the functions to optimise the queries to the database.
+
+The remaining functions have proved really difficult to detangle and optimise, so for now I will mark this issue as done, until such a time as the performance of the menu proves to be unnacceptably slow.
