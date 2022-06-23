@@ -28,3 +28,14 @@ This will have corresponding changes in code to get rid of all the code dealing 
 ## Related Issues and Topics
 
 => ../topics/gn1-migration-to-gn2/partial-correlations.gmi
+
+## Update: 2022-06-23
+
+Commits
+=> https://github.com/genenetwork/genenetwork2/commit/42e7643d6bd2e3b26ca35a91c73bfd65e95bb386
+=> https://github.com/genenetwork/genenetwork3/commit/7f66bb029322a06b52359abf8836e158afaa6755
+enable this simplification of the partial correlation options.
+
+As of 2022-06-23T07:06+03:00UTC the changes have not made it to
+=> https://genenetwork.org/ production
+yet, so I am leaving this open for now
