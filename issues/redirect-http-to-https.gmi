@@ -3,9 +3,19 @@
 ## Tags
 * assigned: ??
 * keywords: http, https
-* status: unclear
+* status: closed, completed
 * priority: medium
 
 All http://genenetwork.org URIs should redirect to https://genenetwork.org URIs. This should be done on the HTTP server (nginx) config. Currently, if the user enters the HTTP site on their browser, they stay on the HTTP site.
 
 > Note the issue is that we get errors on an automatic redirect. Needs some work.
+
+## Update 2022-06-24
+
+It seems to me (fredm) that this has been dealt with, seeing as all the genenetwork links I'm aware of
+=> http://genenetwork.org
+=> http://issues.genenetwork.org
+=> http://ci.genenetwork.org
+all redirect to the https version
+
+I am closing this as completed
