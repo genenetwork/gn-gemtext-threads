@@ -21,10 +21,6 @@
 
 (tissue-configuration
  #:project "GeneNetwork issue tracker"
- #:issue-files (remove (lambda (filename)
-                         (string=? (basename filename)
-                                   "README.gmi"))
-                       (gemtext-files-in-directory "issues"))
  #:aliases '(("Alexander Kabui" "Alexander" "alex" "alexk")
              ("Arun Isaac" "aruni")
              ("BonfaceKilz" "Bonface Kilz" "bonfacem")
@@ -36,6 +32,14 @@
              ("Arthur Centeno" "acenteno")
              ("jgart")
              ("Zachary Sloan" "zach" "zachs" "zsloan"))
+ #:indexed-documents (append (map (lambda (filename)
+                                    (indexed-document (cut read-gemtext-issue filename)
+                                                      (string-append "/" (replace-extension filename "html"))))
+                                  (gemtext-files-in-directory "issues"))
+                             (map (lambda (filename)
+                                    (indexed-document (cut read-gemtext-document filename)
+                                                      (string-append "/" (replace-extension filename "html"))))
+                                  (gemtext-files-in-directory "topics")))
  #:web-css "/style.css"
  #:web-files (cons* (file "style.css"
                           (copier "style.css"))
