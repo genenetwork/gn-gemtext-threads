@@ -43,27 +43,18 @@
  #:web-css "/style.css"
  #:web-files (cons* (file "style.css"
                           (copier "style.css"))
-                    (file "index.html"
-                          (skribe-exporter "index.skb"))
-                    (file "closed.html"
-                          (skribe-exporter "closed.skb"))
-                    (file "team.html"
-                          (skribe-exporter "team.skb"))
-                    (file "topics.html"
-                          (skribe-exporter "topics.skb"))
-                    (append (tag-pages)
-                            (filter-map (lambda (filename)
-                                          (cond
-                                           ((and (string-suffix? ".gmi" filename)
-                                                 (not (string=? (basename filename)
-                                                                "README.gmi")))
-                                            (file (replace-extension filename "html")
-                                                  (gemtext-exporter filename
-                                                                    (genenetwork-gemtext-reader filename))))
-                                           ((or (string-suffix? ".jpg" filename)
-                                                (string-suffix? ".png" filename)
-                                                (string-suffix? ".svg" filename))
-                                            (file filename
-                                                  (copier filename)))
-                                           (else #f)))
-                                        (git-tracked-files)))))
+                    (filter-map (lambda (filename)
+                                  (cond
+                                   ((and (string-suffix? ".gmi" filename)
+                                         (not (string=? (basename filename)
+                                                        "README.gmi")))
+                                    (file (replace-extension filename "html")
+                                          (gemtext-exporter filename
+                                                            (genenetwork-gemtext-reader filename))))
+                                   ((or (string-suffix? ".jpg" filename)
+                                        (string-suffix? ".png" filename)
+                                        (string-suffix? ".svg" filename))
+                                    (file filename
+                                          (copier filename)))
+                                   (else #f)))
+                                (git-tracked-files))))
