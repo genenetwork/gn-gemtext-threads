@@ -42,32 +42,26 @@ guix shell tissue
 
 List all open issues.
 ```
-tissue list
+tissue search
 ```
-
-Only list open issues assigned to pjotrp.
+Search for open issues matching "genotype database".
 ```
-tissue list --assigned=pjotrp
+tissue search genotype database
 ```
-
-Print an issue, say issue 7, on the command line.
+Search for closed issues matching "genotype database".
 ```
-tissue show 7
+tissue search '(genotype database) AND is:closed'
 ```
-
-Edit an issue, say issue 9. This opens the relevant gemtext file in your favourite editor as defined by the EDITOR environment variable.
+Search for open issues assigned to pjotrp.
 ```
-tissue edit 9
+tissue search assigned:pjotrp
 ```
-
-List issues that were created or updated in the last 3 days, in the last week or month respectively. The --since argument is passed directly to `git log`. Therefore, tissue understands any --since argument that `git log` understands.
+Search for open issues tagged gemma.
 ```
-tissue news --since='3 days'
-tissue news --since='1 week'
-tissue news --since='1 month'
+tissue search tag:gemma
+tissue search keyword:gemma
 ```
-
-To learn more about tissue, please use the built-in help feature.
+Search for closed issues tagged low.
 ```
-tissue --help
+tissue search tag:low AND is:closed
 ```
