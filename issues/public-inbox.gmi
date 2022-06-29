@@ -1,0 +1,7 @@
+# Public inbox
+
+Set up a public inbox based mailing list for genenetwork. Among other things, this could be used to review patches via the email based git workflow. Preferably, set up this public inbox as part of guix-forge.
+
+=> https://public-inbox.org/README.html public-inbox
+
+* assigned: aruni
