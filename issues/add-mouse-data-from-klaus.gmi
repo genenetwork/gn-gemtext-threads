@@ -63,3 +63,22 @@ dat10
 50   BXD 6_5  89.03000  d1
 [...]
 ```
+### Notes: Thu 30 Jun 2022 21:42:39 EAT
+Some comments from Zach:
+
+```
+I think that Klaus is referring to what we store in GN as phenotype traits.
+So you'd have a separate trait page for each time series "step".'
+
+He's probably referring to these traits:
+Day 1 - https://genenetwork.org/show_trait?trait_id=13005&dataset=BXDPublish
+Day 2 - https://genenetwork.org/show_trait?trait_id=13006&dataset=BXDPublish
+And continues from there - you can see them with the following search (with
+a few other random traits mixed in; I first just searched for "Schughart"
+in the global search) -
+https://genenetwork.org/gsearch?type=phenotype&terms=H1N1
+
+ You're correct about there not being a (good) way to deal with something
+like animal number currently. The way we deal with something like that is
+to create a new group, with the "strain list" being a list of individuals.
+```
