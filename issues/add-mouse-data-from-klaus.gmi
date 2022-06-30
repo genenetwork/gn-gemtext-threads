@@ -1,0 +1,65 @@
+# Add mouse data-set
+
+## Tags
+
+* assigned: bonfacem
+* priority: high
+* status: in progress
+
+### Notes: Thu 30 Jun 2022 17:38:59 EAT
+
+Klaus' recently shared with us some mouse data.
+Here's a snip of how that looks like:
+
+```
+mouse_ID                   BW       day         strain	sex    inf_dose	animal.no.
+241	CC001_m_1	100	perc_d00	CC001	m	10 FFU	1
+242	CC001_m_1	98.56	perc_d03	CC001	m	10 FFU	1
+243	CC001_m_1	NA	perc_d13	CC001	m	10 FFU	1
+244	CC001_m_1	NA	perc_d12	CC001	m	10 FFU	1
+245	CC001_m_1	NA	perc_d10	CC001	m	10 FFU	1
+246	CC001_m_1	100.92	perc_d04	CC001	m	10 FFU	1
+247	CC001_m_1	98.08	perc_d01	CC001	m	10 FFU	1
+248	CC001_m_1	76.21	perc_d08	CC001	m	10 FFU	1
+249	CC001_m_1	93.22	perc_d05	CC001	m	10 FFU	1
+250	CC001_m_1	90.42	perc_d06	CC001	m	10 FFU	1
+```
+
+I've been working on adding the above to the GN2 database.
+The current challenge I have is that this data is Time Series---for the same strain, we have values indexed by time.
+Also, we tag data by "animal.no." and "sex".
+So for a male version of "CC001" with animal number 1, we have "CC001_m_1".
+This is a problem---storing TS data---that Rob/Suheeta have highlighted in the past.
+How do we go about doing this?
+Currently, in GN2 we store averages of the aforementioned data.
+This doesn't work out well for us: we don't have, AFAIU, a concept for "animal.no."
+I would suggest we use lmdb to store this data, and work out a way to integrate it with the rest of GN2---so that we display this info on the main page.
+
+### Notes: Thu 30 Jun 2022 21:39:15 EAT
+
+Here's how to extract the data from the provided data-set:
+
+Just extract the data for d1, d2, d3 separately and use each day as a separate data set.
+
+```
+> unique(dat2$day)
+[1] d0 d1 d2 d3
+Levels: d0 d1 d2 d3
+
+> table(dat2$day)
+d0 d1 d2 d3 
+44 44 44 44
+
+dat10 <- subset(dat2,dat2$day=="d1")
+dat10
+
+> dat10
+    mouse_ID        BW day
+45  BXD 50_3  94.85000  d1
+46  BXD 64_1  96.36000  d1
+47  BXD 29_1  96.85000  d1
+48  BXD 40_3  97.69000  d1
+49  BXD 49_2  97.06000  d1
+50   BXD 6_5  89.03000  d1
+[...]
+```
