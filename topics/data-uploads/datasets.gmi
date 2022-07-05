@@ -1,0 +1,38 @@
+# Some Historical Context
+
+In the context of GN code, a "dataset" specifically refers to a grouping of traits.  It's easy to confuse that with individual GN traits (which can best be defined as a single set of sample data).  So Time Series (TS) data would consist of multiple GN traits, one trait for each time point.
+
+A phenotype is an observed 'feature' such as body weight.  In genetics, traits are characteristics about humans and other living organisms that can be described or measured.  Sex is a trait.  In GN we mixed them up.
+
+When we do an experiment we take measurements across a range of individuals at a time point.  Each time point is a vector of data.  When repeated with the same individual/strain we can take the mean (meaningfully).  That is another vector.
+
+As alluded to earlier, 'datasets' are combinations of measurements referring to one (or more?) experiments.  [Suggestion] Link dataset to measurements/phenotypes in an experiment at a certain time point.  Thus we have a matrix of data (columns are measurements and means).  For probesets and RNA-seq we treat them the same as simple vectors of measurements.
+
+When we have time series we get a 3rd dimension which can be represented in metadata.  No need to account for that at the storage level.  We'll need to handle it in the UI and with any computations.
+
+We invented the term “attribute” for trait OR metadata type that is even broader.  For example an attribute can include an indicator for inclusion of a case in a study.  An attribute can be alphanumeric and can be used as a co-factor.  Does get messy.
+
+
+# Extracting TS Data from a provided data set
+
+Suppose you have the following CSV file (snippet):
+
+```
+  mouse_ID                   BW       day         strain        sex    inf_dose animal.no.
+  241   CC001_m_1       100     perc_d00        CC001   m       10 FFU  1
+  242   CC001_m_1       98.56   perc_d03        CC001   m       10 FFU  1
+  243   CC001_m_1       NA      perc_d13        CC001   m       10 FFU  1
+  244   CC001_m_1       NA      perc_d12        CC001   m       10 FFU  1
+  245   CC001_m_1       NA      perc_d10        CC001   m       10 FFU  1
+  246   CC001_m_1       100.92  perc_d04        CC001   m       10 FFU  1
+  247   CC001_m_1       98.08   perc_d01        CC001   m       10 FFU  1
+  248   CC001_m_1       76.21   perc_d08        CC001   m       10 FFU  1
+  249   CC001_m_1       93.22   perc_d05        CC001   m       10 FFU  1
+  250   CC001_m_1       90.42   perc_d06        CC001   m       10 FFU  1
+[...]
+
+```
+
+Each day (d1, d2, d3) represents a different data set.  From the above, a "dataset" is grouped by "day".
+
+In the above, Strain is CC001.  It is male and animal no 1.  For mapping, only the strain name and group will matter.  Combine sex and days and infection status to a data set for mapping.  A target file is provided that describes all of this.
