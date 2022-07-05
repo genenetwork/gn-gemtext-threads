@@ -4,3 +4,8 @@
 * assigned: aruni
 
 Links in gemtext that point to images should render as images rather than as links. This way it will be possible to inline images in issues.
+
+tissue now has its own issue tracker. We move this issue there.
+=> https://tissue.systemreboot.net/issues/render-images-in-web-output.html
+
+* closed
