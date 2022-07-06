@@ -1,0 +1,10 @@
+# Tests for the genodb genotype database
+
+Write tests for the genodb genotype database Common Lisp code.
+=> https://git.genenetwork.org/GeneNetwork/cl-gn cl-gn repository which contains the genodb code
+Perhaps, imitate similar tests in genenetwork3
+=> https://github.com/genenetwork/genenetwork3/blob/main/tests/unit/computations/test_parsers.py
+The genodb genotype database implementation is explained in detail at
+=> /topics/genotype-database.html
+
+* assigned: aruni
