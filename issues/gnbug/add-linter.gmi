@@ -47,3 +47,9 @@ and each instance of the issue tracker can have some config file that defines, a
 The tags could be parsed into a hashmap or an associative list, or any other similarly useful datatype, from which the values would be read for display.
 
 Tissue could determine what the context is (CLI, web, etc) and using the config, figure out what tags to display and how
+
+## Closing
+
+We don't have tag restrictions for now. And, tag restrictions probably go against the "unstructured and unrestrictive" aesthetic that we are aiming for. In the web UI, we can color tags using the provided CSS classes. In the CLI, we have a fixed blue color for all tags. Short of supporting full-fledged CLI color theming, it might be counterproductive to allow changing colors of specific tags in the CLI. If filtering based on tags is the objective, we now also have a powerful xapian-powered search interface.
+
+* closed
