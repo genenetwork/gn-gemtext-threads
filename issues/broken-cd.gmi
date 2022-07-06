@@ -1,0 +1,10 @@
+# Broken continuous deployment
+
+* assigned: aruni
+* tags: critical
+
+The continuous deployment (CD) of GeneNetwork2 at https://gn2dev.genenetwork.org/ is broken. Even with all javascript enabled, none of the menu items load. The error message "There was an error retrieving and setting the menu. Try again later." appears. Perhaps there is something missing in the CD that is present in production?
+
+This bug is quite critical. Our CD is unusable without addressing this bug.
+
+=> https://gn2dev.genenetwork.org/ GeneNetwork2 Continuous Deployment
