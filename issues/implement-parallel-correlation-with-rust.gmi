@@ -35,6 +35,10 @@ parralel computation
 
 * [ ]  gn2 integration(WIP)
 
+* [ ] parsing input datasets
+
+* [ ]  benchmark for all datasets rust v python
+
 
 
 
@@ -58,6 +62,15 @@ added a documentation for correlation rust
 
 PR for integrating to genenetwork:
 
-=> https://github.com/genenetwork/genenetwork3/pull/93
+=> https://github.com/genenetwork/genenetwork3/pull/93 
 
+
+
+### 8 ,July 2022
+
+worked on input data parsing and enhancements
+
+PR for parsing datasets
+
+=> https://github.com/genenetwork/genenetwork3/pull/96
 
