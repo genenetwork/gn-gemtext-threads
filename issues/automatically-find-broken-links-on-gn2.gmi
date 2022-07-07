@@ -5,7 +5,7 @@
 * assigned: zsloan, alex
 * type: bug
 * priority: medium
-* status: completed
+* status: completed, closed
 * keywords: GN1, GN2, broken links, from github
 
 ## Members
