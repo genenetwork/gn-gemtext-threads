@@ -10,7 +10,7 @@ is to use gn3 as library to avoid the above
 * assigned: alex
 * keywords: network_connections,ctl,wgcna
 * type: bug
-* status: in progress
+* status: stalled
 * priority: medium
 
 
