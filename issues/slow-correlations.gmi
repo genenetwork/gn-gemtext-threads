@@ -17,7 +17,7 @@ Issue experienced by users include
 * priority: critical
 * assigned: alexm, bonfacekilz
 * keywords: correlations, ui, crash
-* status: in progress
+* status: closed
 
 ## Tasks
 
@@ -152,3 +152,14 @@ to memory error for forked processes and
 is best implemented in a different
 language if the issue arises
 
+
+# Notes
+
+### Friday, 8 July 2022
+
+Closing down the issue,to speed up things the gn2 correlation computation
+was to be rewritten using rust
+
+Added an issue tracker for this
+
+=> https://issues.genenetwork.org/issues/implement-parallel-correlation-with-rust.gmi
