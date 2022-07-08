@@ -6,10 +6,16 @@
 * keywords: linter, tissue
 * assigned: bonfacem
 * priority: low
-* status: under discussion
 
 ## Description
 
 Add a transient interface for GNU Emacs for tissue. Check out transient:
 
 => https://github.com/magit/transient
+
+## Moving to tissue's own issue tracker
+
+Now that tissue is dogfooding, this issue is moved to tissue's own issue tracker.
+=> https://tissue.systemreboot.net/issues/emacs-interface.html tissue feature request for an Emacs interface
+
+* closed
