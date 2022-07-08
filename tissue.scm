@@ -34,11 +34,11 @@
              ("Zachary Sloan" "zach" "zachs" "zsloan"))
  #:indexed-documents (append (map (lambda (filename)
                                     (indexed-document (cut read-gemtext-issue filename)
-                                                      (string-append "/" (replace-extension filename "html"))))
+                                                      (string-append "/" (string-remove-suffix ".gmi" filename))))
                                   (gemtext-files-in-directory "issues"))
                              (map (lambda (filename)
                                     (indexed-document (cut read-gemtext-document filename)
-                                                      (string-append "/" (replace-extension filename "html"))))
+                                                      (string-append "/" (string-remove-suffix ".gmi" filename))))
                                   (gemtext-files-in-directory "topics")))
  #:web-css "/style.css"
  #:web-files (cons* (file "style.css"
