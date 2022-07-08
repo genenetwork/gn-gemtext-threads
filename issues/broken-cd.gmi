@@ -8,3 +8,13 @@ The continuous deployment (CD) of GeneNetwork2 at https://gn2dev.genenetwork.org
 This bug is quite critical. Our CD is unusable without addressing this bug.
 
 => https://gn2dev.genenetwork.org/ GeneNetwork2 Continuous Deployment
+
+## Resolution
+
+It turned out that there were 3 issues at play here.
+
+* GN_SERVER_URL was not set in the CD. GN_SERVER_URL is required by the javascript to query the genenetwork3 API and populate the menu.
+* The mariadb socket was not accessible to the genenetwork3 process inside its container.
+* Cross-Origin Resource Sharing (CORS) was not allowed by the genenetwork3 server. Fred is now working on fixing this in the genenetwork3 code.
+
+* assigned: fredm
