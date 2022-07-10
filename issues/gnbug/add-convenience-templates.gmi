@@ -5,7 +5,6 @@
 * assigned: jgart
 * type: feature-request
 * priority: low
-* status: in progress, discussion, stalled
 * keywords: tissue, gnbug
 
 ## Description
@@ -35,3 +34,10 @@ following:
 ```
 
 Might be bloat but might be nice and convenient also. WDYT?
+
+## Moving to tissue's own issue tracker
+
+Now that tissue is dogfooding, this issue is moved to tissue's own issue tracker.
+=> https://tissue.systemreboot.net/issues/issue-templates
+
+* closed
