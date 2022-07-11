@@ -18,3 +18,10 @@ It turned out that there were 3 issues at play here.
 * Cross-Origin Resource Sharing (CORS) was not allowed by the genenetwork3 server. Fred is now working on fixing this in the genenetwork3 code.
 
 * assigned: fredm
+
+
+## Update: 2022-07-11
+
+The CORS issue is now fixed. The menus are loading appropriately.
+
+* status: closed, completed
