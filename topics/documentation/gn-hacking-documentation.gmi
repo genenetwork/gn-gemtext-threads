@@ -119,3 +119,36 @@ What is the mapping between these and the traits above?
 ## Update 2022-04-04
 
 Work has began on writing a technical specification document detailing the current state of the system, and the possible future implementation goals of the system. See branch `technical-specification` in the GeneNetwork3 repository.
+
+
+## Update 2022-07-18
+
+### Platforms
+
+Stored in the *GeneChip* table in the database.
+
+* TODO: Elaborate what these are once you understand them
+
+### Groups
+
+These are in the *InbredSet* table in the database.
+
+* What are they?
+
+Groups are linked to the Species.
+
+### Studies
+
+Stored in the *ProbeFreeze* table in the database.
+
+Linked to platforms (ChipId), groups (InbredSetId) and tissues (TissueId).
+
+A study can have multiple experiments, each of which provides a dataset.
+
+### Datasets
+
+Stored in the *ProbeSetFreeze* table in the database.
+
+Linked to studies (ProbeFreezeId) and averaging methods (AvgId).
+
+From my understanding so far, a dataset is the results from a single experiment within a study.
