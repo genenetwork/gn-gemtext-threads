@@ -152,3 +152,7 @@ Stored in the *ProbeSetFreeze* table in the database.
 Linked to studies (ProbeFreezeId) and averaging methods (AvgId).
 
 From my understanding so far, a dataset is the results from a single experiment within a study.
+
+### Annotations
+
+Stored in *ProbeSet* table in the database
