@@ -1,0 +1,17 @@
+# Add the option to save traits uploaded with the Submit Trait option
+
+# Tags
+
+* assigned: zsloan
+* priority: medium
+* type: feature-request
+* status: open, in progress
+* keywords: data, meta-data
+
+# Description
+
+Current the Submit Trait feature only allows for trait data (submitted as just a string of values) to be saved as a "temp" trait (that is saved in Redis for a limited period of time).
+
+There are two main changes/additions that should be made to this:
+- Allow data to be submitted via a CSV upload
+- Allow data to be saved to the DB via an "Add" (or maybe "Save") button on the trait page after submitting it
