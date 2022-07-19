@@ -25,3 +25,9 @@ The function decorated with `@app.before_requests` is called before every reques
 I started by checking whether the request is to a *static* or *js* endpoint, and if it is, we do not bother trying to create the engine in that case.
 
 This does not resolve the issue per-se, but it does reduce a lot of the noise when logging.
+
+## Closing for now
+
+We have not been able to reproduce this issue for the last few months. I am closing it for now, but we may reopen it if it recurs.
+
+* closed
