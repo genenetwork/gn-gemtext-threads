@@ -8,6 +8,6 @@ I'll need that mapping information for every strain, symbol etc... that has an a
 
 Ideally, I can have those mappings in some machine-readable format like csv, json, etc...
 
-* assigned: jgart, arthur
+* assigned: fredm, jgart, arthur
 
-* in progress
+* status: closed

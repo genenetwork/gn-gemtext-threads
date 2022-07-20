@@ -42,8 +42,8 @@ dataset so that we can inspect it."
 
 ## Tags
 
-* assigned: jgart
+* assigned: fredm, jgart
 * type: feature-request
-* status: unclear
+* status: closed
 * priority: medium
 * keywords: UI, quality control

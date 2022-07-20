@@ -34,8 +34,8 @@ The tricky part is still how the data is handled in escrow.
 
 ## Tags
 
-* assigned: jgart
+* assigned: fredm, jgart
 * priority: high
 * type: feature-request
-* status: in progress, beta
+* status: closed
 * keywords: quality control

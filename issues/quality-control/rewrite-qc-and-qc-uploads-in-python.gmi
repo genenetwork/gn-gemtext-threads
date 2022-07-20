@@ -25,6 +25,14 @@ and were written in Common-Lisp. The two applications are:
 
 In this document, the discussions of what is necessary to get the application in an acceptable state will be detailed and discussions to get there will also be included.
 
+Some other related issues for consideration, and superseded by this issue are:
+
+=> /issues/quality-control/enumerate-all-qc-checks Enumeration of QC checks for all platforms to test against
+=> /issues/quality-control/gene-symbols Mappings between representations of symbol names
+=> /issues/quality-control/qc-checks Some checks to run against files
+=> /issues/quality-control/qc Notes on original QC App ideas
+=> /issues/quality-control/ui-design Some UI design notes on the QC app
+
 
 ### Requirements
 

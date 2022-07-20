@@ -48,8 +48,8 @@ is allowed into the GeneNetwork will be 22,000 entries.
 
 ## Tags
 
-* assigned: jgart
+* assigned: fredm, jgart
 * type: feature-request
 * priority: high
-* status: unclear
+* status: closed
 * keywords: quality control
