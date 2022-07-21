@@ -1,0 +1,18 @@
+# Add track for showing which regions in mouse/rat correspond to human regions to the mapping figure
+
+# Tags
+
+* assigned: zsloan
+* priority: medium
+* type: feature-request
+* status: open, in progress
+* keywords: mapping
+
+# Description
+
+The idea is to add a new track to mouse/rat mapping figures that provides links to the corresponding region for humans in the UCSC Genome Browser. 
+
+This can be done using these UCSC chain files. Links to the files and an explanation about their format are below:
+- Help file: https://genome.ucsc.edu/goldenPath/help/chain.html
+- Mouse reference: http://hgdownload.cse.ucsc.edu/goldenpath/mm10/liftOver/
+- Human reference: http://hgdownload.cse.ucsc.edu/goldenpath/hg38/liftOver/
