@@ -1,0 +1,16 @@
+# Allow analyses to be done between traits from "individuals" groups and their corresponding "main" group
+
+# Tags
+
+* assigned: zsloan
+* priority: medium
+* type: feature-request
+* status: open, in progress
+* keywords: data, meta-data
+
+# Description
+
+Currently you can't do an analysis beween traits from the "main" BXD group and traits from any of the BXD individuals groups, but it should technically be possible to do so as long as there's a mapping of individuals with their respective strains.
+
+My idea to enable this is to have some code (probably as a decorator function) that, prior to an analysis, checks if there are traits from both a "main" and "individuals" group (for example a BXDPublish phenotype and a phenotype from BXD-LongevityPublish). These mappings could be stored in a simple JSON file. 
+The "main" group trait(s) could then have their sample data converted to the sample list of the "individuals" group, provided the mappings of individuals to strains exists in the CaseAttributes tables. A Temp trait could be created for the purposes of the analysis (though this presents potential issues with trait page links).
