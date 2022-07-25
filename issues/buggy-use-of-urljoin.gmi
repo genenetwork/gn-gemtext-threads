@@ -1,0 +1,32 @@
+# Buggy Use of `urllib.parse.urljoin`
+
+## Tags
+
+* type: bug
+* priority: low
+* assigned: fredm
+* status: pending
+* keywords: url
+
+## Description
+
+The
+=> https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urljoin `urllib.parse.urljoin` function
+will extract the base url from the first argument, and will lead to subtle errors if the configurations are not set up correctly to include the trailing slash.
+
+For example, if you call
+=> https://github.com/genenetwork/genenetwork3/blob/ab354ac46bf7f84ed2504c6e0061ede808ab6ee1/gn3/authentication.py#L75-L100 this function
+with the arguments
+> get_highest_user_access_role("123", "456", gn_proxy_url="https://genenetwork.org/gn3-proxy")
+the function does not actually access
+> https://genenetwork.org/gn3-proxy/available?resource=123&user=456
+as one might expect, instead, it actually accesses
+> https://genenetwork.org/available?resource=123&user=456
+
+If you compare the 2 urls, you see that the "gn3-proxy" part of the url is dropped. If you include the trailing slash as follows
+> get_highest_user_access_role("123", "456", gn_proxy_url="https://genenetwork.org/gn3-proxy")
+then it accesses
+> https://genenetwork.org/gn3-proxy/available?resource=123&user=456
+as is expected.
+
+This failure mode is a little too subtle, and leads to time usage trying to troubleshoot the issue. We need a more robust way to join the URIs such that the system will always do the expected thing regardless of whether one remembers to add the trailing slash.
