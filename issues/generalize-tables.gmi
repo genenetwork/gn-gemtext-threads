@@ -1,0 +1,29 @@
+# Enable all DataTables to call the same code
+
+# Tags
+
+* assigned: zsloan
+* priority: medium
+* type: refactor
+* status: open, in progress
+* keywords: tables, javascript
+
+# Description
+
+Currently most DataTables are drawn independently, so each separate page has its own DataTables initialization code. This results in inconsistency with features (like some tables having resizable columns and others not) and a lot of duplicated code.
+
+I'm changing this so that there's a couple files (create_datatable.js) with shared functions for initializing tables. This function takes the following parameters as input:
+tableId - the table's ID
+tableData - the table's row contents as JSON
+columnDefs - the table's column definitions - the column names, how they should be sorted, how to render their cell contents, etc (see - https://datatables.net/examples/advanced_init/column_render.html )
+customSettings - settings specific to the table in question, which can override the defaults
+
+Converted tables:
+[X] - Search Results
+[X] - Collection View
+[ ] - Collection List
+[ ] - Correlation Results
+[ ] - Global Search
+[ ] - Trait Page Sample Table
+[X] - Mapping Results
+[ ] - Interval Analyst ( might not convert this )
