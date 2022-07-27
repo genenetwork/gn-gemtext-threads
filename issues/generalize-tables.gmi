@@ -21,7 +21,7 @@ customSettings - settings specific to the table in question, which can override 
 Converted tables:
 [X] - Search Results
 [X] - Collection View
-[ ] - Collection List
+[X] - Collection List
 [ ] - Correlation Results
 [ ] - Global Search
 [ ] - Trait Page Sample Table
