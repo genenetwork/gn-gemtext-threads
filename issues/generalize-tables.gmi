@@ -23,7 +23,7 @@ Converted tables:
 [X] - Collection View
 [X] - Collection List
 [X] - Correlation Results
-[ ] - Global Search
+[X] - Global Search
 [ ] - Trait Page Sample Table
 [X] - Mapping Results
 [ ] - Interval Analyst ( might not convert this )
