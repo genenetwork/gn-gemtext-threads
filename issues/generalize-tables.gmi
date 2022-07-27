@@ -22,7 +22,7 @@ Converted tables:
 [X] - Search Results
 [X] - Collection View
 [X] - Collection List
-[ ] - Correlation Results
+[X] - Correlation Results
 [ ] - Global Search
 [ ] - Trait Page Sample Table
 [X] - Mapping Results
