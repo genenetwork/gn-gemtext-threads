@@ -24,6 +24,6 @@ Converted tables:
 [X] - Collection List
 [X] - Correlation Results
 [X] - Global Search
-[ ] - Trait Page Sample Table
+[X] - Trait Page Sample Table
 [X] - Mapping Results
 [ ] - Interval Analyst ( might not convert this )
