@@ -1,0 +1,24 @@
+# Failing Tests
+
+## Tags
+* assigned: zsloan, alex
+* type: bug
+* priority: critical
+* status: open
+* keywords: genenetwork2, tests failure
+
+## Description
+
+The following changes are causing the tests to fail and therefore need to be fixed:
+
+* File: wqflask/tests/unit/wqflask/show_trait/test_export_trait_data.py
+> fb9ff600a wqflask/tests/wqflask/show_trait/test_export_trait_data.py (Alexanderlacuna 2020-10-30 12:38:30 +0300  30)         results = get_export_metadata("random_id", "Temp")
+
+
+* File: wqflask/wqflask/show_trait/export_trait_data.py
+> 7660c3bf9 (zsloan        2022-07-08 20:34:19 +0000  35)             for attr in sample_data['attributes']:
+> ...
+> 00baf5bab (zsloan        2022-08-01 16:00:25 +0000  42) def get_export_metadata(trait_metadata):
+
+
+The failures are related, so maybe liaise to fix the failing tests
