@@ -7,7 +7,7 @@ This is a collection of UI issues mentioned by Rob in e-mails.
 * type: ui
 * keywords: user-interface
 * assigned: zachs, ethan, bonfacem
-* status: in-progress
+* status: closed
 * priority: low
 
 ## TODO
