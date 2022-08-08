@@ -8,6 +8,13 @@
 * status: open, in progress
 * keywords: mapping
 
+I currently have it displaying regions in mouse with text and a UCSC genome browser link to the corresponding human region as a track for the mapping figure.
+
+# TODO
+[X] Display track showing homology across mouse/human/maybe rat (done for mouse, won't be hard to also enable for other species)
+[ ] Make it display an arrow depending on the strand (whether the query strand matches the reference
+[ ] Store the homology chain file data differently (keeping it as a text file might be fine, but need to find a better place for it; currently it's just directly pointing to its path)
+
 # Description
 
 The idea is to add a new track to mouse/rat mapping figures that provides links to the corresponding region for humans in the UCSC Genome Browser. 
