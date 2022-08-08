@@ -40,3 +40,9 @@ This is a collection of UI issues mentioned by Rob in e-mails.
 => https://github.com/validator/validator
 
 and he'll be submit a series of PRs to clean up the HTML on all of the pages. There's a lot of render time performance to be had (probably hundreds of ms in the worst cases) just by cleaning up the HTML.
+
+## Closing for now
+
+There has been no update on this for some time now; and some of the items highlighted above seem to have been fixed elsewhere or is yet to worked on separately.
+
+* closed
