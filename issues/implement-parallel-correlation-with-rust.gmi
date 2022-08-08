@@ -27,17 +27,21 @@ parralel computation
 * [X] package the library as a guix package
 
 
-* [ ] add parralel computation
+* [x]  gn2 integration
 
+* [x] parsing input datasets
+
+* [x]  benchmark for all datasets rust v gn2 version
+
+* [ ] Figure out how to tell cargo to use the declared dependencies, rather than dowloading the dependencies
+
+* [ ] db queries migration to gn3 or use partial correlation queries
+
+* [ ] add parralel computation
 
 * [ ] code optimization and minor fixes
 
 
-* [ ]  gn2 integration(WIP)
-
-* [ ] parsing input datasets
-
-* [ ]  benchmark for all datasets rust v python
 
 
 
