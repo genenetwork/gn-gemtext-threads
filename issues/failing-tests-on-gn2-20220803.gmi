@@ -22,3 +22,15 @@ The following changes are causing the tests to fail and therefore need to be fix
 
 
 The failures are related, so maybe liaise to fix the failing tests
+
+
+
+## Notes
+
+commit to fix the tests
+
+=> https://github.com/genenetwork/genenetwork2/commit/9cbaec569ee35025a0d23004989f86aee55d9244
+
+=> https://github.com/genenetwork/genenetwork2/commit/4cb8a42aba019dfd5d814aa602c4500ce781d812
+
+
