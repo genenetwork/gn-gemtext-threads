@@ -14,7 +14,9 @@
 
 ## Tasks
 
-- [ ] Package `jquery-ui`.
-- [ ] Replace `jquery-ui` cdn with a link from the GNU Guix profile.
+- [x] Package `jquery-ui`.
+- [x] Replace `jquery-ui` cdn with a link from the GNU Guix profile.
 - [ ] Check and report if there are other js files we load from a CDN.
+
+
 
