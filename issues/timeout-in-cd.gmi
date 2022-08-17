@@ -4,3 +4,5 @@
 * assigned: aruni
 
 The timeout of the reverse proxy in the genenetwork CD should be increased from the default 1 minute to 5 minutes. This is a kludge, but needs to be done for now.
+
+* closed
