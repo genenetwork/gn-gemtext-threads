@@ -4,30 +4,34 @@ String interpolation when writing queries is a really bad idea; it leads to expo
 
 As a demonstration, using some existing code, do not write a query like this:
 
-> curr.execute(
->     """
->         SELECT Strain.Name, Strain.Id FROM Strain, Species
->         WHERE Strain.Name IN {}
->         and Strain.SpeciesId=Species.Id
->         and Species.name = '{}'
->     """.format(
->         create_in_clause(list(sample_data.keys())),
->         *mescape(dataset.group.species)))
+```
+curr.execute(
+    """
+        SELECT Strain.Name, Strain.Id FROM Strain, Species
+        WHERE Strain.Name IN {}
+        and Strain.SpeciesId=Species.Id
+        and Species.name = '{}'
+    """.format(
+        create_in_clause(list(sample_data.keys())),
+        *mescape(dataset.group.species)))
+```
 
 In the query above, we interpolate the values of the 'sample_data.keys()' values and that of the 'dataset.group.species' values.
 
 The code above can be rewritten to something like:
 
-> sample_data_keys = tuple(key for key in sample_data.keys())
->
-> curr.execute(
->     """
->         SELECT Strain.Name, Strain.Id FROM Strain, Species
->         WHERE Strain.Name IN ({})
->         and Strain.SpeciesId=Species.Id
->         and Species.name = %s
->     """.format(", ".join(sample_data_keys)),
->     (sample_data_keys + (dataset.group.species,)))
+```
+sample_data_keys = tuple(key for key in sample_data.keys())
+
+curr.execute(
+    """
+        SELECT Strain.Name, Strain.Id FROM Strain, Species
+        WHERE Strain.Name IN ({})
+        and Strain.SpeciesId=Species.Id
+        and Species.name = %s
+    """.format(", ".join(sample_data_keys)),
+    (sample_data_keys + (dataset.group.species,)))
+```
 
 In this new query, the IN clause ends up being a string of the form
 
@@ -45,20 +49,22 @@ There is one more '%s' placeholder for the 'Species.name' value, so, the final t
 
 The functions 'create_in_clause' and 'mescape' are defined as below:
 
-> from MySQLdb import escape_string as escape_
-> 
-> def create_in_clause(items):
->     """Create an in clause for mysql"""
->     in_clause = ', '.join("'{}'".format(x) for x in mescape(*items))
->     in_clause = '( {} )'.format(in_clause)
->     return in_clause
-> 
-> def mescape(*items):
->     """Multiple escape"""
->     return [escape_(str(item)).decode('utf8') for item in items]
->
-> def escape(string_):
->     return escape_(string_).decode('utf8')
+```
+from MySQLdb import escape_string as escape_
+
+def create_in_clause(items):
+    """Create an in clause for mysql"""
+    in_clause = ', '.join("'{}'".format(x) for x in mescape(*items))
+    in_clause = '( {} )'.format(in_clause)
+    return in_clause
+
+def mescape(*items):
+    """Multiple escape"""
+    return [escape_(str(item)).decode('utf8') for item in items]
+
+def escape(string_):
+    return escape_(string_).decode('utf8')
+```
 
 
 ## Parameter Style
@@ -67,16 +73,18 @@ In the section above, we show the most common parameter style used in most cases
 
 If you want to use a mapping object (dict), you have the option of using the '%(<text>)s' format for the query. In that case, we could rewrite the query above into something like:
 
-> sample_data_dict = {f"sample_{idx}: key for idx,key in enumerate(sample_data.keys())}
->
-> curr.execute(
->     """
->         SELECT Strain.Name, Strain.Id FROM Strain, Species
->         WHERE Strain.Name IN ({})
->         and Strain.SpeciesId=Species.Id
->         and Species.name = %(species_name)s
->     """.format(", ".join([f"%({key})s" for key in sample_data_dict.keys()])),
->     {**sample_data_dict, "species_name": dataset.group.species})
+```
+sample_data_dict = {f"sample_{idx}: key for idx,key in enumerate(sample_data.keys())}
+
+curr.execute(
+    """
+        SELECT Strain.Name, Strain.Id FROM Strain, Species
+        WHERE Strain.Name IN ({})
+        and Strain.SpeciesId=Species.Id
+        and Species.name = %(species_name)s
+    """.format(", ".join([f"%({key})s" for key in sample_data_dict.keys()])),
+    {**sample_data_dict, "species_name": dataset.group.species})
+```
 
 ## Final Note
 
