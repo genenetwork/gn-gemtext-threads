@@ -4,6 +4,31 @@ GN1 time machines are pretty straightforward. With GN2 the complexity has increa
 
 Here I track what it takes today to install an instance of GN2 that is 'frozen' in time.
 
+- [X] Install Mariadb and recover production DB (est. 3-4 hrs)
+
+## Tags
+
+* assigned: pjotrp
+* status: in progress
+* priority: medium
+* type: system administration
+* keywords: systems, production
+
+## Tasks
+
+General time line:
+
+* [X] Install machine software and physical (4 hours)
+* [X] Sync backups on a daily basis and add monitoring (2 hours)
+* [X] Set up Mariadb and sync from backup (4 hours)
+* [ ] GN2 production environment
+* [ ] GN3 aliases server (Racket)
+* [ ] GN3 Genenetwork3 service (Python)
+* [ ] GN3 auth proxy (Racket)
+* [ ] set up https and letsencrypt
+* [ ] setup logrotate for production log files
+* [ ] Check performance and install monitors
+
 ## INFO
 
 ### Setting up Guix
@@ -69,7 +94,7 @@ as root you should be able to login with
 mysql -e 'show databases'
 ```
 
-### Mariadb database from backup (est. 2 hours)
+### Mariadb database from backup
 
 We have daily incremental backups on P2, Tux02 and Epysode. First restore the files with
 
@@ -81,21 +106,25 @@ borg extract --progress /export2/backup/tux01/borg-tux01::borg-backup-mariadb-20
 
 Extracting 430Gb takes about 90 minutes.
 
-Now make sure mariadb is stopped. Copy the database to fast storage and symlink the DB dir.
+Now make sure mariadb is stopped. Copy the database to fast storage. Set permissions correctly:
+
+```
+chown mysql.mysql -R /var/lib/mysql
+```
+
+Check them and symlink the DB dir:
 
 ```
 root@epysode:/export/tux01-mirror#
 cp -vau /export2/tux01-restore/home/backup/tux01_mariadb_new .
 systemctl stop mariadb
-ln -s /export2/tux01-restore/home/backup/tux01_mariadb_new /var/lib/mysql
+ln -s /export/tux01-mirror/tux01_mariadb_new/latest /var/lib/mysql
 systemctl start mariadb
 /usr/local/guix-profiles/guix-profiles/mariadb/bin/mysql_upgrade -u webqtlout -pwebqtlout
 /export/backup/scripts/tux02/system_check.sh
 ```
 
-```
-
-In the process I discover that ibdata1 file has grown to 100GB. Not a problem yet, but we should purge that
+In the process I discover that ibdata1 file has grown to 100GB. Not a problem yet, but we should purge that on production at some point
 
 => https://www.percona.com/blog/2013/08/20/why-is-the-ibdata1-file-continuously-growing-in-mysql/
 
