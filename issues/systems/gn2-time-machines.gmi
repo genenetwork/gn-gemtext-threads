@@ -1,0 +1,102 @@
+# GN2 Time Machines
+
+GN1 time machines are pretty straightforward. With GN2 the complexity has increased a lot because of interacting services and a larger dependency graph.
+
+Here I track what it takes today to install an instance of GN2 that is 'frozen' in time.
+
+## INFO
+
+### Setting up Guix
+
+We tend to install software in a guix profile. E.g.
+
+```
+guix pull -p ~/opt/guix-pull
+. /home/wrk/opt/guix-pull/etc/profile
+guix package -i mariadb -p /usr/local/guix-profiles/mariadb
+```
+
+### Mariadb (est. 1-2 hours)
+
+Set up a global Mariadb
+
+```
+guix package -i mariadb -p /usr/local/guix-profiles/mariadb
+```
+
+Usually I use the Debian version to set up defaults
+
+```
+apt-get install mariadb
+cd /etc/systemd/system
+cp /lib/systemd/system/mariadb.service .
+systemctl disable mariadb
+```
+
+Add  to systemd
+
+```diff
++Type=simple
++CapabilityBoundingSet=CAP_IPC_LOCK CAP_DAC_OVERRIDE CAP_AUDIT_WRITE
++PrivateDevices=false
++ProtectHome=false
++ExecStart=/usr/local/guix-profiles/mariadb/bin/mariadbd --pid-file=/var/run/mysqld/mariadb.pid $MYSQLD_OPTS $_WSREP_NEW_CLUSTER $_WSREP_START_POSITION
++PIDFile=/usr/local/mysql/data/mysqld.pid
++# ExecStartPost=/bin/sh -c "systemctl unset-environment _WSREP_START_POSITION"
+-ExecStartPost=/etc/mysql/debian-start
++RestartSec=15s
++TimeoutStartSec=infinity
++TimeoutStopSec=infinity
+```
+
+comment out the galera ExecStart too.
+
+```
+systemctl enable mariadb-guix.service
+```
+
+Make sure all symlinks point to our configuration file.
+
+Before starting systemd you may want to make sure the database is running.
+
+```
+/usr/local/guix-profiles/mariadb/bin/mariadbd --pid-file=/var/run/mysqld/mariadb.pid --verbose (--help)
+```
+
+as root you should be able to login with
+
+```
+mysql -e 'show databases'
+```
+
+### Mariadb database from backup (est. 2 hours)
+
+We have daily incremental backups on P2, Tux02 and Epysode. First restore the files with
+
+```
+. ~/.borg-pass
+cd /export2/tux01-restore
+borg extract --progress /export2/backup/tux01/borg-tux01::borg-backup-mariadb-20220815-03:13-Mon
+```
+
+Extracting 430Gb takes about 90 minutes.
+
+Now make sure mariadb is stopped. Copy the database to fast storage and symlink the DB dir.
+
+```
+root@epysode:/export/tux01-mirror#
+cp -vau /export2/tux01-restore/home/backup/tux01_mariadb_new .
+systemctl stop mariadb
+ln -s /export2/tux01-restore/home/backup/tux01_mariadb_new /var/lib/mysql
+systemctl start mariadb
+/usr/local/guix-profiles/guix-profiles/mariadb/bin/mysql_upgrade -u webqtlout -pwebqtlout
+/export/backup/scripts/tux02/system_check.sh
+```
+
+```
+
+In the process I discover that ibdata1 file has grown to 100GB. Not a problem yet, but we should purge that
+
+=> https://www.percona.com/blog/2013/08/20/why-is-the-ibdata1-file-continuously-growing-in-mysql/
+
+(obviously we don't want to use mysqldump right now, but I'll need to do some future work).
