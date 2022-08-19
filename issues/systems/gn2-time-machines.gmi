@@ -2,9 +2,7 @@
 
 GN1 time machines are pretty straightforward. With GN2 the complexity has increased a lot because of interacting services and a larger dependency graph.
 
-Here I track what it takes today to install an instance of GN2 that is 'frozen' in time.
-
-- [X] Install Mariadb and recover production DB (est. 3-4 hrs)
+Here I track what it takes today to install a fallback instance of GN2 that is 'frozen' in time.
 
 ## Tags
 
@@ -16,14 +14,14 @@ Here I track what it takes today to install an instance of GN2 that is 'frozen' 
 
 ## Tasks
 
-General time line:
+Also a time line:
 
-* [X] Install machine software and physical (4 hours)
+* [X] Install machine software and physical (est. 4-8 hours)
 * [X] Sync backups on a daily basis and add monitoring (2 hours)
 * [X] Set up Mariadb and sync from backup (4 hours)
-* [ ] GN2 production environment
-* [ ] GN3 aliases server (Racket)
+* [X] GN2 production environment with nginx & genotype_files (2 hours)
 * [ ] GN3 Genenetwork3 service (Python)
+* [ ] GN3 aliases server (Racket)
 * [ ] GN3 auth proxy (Racket)
 * [ ] set up https and letsencrypt
 * [ ] setup logrotate for production log files
@@ -40,6 +38,18 @@ guix pull -p ~/opt/guix-pull
 . /home/wrk/opt/guix-pull/etc/profile
 guix package -i mariadb -p /usr/local/guix-profiles/mariadb
 ```
+
+To get to genenetwork we use a channel. The last working channel on the CI can be downloaded from https://ci.genenetwork.org/channels.scm. Now do
+
+```
+guix pull -C channels.scm -p ~/opt/guix-gn-channel
+. ~/opt/guix-gn-channel/etc/profile
+guix package -i genenetwork2 -p ~/opt/genenetwork2
+```
+
+That sets the profile to ~/opt/genenetwork2.
+
+Note that these commands may take a while. And when guix starts building lots of software it may be necessary to configure a substitute server (we use guix.genenetwork.org) adding --substitute-urls="http://guix.genenetwork.org https://ci.guix.info".
 
 ### Mariadb (est. 1-2 hours)
 
@@ -129,3 +139,59 @@ In the process I discover that ibdata1 file has grown to 100GB. Not a problem ye
 => https://www.percona.com/blog/2013/08/20/why-is-the-ibdata1-file-continuously-growing-in-mysql/
 
 (obviously we don't want to use mysqldump right now, but I'll need to do some future work).
+
+### Setting up GN2
+
+Create a gn2 user and checkout the git repo in /home/gn2/production/gene. Note that there exists also a backup of gn2 in borg which has a 'run_production.sh' script.
+
+Running the script will give feedback
+
+```
+su gn2
+cd /home/gn2/production/
+sh run_production.sh
+```
+
+You'll find you need the Guix install of gn2. Starting with guix section above.
+
+### Genotype files
+
+GN2 requires a set of files that is in the backup
+
+```
+borg extract borg-genenetwork::borg-ZACH-home-20220819-04:04-Fri home/zas1024/gn2-zach/genotype_files/
+```
+
+move the genotype_files and update the path in `gn2_settings.py` which is in the same dir as the run_production.sh script.
+
+### Configure Nginx
+
+You'll need to tell Nginx to forward to the web server. Something like:
+
+```
+server {
+    listen 80;
+    server_name gn2-fallback.genenetwork.org;
+
+    access_log  /var/log/nginx/gn2-danny-access.log;
+    error_log  /var/log/nginx/gn2-danny-error.log;
+
+    location / {
+            proxy_pass         http://127.0.0.1:5000/;
+            proxy_redirect     off;
+
+            proxy_set_header   Host             $host;
+            proxy_set_header   X-Real-IP        $remote_addr;
+            proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+
+      client_max_body_size 8050m;
+      proxy_read_timeout 300;
+      proxy_connect_timeout 300;                                                                                 proxy_send_timeout 300;
+
+    }
+}
+```
+
+### Setting up GN3
+
+Without gn3 the menu will not show on the main page and you see 'There was an error retrieving and setting the menu. Try again later.'
