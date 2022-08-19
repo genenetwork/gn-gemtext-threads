@@ -8,7 +8,7 @@ You need to setup a quick local database for development without needing root pe
 * An assumption is made that the GeneNetwork2 profile is in ${HOME}/opt/gn_profiles/gn2_latest for the purposes of this documentation. Please replace as appropriate.
 * We install the database files under ${HOME}/genenetwork/mariadb. Change as appropriate.
 
-## Steps
+## Setup Database Server
 
 Setup directories
 
@@ -90,3 +90,67 @@ Now logout, and log back in as the new webqtlout user:
 ```
 
 and enter the password you provided.
+
+
+## Setting up the Small Database
+
+Download the database from
+
+=> http://ipfs.genenetwork.org/ipfs/QmRUmYu6ogxEdzZeE8PuXMGCDa8M3y2uFcfo4zqQRbpxtk
+
+Say you downloaded the file in ${HOME}/Downloads, you can now add the database to your server.
+
+First stop the server:
+
+```
+$ ps aux | grep mysqld # get the process ids
+$ kill -s SIGTERM <pid-of-mysqld> <pid-of-mysqld_safe>
+```
+
+Now extract the database archive in the mysql data directory:
+
+```
+$ cd ${HOME}/genenetwork/mariadb/var/lib/data
+$ p7zip -k -d ${HOME}/Downloads/db_webqtl_s.7z
+```
+
+Now restart the server:
+
+```
+${HOME}/opt/gn_profiles/gn2_latest/bin/mysqld_safe \
+    --defaults-file=${HOME}/genenetwork/mariadb/my.cnf
+```
+
+Then update the databases
+
+```
+$ /home/frederick/opt/gn_profiles/gn2_latest/bin/mysql_upgrade \
+    --defaults-file=/home/frederick/genenetwork/mariadb/my.cnf \
+    --user=frederick --password --force
+```
+
+and login as the administrative user:
+
+```
+$ /home/frederick/opt/gn_profiles/gn2_latest/bin/mysql \
+    --defaults-file=/home/frederick/genenetwork/mariadb/my.cnf \
+    --user=$(whoami) --password
+```
+
+and grant the privileges to your normal user:
+
+```
+MariaDB [mysql]> GRANT ALL PRIVILEGES ON db_webqtl_s.* TO 'webqtlout'@'localhost';
+```
+
+now logout as the administrative user and log back in as the normal user
+
+```
+/home/frederick/opt/gn_profiles/gn2_latest/bin/mysql \
+    --defaults-file=/home/frederick/genenetwork/mariadb/my.cnf \
+    --user=webqtlout --host=localhost --password db_webqtlout_s
+
+MariaDB [db_webqtlout_s]> SELECT * FROM ProbeSetData LIMIT 20;
+```
+
+verify you see some data.
