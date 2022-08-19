@@ -10,7 +10,7 @@ You need to setup a quick local database for development without needing root pe
 
 ## Steps
 
-Step 01: Setup directories
+Setup directories
 
 ```
 mkdir -pv ${HOME}/genenetwork/mariadb/var/run
@@ -73,4 +73,20 @@ $ ${HOME}/opt/gn_profiles/gn2_latest/bin/mysql \
 
 enter the newly set password and voila, you are logged in and your user has the password set up.
 
-Continue to setup other databases as appropriate.
+Now, setup a new user, say webqtlout, and a default database they can connect to
+
+```
+MariaDB [mysql]> CREATE DATABASE webqtlout;
+MariaDB [mysql]> CREATE USER 'webqtlout'@'localhost' IDENTIFIED BY '<some-password>';
+MariaDB [mysql]> GRANT ALL PRIVILEGES ON webqtlout.* TO 'webqtlout'@'localhost';
+```
+
+Now logout, and log back in as the new webqtlout user:
+
+```
+/home/frederick/opt/gn_profiles/gn2_latest/bin/mysql \
+    --defaults-file=/home/frederick/genenetwork/mariadb/my.cnf \
+    --user=webqtlout --host=localhost --password webqtlout
+```
+
+and enter the password you provided.
