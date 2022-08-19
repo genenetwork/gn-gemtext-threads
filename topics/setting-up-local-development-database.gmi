@@ -1,0 +1,76 @@
+# Setting up Local Development Database
+
+## Introduction
+
+You need to setup a quick local database for development without needing root permissions and polluting your environment.
+
+* ${HOME} is the path to your home directory
+* An assumption is made that the GeneNetwork2 profile is in ${HOME}/opt/gn_profiles/gn2_latest for the purposes of this documentation. Please replace as appropriate.
+* We install the database files under ${HOME}/genenetwork/mariadb. Change as appropriate.
+
+## Steps
+
+Step 01: Setup directories
+
+```
+mkdir -pv ${HOME}/genenetwork/mariadb/var/run
+mkdir -pv ${HOME}/genenetwork/mariadb/var/lib/data
+mkdir -pv ${HOME}/genenetwork/mariadb/var/lib/mysql
+```
+
+Setup default my.cnf
+
+```
+cat <<EOF > ${HOME}/genenetwork/mariadb/my.cnf
+[client-server]
+socket=${HOME}/genenetwork/mariadb/var/run/mysqld/mysqld.sock
+port=3307
+
+[server]
+user=$(whoami)
+socket=${HOME}/genenetwork/mariadb/var/run/mysqld/mysqld.sock
+basedir=${HOME}/opt/gn_profiles/gn2_latest
+datadir=${HOME}/genenetwork/mariadb/var/lib/data
+ft_min_word_len=3
+EOF
+```
+
+Install the database
+
+```
+${HOME}/opt/gn_profiles/gn2_latest/bin/mysql_install_db \
+    --defaults-file=${HOME}/genenetwork/mariadb/my.cnf
+```
+
+Running the daemon:
+
+```
+${HOME}/opt/gn_profiles/gn2_latest/bin/mysqld_safe \
+    --defaults-file=${HOME}/genenetwork/mariadb/my.cnf
+```
+
+Connect to daemon
+
+```
+${HOME}/opt/gn_profiles/gn2_latest/bin/mysql \
+    --defaults-file=${HOME}/genenetwork/mariadb/my.cnf
+```
+
+Set up password for user
+
+```
+MariaDB [(none)]> USE mysql;
+MariaDB [mysql]> ALTER USER '<your-username>'@'localhost' IDENTIFIED BY '<the-new-password>';
+MariaDB [mysql]> FLUSH PRIVILEGES;
+```
+
+Now logout and login again with
+
+```
+$ ${HOME}/opt/gn_profiles/gn2_latest/bin/mysql \
+    --defaults-file=${HOME}/genenetwork/mariadb/my.cnf --password mysql
+```
+
+enter the newly set password and voila, you are logged in and your user has the password set up.
+
+Continue to setup other databases as appropriate.
