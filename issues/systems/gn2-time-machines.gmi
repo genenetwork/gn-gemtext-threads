@@ -195,3 +195,110 @@ server {
 ### Setting up GN3
 
 Without gn3 the menu will not show on the main page and you see 'There was an error retrieving and setting the menu. Try again later.'
+
+GN3 is a separate REST server that has its own dependencies. A bit confusingly it is also a Python module dependency for GN2. So we need to set up both 'routes'.
+
+First checkout the genenetwork3 repo as gn2 user
+
+```
+su gn2
+cd /home/gn2
+mkdir -p gn3_production
+cd gn3_production
+git clone https://github.com/genenetwork/genenetwork3.git
+```
+
+Check the genenetwork3 README for latest instructions on starting the service as a Guix container. Typically
+
+```
+guix shell -C --network --expose=$HOME/production/genotype_files/ -Df guix.scm
+```
+
+where genotype_files is the dir you installed earlier.
+
+Run it with, for example
+
+```
+export FLASK_APP="main.py"
+flask run --port=8081
+```
+
+I.e., the same port as GN2 expects in gn2_settings.py. Test with
+
+```
+curl localhost:8081/api/version
+"1.0"
+```
+
+Next set up the external API with nginx by adding the following path to above definition:
+
+```
+    location /gn3 {
+            rewrite /gn3/(.*) /$1  break;
+            proxy_pass         http://127.0.0.1:8081/;
+            proxy_redirect     off;
+            proxy_set_header   Host $host;
+    }
+```
+
+and if DNS is correct you should get
+
+```
+curl gn2-fallback.genenetwork.org/gn3/api/version
+"1.0"
+```
+
+To generate the main menu the server does a request to
+$.ajax(gn_server_url +'api/menu/generate/json. On production that is
+https://genenetwork.org/api3/api/menu/generate/json which is actually gn3(!)
+
+```
+curl http://gn2-fallback.genenetwork.org/gn3/api/menu/generate/json
+```
+
+If this gives an error check the gn3 output log.
+
+Perhaps obviously, on a production server GN3 should be running as a proper service.
+
+### Alias service
+
+There is another GN3 service that resolves wikidata Gene aliases
+
+```
+su gn2
+cd ~/gn3_production
+git clone https://github.com/genenetwork/gn3.git
+```
+
+follow the instructions in the README and you should get
+
+```
+curl localhost:8000/gene/aliases/Shh
+["Hx","ShhNC","9530036O11Rik","Dsh","Hhg1","Hxl3","M100081","ShhNC"]
+```
+
+### Authentication proxy
+
+The proxy also needs to run.
+
+```
+su gn2
+cd ~/gn3_production
+git clone https://github.com/genenetwork/gn-proxy.git
+```
+
+See README
+
+### Trouble shooting
+
+Check the server log for errors from the server. There should be one in /home/gn2/production/tmp/. For example you may see
+
+```
+ERROR:wqflask:404: Not Found:  7:20AM UTC Aug 20, 2022: http://gn2-fallback.genenetwork.org/api/api/menu/generate/json
+```
+
+pointing out the setting in gn2_settings.py is wrong.
+
+Use the console bar of the browse to see what JS error you get.
+
+If you get CORS errors it is because you are using a server that is not genenetwork.org and this is usually a configuration issue.
