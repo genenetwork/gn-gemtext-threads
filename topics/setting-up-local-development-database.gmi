@@ -154,3 +154,33 @@ MariaDB [db_webqtlout_s]> SELECT * FROM ProbeSetData LIMIT 20;
 ```
 
 verify you see some data.
+
+### A Note on Connection to the Server
+
+So far, we have been connecting to the server by specifying --defaults-file option, e.g.
+
+```
+${HOME}/opt/gn_profiles/gn2_latest/bin/mysql \
+    --defaults-file=${HOME}/genenetwork/mariadb/my.cnf \
+    --user=webqtlout --host=localhost --password db_webqtlout_s
+```
+
+which allows connection via the unix socket.
+
+We could drop that specification and connect via the port with:
+
+```
+${HOME}/opt/gn_profiles/gn2_latest/bin/mysql \
+    --user=webqtlout --host=127.0.0.1 --port=3307 --password db_webqtlout_s
+```
+
+In this version, the host specification was changed from
+```
+--host=localhost
+```
+to
+```
+--host=127.0.0.1
+```
+
+^^^whereas, the --defaults-file file specification was dropped and a new --port specification was added.
