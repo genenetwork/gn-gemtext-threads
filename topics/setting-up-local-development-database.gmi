@@ -183,4 +183,4 @@ to
 --host=127.0.0.1
 ```
 
-^^^whereas, the --defaults-file file specification was dropped and a new --port specification was added.
+whereas, the **--defaults-file** file specification was dropped and a new **--port** specification was added.
