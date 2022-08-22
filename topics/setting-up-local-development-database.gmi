@@ -84,8 +84,8 @@ MariaDB [mysql]> GRANT ALL PRIVILEGES ON webqtlout.* TO 'webqtlout'@'localhost';
 Now logout, and log back in as the new webqtlout user:
 
 ```
-/home/frederick/opt/gn_profiles/gn2_latest/bin/mysql \
-    --defaults-file=/home/frederick/genenetwork/mariadb/my.cnf \
+${HOME}/opt/gn_profiles/gn2_latest/bin/mysql \
+    --defaults-file=${HOME}/genenetwork/mariadb/my.cnf \
     --user=webqtlout --host=localhost --password webqtlout
 ```
 
@@ -124,16 +124,16 @@ ${HOME}/opt/gn_profiles/gn2_latest/bin/mysqld_safe \
 Then update the databases
 
 ```
-$ /home/frederick/opt/gn_profiles/gn2_latest/bin/mysql_upgrade \
-    --defaults-file=/home/frederick/genenetwork/mariadb/my.cnf \
+$ ${HOME}/opt/gn_profiles/gn2_latest/bin/mysql_upgrade \
+    --defaults-file=${HOME}/genenetwork/mariadb/my.cnf \
     --user=frederick --password --force
 ```
 
 and login as the administrative user:
 
 ```
-$ /home/frederick/opt/gn_profiles/gn2_latest/bin/mysql \
-    --defaults-file=/home/frederick/genenetwork/mariadb/my.cnf \
+$ ${HOME}/opt/gn_profiles/gn2_latest/bin/mysql \
+    --defaults-file=${HOME}/genenetwork/mariadb/my.cnf \
     --user=$(whoami) --password
 ```
 
@@ -146,8 +146,8 @@ MariaDB [mysql]> GRANT ALL PRIVILEGES ON db_webqtl_s.* TO 'webqtlout'@'localhost
 now logout as the administrative user and log back in as the normal user
 
 ```
-/home/frederick/opt/gn_profiles/gn2_latest/bin/mysql \
-    --defaults-file=/home/frederick/genenetwork/mariadb/my.cnf \
+${HOME}/opt/gn_profiles/gn2_latest/bin/mysql \
+    --defaults-file=${HOME}/genenetwork/mariadb/my.cnf \
     --user=webqtlout --host=localhost --password db_webqtlout_s
 
 MariaDB [db_webqtlout_s]> SELECT * FROM ProbeSetData LIMIT 20;
