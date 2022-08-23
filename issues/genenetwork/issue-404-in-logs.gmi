@@ -1,6 +1,4 @@
-# 404 error in logs
-
-We get many 404's in GN logs. Can we rewire that so no log entries appear as a full stack dump?
+# Better Logging
 
 ## Tags
 
@@ -14,12 +12,9 @@ We get many 404's in GN logs. Can we rewire that so no log entries appear as a f
 
 => https://flask.palletsprojects.com/en/2.0.x/errorhandling/
 
-Some of those 404's in our log
-mean that we forgot to package something; for
-example:
+Some of those 404's in our log mean that we forgot to package something; for example:
 
-=>
-https://git.genenetwork.org/guix-bioinformatics/guix-bioinformatics/commit/e80fe4ddcf15e21004b8135cf8af34b458697f64
+=> https://git.genenetwork.org/guix-bioinformatics/guix-bioinformatics/commit/e80fe4ddcf15e21004b8135cf8af34b458697f64
 
 Removing the 404's would prevent us from catching important errors if ever they occur. I suggest we fix the 404's; some of them have a cascading effect, like the font-awesome missing "webfonts" folder I just fixed that leads to a lot of unnecessary 404s.
 
