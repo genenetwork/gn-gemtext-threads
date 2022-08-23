@@ -6,6 +6,8 @@ We prioritise maintaining user functionality over speed in GN [with time this sp
 
 ## Goals
 
+- Have script-friendly error/info logs.
+
 - Remove noise from GN2.
 
 - Separate logging into different files: error logs, info logs.  Add this somewhere with Flask itself instead of re-directing STDOUT to a file.
@@ -43,3 +45,5 @@ We prioritise maintaining user functionality over speed in GN [with time this sp
   - "MISC: <message>"
 
 - Have time-stamped logs by month. E.g. "genenetwork2-08-2022.error.log" and "genenetwork2-08-2022.info.log".  This way in future, we can actually run an analysis on what breaks often in GN2.
+
+- Get rid of "utility.logger" module and replace it with Flask's or Python's in-built logging.
