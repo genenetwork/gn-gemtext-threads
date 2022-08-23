@@ -23,16 +23,23 @@ We prioritise maintaining user functionality over speed in GN [with time this sp
 ## Actual Design
 
 - Configure logger to separate logs into different files:
+
   - INFO file - contains initial bootstrap messages and instrumentation we may have to do.
+
   - ERROR file - contains real errors.
 
 - Have those settings - the different log files - be part of GN2 start-up script.
 
 - For error messages, use the following format for different error messages:
+
   - "DATABASE: <message>"
+
   - "REDIS: <message>"
+
   - "COMPUTATION: <message>"
+
   - "API: <message>"
+
   - "MISC: <message>"
 
 - Have time-stamped logs by month. E.g. "genenetwork2-08-2022.error.log" and "genenetwork2-08-2022.info.log".  This way in future, we can actually run an analysis on what breaks often in GN2.
