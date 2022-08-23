@@ -1,0 +1,9 @@
+# Second production on tux02
+
+* assigned: aruni
+
+Set up a second production system on tux02. This will be fully configured using Guix and will be able to roll back to previous states easily. The Guix configuration of this system should go into the genenetwork-machines repo.
+=> https://git.genenetwork.org/arunisaac/genenetwork-machines genenetwork-machines repo
+
+This issue likely obsoletes
+=> /issues/systems/tux02-production
