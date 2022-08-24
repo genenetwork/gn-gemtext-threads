@@ -24,6 +24,15 @@ The vpn-slice script looks up the hostnames tux01 and tux02e on the VPN DNS and 
 Note that the vpn-slice package is not yet packaged for Guix. However, there is a pending patch at
 => https://issues.guix.gnu.org/57351 Guix issue tracking vpn-splice packaging
 
+## qtwebengine text rendering bug
+
+There is currently a bug in Guix with qtwebengine text rendering.
+=> https://issues.guix.gnu.org/52672
+This causes text to not render in the Duo authentication browser window. Until this bug is fixed, work around it by setting the following environment variable.
+```
+export QTWEBENGINE_CHROMIUM_FLAGS=--disable-seccomp-filter-sandbox
+```
+
 ## Acknowledgement
 
 Many thanks to Pjotr Prins and Erik Garrison without whose earlier work this guide would not be possible.
