@@ -4,9 +4,9 @@ It is possible to connect to the UTHSC VPN using only free software. For this, y
 => https://github.com/vlaci/openconnect-sso/ openconnect-sso
 => https://www.infradead.org/openconnect/ openconnect
 
-To connect, run openconnect-sso as follows and enter your password when prompted. A browser window will pop up for you to complete the Duo authentication. Once done, you will be connected to the VPN.
+To connect, run openconnect-sso as follows. A browser window will pop up for you to complete the Duo authentication. Once done, you will be connected to the VPN.
 ```
-$ openconnect-sso --server uthscvpn1.uthsc.edu --user your-netid --authgroup UTHSC
+$ openconnect-sso --server uthscvpn1.uthsc.edu --authgroup UTHSC
 ```
 
 ## Avoid tunneling all your network traffic through the VPN (aka Split Tunneling)
@@ -16,7 +16,7 @@ openconnect, by default, tunnels all your traffic through the VPN. This is not g
 
 For example, to connect to the UTHSC VPN but only access the hosts tux01 and tux02e through the VPN, run the following command.
 ```
-$ openconnect-sso --server uthscvpn1.uthsc.edu --user your-netid --authgroup UTHSC -- --script 'vpn-slice tux01 tux02e'
+$ openconnect-sso --server uthscvpn1.uthsc.edu --authgroup UTHSC -- --script 'vpn-slice tux01 tux02e'
 ```
 The vpn-slice script looks up the hostnames tux01 and tux02e on the VPN DNS and adds /etc/hosts entries and routes to your system. vpn-slice can also set up more complicated routes. To learn more, read the vpn-slice documentation.
 
