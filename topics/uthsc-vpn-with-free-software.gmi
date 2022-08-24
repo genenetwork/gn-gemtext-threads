@@ -8,6 +8,7 @@ To connect, run openconnect-sso as follows. A browser window will pop up for you
 ```
 $ openconnect-sso --server uthscvpn1.uthsc.edu --authgroup UTHSC
 ```
+Note that openconnect-sso should be run as a regular user, not as root. After passing Duo authentication, openconnect-sso will try to gain root priviliges to set up the network routes. At that point, it will prompt you for your password using sudo.
 
 ## Avoid tunneling all your network traffic through the VPN (aka Split Tunneling)
 
