@@ -9,5 +9,7 @@
 
 ## Tasks
 
+* [ ] Geno files incomplete?
+=> http://gn2.genenetwork.org/api/v_pre1//genotypes/HSNIH-Palmer.geno
 * [ ] GN1 migrate genewiki pages
 => ../issues/genenetwork/genewiki.gmi
