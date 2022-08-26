@@ -3,13 +3,11 @@
 ## Tags
 
 * assigned: zsloan
-* keywords: global search, genewiki
+* keywords: genewiki
 * status: unclear
 * priority: unclear
 
 ## Tasks
 
-* [ ] Fix global search
-=> ../issues/genenetwork/global-search.gmi fix global search
 * [ ] GN1 migrate genewiki pages
 => ../issues/genenetwork/genewiki.gmi

@@ -1,0 +1,28 @@
+# Ongoing Work
+
+In this document we track ongoing work.
+
+## Tags
+
+* kanban: pjotrp
+* assigned: pjotrp
+* status: ongoing
+* keywords: pjotrp, to remove
+
+## Notes
+
+## Tasks
+
+Ongoing
+
+* [ ] Rust correlations and materialised view (Fred, Alex)
+* [ ] Fix missing GENO file (Zach, Pjotr, Gregory)
+* [ ] Bringing Xapian Search to GN (Arun)
+* [ ] New genotype format (Arun, Pjotr, Bonface)
+* [ ] RDF and virtuoso endpoint (Bonface, Arun, Pjotr)
+* [ ] Data upload and curation (Fred, Arthur)
+* [ ] Deployment container for GN2 (Arun)
+* [ ] GeneNetwork paper (Pjotr, Rob)
+* [ ] Creating a live monitor/sanity checker for GN (Arun)
+* [ ] Pangenome genotype correction with vcflib (Pjotr)
+* [ ] Becoming a DOI provider (Pjotr)
