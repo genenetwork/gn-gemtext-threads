@@ -1,0 +1,31 @@
+* Orchestration and fallbacks
+
+After the Penguin2 crash in Aug. 2022 it has become increasingly clear how hard it is to deploy GeneNetwork. GNU Guix helps a great deal with dependencies, but it does not handle orchestration between machines/services well. Also we need to look at the future.
+
+What is GN today in terms of services
+
+ 1. Main GN2 server (Python, 20+ processes, 3+ instances: depends on all below)
+ 2. Matching GN3 server and REST endpoint (Python: less dependencies)
+ 3. Mariadb
+ 4. redis
+ 5. virtuoso
+ 6. GN-proxy (Racket, authentication handler: redis, mariadb)
+ 7. Alias proxy (Racket, gene aliases wikidata)
+ 8. Jupyter R and Julia notebooks
+ 9. BNW server (Octave)
+10. UCSC browser
+11. GN1 instances (older python, 12 instances in principle, 2 running today)
+12. Access to HPC for GEMMA (coming)
+13. Backup services
+14. monitoring services
+
+I am still missing a few! All run by a man and his diligent dog.
+
+For the future the orchestration needs to be more robust and resilient. This means:
+
+ 1. A fallback for every service on a separate machine
+ 2. Improved privacy protection for (future) human data
+ 3. Separate servers serving different data sources
+ 4. Partial synchronization between data sources
+
+The only way we *can* scale is by adding machines. But the system is not yet ready for that. Also getting rid of monolithic primary databases in favor of files helps synchronization.
