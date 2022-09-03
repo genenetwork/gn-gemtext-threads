@@ -5,14 +5,15 @@ Tux01 ran out of steam.
 ## Tags
 
 * assigned: pjotrp, zsloan
-* type: bug
+* type: systems
 * keywords: database
 * status: unclear
-* priority: high
+* priority: medium
 
 ## Tasks
 
 * [X] post-mortem (see below)
+* [ ] free up disk space
 * [ ] update nvme firmware
 * [ ] convert remaining tables to innodb
 * [ ] monitor mariadb internals
