@@ -1,0 +1,108 @@
+# tux01 running out of RAM
+
+Tux01 ran out of steam.
+
+## Tags
+
+* assigned: pjotrp, zsloan
+* type: bug
+* keywords: database
+* status: unclear
+* priority: high
+
+## Tasks
+
+* [X] post-mortem (see below)
+* [ ] update nvme firmware
+* [ ] convert remaining tables to innodb
+* [ ] monitor mariadb internals
+* [ ] find out what can have caused an OOM
+
+## Notes
+
+Some post mortem:
+
+* GN1 uses 10% of RAM, that is a bit high
+* Other services behaving fine
+* dirs look fine though /home only has 80G left
+* dmesg shows serial console crashes
+  + kthread starved
+  + RIP: 0010:serial8250_console_write+0x3d/0x2b0
+  + Out of memory: Kill process 4361 (mysqld)
+  + mysqld was using 14006154 pages of 4096 size = 53Gb RAM
+* daemon log shows restart of mysql at 2am
+* syslog: Sep  3 02:07:01 tux01 kernel: [18254757.549855] oom_reaper: reaped process 4361 (mysqld), now anon-rss:0kB, file-rss:0kB, shmem-rss:0kB
+
+On to the mysql logs, after the crash
+
+* 2022-09-03  2:07:50 68 [ERROR] mysqld: Table './db_webqtl/CaseAttributeXRefNew' is marked as crashed and should be repaired
+* 2022-09-03  2:07:50 9 [ERROR] mysqld: Table './db_webqtl/GeneRIF' is marked as crashed and should be repaired
+
+right before the crash
+
+* 2022-09-03  2:05:16 0 [Note] InnoDB: page_cleaner: 1000ms intended loop took 5476ms. The settings might not be optimal. (flushed=0 and evicted=0, during the time.)
+
+The mysql slow query log shows a number of slow queries before 2am. Which is not normal. So it seems it was leading up to a crash. Most of these queries refer to GeneRIF:
+
+```
+# Time: 220903  1:25:34
+# User@Host: webqtlout[webqtlout] @  [128.169.4.67]
+# Query_time: 772.880949  Lock_time: 0.001206  Rows_sent: 157432  Rows_examined: 472318
+# Rows_affected: 0  Bytes_sent: 29887236
+SET timestamp=1662168334;
+select distinct Species.FullName, GeneRIF_BASIC.GeneId, GeneRIF_BASIC.comment, GeneRIF_BASIC.PubMed_ID from GeneRIF_BASIC, Species where GeneRIF_BASIC.symbol=''OR ELT(6676=1964,1964) AND '4YK4' LIKE '4YK4' and GeneRIF_BASIC.SpeciesId = Species.Id order by Species.Id, GeneRIF_BASIC.createtime;
+# Time: 220903  1:26:31
+```
+
+let's try to run that by hand. It returns 157432 rows in set (2.523 sec). So it is fine now. It might be that on reboot the table got fixed, but we'll check the tables anyway. First take a look at the state of the engine itself as described in
+
+=> ../database-not-responding.gmi
+
+Also
+
+```
+MariaDB [db_webqtl]> CHECK TABLE GeneRIF;
++-------------------+-------+----------+----------+
+| Table             | Op    | Msg_type | Msg_text |
++-------------------+-------+----------+----------+
+| db_webqtl.GeneRIF | check | status   | OK       |
++-------------------+-------+----------+----------+
+1 row in set (0.014 sec)
+```
+
+So the tables were repaired on restarting mariadb - something we set it up to do. We should convert these tables to innodb (from myisam), but I have been postponing that until we have a large enough SSD for mariadb.
+
+## Check RAID and disks
+
+/dev/sda is on a PERC H740P Adp. controller. A quick search shows that there are no real known issues with these RAID controllers after 4 years. Pretty impressive.
+
+The following show no errors logged:
+
+```
+hdparm -I /dev/sda
+smartctl -a /dev/sda -d megaraid,0
+```
+
+Same for disk /dev/sdb and
+
+```
+smartctl -x /dev/nvme0
+smartctl -x /dev/nvme1
+```
+
+It looks like there is nothing to worry about.
+
+A search for nvme 'Dell Express Flash PM1725a problems' shows this an issue where disks go offline and that can be solved with Dell Express Flash NVMe PCIe SSD PM1725a, version 1.1.2, A03.
+We are on 1.0.4.
+
+=> https://www.dell.com/support/kbdoc/fr-fr/000177934/dell-technologies-a-pm1725a-may-go-offline-with-various-errors-including-nvme-remove-namespaces?lang=en
+
+Dell engineers have observed an infrequent issue during system operations, using the Dell PM1725a Express Flash NVMe PCIe SSD, in which the device may go offline and remain inaccessible. The drive may be accessible again after a reboot.
+
+The disks /dev/sda and /dev/sdb is Model Family: Seagate Barracuda 2.5 5400 Device Model:     ST5000LM000-2AN170 and appear to be behaving well.
+
+## Conclusion
+
+No real problems surface on those checks. So it looks like a table went out of wack and killed mariadb. It does not explain the RAM issue though. Why the the OOM killer had mariadb killed at 50Gb? It was the largest process, but not all RAM was used.
+
+Recommendations: see tasks above
