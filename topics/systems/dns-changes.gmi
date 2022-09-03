@@ -9,15 +9,22 @@ We are moving thing to a new DNS hosting service. We have accounts on both. To m
 * Sign in to your GoDaddy account.
 * Export the DNS record to a file
 * Print the DNS settings to a PDF
-* Start a transfer from DNSsimple to get an auth code
+* On GoDaddy disable WHOIS privacy protection (on the domains table)
+* On GoDaddy start a transfer from DNSsimple to get an auth code
   + Click your username at the top right of the page.
   + Select My Products.
   + Click Manage next to the relevant domain.
   + Scroll down to Additional Settings.
   + Click Get authorization code. Note: If you have more than 6 domains in your account, click Email my code
-  + Set transfer on DNSsimple - tick DNS box
-  + Check DNS on switch - it may not be completely automatic
-  + Cherk record on DNSsimple
-  + Check transfer with `dig systemsgenetics.org NS`
 * On DNSimple add the authorisation code under Tamara
-* Import DNS settings on DNSimple
+  + Set transfer on DNSimple - tick DNS box
+  + Check the `DNS on' switch - it may not be completely automatic
+  + Cherk record on DNSimple
+  + Check transfer with `dig systemsgenetics.org NS`
+* Import DNS settings on DNSimple (cut-N-paste)
+  + Edit delegation - make sure the delegation box is set
+=> https://support.dnsimple.com/articles/delegating-dnsimple-registered
+* Test
+  + dig systemsgenetics.org [NS]
+  + dig systemsgenetics.org @ns1.dnsimple.com NS
+  + whois systemsgenetics.org
