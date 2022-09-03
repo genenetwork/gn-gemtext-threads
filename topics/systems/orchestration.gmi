@@ -16,8 +16,11 @@ What is GN today in terms of services
 10. UCSC browser
 11. GN1 instances (older python, 12 instances in principle, 2 running today)
 12. Access to HPC for GEMMA (coming)
-13. Backup services
-14. monitoring services
+13. Backup services (sheepdog, rsync, borg)
+14. monitoring services (incl. systemd, gunicorn, shepherd, sheepdog)
+15. mail server
+16. https certificates
+17. http(s) proxy (nginx)
 
 I am still missing a few! All run by a man and his diligent dog.
 
