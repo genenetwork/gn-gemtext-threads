@@ -9,7 +9,7 @@ parralel computation
 
 ## Tags
 
-* assigned:alexm
+* assigned:alem,Fred
 * type: upgrade
 * priority: medium
 * status: in progress
@@ -39,7 +39,7 @@ parralel computation
 
 * [ ] add parralel computation
 
-* [ ] code optimization and minor fixes
+* [x] code optimization and minor fixes
 
 
 
@@ -78,3 +78,17 @@ PR for parsing datasets
 
 => https://github.com/genenetwork/genenetwork3/pull/96
 
+
+## 17,Aug 2022
+
+integration of correlation rust ongoing with @fred working
+also including optimizing of slow queries,code refatoring
+
+
+## 5 Sept 2022
+
+use text files similar to gn1 see example
+
+=> https://github.com/genenetwork/genenetwork1/blob/d2381dd5bb35cb906032f7d530e9d14984e1de21/web/webqtl/correlation/CorrelationPage.py#L271
+
+also something to be considered  is lmdb
