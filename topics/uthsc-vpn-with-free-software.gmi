@@ -1,0 +1,37 @@
+# UTHSC VPN with free software
+
+It is possible to connect to the UTHSC VPN using only free software. For this, you need the openconnect-sso package. openconnect-sso is a wrapper around openconnect that handles the web-based single sign-on and runs openconnect with the right arguments.
+=> https://github.com/vlaci/openconnect-sso/ openconnect-sso
+=> https://www.infradead.org/openconnect/ openconnect
+
+To connect, run openconnect-sso as follows. A browser window will pop up for you to complete the Duo authentication. Once done, you will be connected to the VPN.
+```
+$ openconnect-sso --server uthscvpn1.uthsc.edu --authgroup UTHSC
+```
+Note that openconnect-sso should be run as a regular user, not as root. After passing Duo authentication, openconnect-sso will try to gain root priviliges to set up the network routes. At that point, it will prompt you for your password using sudo.
+
+## Avoid tunneling all your network traffic through the VPN (aka Split Tunneling)
+
+openconnect, by default, tunnels all your traffic through the VPN. This is not good for your privacy. It is better to tunnel only the traffic destined to the specific hosts that you want to access. This can be done using the vpn-slice script.
+=> https://github.com/dlenski/vpn-slice/ vpn-slice
+
+For example, to connect to the UTHSC VPN but only access the hosts tux01 and tux02e through the VPN, run the following command.
+```
+$ openconnect-sso --server uthscvpn1.uthsc.edu --authgroup UTHSC -- --script 'vpn-slice tux01 tux02e'
+```
+The vpn-slice script looks up the hostnames tux01 and tux02e on the VPN DNS and adds /etc/hosts entries and routes to your system. vpn-slice can also set up more complicated routes. To learn more, read the vpn-slice documentation.
+
+## qtwebengine text rendering bug
+
+There is currently a bug in Guix with qtwebengine text rendering.
+=> https://issues.guix.gnu.org/52672
+This causes text to not render in the Duo authentication browser window. Until this bug is fixed, work around it by setting the following environment variable.
+```
+export QTWEBENGINE_CHROMIUM_FLAGS=--disable-seccomp-filter-sandbox
+```
+
+## Acknowledgement
+
+Many thanks to Pjotr Prins and Erik Garrison without whose earlier work this guide would not be possible.
+=> https://github.com/pjotrp/linux-at-university-of-tennessee
+=> https://github.com/ekg/openconnect-sso-docker

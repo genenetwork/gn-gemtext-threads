@@ -2,9 +2,7 @@
 
 GN1 time machines are pretty straightforward. With GN2 the complexity has increased a lot because of interacting services and a larger dependency graph.
 
-Here I track what it takes today to install an instance of GN2 that is 'frozen' in time.
-
-- [X] Install Mariadb and recover production DB (est. 3-4 hrs)
+Here I track what it takes today to install a fallback instance of GN2 that is 'frozen' in time.
 
 ## Tags
 
@@ -16,14 +14,14 @@ Here I track what it takes today to install an instance of GN2 that is 'frozen' 
 
 ## Tasks
 
-General time line:
+Also a time line:
 
-* [X] Install machine software and physical (4 hours)
+* [X] Install machine software and physical (est. 4-8 hours)
 * [X] Sync backups on a daily basis and add monitoring (2 hours)
 * [X] Set up Mariadb and sync from backup (4 hours)
-* [ ] GN2 production environment
-* [ ] GN3 aliases server (Racket)
+* [X] GN2 production environment with nginx & genotype_files (2 hours)
 * [ ] GN3 Genenetwork3 service (Python)
+* [ ] GN3 aliases server (Racket)
 * [ ] GN3 auth proxy (Racket)
 * [ ] set up https and letsencrypt
 * [ ] setup logrotate for production log files
@@ -40,6 +38,18 @@ guix pull -p ~/opt/guix-pull
 . /home/wrk/opt/guix-pull/etc/profile
 guix package -i mariadb -p /usr/local/guix-profiles/mariadb
 ```
+
+To get to genenetwork we use a channel. The last working channel on the CI can be downloaded from https://ci.genenetwork.org/channels.scm. Now do
+
+```
+guix pull -C channels.scm -p ~/opt/guix-gn-channel
+. ~/opt/guix-gn-channel/etc/profile
+guix package -i genenetwork2 -p ~/opt/genenetwork2
+```
+
+That sets the profile to ~/opt/genenetwork2.
+
+Note that these commands may take a while. And when guix starts building lots of software it may be necessary to configure a substitute server (we use guix.genenetwork.org) adding --substitute-urls="http://guix.genenetwork.org https://ci.guix.info".
 
 ### Mariadb (est. 1-2 hours)
 
@@ -129,3 +139,166 @@ In the process I discover that ibdata1 file has grown to 100GB. Not a problem ye
 => https://www.percona.com/blog/2013/08/20/why-is-the-ibdata1-file-continuously-growing-in-mysql/
 
 (obviously we don't want to use mysqldump right now, but I'll need to do some future work).
+
+### Setting up GN2
+
+Create a gn2 user and checkout the git repo in /home/gn2/production/gene. Note that there exists also a backup of gn2 in borg which has a 'run_production.sh' script.
+
+Running the script will give feedback
+
+```
+su gn2
+cd /home/gn2/production/
+sh run_production.sh
+```
+
+You'll find you need the Guix install of gn2. Starting with guix section above.
+
+### Genotype files
+
+GN2 requires a set of files that is in the backup
+
+```
+borg extract borg-genenetwork::borg-ZACH-home-20220819-04:04-Fri home/zas1024/gn2-zach/genotype_files/
+```
+
+move the genotype_files and update the path in `gn2_settings.py` which is in the same dir as the run_production.sh script.
+
+### Configure Nginx
+
+You'll need to tell Nginx to forward to the web server. Something like:
+
+```
+server {
+    listen 80;
+    server_name gn2-fallback.genenetwork.org;
+
+    access_log  /var/log/nginx/gn2-danny-access.log;
+    error_log  /var/log/nginx/gn2-danny-error.log;
+
+    location / {
+            proxy_pass         http://127.0.0.1:5000/;
+            proxy_redirect     off;
+
+            proxy_set_header   Host             $host;
+            proxy_set_header   X-Real-IP        $remote_addr;
+            proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+
+      client_max_body_size 8050m;
+      proxy_read_timeout 300;
+      proxy_connect_timeout 300;                                                                                 proxy_send_timeout 300;
+
+    }
+}
+```
+
+### Setting up GN3
+
+Without gn3 the menu will not show on the main page and you see 'There was an error retrieving and setting the menu. Try again later.'
+
+GN3 is a separate REST server that has its own dependencies. A bit confusingly it is also a Python module dependency for GN2. So we need to set up both 'routes'.
+
+First checkout the genenetwork3 repo as gn2 user
+
+```
+su gn2
+cd /home/gn2
+mkdir -p gn3_production
+cd gn3_production
+git clone https://github.com/genenetwork/genenetwork3.git
+```
+
+Check the genenetwork3 README for latest instructions on starting the service as a Guix container. Typically
+
+```
+guix shell -C --network --expose=$HOME/production/genotype_files/ -Df guix.scm
+```
+
+where genotype_files is the dir you installed earlier.
+
+Run it with, for example
+
+```
+export FLASK_APP="main.py"
+flask run --port=8081
+```
+
+I.e., the same port as GN2 expects in gn2_settings.py. Test with
+
+```
+curl localhost:8081/api/version
+"1.0"
+```
+
+Next set up the external API with nginx by adding the following path to above definition:
+
+```
+    location /gn3 {
+            rewrite /gn3/(.*) /$1  break;
+            proxy_pass         http://127.0.0.1:8081/;
+            proxy_redirect     off;
+            proxy_set_header   Host $host;
+    }
+```
+
+and if DNS is correct you should get
+
+```
+curl gn2-fallback.genenetwork.org/gn3/api/version
+"1.0"
+```
+
+To generate the main menu the server does a request to
+$.ajax(gn_server_url +'api/menu/generate/json. On production that is
+https://genenetwork.org/api3/api/menu/generate/json which is actually gn3(!)
+
+```
+curl http://gn2-fallback.genenetwork.org/gn3/api/menu/generate/json
+```
+
+If this gives an error check the gn3 output log.
+
+Perhaps obviously, on a production server GN3 should be running as a proper service.
+
+### Alias service
+
+There is another GN3 service that resolves wikidata Gene aliases
+
+```
+su gn2
+cd ~/gn3_production
+git clone https://github.com/genenetwork/gn3.git
+```
+
+follow the instructions in the README and you should get
+
+```
+curl localhost:8000/gene/aliases/Shh
+["Hx","ShhNC","9530036O11Rik","Dsh","Hhg1","Hxl3","M100081","ShhNC"]
+```
+
+### Authentication proxy
+
+The proxy also needs to run.
+
+```
+su gn2
+cd ~/gn3_production
+git clone https://github.com/genenetwork/gn-proxy.git
+```
+
+See README
+
+### Trouble shooting
+
+Check the server log for errors from the server. There should be one in /home/gn2/production/tmp/. For example you may see
+
+```
+ERROR:wqflask:404: Not Found:  7:20AM UTC Aug 20, 2022: http://gn2-fallback.genenetwork.org/api/api/menu/generate/json
+```
+
+pointing out the setting in gn2_settings.py is wrong.
+
+Use the console bar of the browse to see what JS error you get.
+
+If you get CORS errors it is because you are using a server that is not genenetwork.org and this is usually a configuration issue.

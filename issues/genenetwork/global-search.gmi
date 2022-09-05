@@ -1,16 +1,19 @@
 # Global search problems
 
-Global search is the top bar of GN2
+Global search is the top bar of GN2.
+
+Note we are replacing search with xapian. So this is less important.
 
 ## Tags
 
 * assigned: pjotrp, zsloan
-* status: unclear
-* priority: critical
+* status: later
+* priority: low
 * type: bug
 * keywords: global search, BRCA2
 
 ## Tasks
 
-* [ ] BRCA2 does not render results in table
-* [ ] 'Brca2' with quotes gives a SQL error
+* [X] BRCA2 does not render results in table
+* [ ] 'Brca2' with quotes gives a SQL error, see
+=> http://genenetwork.org/gsearch?type=gene&terms=%27Brca2%27

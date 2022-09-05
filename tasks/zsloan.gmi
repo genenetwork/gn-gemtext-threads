@@ -3,13 +3,13 @@
 ## Tags
 
 * assigned: zsloan
-* keywords: global search, genewiki
+* keywords: genewiki
 * status: unclear
 * priority: unclear
 
 ## Tasks
 
-* [ ] Fix global search
-=> ../issues/genenetwork/global-search.gmi fix global search
+* [ ] Geno files incomplete?
+=> http://gn2.genenetwork.org/api/v_pre1//genotypes/HSNIH-Palmer.geno
 * [ ] GN1 migrate genewiki pages
 => ../issues/genenetwork/genewiki.gmi

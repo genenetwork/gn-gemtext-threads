@@ -8,3 +8,9 @@ The genodb genotype database implementation is explained in detail at
 => /topics/genotype-database.html
 
 * assigned: aruni
+
+## Resolution
+
+Tests have now been written.
+
+* closed

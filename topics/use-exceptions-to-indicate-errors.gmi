@@ -1,0 +1,16 @@
+# Use exceptions to indicate errors
+
+Often, we indicate that a function has encountered an error by returning a None value. Here's why this is a bad idea and why you should use exceptions instead.
+
+When we return None values to indicate errors, we have to take care to check the return value of every function call and propagate errors higher and higher up the function call stack until we reach a point where the error is handled. This clutters up the code, and is one reason why writing correct code in languages like C that don't have exceptions is a pain.
+
+With exceptions, we only have to create an exception handler (try/except block in Python) at the highest level. Any exception raised by functions below that level are automatically passed on to the except block with no additional programmer effort.
+
+Here's an example where we run mapping, and if there's an error, we return an error page. Else, we return the results page. Notice that we do not check the return value template_vars.
+```
+try:
+    template_vars = run_mapping.RunMapping(start_vars, temp_uuid)
+    return render_template("mapping_results.html", **template_vars)
+except:
+    return render_template("mapping_error.html")
+```

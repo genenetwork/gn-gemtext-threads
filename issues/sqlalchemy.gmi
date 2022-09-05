@@ -1,0 +1,59 @@
+# Replace sqlalchemy with MySQLdb
+
+## Tags
+
+* assigned: bonfacem, zachs
+* type: refactor
+* priority: medium
+
+## Description
+
+Connections that use sqlalchemy are the only placen in GN2 where connections remain "open" indefinitely until a connection is closed.  In the event that we have many users at the same time, say like during one of Rob's classes; and they do a search, we have N connections indefinitely open until their sessions are killed.  And removing that is trivial, and to demonstrate that using a random example from GN2 (/wqflask/wqflask/search_results.py):
+
+```
+def get_GO_symbols(a_search):
+    query = """SELECT genes
+	       FROM GORef
+	       WHERE goterm='{0}:{1}'""".format(a_search['key'], a_search['search_term'][0])
+
+    gene_list = g.db.execute(query).fetchone()[0].strip().split()
+
+    new_terms = []
+    for gene in gene_list:
+	this_term = dict(key=None,
+			 separator=None,
+			 search_term=[gene])
+
+	new_terms.append(this_term)
+
+    return new_terms
+```
+
+could be replaced with:
+
+```
+ def get_GO_symbols(a_search):
+-    query = """SELECT genes
+-               FROM GORef
+-               WHERE goterm='{0}:{1}'""".format(a_search['key'], a_search['search_term'][0])
+-
+-    gene_list = g.db.execute(query).fetchone()[0].strip().split()
+-
+-    new_terms = []
+-    for gene in gene_list:
+-        this_term = dict(key=None,
+-                         separator=None,
+-                         search_term=[gene])
+-
+-        new_terms.append(this_term)
+-
+-    return new_terms
++    genes = []
++    with database_connection() as conn:
++        with conn.cursor() as cursor:
++            cursor.execute("SELECT genes FROM GORef WHERE goterm=%s",
++                         (a_search.get("key")))
++            genes = cursor.fetchone()[0].strip().split()
++    return [dict(key=None, separator=None, search_term=[gene])
++            for gene in genes]
+```

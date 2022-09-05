@@ -25,3 +25,40 @@ with an edit button, similar to
 * keywords: GN1, documentation
 
 ## Tasks
+
+* [ ] Export Genewiki to markdown - one file per gene and store in git@github.com:genenetwork/gn-docs.git
+* [ ] Format output for GN using markdown parser (similar to other docs)
+* [ ] Provide edit link to github
+
+Later we'll add automated links to wikidata and Uniprot etc.
+
+## Notes
+
+Zach writes: How exactly do we want to store all of this? It appears to currently be
+stored across three SQL tables - GeneRIF, GeneRIFXRef, and GeneCategory.
+The first contains a row for each item a user adds (when displaying all
+items it queries by gene symbol), and the latter two are for storing the
+checkbox stuff (so there will presumably be a row in GeneRIFXRef for every
+checked box for each symbol, though this isn't totally clear to me because
+it's linked by GeneRIF.Id - which isn't unique - rather than GeneRIF.symbol
+which is what I would have assumed).
+
+IIRC the issue I ran into (that isn't immediately apparent from looking at
+the web page) is that it's currently stored as a list of items. There isn't
+a single "free text" area - when a user edits they are either adding a new
+text item with its own row in the DB or editing one of the existing items,
+so I'm not sure how best to reasonably convert the current contents and
+editing method to markdown. Currently it doesn't even support any sort of
+user styling/formatting - users just enter basic text into a form. And if
+they were converted to markdown, how would we be storing the checkbox
+content?
+
+It's probably possible to write a script that goes through those tables and
+generates a bunch of markdown files from them (one for each gene symbol, I
+think?), with the list of items just being converted into a single markdown
+file with those items formatted into a list. This would de-link GN1's
+GeneWiki from GN2's in the future, though (since the way things are stored
+would be fundamentally changed).
+
+Pj: That is what we want. Create a markdown file for each gene symbol.
+Checklist can be part of that using markdown syntax.

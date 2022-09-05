@@ -1,0 +1,8 @@
+# Coding guidelines
+
+We aim to adhere to the following coding guidelines.
+
+=> /topics/use-exceptions-to-indicate-errors Exceptions, not None return values
+=> /topics/better-logging Log messages
+
+This document is an index of other documents describing coding guidelines. Add more here as you write/discover them.

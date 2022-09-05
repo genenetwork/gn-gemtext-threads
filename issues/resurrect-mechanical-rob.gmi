@@ -9,3 +9,11 @@ We need to run Mechanical Rob tests as part of our continuous integration tests.
 * status: in progress
 * type: enhancement
 * priority: medium
+
+## Resolution
+
+The Mechanical Rob CI tests are functioning again now. To see how to run Mechanical Rob, see the CI job definition in the genenetwork-machines repo.
+=> https://git.genenetwork.org/arunisaac/genenetwork-machines/src/branch/main/genenetwork-development.scm
+The invocation procedure is bound to change as the many environment variables in genenetwork2 are cleared up.
+
+* closed

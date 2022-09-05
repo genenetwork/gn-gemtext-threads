@@ -1,0 +1,27 @@
+# Improving Logging in GN2
+
+## What Are We Trying To Solve?
+
+We prioritise maintaining user functionality over speed in GN [with time this speed will be improved].  As such we should be pay more attention at not breaking any currently working GN2 functionality.  And when/if we do, trouble-shooting should be easy.  On this front, one way is to stream-line logging in both GN2/GN3 and make it more script friendly - only report when something fails, not to instrument variables - and in so doing make the process of monitoring easier.
+
+## Goals
+
+* Have script-friendly error/info logs.
+* Remove noise from GN2.
+* Separate logging into different files: error logs, info logs.  Add this somewhere with Flask itself instead of re-directing STDOUT to a file.
+
+### Non-goals
+
+* Logging in GN3.
+* Parsing logs to extract goals.
+* Getting rid of "gn.db" global object and in so doing removing "MySqlAlchemy" [that we really shouldn't be using].
+* Adding log messages to existing functions.
+
+## Actual Design
+
+* Get rid of "utility.logger" module and replace it with Flask's or Python's in-built logging.
+* Configure the logging system to automatically add the module name, line number, time-stamps etc.
+
+## Resources
+
+=> https://realpython.com/python-logging/ Logging in Python
