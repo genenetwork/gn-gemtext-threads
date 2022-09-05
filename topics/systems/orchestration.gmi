@@ -21,6 +21,7 @@ What is GN today in terms of services
 15. mail server
 16. https certificates
 17. http(s) proxy (nginx)
+18. CI/CD server (with github webhooks)
 
 I am still missing a few! All run by a man and his diligent dog.
 
