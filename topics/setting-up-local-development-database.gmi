@@ -111,8 +111,7 @@ Now logout, and log back in as the new webqtlout user:
 
 and enter the password you provided.
 
-
-## Setting up the Small Database
+### Setting up the Small Database
 
 Download the database from
 
