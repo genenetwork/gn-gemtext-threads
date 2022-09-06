@@ -1,13 +1,34 @@
 # Setting up Local Development Database
 
-## Introduction
+You need to set up a quick local database for development without polluting your environment.
 
-You need to set up a quick local database for development without needing root permissions and polluting your environment.
+## Method 1 (Using Guix)
+
+Setting up mariadb in a Guix container is the preferred and easier method. But, you need root access to run the container. The genenetwork2 repo comes with a guix system container definition to run MariaDB and Redis. From the genenetwork2 repo, you can build and run the container using:
+```
+$ sudo $(./containers/db-container.sh)
+```
+You should now be able to connect to the database using
+```
+$ mysql --protocol tcp -u root
+```
+Create a database db_webqtl_s
+```
+MariaDB [mysql]> CREATE DATABASE db_webqtl_s;
+```
+Load the small database dump into the database. You may find the small database on tux02 at /home/aruni/gn2.sql.lz
+```
+$ lzip -cd gn2.sql.lz | mysql --protocol tcp -u root db_webqtl_s
+```
+Since this is a develpoment server accessible only from localhost, it is ok to use the root user with no password. Configure your development instance of genenetwork2 with the following SQL_URI.
+```
+SQL_URI="mysql://root@127.0.0.1:3306/db_webqtl_s"
+```
+
+## Method 2 (Manual method without Guix)
 
 * An assumption is made that the GeneNetwork2 profile is in ~/opt/gn_profiles/gn2_latest for the purposes of this documentation. Please replace as appropriate.
 * We install the database files under ~/genenetwork/mariadb. Change as appropriate.
-
-## Set up Database Server
 
 Set up directories
 
