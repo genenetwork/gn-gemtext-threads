@@ -16,7 +16,6 @@ Git repositories currently in use.
 ## Continuous Integration/Deployment
 
 => https://ci.genenetwork.org/jobs Continuous integration jobs
-=> https://gn2dev.genenetwork.org/ GeneNetwork2 continuous deployment
-=> https://gn3dev.genenetwork.org/ GeneNetwork3 continuous deployment
+=> https://cd.genenetwork.org/ Continuous deployment
 => https://ci.genenetwork.org/archive/dump-genenetwork-database/latest/sql.svg Continuous SQL schema visualization
 => https://ci.genenetwork.org/archive/dump-genenetwork-database/latest/rdf.svg Continuous RDF schema visualization
