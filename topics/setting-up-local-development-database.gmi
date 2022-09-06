@@ -4,33 +4,32 @@
 
 You need to setup a quick local database for development without needing root permissions and polluting your environment.
 
-* ${HOME} is the path to your home directory
-* An assumption is made that the GeneNetwork2 profile is in ${HOME}/opt/gn_profiles/gn2_latest for the purposes of this documentation. Please replace as appropriate.
-* We install the database files under ${HOME}/genenetwork/mariadb. Change as appropriate.
+* An assumption is made that the GeneNetwork2 profile is in ~/opt/gn_profiles/gn2_latest for the purposes of this documentation. Please replace as appropriate.
+* We install the database files under ~/genenetwork/mariadb. Change as appropriate.
 
 ## Setup Database Server
 
 Setup directories
 
 ```
-mkdir -pv ${HOME}/genenetwork/mariadb/var/run
-mkdir -pv ${HOME}/genenetwork/mariadb/var/lib/data
-mkdir -pv ${HOME}/genenetwork/mariadb/var/lib/mysql
+mkdir -pv ~/genenetwork/mariadb/var/run
+mkdir -pv ~/genenetwork/mariadb/var/lib/data
+mkdir -pv ~/genenetwork/mariadb/var/lib/mysql
 ```
 
 Setup default my.cnf
 
 ```
-cat <<EOF > ${HOME}/genenetwork/mariadb/my.cnf
+cat <<EOF > ~/genenetwork/mariadb/my.cnf
 [client-server]
-socket=${HOME}/genenetwork/mariadb/var/run/mysqld/mysqld.sock
+socket=~/genenetwork/mariadb/var/run/mysqld/mysqld.sock
 port=3307
 
 [server]
 user=$(whoami)
-socket=${HOME}/genenetwork/mariadb/var/run/mysqld/mysqld.sock
-basedir=${HOME}/opt/gn_profiles/gn2_latest
-datadir=${HOME}/genenetwork/mariadb/var/lib/data
+socket=~/genenetwork/mariadb/var/run/mysqld/mysqld.sock
+basedir=~/opt/gn_profiles/gn2_latest
+datadir=~/genenetwork/mariadb/var/lib/data
 ft_min_word_len=3
 EOF
 ```
@@ -38,22 +37,22 @@ EOF
 Install the database
 
 ```
-${HOME}/opt/gn_profiles/gn2_latest/bin/mysql_install_db \
-    --defaults-file=${HOME}/genenetwork/mariadb/my.cnf
+~/opt/gn_profiles/gn2_latest/bin/mysql_install_db \
+    --defaults-file=~/genenetwork/mariadb/my.cnf
 ```
 
 Running the daemon:
 
 ```
-${HOME}/opt/gn_profiles/gn2_latest/bin/mysqld_safe \
-    --defaults-file=${HOME}/genenetwork/mariadb/my.cnf
+~/opt/gn_profiles/gn2_latest/bin/mysqld_safe \
+    --defaults-file=~/genenetwork/mariadb/my.cnf
 ```
 
 Connect to daemon
 
 ```
-${HOME}/opt/gn_profiles/gn2_latest/bin/mysql \
-    --defaults-file=${HOME}/genenetwork/mariadb/my.cnf
+~/opt/gn_profiles/gn2_latest/bin/mysql \
+    --defaults-file=~/genenetwork/mariadb/my.cnf
 ```
 
 Set up password for user
@@ -67,8 +66,8 @@ MariaDB [mysql]> FLUSH PRIVILEGES;
 Now logout and login again with
 
 ```
-$ ${HOME}/opt/gn_profiles/gn2_latest/bin/mysql \
-    --defaults-file=${HOME}/genenetwork/mariadb/my.cnf --password mysql
+$ ~/opt/gn_profiles/gn2_latest/bin/mysql \
+    --defaults-file=~/genenetwork/mariadb/my.cnf --password mysql
 ```
 
 enter the newly set password and voila, you are logged in and your user has the password set up.
@@ -84,8 +83,8 @@ MariaDB [mysql]> GRANT ALL PRIVILEGES ON webqtlout.* TO 'webqtlout'@'localhost';
 Now logout, and log back in as the new webqtlout user:
 
 ```
-${HOME}/opt/gn_profiles/gn2_latest/bin/mysql \
-    --defaults-file=${HOME}/genenetwork/mariadb/my.cnf \
+~/opt/gn_profiles/gn2_latest/bin/mysql \
+    --defaults-file=~/genenetwork/mariadb/my.cnf \
     --user=webqtlout --host=localhost --password webqtlout
 ```
 
@@ -98,7 +97,7 @@ Download the database from
 
 => http://ipfs.genenetwork.org/ipfs/QmRUmYu6ogxEdzZeE8PuXMGCDa8M3y2uFcfo4zqQRbpxtk
 
-Say you downloaded the file in ${HOME}/Downloads, you can now add the database to your server.
+Say you downloaded the file in ~/Downloads, you can now add the database to your server.
 
 First stop the server:
 
@@ -110,30 +109,30 @@ $ kill -s SIGTERM <pid-of-mysqld> <pid-of-mysqld_safe>
 Now extract the database archive in the mysql data directory:
 
 ```
-$ cd ${HOME}/genenetwork/mariadb/var/lib/data
-$ p7zip -k -d ${HOME}/Downloads/db_webqtl_s.7z
+$ cd ~/genenetwork/mariadb/var/lib/data
+$ p7zip -k -d ~/Downloads/db_webqtl_s.7z
 ```
 
 Now restart the server:
 
 ```
-${HOME}/opt/gn_profiles/gn2_latest/bin/mysqld_safe \
-    --defaults-file=${HOME}/genenetwork/mariadb/my.cnf
+~/opt/gn_profiles/gn2_latest/bin/mysqld_safe \
+    --defaults-file=~/genenetwork/mariadb/my.cnf
 ```
 
 Then update the databases
 
 ```
-$ ${HOME}/opt/gn_profiles/gn2_latest/bin/mysql_upgrade \
-    --defaults-file=${HOME}/genenetwork/mariadb/my.cnf \
+$ ~/opt/gn_profiles/gn2_latest/bin/mysql_upgrade \
+    --defaults-file=~/genenetwork/mariadb/my.cnf \
     --user=frederick --password --force
 ```
 
 and login as the administrative user:
 
 ```
-$ ${HOME}/opt/gn_profiles/gn2_latest/bin/mysql \
-    --defaults-file=${HOME}/genenetwork/mariadb/my.cnf \
+$ ~/opt/gn_profiles/gn2_latest/bin/mysql \
+    --defaults-file=~/genenetwork/mariadb/my.cnf \
     --user=$(whoami) --password
 ```
 
@@ -146,8 +145,8 @@ MariaDB [mysql]> GRANT ALL PRIVILEGES ON db_webqtl_s.* TO 'webqtlout'@'localhost
 now logout as the administrative user and log back in as the normal user
 
 ```
-${HOME}/opt/gn_profiles/gn2_latest/bin/mysql \
-    --defaults-file=${HOME}/genenetwork/mariadb/my.cnf \
+~/opt/gn_profiles/gn2_latest/bin/mysql \
+    --defaults-file=~/genenetwork/mariadb/my.cnf \
     --user=webqtlout --host=localhost --password db_webqtlout_s
 
 MariaDB [db_webqtlout_s]> SELECT * FROM ProbeSetData LIMIT 20;
@@ -160,8 +159,8 @@ verify you see some data.
 So far, we have been connecting to the server by specifying --defaults-file option, e.g.
 
 ```
-${HOME}/opt/gn_profiles/gn2_latest/bin/mysql \
-    --defaults-file=${HOME}/genenetwork/mariadb/my.cnf \
+~/opt/gn_profiles/gn2_latest/bin/mysql \
+    --defaults-file=~/genenetwork/mariadb/my.cnf \
     --user=webqtlout --host=localhost --password db_webqtlout_s
 ```
 
@@ -170,7 +169,7 @@ which allows connection via the unix socket.
 We could drop that specification and connect via the port with:
 
 ```
-${HOME}/opt/gn_profiles/gn2_latest/bin/mysql \
+~/opt/gn_profiles/gn2_latest/bin/mysql \
     --user=webqtlout --host=127.0.0.1 --port=3307 --password db_webqtlout_s
 ```
 
