@@ -11,6 +11,7 @@ We are moving thing to a new DNS hosting service. We have accounts on both. To m
 * Print the DNS settings to a PDF
 * On GoDaddy disable WHOIS privacy protection (on the domains table)
 * On GoDaddy start a transfer from DNSsimple to get an auth code
+  + Set up DNS delegation to point to DNSimple, in addition to GoDaddy servers
   + Click your username at the top right of the page.
   + Select My Products.
   + Click Manage next to the relevant domain.
