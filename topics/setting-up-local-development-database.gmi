@@ -2,14 +2,14 @@
 
 ## Introduction
 
-You need to setup a quick local database for development without needing root permissions and polluting your environment.
+You need to set up a quick local database for development without needing root permissions and polluting your environment.
 
 * An assumption is made that the GeneNetwork2 profile is in ~/opt/gn_profiles/gn2_latest for the purposes of this documentation. Please replace as appropriate.
 * We install the database files under ~/genenetwork/mariadb. Change as appropriate.
 
-## Setup Database Server
+## Set up Database Server
 
-Setup directories
+Set up directories
 
 ```
 mkdir -pv ~/genenetwork/mariadb/var/run
@@ -17,7 +17,7 @@ mkdir -pv ~/genenetwork/mariadb/var/lib/data
 mkdir -pv ~/genenetwork/mariadb/var/lib/mysql
 ```
 
-Setup default my.cnf
+Set up default my.cnf
 
 ```
 cat <<EOF > ~/genenetwork/mariadb/my.cnf
@@ -72,7 +72,7 @@ $ ~/opt/gn_profiles/gn2_latest/bin/mysql \
 
 enter the newly set password and voila, you are logged in and your user has the password set up.
 
-Now, setup a new user, say webqtlout, and a default database they can connect to
+Now, set up a new user, say webqtlout, and a default database they can connect to
 
 ```
 MariaDB [mysql]> CREATE DATABASE webqtlout;
