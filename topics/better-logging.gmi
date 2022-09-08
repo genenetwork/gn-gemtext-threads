@@ -21,6 +21,8 @@ We prioritise maintaining user functionality over speed in GN [with time this sp
 
 * Get rid of "utility.logger" module and replace it with Flask's or Python's in-built logging.
 * Configure the logging system to automatically add the module name, line number, time-stamps etc.
+* Use a better format for displaying the logs.
+* Delete "with Bench..." calls.
 
 ## Resources
 
