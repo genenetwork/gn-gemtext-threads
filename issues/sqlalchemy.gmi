@@ -57,3 +57,13 @@ could be replaced with:
 +    return [dict(key=None, separator=None, search_term=[gene])
 +            for gene in genes]
 ```
+
+## Resolution
+
+This is has been merged in:
+
+=> https://github.com/genenetwork/genenetwork2/pull/730
+
+Should problems occur, a new issue will be created.
+
+* closed
