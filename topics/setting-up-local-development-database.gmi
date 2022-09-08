@@ -16,7 +16,7 @@ Create a database db_webqtl_s
 ```
 MariaDB [mysql]> CREATE DATABASE db_webqtl_s;
 ```
-Load the small database dump into the database. You may find the small database on tux02 at /home/aruni/gn2.sql.lz
+Load the small database dump into the database. You may find the small database either on space or tux02 at /home/aruni/gn2.sql.lz
 ```
 $ lzip -cd gn2.sql.lz | mysql --protocol tcp -u root db_webqtl_s
 ```
