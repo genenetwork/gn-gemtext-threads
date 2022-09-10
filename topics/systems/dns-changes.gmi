@@ -25,7 +25,10 @@ We are moving thing to a new DNS hosting service. We have accounts on both. To m
 * Import DNS settings on DNSimple (cut-N-paste)
   + Edit delegation - make sure the delegation box is set
 => https://support.dnsimple.com/articles/delegating-dnsimple-registered
+* Approve transfer on GoDaddy a bit later
+* Add DNSSec
 * Test
   + dig systemsgenetics.org [NS]
   + dig systemsgenetics.org @ns1.dnsimple.com NS
-  + whois systemsgenetics.org
+  + whois systemsgenetics.org (check for privacy setting!)
+  + https://dnssec-analyzer.verisignlabs.com/genenetwork.org
