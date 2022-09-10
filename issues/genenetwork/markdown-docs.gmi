@@ -1,0 +1,36 @@
+# Markdown docs
+
+@zach, here we are adding .html files. What is the plan with that? I
+think we should convert to markdown first. There are tools out there,
+including pandoc. You can embed html in md which is useful for
+existing tables and figures.
+
+=> https://github.com/genenetwork/gn-docs/tree/master/general/group_infofiles
+
+Mind, it is great we start getting these docs in the repo! Maybe
+Arthur can add html and we convert to markdown. After that Rob can go
+loose.
+
+Pj.
+
+On Sat, Sep 03, 2022 at 11:27:03AM -0500, Rob Williams (UTHSC) wrote:
+>    Got it.
+>    Trying to edit the BXD test file that we will use for Groups (linked
+>    from the INFO button)
+>    [1]https://github.com/genenetwork/gn-docs/commit/7d02526616e836778dea4d3249fe01edb01be8f5
+>    I am logged in but do not seem to have permissions to edit this garbage
+>    file that is about 10 years old. Love to update it.
+>    Is there a way to force line wraps at some practical length?
+
+## Tags
+
+* assigned: pjotrp, zsloan, robw, arthurc
+* type: enhancement
+* priority: medium
+* status: unclear
+* keywords: GN1, documentation
+
+## Tasks
+
+
+## Notes
