@@ -1,0 +1,27 @@
+# Simplify `dataset.py` in GeneNetwork2
+
+## Tags
+
+* assigned: 
+* priority: medium
+* type: bug
+* status: pending
+* keywords: technical debt
+
+## Description
+
+The entire file
+=>https://github.com/genenetwork/genenetwork2/blob/9cd9b91412734f8f084439690082f9e699ebd89e/wqflask/base/data_set.py
+is a mess, and we need to chunk it out into smaller logic.
+
+As part of this, the idea is to begin with the
+=> get_trait_data https://github.com/genenetwork/genenetwork2/blob/9cd9b91412734f8f084439690082f9e699ebd89e/wqflask/base/data_set.py#L740-L832
+and split it into various chunks, that
+* compute the `self.sample_list`
+* retrieve `sample_ids` values from the database using the `self.sample_list` values computed above
+* retrieve `trait_sample_data` from `sample_ids` retrieved above. This can have a number of helper function to compute the appropriate queries for each of the `dataset_type` values ("Publish", "Geno", "ProbeSet", "Temp")
+* compute the `self.trait_data` from the `trait_sample_data` above
+
+We can split each of the steps above into one or more methods.
+
+To help with moving away from using classes, we can ensure that each of these methods returns the values computed/retrieved (in addition to setting the class member variables).
