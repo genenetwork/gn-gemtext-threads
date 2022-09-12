@@ -1,0 +1,24 @@
+# Fix Missing Genotype Files for GEMMA
+
+## Tags
+
+* assigned: 
+* priority: medium
+* type: bug
+* status: pending
+* keywords: gemma, technical debt
+
+## Description
+
+Run GEMMA (under "Mapping Tools") for
+=> https://cd.genenetwork.org/show_trait?trait_id=1436869_at&dataset=HC_M2_0606_P
+
+As of commit
+=> 9cd9b914 https://github.com/genenetwork/genenetwork2/commit/9cd9b91412734f8f084439690082f9e699ebd89e
+the run will fail with an error.
+
+## Steps
+
+* [ ] Add mechanical-rob tests to check that run is successful
+* [ ] Improve error message to indicate what genotype file is missing
+* [ ] If there's a missing genotype file, ensure the test checks that the missing file is mentioned in the error report
