@@ -1,0 +1,30 @@
+# Building a ~guix pack~ for Environment Sharing
+
+## Motivation
+
+Sometimes, you might
+* not have access to guix where you want to deploy
+* not be able to run a guix shell (due to space constraints on the /gnu/store partition, etc)
+* not be able to create a guix profile (due to space constraints on the /gnu/store partition, etc)
+but you still need to have a similar environment for running your application.
+
+In such cases, ~guix pack~ can come in handy.
+
+I will use the process I used for
+=> gnqc_py https://gitlab.com/fredmanglis/gnqc_py
+for demonstration
+
+> guix pack -RR -S /mybin=bin -S /mylib=lib \
+>     -L /home/frederick/genenetwork/guix-bioinformatics \
+>     python redis mariadb genenetwork-qc
+
+* The `-RR` option ensures `guix pack` produces relocatable[1] binaries
+* The `-S` adds the symbolic links to the pack[1]
+* The `-L`[2] option adds the ~guix-bioinformatics~ directory to the front of the module load path
+
+We then add python, redis, mariadb, and genenework-qc packages (and their dependencies) to the pack.
+
+## Footnotes
+
+=> [1] https://guix.gnu.org/manual/en/html_node/Invoking-guix-pack.html
+=> [2] https://www.gnu.org/software/guile/manual/guile.html#Command_002dline-Options
