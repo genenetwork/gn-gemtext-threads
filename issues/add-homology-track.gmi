@@ -17,7 +17,7 @@ I currently have it displaying regions in mouse with text and a UCSC genome brow
 
 # Description
 
-The idea is to add a new track to mouse/rat mapping figures that provides links to the corresponding region for humans in the UCSC Genome Browser. 
+The idea is to add a new track to mouse/rat mapping figures that provides links to the corresponding region for humans in the UCSC Genome Browser.
 
 This can be done using these UCSC chain files. Links to the files and an explanation about their format are below:
 - Help file: https://genome.ucsc.edu/goldenPath/help/chain.html
