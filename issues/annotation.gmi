@@ -13,11 +13,11 @@ Annotation, assembly and liftover are recurring themes because they are tied to 
 
 # TODO
 
-- [ ] Point out where annotation is used in code (@zsloan)
-- [ ] Come up with a storage model to replace the existing Mariadb tables (pjotrp, aruni)
-- [ ] Implement storage backend
-- [ ] Create examples to replace existing code
-- [ ] Replace all code to allow for selecting versions
+* [ ] Point out where annotation is used in code (@zsloan)
+* [ ] Come up with a storage model to replace the existing Mariadb tables (pjotrp, aruni)
+* [ ] Implement storage backend
+* [ ] Create examples to replace existing code
+* [ ] Replace all code to allow for selecting versions
 
 # Notes
 
