@@ -1,0 +1,52 @@
+# Maybe monad
+
+None values are values that represent the absence of a value. This leads to a proliferation of conditionals and special cases in the code, and is a terrible way to represent the absence of a value. We need something better. Enter the maybe monad.
+
+For a detailed case against None values, read
+=> https://www.lucidchart.com/techblog/2015/08/31/the-worst-mistake-of-computer-science/
+
+Consider the following code snippet where we print a value if it is not None.
+```
+def print_unless_none(x):
+    if x is not None:
+        print(x)
+
+foo = 1
+bar = None
+print_unless_none(foo)
+print_unless_none(bar)
+```
+
+Rewriting the same code using the maybe monad, we can avoid the conditional check making the code more concise and more robust against bugs.
+```
+from pymonad.maybe import Just, Nothing
+
+foo = Just(1)
+bar = Nothing
+foo.bind(print)
+bar.bind(print)
+```
+
+Monads may also be passed through a chain of function calls without any condition checking in between. If foo were Nothing, the entire sequence of operations would be skipped with no error raised. Notice how this is much cleaner than interleaving the code with if conditions checking for None intermediate values.
+```
+foo = Just(1)
+foo.map(lambda x: 1 + x) \
+   .map(lambda x: x**2) \
+   .bind(print)
+```
+
+Finally, let's put all this together in a practical example using the MonadicDictCursor from genenetwork. Consider the following code using the DictCursor. The column foo may contain NULL values, and we need to check for them.
+```
+with conn.cursor(MySQLdb.cursors.DictCursor) as cursor:
+    cursor.execute("SELECT foo FROM bar")
+    for row in cursor.fetchall():
+        if row["foo"] is not None:
+            print(row["foo"])
+```
+But, with the MonadicDictCursor, the row object is a MonadictDict where all values are monadic. We therefore do not need any special conditional checks.
+```
+with conn.cursor(utility.monads.MonadicDictCursor) as cursor:
+    cursor.execute("SELECT foo FROM bar")
+    for row in cursor.fetchall():
+        row["foo"].bind(print)
+```
