@@ -1,3 +1,7 @@
 # GEMMA should report name of missing genotype file
 
 When genenetwork is unable to find a genotype file that GEMMA needs, it should report the name of the missing file in the error message. The correct way to do this is it raise a FileNotFoundError lower down close to the GEMMA call, and handle it higher up close to the web UI.
+
+## Resolution
+
+* closed
