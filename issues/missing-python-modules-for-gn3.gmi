@@ -1,0 +1,16 @@
+# Missing Python Module(s) for GeneNetwork3
+
+## Tags
+
+* type: bug
+* priority: high
+* status: open
+* keywords: python-modules
+
+## Description
+
+Missing modules when you try launching genenetwork3 locally:
+
+* python-typing-extensions
+
+The module needs to be added as a dependency, or the import removed if the module is not in use.
