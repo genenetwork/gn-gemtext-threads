@@ -4,7 +4,7 @@
 * assigned: zsloan, alex
 * type: bug
 * priority: critical
-* status: open
+* status: completed, done
 * keywords: genenetwork2, tests failure
 
 ## Description
@@ -34,3 +34,9 @@ commit to fix the tests
 => https://github.com/genenetwork/genenetwork2/commit/4cb8a42aba019dfd5d814aa602c4500ce781d812
 
 
+## Resolution 20/9/22
+
+
+The issue is  fixed
+
+* closed
