@@ -1,0 +1,22 @@
+# Mapping: Haley-Knott Regression: Zooming Bug
+
+## Tags
+
+* status: open
+* keywords: mapping, Haley-Knott Regression
+* priority: medium
+* type: bug
+* assigned: zsloan
+
+## Definition of terms
+
+* ${HOST}: The host you are working on e.g. "cd.genenetwork.org", "localhost:5000", etc
+
+## Bug Description
+
+* Go to ${HOST}/show_trait?trait_id=1457545_at&dataset=HC_M2_0606_P
+* Select "Mapping Tools" drawer
+* Select "Haley-Knott Regression"
+* Click "Compute"
+* Once mapping is complete, on the LRS against Megabases graph, click on the chromosome number at the top of the graph e.g. click on the '2'
+* See 'SQL Syntax' exception thrown
