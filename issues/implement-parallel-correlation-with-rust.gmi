@@ -41,6 +41,8 @@ parralel computation
 
 * [x] code optimization and minor fixes
 
+* [ ] implement biweight mid correlation for rust
+ 
 
 
 
@@ -98,5 +100,4 @@ also something to be considered  is lmdb
 
 integrated  codebase to store db in text files for probeset types
 => https://github.com/genenetwork/genenetwork2/pull/736
-
 
