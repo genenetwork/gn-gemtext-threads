@@ -92,3 +92,11 @@ use text files similar to gn1 see example
 => https://github.com/genenetwork/genenetwork1/blob/d2381dd5bb35cb906032f7d530e9d14984e1de21/web/webqtl/correlation/CorrelationPage.py#L271
 
 also something to be considered  is lmdb
+
+
+## 20 Sept 2022
+
+integrated  codebase to store db in text files for probeset types
+=> https://github.com/genenetwork/genenetwork2/pull/736
+
+
