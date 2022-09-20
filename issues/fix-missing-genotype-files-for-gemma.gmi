@@ -20,5 +20,5 @@ the run will fail with an error.
 ## Steps
 
 * [ ] Add mechanical-rob tests to check that run is successful
-* [ ] Improve error message to indicate what genotype file is missing
+* [x] Improve error message to indicate what genotype file is missing
 * [ ] If there's a missing genotype file, ensure the test checks that the missing file is mentioned in the error report
