@@ -1,3 +1,6 @@
+
+# sample data caching bug
+
 When we cache sample data (mainly for features like correlations), it doesn't take into account changes in the sample list (which is derived from the .geno file).
 
 While this isn't frequently a problem, it was recently encountered with the BXD-Longevity group (which has had a number of recent changes to its .geno file, including changing the order of cases/samples, which basically rendered the cached sample data completely wrong)
@@ -5,3 +8,12 @@ While this isn't frequently a problem, it was recently encountered with the BXD-
 The fix to this is probably just to include the last updated time-stamp for the .geno file when caching. I'll probably do this in the next few days (maybe later today).
 
 The relevant caching code is here - https://github.com/genenetwork/genenetwork2/blob/2c22e593c59a9b4f9129a2e669443709d9c5154a/wqflask/base/data_set.py#L1288-L1317
+
+
+# Tags
+
+* assigned: zsloan,alex
+* priority: medium
+* type: bug
+* status: open
+* keywords: correlation,caching
