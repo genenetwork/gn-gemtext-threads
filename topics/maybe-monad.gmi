@@ -50,3 +50,11 @@ with conn.cursor(utility.monads.MonadicDictCursor) as cursor:
     for row in cursor.fetchall():
         row["foo"].bind(print)
 ```
+
+## Useful Resources
+
+=> https://www.miguelfarrajota.com/2021/06/monads-in-python-with-pymonad/
+
+=> https://jasondelaat.github.io/pymonad_docs/explanations/whats-a-monad.html
+
+=> https://simon.tournier.info/posts/2021-02-03-monad.html
