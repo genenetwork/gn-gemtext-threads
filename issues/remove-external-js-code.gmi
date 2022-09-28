@@ -2,9 +2,9 @@
 
 ## Tags
 
-* assigned: bonfacem, alex
+* assigned: bonfacem, alex,zac
 * type: ui, enhancement
-* status: unclear
+* status: inprogess
 * priority: medium
 * keywords: ui, guix
 
@@ -18,5 +18,9 @@
 - [x] Replace `jquery-ui` cdn with a link from the GNU Guix profile.
 - [ ] Check and report if there are other js files we load from a CDN.
 
+## Notes 28/9/22
 
+The jquery-ui was packaged and currently no other  cdn package exist
+A quick check up on the codebase shows jquery css is loaded from
+=> https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css
 
