@@ -5,7 +5,7 @@
 * assigned: alex
 * priority: high
 * type: bug
-* status: unclear
+* status: closed
 * keywords: TempDataSet, from github
 
 ## Description
@@ -48,3 +48,12 @@ but also the sample from the website did not work for me.
 
 
 @bonfacem might also be interested in this issue
+
+
+
+## Notes 28/9/22
+
+
+this issue has not being reported for a while since jul 16,2022
+The error is also not reproducible
+closing down this until a new issue is raised
