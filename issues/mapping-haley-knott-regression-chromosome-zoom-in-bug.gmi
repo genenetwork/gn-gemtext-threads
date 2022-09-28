@@ -2,7 +2,7 @@
 
 ## Tags
 
-* status: open
+* status: closed
 * keywords: mapping, Haley-Knott Regression
 * priority: medium
 * type: bug

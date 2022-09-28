@@ -29,7 +29,7 @@ curr.execute(
         WHERE Strain.Name IN ({})
         and Strain.SpeciesId=Species.Id
         and Species.name = %s
-    """.format(", ".join(sample_data_keys)),
+    """.format(", ".join(["%s"] * len(sample_data_keys))),
     (sample_data_keys + (dataset.group.species,)))
 ```
 
