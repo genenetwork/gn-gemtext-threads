@@ -2,17 +2,27 @@
 
 ## Executive summary
 
-Put the following into a channels.scm file.
+To build guix profiles that can run GN2+GN3 we use a so-called channel.
+
+Note that a recently tested channel can be fetched from cd.genenetwork.org. That should include the recent git hash values.
+
+Alternatively put the following into a channels.scm file.
 ```
 (list (channel
        (name 'gn-bioinformatics)
-       (url "https://git.genenetwork.org/guix-bioinformatics/guix-bioinformatics")
+       (url "https://gitlab.com/genenetwork/guix-bioinformatics")
+       ;; (url "https://git.genenetwork.org/guix-bioinformatics/guix-bioinformatics")
        (branch "master")))
 ```
 Build a profile using
 ```
 $ guix pull -C channels.scm -p ~/.guix-extra-profiles/genenetwork
 ```
+On production we do
+```
+tux01:~$ ~/opt/guix-pull/bin/guix pull -C channels-latest.scm -p /usr/local/guix-profiles/gn-latest-20220928
+```
+
 Activate the newly built profile using
 ```
 $ export GUIX_PROFILE=~/.guix-extra-profiles/genenetwork
@@ -27,3 +37,7 @@ From time to time, updates to upstream Guix break our guix-bioinformatics channe
 To this end, we hard-code the guix-bioinformatics channel to depend on a specific commit of upstream Guix. This is why the recommended channels.scm file above does not include a %default-guix-channel. However, this comes with the drawback that your entire system will be stuck at that specific commit of upstream Guix. You will not be able to move forward until we decide to update the hard-coded upstream Guix commit in guix-bioinformatics. You may have other work that needs the latest Guix and this might not be what you want. So, we highly recommend using a separate `guix pull` profile specifically for GeneNetwork work, as described above.
 
 This scheme also comes with the added bonus that all members on the team and the continuous integration system will be using exactly the same Guix.
+
+## Notes
+
+We recently had to switch to gitlab because our git server went down on Penguin2.
