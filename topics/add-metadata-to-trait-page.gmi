@@ -1,0 +1,39 @@
+# Add Metadata To The Trait Page (RDF)
+
+Wed 28 Sep 2022 14:49:51 EAT
+
+## Introduction
+
+We are migrating the GN2 relational database to a plain text and RDF database.  Matrix-like data (E.g. fetching sample data for a given data) will be stored inside GN.
+
+So far, we are able to convert the sql data to rdf using "dump.scm" defined in:
+
+=> https://github.com/genenetwork/dump-genenetwork-database
+
+## What are we trying to solve?
+
+Data stored in genenetwork resembles a tree. As an example: we have several species; each of these species belong to a group; each group belongs to a "data type"; and each data type belongs to a particular dataset.  The first step: capturing - albeit requiring more refinement - this data in RDF has been achieved using the aformentioned scheme script.
+
+The overall goal is to be ablet to:
+
+* Incrementally replace MySQL queries with RDF.
+
+* Annotating existing data with metadata that does not yet exist in GN2.
+
+## Goals
+
+* In the Trait Analysis Page, add extrat metadata for "Group", "Tissue", "Gene Symbol".  Possibly, a link to a relevant URL with useful information.
+
+### Non-goals
+
+* Refactoring base classes/sql to solely use RDF.
+
+## Actual Design
+
+* Create endpoints to add extra annotations for Groups, Tissue, Gene Symbol.
+* Should this extra data not exist, write a script in Guile to fetch them from wikidata and insert them into RDF as extra nodes.
+* Add metadata as links or tooltips to the relevant html section.
+
+## Resources
+
+=> https://www.linkedin.com/pulse/six-secret-sparql-ninja-tricks-kurt-cagle/
