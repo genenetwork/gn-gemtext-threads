@@ -1,0 +1,54 @@
+# Error when fetching SNPs in a search page
+Wed 28 Sep 2022 17:45:01 EAT
+
+* assigned: zachs, bonfacem
+* tags: critical
+
+## Steps to reproduce
+
+* Consider this search page:
+
+=> https://genenetwork.org/show_trait?trait_id=1434280_at&dataset=HC_M2_0606_P
+
+=> https://github.com/genenetwork/gn-gemtext-threads/blob/main/pictures/trait-search-page-1427571_at.png
+
+* After clicking on "SNPs", this error is generated (full stack-trace):
+
+```
+      GeneNetwork tux01:gene:2.11-rc2-HEAD-52318e03c  http://genenetwork.org/snp_browser?first_run=true&species=mouse&gene_name=BG976607&limit_strains=on ( 2:42PM UTC Sep 28, 2022) 
+Traceback (most recent call last):
+  File "/usr/local/guix-profiles/gn-latest-20220122/lib/python3.9/site-packages/flask/app.py", line 1513, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/local/guix-profiles/gn-latest-20220122/lib/python3.9/site-packages/flask/app.py", line 1499, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/gn2/production/gene/wqflask/wqflask/views.py", line 867, in snp_browser_page
+    template_vars = snp_browser.SnpBrowser(cursor, request.args)
+  File "/home/gn2/production/gene/wqflask/wqflask/snp_browser/snp_browser.py", line 14, in __init__
+    self.initialize_parameters(start_vars)
+TypeError: initialize_parameters() missing 1 required positional argument: 'start_vars'
+ 
+```
+
+* If you are using the provided local database, you get an error because the "RatSnpPattern" table does not exist:
+
+```
+ERROR:wqflask:http://localhost:5004/snp_browser?first_run=true&species=mouse&gene_name=BG976607&limit_strains=on ( 2:11PM UTC Sep 28, 2022)
+Traceback (most recent call last):
+  File "/home/bonface/opt/genenetwork2/lib/python3.9/site-packages/flask/app.py", line 1523, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/bonface/opt/genenetwork2/lib/python3.9/site-packages/flask/app.py", line 1509, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/bonface/projects/oqo-genenetwork2/search/wqflask/wqflask/views.py", line 859, in snp_browser_page
+    template_vars = snp_browser.SnpBrowser(request.args)
+  File "/home/bonface/projects/oqo-genenetwork2/search/wqflask/wqflask/snp_browser/snp_browser.py", line 13, in __init__
+    self.strain_lists = get_browser_sample_lists()
+  File "/home/bonface/projects/oqo-genenetwork2/search/wqflask/wqflask/snp_browser/snp_browser.py", line 672, in get_browser_sample_lists
+    cursor.execute("SHOW COLUMNS FROM RatSnpPattern")
+  File "/home/bonface/opt/genenetwork2/lib/python3.9/site-packages/MySQLdb/cursors.py", line 206, in execute
+    res = self._query(query)
+  File "/home/bonface/opt/genenetwork2/lib/python3.9/site-packages/MySQLdb/cursors.py", line 319, in _query
+    db.query(q)
+  File "/home/bonface/opt/genenetwork2/lib/python3.9/site-packages/MySQLdb/connections.py", line 259, in query
+    _mysql.connection.query(self, query)
+MySQLdb._exceptions.ProgrammingError: (1146, "Table 'db_webqtl_s.RatSnpPattern' doesn't exist")
+```
