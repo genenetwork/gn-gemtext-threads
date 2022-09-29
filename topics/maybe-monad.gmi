@@ -35,7 +35,7 @@ foo.map(lambda x: 1 + x) \
    .bind(print)
 ```
 
-Finally, let's put all this together in a practical example using the MonadicDictCursor from genenetwork. Consider the following code using the DictCursor. The column foo may contain NULL values, and we need to check for them.
+Finally, let's put all this together in a practical example using sql_query_mdict from genenetwork. Consider the following code using the DictCursor. The column foo may contain NULL values, and we need to check for them.
 ```
 with conn.cursor(MySQLdb.cursors.DictCursor) as cursor:
     cursor.execute("SELECT foo FROM bar")
@@ -43,13 +43,12 @@ with conn.cursor(MySQLdb.cursors.DictCursor) as cursor:
         if row["foo"] is not None:
             print(row["foo"])
 ```
-But, with the MonadicDictCursor, the row object is a MonadictDict where all values are monadic. We therefore do not need any special conditional checks.
+But, with sql_query_mdict, the row object is a MonadictDict where all values are monadic. We therefore do not need any special conditional checks.
 ```
-with conn.cursor(utility.monads.MonadicDictCursor) as cursor:
-    cursor.execute("SELECT foo FROM bar")
-    for row in cursor.fetchall():
-        row["foo"].bind(print)
+for row in sql_query_mdict("SELECT foo FROM bar"):
+    row["foo"].bind(print)
 ```
+As a bonus, sql_query_mdict also gets rid of cursors by returning a generator and letting us iterate over it pythonically.
 
 ## Useful Resources
 
