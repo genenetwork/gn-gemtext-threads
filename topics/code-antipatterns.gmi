@@ -1,0 +1,93 @@
+# Introduction
+
+This document contains some anti-patterns that have either been discussed during code-reviews or noticed by some one when refactoring any of GN's code-base.  Use these "ideas" as a reference, and apply reasonable judgement depending on what you are working on.
+
+
+## [Python] Don't pass mutable types as arguments
+
+Consider:
+
+```
+from typing import List
+
+
+_l = ['a', 'b', 'c']
+
+
+def add_pvalue(l: List, val: str) -> List:
+    l.append(val)
+    return l
+
+print(f"{_l=}\n")
+print(f"{add_pvalue(_l, 'd')=}\n")
+print(f"{_l=}")
+
+```
+
+which outputs (note that _l in the global scope has changed):
+
+```
+_l=['a', 'b', 'c']
+
+add_pvalue(_l, 'd')=['a', 'b', 'c', 'd']
+
+_l=['a', 'b', 'c', 'd']
+```
+
+A better fix would be:
+
+
+```
+from typing import List
+
+
+_l = ['a', 'b', 'c']
+
+
+def add_pvalue(l: List, val: str) -> List:
+    l = l.copy()
+    l.append(val)
+    return l
+
+print(f"{_l=}\n")
+print(f"{add_pvalue(_l, 'd')=}\n")
+print(f"{_l=}")
+```
+
+which now does the right thing:
+
+```
+_l=['a', 'b', 'c']
+
+add_pvalue(_l, 'd')=['a', 'b', 'c', 'd']
+
+_l=['a', 'b', 'c']
+
+```
+
+Best, use immutable types:
+
+```
+from typing import Tuple
+
+
+_l = ['a', 'b', 'c']
+
+
+def add_pvalue(l: Tuple, val: str) -> Tuple:
+    return l + (val,)
+
+print(f"{_l=}\n")
+print(f"{add_pvalue(tuple(_l), 'p')=}\n")
+print(f"{_l=}")
+```
+
+which outputs:
+
+```
+_l=['a', 'b', 'c']
+
+add_pvalue(tuple(_l), 'p')=('a', 'b', 'c', 'p')
+
+_l=['a', 'b', 'c']
+```
