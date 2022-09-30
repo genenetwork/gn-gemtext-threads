@@ -1,6 +1,6 @@
 # Add Metadata To The Trait Page (RDF)
 
-Wed 28 Sep 2022 14:49:51 EAT
+Fri 30 Sep 2022 11:48:41 EAT
 
 ## Introduction
 
@@ -22,17 +22,39 @@ The overall goal is to be ablet to:
 
 ## Goals
 
-* In the Trait Analysis Page, add extrat metadata for "Group", "Tissue", "Gene Symbol".  Possibly, a link to a relevant URL with useful information.
+In the Trait Analysis page, for example:
+
+=> https://genenetwork.org/show_trait?trait_id=1434280_at&dataset=HC_M2_0606_P
+
+and the corresponding GN1 link:
+
+=> http://gn1.genenetwork.org/webqtl/main.py?cmd=show&db=HC_M2_0606_P&probeset=1434280_at
+
+which on further inspection presents metadata on that specific dataset group here:
+
+=> http://gn1.genenetwork.org/webqtl/main.py?FormID=sharinginfo&GN_AccessionId=112
+
+We notice that there's metadata in GN1 - which we have in RDF - that we can add to the GN2 traits page.  As such, this design doc will be limited to using RDF to:
+
+* Append metadata about the tissue
+* Append relevant metadata about the dataset group, in particular: about the data values and it's processing; about the array platform; experiment type; and contributors.
+
+Beyond querying metadata, this design doc also proposes the creation of a monadic rdf-fetch similar to what happens in:
+
+=> https://issues.genenetwork.org/topics/maybe-monad
 
 ### Non-goals
 
 * Refactoring base classes/sql to solely use RDF.
+* Using federated queries - they are slow.
+* Writing a script in Guile to fetch and append extra metadata from wikidata and insert them into RDF as extra nodes.  This should be tackled as a separate issue.
 
 ## Actual Design
 
-* Create endpoints to add extra annotations for Groups, Tissue, Gene Symbol.
-* Should this extra data not exist, write a script in Guile to fetch them from wikidata and insert them into RDF as extra nodes.
-* Add metadata as links or tooltips to the relevant html section.
+* Rewrite the existing way of fetching RDF using pymonads.
+* React to the change-amplification - should any exist - caused by the above change and add tests where feasible.
+* Create endpoints to add extra annotations for Tissue, Dataset Group, Dataset Values and Processing; array platform; experiment type; and contributors.
+* Add metadata as links, tooltips, or html <summary> tag to the relevant html section(s).
 
 ## Resources
 
