@@ -5,5 +5,12 @@ We aim to adhere to the following coding guidelines.
 => /topics/use-exceptions-to-indicate-errors Exceptions, not None return values
 => /topics/maybe-monad Maybe monad, not None values
 => /topics/better-logging Log messages
+=> /topics/code-antipatterns Coding Anti-Patterns
+=> /topics/lisp/debugging Debugging lisp
+=> /topics/lisp/common-lisp-sly Common LISP: sly
+=> /topics/lisp/define-condition Common Lisp Condition Handling
+=> /topics/lisp/lisp4schemers Lisp For Schemers
+=> /topics/lisp/tips-and-tricks Defining a scheme sexp comment with a reader macro
+=> /topics/profiling_python_code Profiling Python code
 
 This document is an index of other documents describing coding guidelines. Add more here as you write/discover them.
