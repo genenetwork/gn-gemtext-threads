@@ -1,4 +1,4 @@
-# Introduction
+# Coding Anti-Patterns
 
 This document contains some anti-patterns that have either been discussed during code-reviews or noticed by some one when refactoring any of GN's code-base.  Use these "ideas" as a reference, and apply reasonable judgement depending on what you are working on.
 
