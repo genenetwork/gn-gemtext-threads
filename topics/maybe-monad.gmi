@@ -45,8 +45,9 @@ with conn.cursor(MySQLdb.cursors.DictCursor) as cursor:
 ```
 But, with sql_query_mdict, the row object is a MonadictDict where all values are monadic. We therefore do not need any special conditional checks.
 ```
-for row in sql_query_mdict("SELECT foo FROM bar"):
-    row["foo"].bind(print)
+with database_connection() as conn
+    for row in sql_query_mdict(conn, "SELECT foo FROM bar"):
+        row["foo"].bind(print)
 ```
 As a bonus, sql_query_mdict also gets rid of cursors by returning a generator and letting us iterate over it pythonically.
 
