@@ -1,0 +1,7 @@
+# Annotate traits page with metadata from RDF
+
+* assigned: bonfacem
+
+Read the design-doc here:
+
+=> /topics/add-metadata-to-trait-page
