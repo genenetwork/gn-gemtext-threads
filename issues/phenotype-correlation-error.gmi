@@ -23,3 +23,9 @@ subprocess.CalledProcessError: Command '['/usr/local/guix-profiles/gn-latest-202
 * keywords: correlations
 * status: in-progress
 * priority: high
+
+## Notes
+
+* 2022-09-29: Successfully reproduced on production
+* 2022-09-29: Fix file format issues
+* 2022-09-30: Fix issues in rust correlation code
