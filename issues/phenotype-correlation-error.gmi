@@ -1,8 +1,13 @@
-# Correlation against phenotypes fails (for at least some datasets)
+# Phenotype Correlation Error
 
-Example: Run a correlation against BXD Published Phenotypes (at the top of the drop-down menu) from here - https://genenetwork.org/show_trait?trait_id=1442370_at&dataset=HC_M2_0606_P
+## Correlation against phenotypes fails (for at least some datasets)
+
+Example: Run a correlation against BXD Published Phenotypes (at the top of the drop-down menu) from here -
+=> https://genenetwork.org/show_trait?trait_id=1442370_at&dataset=HC_M2_0606_P
 
 The bug appears to occur in the rust correlation tool, so I'm not sure how to debug it myself. The last few linnes of the stack trace are as follows:
+
+```
   File "/export2/local/home/zas1024/gn2-zach/gene/wqflask/wqflask/correlation/rust_correlation.py", line 262, in __compute_sample_corr__
     return run_correlation(
   File "/usr/local/guix-profiles/gn-latest-20220820/lib/python3.9/site-packages/gn3/computations/rust_correlation.py", line 58, in run_correlation
@@ -10,6 +15,7 @@ The bug appears to occur in the rust correlation tool, so I'm not sure how to de
   File "/gnu/store/qar3sks5fwzm91bl3d3ngyrvxs7ipj5z-python-3.9.9/lib/python3.9/subprocess.py", line 528, in run
     raise CalledProcessError(retcode, process.args,
 subprocess.CalledProcessError: Command '['/usr/local/guix-profiles/gn-latest-20220820/bin/correlation_rust', '/home/zas1024/gn2-zach/tmp/gn2/correlation/IoaglmTgDJ.json', '/home/zas1024/gn2-zach/tmp/gn2']' died with <Signals.SIGSEGV: 11>.
+```
 
 ## Tags
 * assigned: alexm, fredm, zsloan
