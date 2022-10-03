@@ -17,6 +17,50 @@ The bug appears to occur in the rust correlation tool, so I'm not sure how to de
 subprocess.CalledProcessError: Command '['/usr/local/guix-profiles/gn-latest-20220820/bin/correlation_rust', '/home/zas1024/gn2-zach/tmp/gn2/correlation/IoaglmTgDJ.json', '/home/zas1024/gn2-zach/tmp/gn2']' died with <Signals.SIGSEGV: 11>.
 ```
 
+----
+
+After fixing the issues with the interactions with the rust correlations code, I am now running into the following error when I run a correlation against the "Hippocampus Consortium M430v2 (Jun06) PDNN" dataset with the same trait from the URI above:
+```
+Traceback (most recent call last):
+  File "/home/frederick/opt/gn_profiles/gn2_latest/lib/python3.9/site-packages/flask/app.py", line 1523, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/frederick/opt/gn_profiles/gn2_latest/lib/python3.9/site-packages/flask/app.py", line 1509, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/frederick/genenetwork/genenetwork2/wqflask/wqflask/views.py", line 820, in corr_compute_page
+    correlation_results = set_template_vars(request.form, correlation_results)
+  File "/home/frederick/genenetwork/genenetwork2/wqflask/wqflask/correlation/show_corr_results.py", line 54, in set_template_vars
+    table_json = correlation_json_for_table(correlation_data,
+  File "/home/frederick/genenetwork/genenetwork2/wqflask/wqflask/correlation/show_corr_results.py", line 104, in correlation_json_for_table
+    target_trait_ob = create_trait(dataset=target_dataset_ob,
+  File "/home/frederick/genenetwork/genenetwork2/wqflask/base/trait.py", line 44, in create_trait
+    the_trait = retrieve_trait_info(
+  File "/home/frederick/genenetwork/genenetwork2/wqflask/base/trait.py", line 599, in retrieve_trait_info
+    raise KeyError(repr(trait.name)
+KeyError: "'1' information is not found in the database."
+```
+
+I also run into the following error when I run the mechanical-rob tests
+
+```
+ERROR:wqflask:http://localhost:5033/corr_compute ( 4:26AM UTC Oct 03, 2022)
+Traceback (most recent call last):
+  File "/home/frederick/opt/gn_profiles/gn2_latest/lib/python3.9/site-packages/flask/app.py", line 1523, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/frederick/opt/gn_profiles/gn2_latest/lib/python3.9/site-packages/flask/app.py", line 1509, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/frederick/genenetwork/genenetwork2/wqflask/wqflask/views.py", line 818, in corr_compute_page
+    correlation_results = compute_correlation(request.form, compute_all=True)
+  File "/home/frederick/genenetwork/genenetwork2/wqflask/wqflask/correlation/correlation_gn3_api.py", line 199, in compute_correlation
+    return compute_correlation_rust(
+  File "/home/frederick/genenetwork/genenetwork2/wqflask/wqflask/correlation/rust_correlation.py", line 326, in compute_correlation_rust
+    results = corr_type_fns[corr_type](
+  File "/home/frederick/genenetwork/genenetwork2/wqflask/wqflask/correlation/rust_correlation.py", line 299, in __compute_lit_corr__
+    (this_trait_geneid, geneid_dict, species) = do_lit_correlation(
+  File "/home/frederick/genenetwork/genenetwork2/wqflask/wqflask/correlation/correlation_gn3_api.py", line 237, in do_lit_correlation
+    geneid_dict = this_dataset.retrieve_genes("GeneId")
+AttributeError: 'PhenotypeDataSet' object has no attribute 'retrieve_genes'
+```
+
 ## Tags
 * assigned: alexm, fredm, zsloan
 * type: bug
