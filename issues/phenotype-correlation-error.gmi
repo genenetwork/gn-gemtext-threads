@@ -39,6 +39,41 @@ Traceback (most recent call last):
 KeyError: "'1' information is not found in the database."
 ```
 
+The error above was caused by processing the data for output way too early. This has been fixed.
+
+
+----
+
+Running "Tissue" correlations on
+=> https://genenetwork.org/show_trait?trait_id=1442370_at&dataset=HC_M2_0606_P
+against the "BXD Published Phenotypes" database fails with the error:
+
+```
+Traceback (most recent call last):
+  File "/usr/local/guix-profiles/gn-latest-20220820/lib/python3.9/site-packages/flask/app.py", line 1523, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/local/guix-profiles/gn-latest-20220820/lib/python3.9/site-packages/flask/app.py", line 1509, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/gn2/production/gene/wqflask/wqflask/views.py", line 820, in corr_compute_page
+    correlation_results = set_template_vars(request.form, correlation_results)
+  File "/home/gn2/production/gene/wqflask/wqflask/correlation/show_corr_results.py", line 54, in set_template_vars
+    table_json = correlation_json_for_table(correlation_data,
+  File "/home/gn2/production/gene/wqflask/wqflask/correlation/show_corr_results.py", line 104, in correlation_json_for_table
+    target_trait_ob = create_trait(dataset=target_dataset_ob,
+  File "/home/gn2/production/gene/wqflask/base/trait.py", line 44, in create_trait
+    the_trait = retrieve_trait_info(
+  File "/home/gn2/production/gene/wqflask/base/trait.py", line 599, in retrieve_trait_info
+    raise KeyError(repr(trait.name)
+KeyError: "'1422223_at' information is not found in the database."
+```
+
+so far, triangulated the issue to possibly being the fact that the "target_dataset" value is not used
+=> https://github.com/genenetwork/genenetwork2/blob/53aa084fd2c9c930ac791ee43affffb3f788547c/wqflask/wqflask/correlation/rust_correlation.py#L271-L289 in this function.
+
+@zsloan and @alexm: any ideas?
+
+----
+
 I also run into the following error when I run the mechanical-rob tests
 
 ```
@@ -73,3 +108,4 @@ AttributeError: 'PhenotypeDataSet' object has no attribute 'retrieve_genes'
 * 2022-09-29: Successfully reproduced on production
 * 2022-09-29: Fix file format issues
 * 2022-09-30: Fix issues in rust correlation code
+* 2022-10-03: Fix: avoid processing for output early
