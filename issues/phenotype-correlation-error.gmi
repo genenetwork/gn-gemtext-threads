@@ -73,7 +73,11 @@ so far, triangulated the issue to possibly being the fact that the "target_datas
 
 ## Literature Correlation: ...
 
-I also run into the following error when I run the mechanical-rob tests
+Run literature correlation for
+=> http://localhost:5033/show_trait?trait_id=1442370_at&dataset=HC_M2_0606_P this trait
+against the "BXD Published Phenotype" database and observe the following exception:
+
+This also fails if you run it against the "BXD Genotypes" dataset.
 
 ```
 ERROR:wqflask:http://localhost:5033/corr_compute ( 4:26AM UTC Oct 03, 2022)
@@ -94,6 +98,16 @@ Traceback (most recent call last):
     geneid_dict = this_dataset.retrieve_genes("GeneId")
 AttributeError: 'PhenotypeDataSet' object has no attribute 'retrieve_genes'
 ```
+
+The literature correlations computation calls the `retrieve_genes` method, that is only present in the `base.data_set.mrnaassaydataset.MrnaAssayDataSet` class, which handles traits of type "ProbeSet".
+
+==================
+
+In my (fredm) work on partial correlations, before doing the computations,
+=> https://github.com/genenetwork/genenetwork3/blob/ff34aee0f39c2e91db243461d7d67405e7aea0e3/gn3/computations/partial_correlations.py#L704-L750 there were error checks
+that were run.
+
+Should these be present for the full correlations too?
 
 ## Tags
 * assigned: alexm, fredm, zsloan
