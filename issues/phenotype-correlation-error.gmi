@@ -41,11 +41,13 @@ KeyError: "'1' information is not found in the database."
 
 The error above was caused by processing the data for output way too early. This has been fixed.
 
-## Tissue Correlation: Probeset Trait Against Publish Dataset
+## Tissue Correlation: Probeset Trait Against Publish/Genotype Dataset
 
 Running "Tissue" correlations on
 => https://genenetwork.org/show_trait?trait_id=1442370_at&dataset=HC_M2_0606_P
 against the "BXD Published Phenotypes" database fails with the error:
+
+This also fails if you run it against the "BXD Genotypes" dataset.
 
 ```
 Traceback (most recent call last):
@@ -71,7 +73,7 @@ so far, triangulated the issue to possibly being the fact that the "target_datas
 
 @zsloan and @alexm: any ideas?
 
-## Literature Correlation: ...
+## Literature Correlation: Probeset Trait Against Publish/Genotype Dataset
 
 Run literature correlation for
 => http://localhost:5033/show_trait?trait_id=1442370_at&dataset=HC_M2_0606_P this trait
@@ -101,13 +103,21 @@ AttributeError: 'PhenotypeDataSet' object has no attribute 'retrieve_genes'
 
 The literature correlations computation calls the `retrieve_genes` method, that is only present in the `base.data_set.mrnaassaydataset.MrnaAssayDataSet` class, which handles traits of type "ProbeSet".
 
-==================
+The code seems to imply that we should not run literature correlations against any dataset that is not of type "ProbeSet".
+
+## Some Reflections
 
 In my (fredm) work on partial correlations, before doing the computations,
 => https://github.com/genenetwork/genenetwork3/blob/ff34aee0f39c2e91db243461d7d67405e7aea0e3/gn3/computations/partial_correlations.py#L704-L750 there were error checks
 that were run.
 
 Should these be present for the full correlations too?
+
+The failures above with the Publish/Genotype datasets implies one of two things:
+* The code is not general enough, or
+* We need to handle the exceptions, and present the selection errors as appropriate.
+
+Better yet, we should probably not present invalid data to the user, i.e. do not present user with a dataset which would lead to errors if a correlation of a particular type is run against it with the given trait.
 
 ## Tags
 * assigned: alexm, fredm, zsloan
