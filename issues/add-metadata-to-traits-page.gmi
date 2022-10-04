@@ -70,18 +70,18 @@ Metadata about this dataset can be found in:
 
 ## Display the metadata in GN2 as HTML
 
-* [ ] Display the metadata as part of GN2 web-page
-* [ ] Determine whether to load the RDF metadata as part of the response or create an entirely different endpoint for it.
+* [ ] Display the metadata as part of GN2 web-page.  This data is stored as HTML.  How do work around this WRT displaying in a UI friendly way?
+* [ ] Determine whether to load the RDF metadata as part of the response or create an entirely different endpoint for it
 * [ ] Submit patches for review
 
 ## Editing metadata
 
 * [ ] Research ways of editing that text if the user really wants to
-* [ ] Inspect how GN2 did the edits.
-* [ ] Work out if the edits are feasible/important to work on and communicate to PJ/Arun.
+* [ ] Inspect how GN1 did the edits
+* [ ] Work out if the edits are feasible/important to work on and communicate to PJ/Arun
 
 ## Next steps
 
-* [ ] Spec out LMDB integration and how it would work out with current statistical operations.  Collaborate with Alex/Fred on this.
+* [ ] Spec out LMDB integration and how it would work out with current statistical operations.  Collaborate with Alex/Fred on this
 
 
