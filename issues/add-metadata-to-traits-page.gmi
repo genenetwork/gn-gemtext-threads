@@ -5,3 +5,83 @@
 Read the design-doc here:
 
 => /topics/add-metadata-to-trait-page
+
+This task is related to:
+
+=> /issues/capture-data-on-BXDs-in-RDF
+
+
+# Tasks
+## Exploration
+
+* [X] Modify - experimental - how we dump the CSV files
+
+In one of the reviews, it was pointed that we shouldn't really store table IDs in RDF.  They are confusing and not necessarily important.
+
+* [X] Experiment with replacing some of the base SQL queries with RDF
+
+No much progress was made with this.  We use table IDs to reference and build relationships in GN.  This has made it difficult to have drop-in replacements in RDF without breaking a big part of GN2 functionality.  Also, how we fetch data in GN through deep inheritance.  With time, this deep inheritance that introduces un-necessary coupling should be untangled - a task for another day - in favour of composition.
+
+* [X] Explore federated queries using wikidata/Uniprot
+
+This demo was unsatisfactory; but nevertheless, I have a good understanding of how federated queries work. My findings are: federated queries can be slow (querying wikidata took as long as 5 minutes).  As such, a better strategy would be to write scripts to enrish our dataset from other data sources as entries with the right ontology.  Also, being exposed to many other RDF sources that use different ontologies was confusing.
+
+
+## Fetch metadata - datasets - using RDF
+
+* [X] Initial experimentation in python-script + demo to the team.
+
+The submitted demo was for this SPARQL query for the trait:
+
+```
+PREFIX gn: <http://genenetwork.org/>
+SELECT ?name ?dataset ?dataset_group ?title ?summary ?aboutTissue ?aboutPlatform ?aboutProcessing
+WHERE {
+  ?dataset gn:accessionId "GN112" ;
+           rdf:type gn:dataset .
+OPTIONAL { ?dataset gn:name ?name } .
+OPTIONAL { ?dataset gn:aboutTissue ?aboutTissue} .
+OPTIONAL { ?dataset gn:title ?title } .
+OPTIONAL { ?dataset gn:summary ?summary } .
+OPTIONAL { ?dataset gn:aboutPlatform ?aboutPlatform} .
+OPTIONAL { ?dataset gn:aboutProcessing ?aboutProcessing} .
+OPTIONAL { ?dataset gn:geoSeries ?geo_series } .
+}
+```
+
+The particular trait in GN2 is:
+
+=> https://genenetwork.org/show_trait?trait_id=1458764_at&dataset=HC_M2_0606_P
+
+The equivalent version in GN1 is:
+
+=> http://gn1.genenetwork.org/webqtl/main.py?cmd=show&db=HC_M2_0606_P&probeset=1454998_at
+
+Metadata about this dataset can be found in:
+
+=> http://gn1.genenetwork.org/webqtl/main.py?FormID=sharinginfo&GN_AccessionId=112
+
+
+* [ ] Work out what type of datasets have accession id's
+* [ ] Refactor the dataset fetch fn in GN3 to use the Maybe Monad
+* [ ] Write tests for the above
+* [ ] Test on test database upstream - if this is set-up
+* [ ] Submit patches for review
+
+## Display the metadata in GN2 as HTML
+
+* [ ] Display the metadata as part of GN2 web-page
+* [ ] Determine whether to load the RDF metadata as part of the response or create an entirely different endpoint for it.
+* [ ] Submit patches for review
+
+## Editing metadata
+
+* [ ] Research ways of editing that text if the user really wants to
+* [ ] Inspect how GN2 did the edits.
+* [ ] Work out if the edits are feasible and communicate to PJ/Arun.  Important: check if this is important to work on.
+
+## Next steps
+
+* [ ] Spec out LMDB integration and how it would work out with current statistical operations.  Collaborate with Alex/Fred on this.
+
+
