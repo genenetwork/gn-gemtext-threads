@@ -20,11 +20,11 @@ In one of the reviews, it was pointed that we shouldn't really store table IDs i
 
 * [X] Experiment with replacing some of the base SQL queries with RDF
 
-No much progress was made with this.  We use table IDs to reference and build relationships in GN.  This has made it difficult to have drop-in replacements in RDF without breaking a big part of GN2 functionality.  Also, how we fetch data in GN through deep inheritance.  With time, this deep inheritance that introduces un-necessary coupling should be untangled - a task for another day - in favour of composition.
+No much progress was made with this.  We use table IDs to reference and build relationships in GN.  This has made it difficult to have drop-in replacements in RDF without breaking a big part of GN2 functionality.  Also, how we fetch data in GN through deep inheritance.  With time, this deep inheritance that introduces unnecessary coupling should be untangled - a task for another day - in favor of composition.
 
 * [X] Explore federated queries using wikidata/Uniprot
 
-This demo was unsatisfactory; but nevertheless, I have a good understanding of how federated queries work. My findings are: federated queries can be slow (querying wikidata took as long as 5 minutes).  As such, a better strategy would be to write scripts to enrish our dataset from other data sources as entries with the right ontology.  Also, being exposed to many other RDF sources that use different ontologies was confusing.
+This demo was unsatisfactory; but nevertheless, I have a good understanding of how federated queries work. My findings are: federated queries can be slow (querying wikidata took as long as 5-30 seconds).  As such, a better strategy would be to write scripts to enrich our dataset from other data sources as entries with the right ontology.  Also, being exposed to many other RDF sources that use different ontology was confusing.
 
 
 ## Fetch metadata - datasets - using RDF
@@ -78,7 +78,7 @@ Metadata about this dataset can be found in:
 
 * [ ] Research ways of editing that text if the user really wants to
 * [ ] Inspect how GN2 did the edits.
-* [ ] Work out if the edits are feasible and communicate to PJ/Arun.  Important: check if this is important to work on.
+* [ ] Work out if the edits are feasible/important to work on and communicate to PJ/Arun.
 
 ## Next steps
 
