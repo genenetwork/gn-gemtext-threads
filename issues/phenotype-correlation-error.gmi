@@ -1,6 +1,6 @@
 # Phenotype Correlation Error
 
-## Correlation against phenotypes fails (for at least some datasets)
+## Fixed: Correlation against phenotypes fails (for at least some datasets)
 
 Example: Run a correlation against BXD Published Phenotypes (at the top of the drop-down menu) from here -
 => https://genenetwork.org/show_trait?trait_id=1442370_at&dataset=HC_M2_0606_P
@@ -17,7 +17,7 @@ The bug appears to occur in the rust correlation tool, so I'm not sure how to de
 subprocess.CalledProcessError: Command '['/usr/local/guix-profiles/gn-latest-20220820/bin/correlation_rust', '/home/zas1024/gn2-zach/tmp/gn2/correlation/IoaglmTgDJ.json', '/home/zas1024/gn2-zach/tmp/gn2']' died with <Signals.SIGSEGV: 11>.
 ```
 
-----
+## Fixed: Processing for Output too Early
 
 After fixing the issues with the interactions with the rust correlations code, I am now running into the following error when I run a correlation against the "Hippocampus Consortium M430v2 (Jun06) PDNN" dataset with the same trait from the URI above:
 ```
@@ -41,8 +41,7 @@ KeyError: "'1' information is not found in the database."
 
 The error above was caused by processing the data for output way too early. This has been fixed.
 
-
-----
+## Tissue Correlation: Probeset Trait Against Publish Dataset
 
 Running "Tissue" correlations on
 => https://genenetwork.org/show_trait?trait_id=1442370_at&dataset=HC_M2_0606_P
@@ -72,7 +71,7 @@ so far, triangulated the issue to possibly being the fact that the "target_datas
 
 @zsloan and @alexm: any ideas?
 
-----
+## Literature Correlation: ...
 
 I also run into the following error when I run the mechanical-rob tests
 
