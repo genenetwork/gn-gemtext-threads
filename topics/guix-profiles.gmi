@@ -6,6 +6,8 @@ To build guix profiles that can run GN2+GN3 we use a so-called channel.
 
 Note that a recently tested channel can be fetched from cd.genenetwork.org. That should include the recent git hash values.
 
+=> https://ci.genenetwork.org/channels.scm
+
 Alternatively put the following into a channels.scm file.
 ```
 (list (channel
@@ -18,10 +20,6 @@ Build a profile using
 ```
 $ guix pull -C channels.scm -p ~/.guix-extra-profiles/genenetwork
 ```
-On production we do
-```
-tux01:~$ ~/opt/guix-pull/bin/guix pull -C channels-latest.scm -p /usr/local/guix-profiles/gn-latest-20220928
-```
 
 Activate the newly built profile using
 ```
@@ -29,6 +27,18 @@ $ export GUIX_PROFILE=~/.guix-extra-profiles/genenetwork
 $ . $GUIX_PROFILE/.guix-extra-profiles/genenetwork
 ```
 Hack away on any GeneNetwork repository as usual. Now, any development environment you create with `guix shell` will be identical to what others on the team and the continuous integration system are using. This development environment is guaranteed to not break regardless of the latest changes to Guix upstream or other externalities.
+
+## Production (tux01)
+
+After downloading channels.scm from
+
+=> https://ci.genenetwork.org/channels.scm
+
+On production we do
+```
+tux01:~$ ~/opt/guix-pull/bin/guix pull -C channels.scm -p /usr/local/guix-profiles/gn-latest-20220928
+```
+
 
 ## Rationale
 
