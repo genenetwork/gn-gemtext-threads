@@ -1,0 +1,13 @@
+# Tasks for Fred
+
+## Tags
+
+* assigned: bonfacem
+* status: in progress
+* priority: high
+
+## Tasks
+
+* Add metadata to mapping page from RDF
+  - [ ] get on testing and CD
+  - [ ] move to production
