@@ -154,6 +154,24 @@ My initial hunch was correct. We should not be running the tissue and literature
 
 We now need to check for these combinations and display an error for the user, as is done in GN1
 
+
+
+The error reported above
+```
+raise KeyError(
+KeyError: "'1' information is not found in the database for dataset 'HC_M2_0606_P' with id '112'."
+
+```
+causes the correlation below to fail
+for maintainability and to fix current bugs
+this code that does  preprocessing of data needs to be modified
+thats is :-
+
+* Tissue correlation data
+* top n sample correlation data
+* top n tissue correlation data
+
+
 ## Tags
 * assigned: alexm, fredm, zsloan
 * type: bug
