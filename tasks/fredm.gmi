@@ -1,0 +1,20 @@
+# Tasks for Fred
+
+## Tags
+
+* assigned: fredm
+* status: in progress
+* priority: high
+
+## Tasks
+
+* Complete correlation bug hunting and merge with production
+* Genotype data uploader on space
+  - finalise spack configuration (nginx)
+  - add simple password protection (using nginx?)
+* Start on authentication/authorization for GN2 (with @pjotrp)
+* Merge phenotype uploader functionality that is already in GN2 (with @bonfacem)
+
+Extra:
+
+* Work on analysis of aging mice
