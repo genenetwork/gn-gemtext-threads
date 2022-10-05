@@ -8,6 +8,14 @@
 
 ## Tasks
 
-* Add metadata to mapping page from RDF
-*   [ ] get on testing and CD
-*   [ ] move to production
+* Add metadata to traits page using RDF
+
+=> /issues/add-metadata-to-traits-page.gmi Annotating Metadata to traits page
+
+* Integrate SQL script in GN2 (enable users to add new data)
+
+Extra:
+
+* Co-ordinate with Zach to fix:
+
+=> /issues/error-when-fetching-snps.gmi Errors when fetching errors pages
