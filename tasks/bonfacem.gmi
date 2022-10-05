@@ -9,5 +9,5 @@
 ## Tasks
 
 * Add metadata to mapping page from RDF
-  - [ ] get on testing and CD
-  - [ ] move to production
+*   [ ] get on testing and CD
+*   [ ] move to production
