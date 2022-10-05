@@ -71,8 +71,6 @@ KeyError: "'1422223_at' information is not found in the database."
 so far, triangulated the issue to possibly being the fact that the "target_dataset" value is not used
 => https://github.com/genenetwork/genenetwork2/blob/53aa084fd2c9c930ac791ee43affffb3f788547c/wqflask/wqflask/correlation/rust_correlation.py#L271-L289 in this function.
 
-@zsloan and @alexm: any ideas?
-
 ## Literature Correlation: Probeset Trait Against Publish/Genotype Dataset
 
 Run literature correlation for
@@ -107,6 +105,9 @@ The code seems to imply that we should not run literature correlations against a
 
 ## Some Reflections
 
+The `target_dataset` is not used in the
+=> https://github.com/genenetwork/genenetwork2/blob/c38bee43c1256c3515bbd1d805745d8dfb8ce390/wqflask/wqflask/correlation/rust_correlation.py#L271-L289 tissue correlations which seems like an error to me (fredm).
+
 In my (fredm) work on partial correlations, before doing the computations,
 => https://github.com/genenetwork/genenetwork3/blob/ff34aee0f39c2e91db243461d7d67405e7aea0e3/gn3/computations/partial_correlations.py#L704-L750 there were error checks
 that were run.
@@ -118,6 +119,40 @@ The failures above with the Publish/Genotype datasets implies one of two things:
 * We need to handle the exceptions, and present the selection errors as appropriate.
 
 Better yet, we should probably not present invalid data to the user, i.e. do not present user with a dataset which would lead to errors if a correlation of a particular type is run against it with the given trait.
+
+## Trial Against GN1
+
+@zsloan @alexm: Running the failing tissue and literature correlations above with the same trait against the "BXD Published Phenotypes" and the "BXD Genotypes" on
+=> http://gn1.genenetwork.org/
+I got the error
+```
+Wrong correlation type
+
+    Sorry! Error occurred while processing your request.
+
+    The nature of the error generated is as follows:
+
+    Correlation Type Error :
+
+        It is not possible to compute the Tissue Correlation (Pearson's r) between your trait and data in this BXDGeno database. Please try again after selecting another type of correlation.
+```
+for the tissue correlations and
+```
+Wrong correlation type
+
+    Sorry! Error occurred while processing your request.
+
+    The nature of the error generated is as follows:
+
+    Correlation Type Error :
+
+        It is not possible to compute the SGO Literature Correlation between your trait and data in this BXDPublish database. Please try again after selecting another type of correlation.
+```
+for the literature correlations.
+
+My initial hunch was correct. We should not be running the tissue and literature correlations in the way we were in the cases above.
+
+We now need to check for these combinations and display an error for the user, as is done in GN1
 
 ## Tags
 * assigned: alexm, fredm, zsloan
