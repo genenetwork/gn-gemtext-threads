@@ -10,16 +10,8 @@
 
 ## Tasks
 
-* [ ] Octopus 10Gbs switch + cables
-  - a test shows Octopus08 is at 10Gbs on the second interface
-  - need to hook up new cables
-* [ ] Add gateway on 10Gbs switch
-=> ../topics/systems/decommission-machines.gmi
+* [ ] Move tux02 into position p2
 
-Completed:
-
-* [X] Tux02 https firewalling
-* [X] Mount 4TB SSDs for Tux01 and Tux02
-
+=> ../issues/systems/decommission-machines.gmi
 
 ## Info

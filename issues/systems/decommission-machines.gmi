@@ -58,6 +58,16 @@
 * [X] spring211 (Poweredge R610 2010 model - no access)
 * [X] autumn211 (R610)
 
-see also
+## File for junking
+
+* [ ] summer211 - ran UTHSC browser (R610) - needs backup to fetch annotations, but no access
+      - need to access when in machine room
+* [ ] winter211 (R610)
+* [ ] spring211 (Poweredge R610 2010 model - no access)
+* [ ] autumn211 (R610)
+* [ ] cluster Tanner
+* [ ] Penguin1
+
+## See also
 
 => https://trello.com/c/usOYPBG9/72-decommissioning-older-machines
