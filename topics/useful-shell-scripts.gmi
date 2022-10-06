@@ -1,0 +1,44 @@
+* Useful Shell Scripts
+
+I make it a habit to put all my user-scripts in =~/bin/= and add that to my =$PATH=.  Another useful tip is to prepend all my scripts using a "," - this allows me to quickly take advantage of zsh's autocomplete.  For the curious, you could also adopt quiuy as part of the scripts - it has the advantage of adding more semantic meaning to your scripts.
+
+- Run a script with a directory: ",run-with-dir"
+
+#+begin_src sh
+#!/bin/sh
+set -eo pipefail
+
+# Run a command in specific directory
+run_within_dir() {
+    target_dir="$1"
+    previous_dir=$(pwd)
+    shift
+    cd $target_dir && "$@"
+    cd $previous_dir
+}
+
+run_within_dir $@
+#+end_src
+
+If you are in =$HOME=, you can do something like: "run-within-dir /tmp"
+
+- Choose a guix profile on the fly: ",choose-profile":
+
+  #+begin_src sh
+#!/bin/env sh
+
+# To run this use source!
+
+GUIX_PROFILE="$(guix package --list-profiles | fzf --multi)"
+
+export GUIX_PROFILE
+. "$GUIX_PROFILE/etc/profile"
+  #+end_src
+
+- Run magit from any terminal: ",magit".  You can take of fzf's autocomplete
+
+  #+begin_src sh
+#!/bin/env sh
+
+emacsclient --eval "(projectile-vc \"$PWD/$@\")"
+  #+end_src
