@@ -1,10 +1,16 @@
-* Useful Shell Scripts
+# Useful Shell Scripts
 
-I make it a habit to put all my user-scripts in =~/bin/= and add that to my =$PATH=.  Another useful tip is to prepend all my scripts using a "," - this allows me to quickly take advantage of zsh's autocomplete.  For the curious, you could also adopt quiuy as part of the scripts - it has the advantage of adding more semantic meaning to your scripts.
+I make it a habit to put all my user-scripts in `~/bin/' and add that to my `$PATH'.  Another useful tip is to prepend all my scripts using a "," - this allows me to quickly take advantage of zsh's autocomplete.  For the curious, you could also adopt quiuy as part of the scripts - it has the advantage of adding more semantic meaning to your scripts.
 
-- Run a script with a directory: ",run-with-dir"
+Most of these scripts were borrowed from:
 
-#+begin_src sh
+=> https://git.sr.ht/~whereiseveryone/dot/tree/master/item/bin
+
+Here are the scripts that make me more efficient on the terminal:
+
+* Run a script in the context of a directory: ",run-with-dir"
+
+```
 #!/bin/sh
 set -eo pipefail
 
@@ -18,13 +24,13 @@ run_within_dir() {
 }
 
 run_within_dir $@
-#+end_src
+```
 
-If you are in =$HOME=, you can do something like: "run-within-dir /tmp"
+If you are in `$HOME', you can do something like: "run-within-dir /tmp"
 
-- Choose a guix profile on the fly: ",choose-profile":
+* Choose a guix profile on the fly: ",choose-profile":
 
-  #+begin_src sh
+```
 #!/bin/env sh
 
 # To run this use source!
@@ -33,12 +39,14 @@ GUIX_PROFILE="$(guix package --list-profiles | fzf --multi)"
 
 export GUIX_PROFILE
 . "$GUIX_PROFILE/etc/profile"
-  #+end_src
+```
 
-- Run magit from any terminal: ",magit".  You can take of fzf's autocomplete
+* Run magit from any terminal: ",magit".  You can take of fzf's autocomplete
 
-  #+begin_src sh
+```
 #!/bin/env sh
 
 emacsclient --eval "(projectile-vc \"$PWD/$@\")"
-  #+end_src
+```
+
+Should these scripts become too many, a repository will be created and a link added to point there.
