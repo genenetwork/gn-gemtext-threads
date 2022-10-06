@@ -24,7 +24,7 @@ $ guix pull -C channels.scm -p ~/.guix-extra-profiles/genenetwork
 Activate the newly built profile using
 ```
 $ export GUIX_PROFILE=~/.guix-extra-profiles/genenetwork
-$ . $GUIX_PROFILE/.guix-extra-profiles/genenetwork
+$ . $GUIX_PROFILE/etc/profile
 ```
 Hack away on any GeneNetwork repository as usual. Now, any development environment you create with `guix shell` will be identical to what others on the team and the continuous integration system are using. This development environment is guaranteed to not break regardless of the latest changes to Guix upstream or other externalities.
 
