@@ -2,8 +2,6 @@
 
 I needed to add the hard disks in the BIOS to make them visible - one of the annoying aspects of these Dell machines. First on Tux02 I cheched the borg backups to see if we have a recent copy of MariaDB, GN2 etc. The DB is from 2 days ago and the genotypes of GN2 are a week old (because of a permission problem). I'll add a copy by hand of both - an opportunity to test the new 10Gbs router.
 
-Something funny is going on. When eno4 goes down the external webserver interface is not working. It appears, somehow, that 128.169.4.67 is covering for 128.169.5.59. I need to check that!
-
 # Tasks
 
 Before rebooting
@@ -13,10 +11,6 @@ On Tux02:
 * [X] Check backups of DB and services
 * [X] Copy trees between machines
 
-On Tux01:
-
-* [ ] Network confused. See above.
-
 On both:
 
 * [X] Check network interface definitions (what happens on reboot)
@@ -24,6 +18,39 @@ On both:
 
 
 # Info
+
+## Reconfiguring disks
+
+We can add a lot of SATA disks. To configure run racadm and set serial settings
+
+: racadm set iDRAC.Serial.Enable 1
+Dump everything
+
+: racdump
+
+: get nic.nicconfig.4
+: hwinventory
+
+Reboot
+
+: racadm>>serveraction powercycle
+
+: racadm>>serveraction hardreset
+: racadm>>serveraction powerstatus
+: racadm>>connect com2
+
+racadm>>
+config -g cfgSerial -o cfgSerialBaudRate 115200
+config -g cfgSerial -o cfgSerialCom2RedirEnable 1
+config -g cfgSerial -o cfgSerialSshEnable 1
+config -g cfgIpmiSol -o cfgIpmiSolEnable 1
+config -g cfgIpmiSol -o cfgIpmiSolBaudRate 115200
+get iDRAC.serial
+
+
+Now you should see the menu in
+
+: console com2
 
 ## Routing
 
