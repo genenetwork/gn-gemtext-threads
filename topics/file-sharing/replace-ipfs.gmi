@@ -1,0 +1,21 @@
+# Replace IPFS
+
+IPFS has some nice features exposing hashed files through HTTP. The overall system, however is overengineered and puts load on the server. Also it is hard to deal with private data.
+
+Our requirements:
+
+* Expose files over the web
+* Serve them under a hash, so we can guarantee/encourage reproducibility
+* Deduplication on the disk drive
+
+## Create a hash of the directory
+
+```
+find current/ -type f -exec md5sum {} \;|awk '{ print $1 }'|md5sum
+```
+
+Then move the files into a dir of that name and expose through, say nginx.
+
+## Deduplication
+
+This can be handled later. One option is to symlink identical files. Another is to use a deduplicating file system or even borg with fuse mounts. git-mount and gitfs may do the job too, though git is not particularly great at handling large files.
