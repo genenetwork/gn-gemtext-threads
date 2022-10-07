@@ -1,8 +1,6 @@
 # Terminal output to the browser
 
-* status: ongoing, in progress
 * type: feature-request
-* assigned: aruni
 * priority: medium
 * keywords: binderlite, notebooks, ansi2html
 
