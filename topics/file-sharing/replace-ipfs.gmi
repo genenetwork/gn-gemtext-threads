@@ -4,9 +4,13 @@ IPFS has some nice features exposing hashed files through HTTP. The overall syst
 
 Our requirements:
 
-* Expose files over the web
+* Expose public files over the web
+
+=> https://files.genenetwork.org/
+
 * Serve them under a hash, so we can guarantee/encourage reproducibility
 * Deduplication on the disk drive
+* Make versioned hashes easy to find (IPFS does not expose these)
 
 ## Create a hash of the directory
 
@@ -19,3 +23,9 @@ Then move the files into a dir of that name and expose through, say nginx.
 ## Deduplication
 
 This can be handled later. One option is to symlink identical files. Another is to use a deduplicating file system or even borg with fuse mounts. git-mount and gitfs may do the job too, though git is not particularly great at handling large files.
+
+## Info
+
+Public files are hosted on tux02
+
+=> https://files.genenetwork.org/
