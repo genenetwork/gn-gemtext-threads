@@ -29,3 +29,7 @@ This can be handled later. One option is to symlink identical files. Another is 
 Public files are hosted on tux02
 
 => https://files.genenetwork.org/
+
+I have added a git repo that is now 11Gb. Looks like it can perform alright, as long as we expose textual files. A cgit frontend can deal with versions.
+
+=> https://git.zx2c4.com/cgit/
