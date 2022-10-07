@@ -1,0 +1,19 @@
+# Tasks for Gregory
+
+# Tags
+
+* assigned: gregf, pjotrp
+* priority: medium
+* type: deployment, packaging
+* status: in progress
+
+# Tasks
+
+* [ ] Simple example of running Julia with sysimage on command line (@gregf)
+* [ ] Replicate using GNU Guix (@pjotrp)
+* [ ] Add first dependency from bulklmm (@gregf)
+* [ ] Replicate with GNU Guix (@pjotrp)
+
+# Notes
+
+=> https://julialang.github.io/PackageCompiler.jl/dev/sysimages.html

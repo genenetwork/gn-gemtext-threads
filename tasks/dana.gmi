@@ -10,7 +10,7 @@
 
 ## Tasks
 
-* [ ] Move tux02 into position p2
+* [X] Move tux02 into position p2
 
 => ../issues/systems/decommission-machines.gmi
 
