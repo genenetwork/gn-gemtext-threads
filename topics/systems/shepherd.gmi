@@ -2,15 +2,42 @@
 
 ## Tags
 
-* assigned: ??
+* assigned: pjotrp, efraimf
 * type: documentation
 * keywords: system, shepherd
-* status: unclear
+* status: wip
 * priority: unclear
 
 ## Description
 
-On Debian based systems we run shepherd as a shepherd user. The service gets started up through systemd:
+On Debian based systems we run shepherd as a shepherd user. The service gets started up through systemd.
+There is currently a systemd service to automatically start shepherd
+on system boot-up. A copy of the service lives in the shepherd-service
+repository.
+
+The process for deploying the services:
+
+symlink shepherd-services/shepherd to $HOME/.config/shepherd
+symlink shepherd-services/cron to $home/.config/cron
+symlink shepherd-services/*sh to $HOME
+
+When shepherd starts up it should start all the services. So currently
+that's bnw, gitea, ipfs, power, rn6app, singlecell and the mcron
+services, gitea-dump and pubmed.
+
+To use shepherd's herd command the command is 'sudo -u shepherd
+/home/shepherd/.guix-profile/bin/herd status'.
+
+: /home/shepherd/.guix-profile/bin/herd status
+
+Adding a bash alias, such as "alias herd-herd='sudo -u shepherd
+/home/shepherd/.guix-profile/bin/herd'", will make it easier to
+interact with shepherd without needing to switch to the shepherd
+user. The logs for the various shepherd services are located in
+/home/shepherd/logs/ but are not yet timestamped. The log for shepherd
+itself is in /home/shepherd/.config/shepherd/shepherd.log. There is
+not yet a way to change this from a config file.
+
 
 ```
 [Unit]
@@ -31,4 +58,5 @@ WantedBy=multi-user.target
 
 ## Notes
 
-This seems to be documentation, and not necessarily a task, issue or enhancement to be worked on
+This seems to be documentation, and not necessarily a task, issue or enhancement to be worked on.
+It is a topic.
