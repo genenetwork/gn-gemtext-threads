@@ -15,3 +15,9 @@
 => ../issues/systems/decommission-machines.gmi
 
 ## Info
+
+Tux02 and Penguin2 switched network IP addresses. The second is now only available through the VPN:
+
+=> tux02.genenetwork.org
+
+=> penguin2.genenetwork.org
