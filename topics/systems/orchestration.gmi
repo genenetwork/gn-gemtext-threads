@@ -1,35 +1,46 @@
-* Orchestration and fallbacks
+# Orchestration and fallbacks
 
 After the Penguin2 crash in Aug. 2022 it has become increasingly clear how hard it is to deploy GeneNetwork. GNU Guix helps a great deal with dependencies, but it does not handle orchestration between machines/services well. Also we need to look at the future.
 
 What is GN today in terms of services
 
- 1. Main GN2 server (Python, 20+ processes, 3+ instances: depends on all below)
- 2. Matching GN3 server and REST endpoint (Python: less dependencies)
- 3. Mariadb
- 4. redis
- 5. virtuoso
- 6. GN-proxy (Racket, authentication handler: redis, mariadb)
- 7. Alias proxy (Racket, gene aliases wikidata)
- 8. Jupyter R and Julia notebooks
- 9. BNW server (Octave)
-10. UCSC browser
-11. GN1 instances (older python, 12 instances in principle, 2 running today)
-12. Access to HPC for GEMMA (coming)
-13. Backup services (sheepdog, rsync, borg)
-14. monitoring services (incl. systemd, gunicorn, shepherd, sheepdog)
-15. mail server
-16. https certificates
-17. http(s) proxy (nginx)
-18. CI/CD server (with github webhooks)
+* [X] Main GN2 server (Python, 20+ processes, 3+ instances: depends on all below)
+Matching GN3 server and REST endpoint (Python: less dependencies)
+Mariadb
+* [X] redis
+* [ ] virtuoso
+* [X] GN-proxy (Racket, authentication handler: redis, mariadb)
+* [X] Alias proxy (Racket, gene aliases wikidata)
+* [X] opar server
+* [ ] Jupyter, R-shiny and Julia notebooks, nb-hub server
+* [ ] BNW server (Octave)
+* [ ] UCSC browser
+* [X] GN1 instances (older python, 12 instances in principle, 2 running today)
+* [ ] Access to HPC for GEMMA (coming)
+* [ ] Backup services (sheepdog, rsync, borg)
+* [ ] monitoring services (incl. systemd, gunicorn, shepherd, sheepdog)
+* [ ] mail server
+* [+] https certificates
+* [X] http(s) proxy (nginx)
+* [X] CI/CD services (with github webhooks)
+* [+] git server (gitea or cgit)
+* [X] file server (formerly IPFS)
+
+Somewhat decoupled services:
+
+* [+] genecup
+* [ ] R/shiny power service Dave
+* [ ] biohackrxiv
+* [ ] covid19
+* [ ] guix publish server
 
 I am still missing a few! All run by a man and his diligent dog.
 
 For the future the orchestration needs to be more robust and resilient. This means:
 
- 1. A fallback for every service on a separate machine
- 2. Improved privacy protection for (future) human data
- 3. Separate servers serving different data sources
- 4. Partial synchronization between data sources
+* A fallback for every service on a separate machine
+* Improved privacy protection for (future) human data
+* Separate servers serving different data sources
+* Partial synchronization between data sources
 
 The only way we *can* scale is by adding machines. But the system is not yet ready for that. Also getting rid of monolithic primary databases in favor of files helps synchronization.
