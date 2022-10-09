@@ -1,4 +1,4 @@
-# Guix profiles for development
+# Updating Guix profiles (for production and development)
 
 ## Executive summary
 
@@ -34,20 +34,41 @@ After downloading channels.scm from
 
 => https://ci.genenetwork.org/channels.scm
 
-On production we do
+On production we do something like
 ```
-tux01:~$ ~/opt/guix-pull/bin/guix pull -C channels.scm -p /usr/local/guix-profiles/gn-latest-20220928
+tux01:~$ ~/opt/guix-pull/bin/guix pull -C channels.scm -p ~/opt/guix-gn-channel
+tux01:~$ ~/opt/guix-gn-channel/bin/guix package -i genenetwork2 -p /usr/local/guix-profiles/gn-latest-yyyymmdd
 ```
 
+Now we can use that profile to run genenetwork2 and genenetwork3:
+
+```
+source /usr/local/guix-profiles/gn-latest-yyyymmdd/profile
+```
+
+And everything should be in the PATH, PYTHONPATH etc.
 
 ## Rationale
 
 From time to time, updates to upstream Guix break our guix-bioinformatics channel. As a result, `guix pull` breaks and our work comes to a standstill for a few days until this can be fixed. While it is important to gradually move towards the latest and greatest, we would like to avoid being at the mercy of externalities and would prefer to update in a more controlled way without interrupting everyone's work.
 
-To this end, we hard-code the guix-bioinformatics channel to depend on a specific commit of upstream Guix. This is why the recommended channels.scm file above does not include a %default-guix-channel. However, this comes with the drawback that your entire system will be stuck at that specific commit of upstream Guix. You will not be able to move forward until we decide to update the hard-coded upstream Guix commit in guix-bioinformatics. You may have other work that needs the latest Guix and this might not be what you want. So, we highly recommend using a separate `guix pull` profile specifically for GeneNetwork work, as described above.
+To this end, we hard-code the guix-bioinformatics channel to depend on a *specific* commit of upstream Guix that is tied to guix-bioinformatics, for example:
 
-This scheme also comes with the added bonus that all members on the team and the continuous integration system will be using exactly the same Guix.
+```
+(list (channel
+        (name 'gn-bioinformatics)
+        (url "https://gitlab.com/genenetwork/guix-bioinformatics")
+        (branch "master")
+        (commit
+          "feff05b47c305d8c944499fbc00fd2126f2b881d")))
+```
+
+This is why the recommended channels.scm file above does not include a %default-guix-channel. However, this comes with the drawback that your entire system will be stuck at that specific commit of upstream Guix (but not if you use another profile as described above). We highly recommend using a separate `guix pull` profile specifically for GeneNetwork work, as described above.
+
+This scheme also comes with the added bonus that all members on the team and the continuous integration system will be using exactly the same Guix. Above channels.scm file is only exposed on a *succesful* build.
 
 ## Notes
 
-We recently had to switch to gitlab because our git server went down on Penguin2.
+We recently had to switch to gitlab because our git server went down on Penguin2. We may move to a cgit solution soon, see
+
+=> ../issues/cant-use-guix-bioinformatics-with-guix-pull.gmi

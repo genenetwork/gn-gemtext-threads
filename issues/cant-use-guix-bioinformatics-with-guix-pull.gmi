@@ -1,21 +1,13 @@
 # Using guix-bioinformatics in a channels.scm file
 
-Without this we can't:
+channels.scm works fine. Only problem is that we don't have a guix-bioinformatics git server that is *not* gitlab or github.
 
-* programatically and reproducably use the repository to cherry-pick commits that work with shepherd services
+I think we should move to ssh keys and cgit. The latter has to run in a container, ideally.
 
 ## Tags
 
-* assigned: Efraim
+* assigned: efraimf, pjotrp
 * type: bug
 * keywords: guix-bioinformatics
-* status: unclear
+* status: in progress
 * priority: medium
-
-## TODO:
-
-* Adjust the genenetwork2 package to no longer break running `guix pull` with this repository in channels.scm
-
-HOW?
-
-Need to move the function calls to export-graph out of the package definition, compute them ahead of time, and seed their results as native-inputs.
