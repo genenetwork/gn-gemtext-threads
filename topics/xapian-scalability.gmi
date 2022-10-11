@@ -2,17 +2,16 @@
 
 As the index grows larger, Xapian takes longer to insert new documents. Shown below is the time (in seconds) taken to build indices of various sizes (in number of documents).
 
-* 10k: 5.0
-* 20k: 10.7
-* 40k: 21.1
-* 80k: 42.3
-* 160k: 87.2
-* 320k: 176.4
-* 640k: 353.9
-* 1280k: 727.5
-* 2560k: 1494.3
-* 5120k: 3037.9
+* 10k: 4.45
+* 20k: 9.48
+* 40k: 20.40
+* 80k: 41.70
+* 160k: 81.63
+* 320k: 159.88
+* 640k: 318.84
+* 1280k: 651.47
+* 2560k: 1357.73
 
-Notice that it takes 607x, not 512x, more time to build the 5120k index than it takes to build the 10k index. In terms of time, the 10k index takes on average 0.5 ms per document while the 5120k index takes on average 0.59 ms per document. We show this graphically below.
+Notice that it takes 305x, not 256x, more time to build the 2560k index than it takes to build the 10k index. In terms of time, the 10k index takes on average 0.45 ms per document while the 2560k index takes on average 0.53 ms per document. We show this graphically below.
 
 => xapian-index-building-scalability.svg
