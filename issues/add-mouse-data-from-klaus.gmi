@@ -6,10 +6,9 @@
 * priority: high
 * status: in progress
 
-### Notes: Thu 30 Jun 2022 17:38:59 EAT
+### Description
 
-Klaus' recently shared with us some mouse data.
-Here's a snip of how that looks like:
+Klaus' recently shared with us some mouse data.  Here's a snip of how that looks like:
 
 ```
 mouse_ID                   BW       day         strain	sex    inf_dose	animal.no.
@@ -25,17 +24,7 @@ mouse_ID                   BW       day         strain	sex    inf_dose	animal.no
 250	CC001_m_1	90.42	perc_d06	CC001	m	10 FFU	1
 ```
 
-I've been working on adding the above to the GN2 database.
-The current challenge I have is that this data is Time Series---for the same strain, we have values indexed by time.
-Also, we tag data by "animal.no." and "sex".
-So for a male version of "CC001" with animal number 1, we have "CC001_m_1".
-This is a problem---storing TS data---that Rob/Suheeta have highlighted in the past.
-How do we go about doing this?
-Currently, in GN2 we store averages of the aforementioned data.
-This doesn't work out well for us: we don't have, AFAIU, a concept for "animal.no."
-I would suggest we use lmdb to store this data, and work out a way to integrate it with the rest of GN2---so that we display this info on the main page.
-
-### Notes: Thu 30 Jun 2022 21:39:15 EAT
+I've been working on adding the above to the GN2 database.  The current challenge I have is that this data is Time Series---for the same strain, we have values indexed by time.  Also, we tag data by "animal.no." and "sex".  So for a male version of "CC001" with animal number 1, we have "CC001_m_1".  This is a problem---storing TS data---that Rob/Suheeta have highlighted in the past.  How do we go about doing this?  Currently, in GN2 we store averages of the aforementioned data.  This doesn't work out well for us: we don't have, AFAIU, a concept for "animal.no."  I would suggest we use lmdb to store this data, and work out a way to integrate it with the rest of GN2 - so that we display this info on the main page.
 
 Here's how to extract the data from the provided data-set:
 
@@ -63,7 +52,7 @@ dat10
 50   BXD 6_5  89.03000  d1
 [...]
 ```
-### Notes: Thu 30 Jun 2022 21:42:39 EAT
+
 Some comments from Zach:
 
 ```
