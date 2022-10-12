@@ -1,0 +1,93 @@
+# CI/ CD for genetwork projects
+
+We need to figure out/ discuss and document how to go about doing the whole automated testing and deployment, from pushing code to deployment to production.
+
+For a first, we need various levels of tests to be run, from unit tests to the more complicated ones like integration, performance, regression, etc tests, and of course, they cannot all be run for each and every commit, and will thus need to be staggered across the entire deployment cycle to help with quick iteration of the code.
+
+## Tags
+
+* assigned: bonfacem, fredm, efraimf, aruni
+* keywords: deployment, CI, CD, testing
+* status: in progress
+* priority: high
+* type: enhancement
+
+## Tasks
+
+As part of the CI/CD effort, it is necessary that there is
+
+=> ../testing/automated-testing.gmi automated testing.
+
+#### Ideas
+
+GeneNetwork is interested in doing two things on every commit (or
+periodically, say, once an hour/day):
+
+* CI: run unit tests
+* CD: rebuild and redeploy a container running GN3
+
+Arun has figured out the CI part. It runs a suitably configured laminar CI service in a Guix container created with `guix system container'. A cron job periodically triggers the laminar CI job.
+
+=> https://git.systemreboot.net/guix-forge/about/
+
+CD hasn't been figured out. Normally, Guix VMs and containers created by `guix system` can only access the store read-only. Since containers don't have write access to the store, you cannot `guix build' from within a container or deploy new containers from within a container. This is a problem for CD. How do you make Guix containers have write access to the store?
+
+Another alternative for CI/ CID were to have the quick running tests, e.g unit tests, run on each commit to branch "main". Once those are successful, the CI/CD system we choose should automatically pick the latest commit that passed the quick running tests for for further testing and deployment, maybe once an hour or so. Once the next battery of tests is passed, the CI/CD system will create a build/artifact to be deployed to staging and have the next battery of tests runs against it. If that passes, then that artifact could be deployed to production, and details on the commit and
+
+#### Possible Steps
+
+Below are some possible steps (and tasks) to undertake for automated deployment
+
+##### STEP 01: Build package
+
+* Triggered by a commit to "main" branch (for now)
+* Trigger build of the package
+* Run unit tests as part of the build: This has been done with the laminar scripts under `scripts/laminar` in genenetwork3.  Maybe just change the command to ensure only specific tests are run, especially when we add in non-functional tests and the like
+* If the build fails (tests fail, other failures): abort and send notifications to development team
+* If build succeeds, go to STEP 02
+
+##### STEP 02: Deploy to Staging
+
+* Triggered by a successful build
+* Run in intervals of maybe one hour or so...
+* Build the container/VM for deployment: here's the first time `guix system container ...` is run
+* Deploy the container/VM to staging: the details are fuzzy here
+* Run configuration tests here
+* Run performance tests
+* Run integration tests
+* Run UI tests
+* Run ... tests
+* On failure, abort and send out notification to development team
+* On success go to STEP 03
+
+##### STEP 03: Deploy to Release Candidate
+
+* Triggered by a successful deploy to Staging
+* Run in intervals of maybe 6 hours
+* Pick latest successful commit to pass staging tests
+* Build the container/VM for deployment: run `guix system container ...` or reuse container from staging
+* Update configurations for production
+* Run configuration tests
+* Run acceptance tests
+* On failure, abort and send out notification to development team
+* On success go to STEP 04
+
+##### STEP 03: Deploy to Production
+
+* Triggered by a successful Release Candidate
+* Tag the commit as a release.  Maybe include the commit hash and date e.g gn3-v0.0.12-794db6e2-20220113
+* Build the container/VM for deployment: run `guix system container ...` or reuse container from staging; tag container as a release container
+* Deploy container to production
+* Generate documentation for tagged commit
+* Generate guix declaration for re-generating the release
+* Archive container image, documentation and guix declaration for possible rollback
+
+#### Some Work Done
+
+=> /topics/systems/gn-services GN Services
+
+This contains a check-list of things that need to be done:
+
+=> /topics/systems/orchestration Orchestration
+
+=> /issues/broken-cd  Broken-cd (Resolved)
