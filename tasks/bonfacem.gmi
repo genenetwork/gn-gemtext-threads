@@ -17,7 +17,7 @@ Rank-ordered list of on-going tasks:
 
 ### Stalled (To Be Done/Completed)
 
-=> https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Astalled+AND+is%3Aopen&type=open-issue All in-progress tasks
+=> https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Astalled+AND+is%3Aopen&type=open-issue All stalled taskse that are to be promoted to in-progress
 
 Rank-ordered list of stalled tasks:
 
