@@ -4,7 +4,7 @@
 
 * assigned: bonfacem
 * type: bug
-* keywords: case attributes, data editing, closed
+* keywords: case attributes, data editing
 
 ## Tasks
 
@@ -23,13 +23,15 @@
 Most of these issues have been addressed in these 2 PRs:
 
 => https://github.com/genenetwork/genenetwork3/pull/90
+
 => https://github.com/genenetwork/genenetwork2/pull/695
 
 The last 2 elements in the tasks have been moved out to their own tasks.
 
-=> https://github.com/genenetwork/gn-gemtext-threads/commit/a75b726a008012b83c1ad25b330d43aabd711ee3
+=> /issues/consecutive-crud-applications-when-uploading-data
 
 Also, wrt UI issues see:
 
-=> https://issues.genenetwork.org/issues/metadata-edits-improvements.html
+=> /issues/metadata-edits-improvements
 
+* closed
