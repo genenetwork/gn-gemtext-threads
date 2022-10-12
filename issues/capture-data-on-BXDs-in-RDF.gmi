@@ -43,10 +43,13 @@ redundant data and complexity increases with time.
 http://gn1.genenetwork.org/webqtl/main.py?FormID=sharinginfo&GN_AccessionId=112 View existing metadata here
 
 We should use wikidata because it's based on RDF and is here to stay. For example this mouse gene
+
 => https://www.wikidata.org/wiki/Q18303218
 relates to mouse
+
 => https://www.wikidata.org/wiki/Q83310.
 You can find some models
+
 => https://www.wikidata.org/wiki/Q24082698.
 To add the BXD we would start by editing wikidata which has the benefit that it gets presented in Wikipedia (wikidata is the backend).
 
@@ -55,6 +58,23 @@ To add the BXD we would start by editing wikidata which has the benefit that it 
 Look at existing ontology. A few are mentioned in:
 => https://jbiomedsem.biomedcentral.com/articles/10.1186/2041-1480-4-13 The Vertebrate Trait Ontology: a controlled vocabulary for the annotation of trait data across species
 
-
-
 When an ontology exists and it looks sensible we should reuse that. If non-existent, we create our own ontology. Obviously we can't get away from adding free flow textual fields. What we want to lift out is what we want to be able to search on.
+
+
+## Resolution
+
+Relevant topic:
+
+=> topics/add-metadata-to-trait-page Add Metadata To The Trait Page (RDF)
+
+This is currently being worked on in:
+
+=> issues/add-metadata-to-traits-page Annotate traits page with metadata from RDF
+
+Work on dumping RDF has already been done in:
+
+=> https://github.com/genenetwork/dump-genenetwork-database dump-genenetwork-database
+
+Also, vector/matrix data should be put in lmdb, and this is a separate issue on it's own.
+
+* closed
