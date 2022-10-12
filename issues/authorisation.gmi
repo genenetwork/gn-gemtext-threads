@@ -10,10 +10,9 @@ Atm genenetwork2's handling of authorisation is a bit clunky; Since @Bonface is 
 
 * assigned: bonfacem, pjotrp, zachs
 * keywords: authorisation
-* status: stalled
 * priority: medium
 
-# TODO
+### Tasks
 
 * [x] Make user able to delete/ add extra value
 
@@ -21,11 +20,16 @@ Atm genenetwork2's handling of authorisation is a bit clunky; Since @Bonface is 
   instead of only fetching that list from the database.  Look at trait
   page for reference.
 
-* [ ] Extend idea of csv generation to probeset data.  Get data from
-  the genotype file and work out how to update the values from the
-  database.
+* [X] Extend idea of csv generation to probeset data.  Get data from the genotype file and work out how to update the values from the database.
 
-# Notes
+* [X] Every resource needs to have the 3 fields set for the group-mask and default-mask: "data", "metadata", "admin". Otherwise, a hash-ref error will be thrown: On this regard, the documentation for gn-proxy should be updated since it's abit misleading (this hasn't been done).
+
+```
+03 ~~> hash-ref: no value found for key
+  key: 'admins
+```
+
+# Introduction
 
 mRNA datasets ("ProbeSetFreeze" in the DB) contain traits, so when you assign privileges to an mRNA dataset, it will apply to all traits within.
 
@@ -55,32 +59,10 @@ On the UI(quote from Zach):
 > search).
 
 ````
-#### Mon 18 Oct 2021
 
-* Marked the function `check_owner_or_admin` as deprecated. It's only used in: `wqflask/show_trait/show_trait.py`.
+An owner, from the proxy views has super-user privileges for everything
 
-* Heavy use of the walrus operator to remove alot of boiler plate.
-
-#### Tue 19 Oct 2021
-
-* Every resource needs to have the 3 fields set for the group-mask and
-  default-mask: "data", "metadata", "admin". Otherwise, a hash-ref
-  error will be thrown:
-
-```
-03 ~~> hash-ref: no value found for key
-  key: 'admins
-```
-
-  On this regard, the documentation for gn-proxy should be updated
-  since it's abit misleading.
-
-- An owner, from the proxy views has super-user privileges for
-  everything
-
-#### Mon 26 Oct 2021
-
-* Some issues Zach pointed out:
+Other issues pointed out:
 
 ```
 > The /trait/update endpoint*, when accessed from >
@@ -109,10 +91,10 @@ On the UI(quote from Zach):
   changed in some way.
 ```
 
-* Fixed the above, while at the same time, adding the new auth links
-  to the show trait page. Key point is that I changed the URLs and
-  moved them to their own module. Particularly for published datasets.
+### Resolution
 
-* New PR:
+=> https://github.com/genenetwork/genenetwork2/pull/614 Editing Metadata Endpoints
 
-=> https://github.com/genenetwork/genenetwork2/pull/614
+Should anything new arise, a new issue will/should be created.
+
+* closed
