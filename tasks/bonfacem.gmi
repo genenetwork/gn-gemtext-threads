@@ -8,10 +8,6 @@
 
 Rank-ordered list of on-going tasks:
 
-AND is:open AND type:open-issue
-
-assigned:bonfacem AND tag:in-progress AND priority:low AND is:open
-
 => https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Ain-progress+AND+priority%3Ahigh+AND+is%3Aopen&type=open-issue High Priority
 
 => https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Ain-progress+AND+priority%3Amedium+AND+is%3Aopen&type=open-issue Medium Priority
@@ -42,9 +38,9 @@ Ad-hoc issues that were picked some where some how:
 
 ### Closed Issues
 
-Should something missing, we can always re-open an issue.
+Should something in one of these closed issues be amiss, we can always and should re-open the offending issue.
 
-currently closed issues are:
+Currently closed issues are:
 
 => https://issues.genenetwork.org/search?type=closed-issue&query=assigned%3Abonfacem%20AND%20type%3Aissue%20AND%20is%3Aclosed Closed Issues
 
