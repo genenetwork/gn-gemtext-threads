@@ -2,6 +2,7 @@
 
 * assigned: bonfacem
 * priority: high
+* status: in progress
 * keywords: rdf, critical, metadata
 
 Read the design-doc here:
