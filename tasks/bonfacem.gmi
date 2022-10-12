@@ -8,11 +8,16 @@
 
 Rank-ordered list of on-going tasks:
 
-=> https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Ain-progress+AND+is%3Aopen&type=open-issue&priority%3A+high High Priority
+AND is:open AND type:open-issue
 
-=> https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Ain-progress+AND+is%3Aopen&type=open-issue&priority%3A+medium Medium Priority
+assigned:bonfacem AND tag:in-progress AND priority:low AND is:open
 
-=> https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Ain-progress+AND+is%3Aopen&type=open-issue&priority%3A+low Low Priority
+=> https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Ain-progress+AND+priority%3Ahigh+AND+is%3Aopen&type=open-issue High Priority
+
+=> https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Ain-progress+AND+priority%3Amedium+AND+is%3Aopen&type=open-issue Medium Priority
+
+
+=> https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Ain-progress+AND+priority%3Alow+AND+is%3Aopen&type=open-issue Low Priority
 
 ### Stalled (To Be Done/Completed)
 
@@ -20,19 +25,19 @@ Rank-ordered list of on-going tasks:
 
 Rank-ordered list of stalled tasks:
 
-=> https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Astalled+AND+is%3Aopen&type=open-issue&priority%3A+high High Priority
 
-=> https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Astalled+AND+is%3Aopen&type=open-issue&priority%3A+low Low Priority
+=> https://issues.genenetwork.org/search?type=open-issue&query=assigned%3Abonfacem%20AND%20tag%3Astalled%20AND%20priority%3Ahigh%20AND%20is%3Aopen High Priority
 
-=> https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Astalled+AND+is%3Aopen&type=open-issue&priority%3A+low Low Priority
+=> https://issues.genenetwork.org/search?type=open-issue&query=assigned%3Abonfacem%20AND%20tag%3Astalled%20AND%20priority%3Amedium%20AND%20is%3Aopen Medium Priority
 
-=> https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Astalled+AND+is%3Aopen&type=open-issue&priority%3A+unclear Unclear
+=> https://issues.genenetwork.org/search?type=open-issue&query=assigned%3Abonfacem%20AND%20tag%3Astalled%20AND%20priority%3A%20AND%20is%3Aopen Low Priority
+
 
 ### Unclear Issues
 
 Ad-hoc issues that were picked some where some how:
 
-=> https://issues.genenetwork.org/search?type=open-issue&query=assigned%3Abonfacem%20AND%20status%3Aunclear%20OR%20priority%3Aunclear%20AND%20type%3Aopen-issue%20AND%20is%3AOpen%20AND%20NOT%20tag%3Ain-progress
+=> https://issues.genenetwork.org/search?type=open-issue&query=assigned%3Abonfacem%20AND%20status%3Aunclear%20OR%20priority%3Aunclear%20AND%20type%3Aopen-issue%20AND%20is%3AOpen%20AND%20NOT%20tag%3Ain-progress Unclear Issues
 
 
 ### Closed Issues
