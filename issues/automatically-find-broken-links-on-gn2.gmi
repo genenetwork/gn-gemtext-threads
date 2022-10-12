@@ -59,3 +59,13 @@ are underlined and highlighted with red for later fix
 ### Update
 
 we no longer use github CI this should be moved the new gn2 CI
+
+### Resolution
+
+This was added to Mechanical Rob here:
+
+=> https://github.com/genenetwork/genenetwork2/pull/555
+
+Making Mechanical Rob should it fail is an entirely different issue.
+
+* closed
