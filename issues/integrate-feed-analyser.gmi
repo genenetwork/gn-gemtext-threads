@@ -4,9 +4,9 @@
 
 * assigned: bonfacem
 * type: feature-request
-* status: in progress
+* status: stalled
 * priority: medium
-* keywords: twitter, feed analyser, from github
+* keywords: twitter, feed analyser
 
 ## Members
 
@@ -17,3 +17,4 @@
 
 => https://github.com/genenetwork/genenetwork2/issues/400 From GitHub
 
+A re-write is warranted, when the time allows it, should be done.  ATM, the author - Munyoki - has picked up new tricks on how to get this done efficiently.  And in particular using machine-learning techniques picked up during his Master's degree.
