@@ -65,11 +65,11 @@ Metadata about this dataset can be found in:
 => http://gn1.genenetwork.org/webqtl/main.py?FormID=sharinginfo&GN_AccessionId=112
 
 
-* [ ] Work out what type of datasets have accession id's
-* [ ] Refactor the dataset fetch fn in GN3 to use the Maybe Monad
-* [ ] Write tests for the above
-* [ ] Test on test database upstream - if this is set-up
-* [ ] Submit patches for review
+* [X] Work out what type of datasets have accession id's
+* [X] Refactor the dataset fetch fn in GN3 to use the Maybe Monad
+* [X] Write tests for the above
+* [X] Test on test database upstream - if this is set-up
+* [X] Submit patches for review
 
 ## Display the metadata in GN2 as HTML
 
