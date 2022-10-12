@@ -4,55 +4,36 @@ Look at Chris' authorisation code:
 
 => https://github.com/genenetwork/gn-proxy
 
-Atm genenetwork2's handling of
-authorisation is a bit clunky; Since @Bonface is working on the data
-data up-loader, and it requires authorisation, this is a good time to
-clean up authorisation.
+Atm genenetwork2's handling of authorisation is a bit clunky; Since @Bonface is working on the data data up-loader, and it requires authorisation, this is a good time to clean up authorisation.
 
 # Tags
 
 * assigned: bonfacem, pjotrp, zachs
 * keywords: authorisation
-* status: in progress, stalled
+* status: stalled
 * priority: medium
 
 # TODO
 
-- [x] Make user able to delete/ add extra value
+* [x] Make user able to delete/ add extra value
 
-- [x] Fetch complete list of samples from database and genotype file
+* [x] Fetch complete list of samples from database and genotype file
   instead of only fetching that list from the database.  Look at trait
   page for reference.
 
-- [ ] Extend idea of csv generation to probeset data.  Get data from
+* [ ] Extend idea of csv generation to probeset data.  Get data from
   the genotype file and work out how to update the values from the
   database.
 
 # Notes
 
-mRNA datasets ("ProbeSetFreeze" in the DB) contain traits, so when you
-assign privileges to an mRNA dataset, it will apply to all traits
-within.
+mRNA datasets ("ProbeSetFreeze" in the DB) contain traits, so when you assign privileges to an mRNA dataset, it will apply to all traits within.
 
-But the phenotype resources (for example the dataset name
-"BXDPublish"; the stuff in the PublishXRef, etc tables) are just the
-traits themselves. The rows of "PublishFreeze" in the DB don't
-correspond to individual resources like the rows of ProbeSetFreeze
-(neither do databased genotypes - GenoFreeze - for that matter). There
-isn't really any "containing" classification for them beyond the
-group. BXD phenotype traits can each come from different studies and
-thus have different privileges for different users, etc, but there's
-nothing in the database really representing that.
+But the phenotype resources (for example the dataset name "BXDPublish"; the stuff in the PublishXRef, etc tables) are just the traits themselves. The rows of "PublishFreeze" in the DB don't correspond to individual resources like the rows of ProbeSetFreeze (neither do databased genotypes - GenoFreeze - for that matter). There isn't really any "containing" classification for them beyond the group. BXD phenotype traits can each come from different studies and thus have different privileges for different users, etc, but there's nothing in the database really representing that.
 
-This means that if you want to change privileges for phenotype data,
-you have to do it trait by trait (or at least to a selection of traits
-you manually choose). But for mRNA ("ProbeSet") traits you can just
-refer to the entire dataset (and as far as I'm aware this will always
-be the case; there's never a need to assign privileges trait-by-trait
-for the mRNA traits.
+This means that if you want to change privileges for phenotype data, you have to do it trait by trait (or at least to a selection of traits you manually choose). But for mRNA ("ProbeSet") traits you can just refer to the entire dataset (and as far as I'm aware this will always be the case; there's never a need to assign privileges trait-by-trait for the mRNA traits.
 
-Another way of representing this is that for mRNA datasets you have
-the following levels:
+Another way of representing this is that for mRNA datasets you have the following levels:
 
 Species -> Group -> Dataset (this is a resource) -> Traits
 
@@ -63,6 +44,7 @@ Species -> Group -> Traits (each is a resource)
 
 On the UI(quote from Zach):
 
+````
 > One interface issue I ran into is how to add/remove groups (since
 > currently the proxy only cares about groups for retrieving the
 > privilege masks). I think I set it up so that you can search for
@@ -72,16 +54,16 @@ On the UI(quote from Zach):
 > have people direct input e-mails (instead of giving the ability to
 > search).
 
+````
 #### Mon 18 Oct 2021
 
-- Marked the function `check_owner_or_admin` as deprecated. It's only
-  used in: `wqflask/show_trait/show_trait.py`.
+* Marked the function `check_owner_or_admin` as deprecated. It's only used in: `wqflask/show_trait/show_trait.py`.
 
-- Heavy use of the walrus operator to remove alot of boiler plate.
+* Heavy use of the walrus operator to remove alot of boiler plate.
 
 #### Tue 19 Oct 2021
 
-- Every resource needs to have the 3 fields set for the group-mask and
+* Every resource needs to have the 3 fields set for the group-mask and
   default-mask: "data", "metadata", "admin". Otherwise, a hash-ref
   error will be thrown:
 
@@ -98,8 +80,9 @@ On the UI(quote from Zach):
 
 #### Mon 26 Oct 2021
 
-- Some issues Zach pointed out:
+* Some issues Zach pointed out:
 
+```
 > The /trait/update endpoint*, when accessed from >
   "/trait/<name>/edit/inbredset-id/<inbredset_id>", currently doesn't
   seem to work because kwargs/args are empty. This is presumably due
@@ -124,9 +107,12 @@ On the UI(quote from Zach):
   "probeset" traits (and in this case dataset_name is actually the
   trait ID). So this probably calls for the endpoint itself being
   changed in some way.
+```
 
-- Fixed the above, while at the same time, adding the new auth links
+* Fixed the above, while at the same time, adding the new auth links
   to the show trait page. Key point is that I changed the URLs and
   moved them to their own module. Particularly for published datasets.
 
-- New PR: https://github.com/genenetwork/genenetwork2/pull/614
+* New PR:
+
+=> https://github.com/genenetwork/genenetwork2/pull/614
