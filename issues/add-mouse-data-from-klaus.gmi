@@ -71,3 +71,16 @@ https://genenetwork.org/gsearch?type=phenotype&terms=H1N1
 like animal number currently. The way we deal with something like that is
 to create a new group, with the "strain list" being a list of individuals.
 ```
+
+Current script that enters data into gn2:
+
+=> https://github.com/genenetwork/dump-genenetwork-database/blob/master/csv-dump.scm
+
+Remaining tasks:
+
+* [ ] Share latest changes.
+* [ ] Test the script in a copy of the production database.
+* [ ] Make this more generic
+* [ ] Integrate with GN2
+
+The last 2 tasks will/should probably be broken down into smaller issues.
