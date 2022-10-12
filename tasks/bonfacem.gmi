@@ -1,4 +1,4 @@
-# Tasks for Bonface
+# Tasks for Munyoki
 
 ## Tags
 
@@ -8,16 +8,10 @@
 
 ## Tasks
 
-* Add metadata to traits page using RDF
+For all tasks currently being worked on tasks see:
 
-=> /issues/add-metadata-to-traits-page.gmi Annotating Metadata to traits page
+=> https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Ain-progress+AND+is%3Aopen&type=open-issue Munyoki's in-progress tasks
 
-* Integrate SQL script in GN2 (enable users to add new data)
+For currently closed issues see:
 
-* Clean up coding guidelines documentation
-
-Extra:
-
-* Co-ordinate with Zach to fix:
-
-=> /issues/error-when-fetching-snps.gmi Errors when fetching errors pages
+=> https://issues.genenetwork.org/search?type=closed-issue&query=assigned%3Abonfacem%20AND%20type%3Aissue%20AND%20is%3Aclosed Munyoki's closed issues
