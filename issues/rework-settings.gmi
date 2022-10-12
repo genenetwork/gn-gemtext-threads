@@ -1,6 +1,8 @@
 # Rework Fetching Settings
 
 * assigned: bonfacem, zsloan, alex, fredm
+* priority: low
+* status: stalled
 * tags: refactor
 
 In GN2, We fetch all our settings from the "wqflask.utility.tools".  This module contains many functions that are only used once.  As an example, consider this function which is defined in the aforementioned module:
