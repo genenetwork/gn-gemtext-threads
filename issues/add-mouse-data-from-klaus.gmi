@@ -3,7 +3,7 @@
 ## Tags
 
 * assigned: bonfacem
-* priority: high
+* priority: medium
 * status: in progress
 
 ### Description
