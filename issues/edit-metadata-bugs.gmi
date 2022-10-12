@@ -3,60 +3,77 @@
 # Tags
 
 * assigned: bonfacem
-* keywords: metatadata
-* status: in progress
+* keywords: metadata
+* status: stalled
 * priority: high
 
-#TODO
+## Tasks
 
-- [ ] I cannot edit the PMID number
+* [ ] I cannot edit the PMID number
 
-- [ ] There is inadequate feedback on whether or not changes have been accepted (PMID: 24640950. Publication below)
+* [ ] There is inadequate feedback on whether or not changes have been accepted (PMID: 24640950. Publication below)
 
 => https://pubmed.ncbi.nlm.nih.gov/24640950/
 
-- [X] I am unable to add the Abstract for the paper
+* [X] I am unable to add the Abstract for the paper
 
-- [X] There is no place to enter the volume number of the journal. Please see GN1.
+* [X] There is no place to enter the volume number of the journal. Please see GN1.
 
-- [X] I cannot change the "authors" text.
+* [X] I cannot change the "authors" text.
 
-# Notes
-### Wed 04 May 2022 23:02:12 EAT (Munyoki)
+* [X] Fix Typos
 
-- Links should be in blue and highlighted ("History").
+* [X] Remove some form fields (Sequence)
 
-- Make important things stand out in a user-friendly way. Right now, the most important thing: editing metadata by downloading a file is at the very bottom.
+* [X] Adjust the size of some form fields
 
-- Editing the pubmed id should have a cascading fx on the related traits .i.e. editing the pudmed id of one trait should update the pubmed id for all the related traits.
+* [X] Remove the "Reset" button
 
-- Hide the "reset" button.
+* [X] Move the update history to it's own page
 
-- "Sequence" should not be part of the form.
+* [X] Re-order form fields to match common citation styles
 
-- Historical reasons for the "pre-*" field e.g. pre-publication was explained in detail. They are there to mark a sort of "confidential" not-yet-ready data.
+* [-] Re-design the button for uploading the forms
 
-- The word "sample data file" is confusing to users.
+## Description
 
-- When adding case-attributes, new columns should be added on the fly.
+This is closely related to:
 
-- Useful idea: For small datasets, allow edits on UI. For large datasets, or data that has new case-attributes, provide excel files.
+=> /issues/metadata-edits-improvements
 
-- There are some fields which are important, but not really used much: "lab code", "Authorised Users".
+Here's a list of UI elements and how the should be:
 
-- UI tweaks: left justify buttons.
+* Links should be in blue and highlighted ("History").
 
-- No need to edit the case attribute names that are similar in the db. I'll need to find a way to infer this using existing information. This means to remove this hack: Sex(3), Sex(14). Notice the id's embedded in the names.
+* Make important things stand out in a user-friendly way. Right now, the most important thing: editing metadata by downloading a file is at the very bottom.
 
-- Set up a meet with Suheeta. See how she uploads the data.
+* Editing the pubmed id should have a cascading fx on the related traits .i.e. editing the pudmed id of one trait should update the pubmed id for all the related traits.
 
-- Typos: "Pre" is not a word on it's own. "Pre Publication" should be "Pre-publication". Key idea here is to correct typos when spotted, and not to leave this to the hands of the end-user.
+* Hide the "reset" button.
 
-- Hints on certain forms. When the authors form is empty, the user is showed a grayed templet of the input format for the authors. For other form element, if feasible, collaborate with Rob to see what useful hints we can provide the end-user.
+* "Sequence" should not be part of the form.
 
-### Thu 05 May 2022 10:56:53 EAT (Munyoki)
+* Historical reasons for the "pre-*" field e.g. pre-publication was explained in detail. They are there to mark a sort of "confidential" not-yet-ready data.
 
-A note about some confusion about PublicationId and PubMed_ID pointed out by Zach:
+* The word "sample data file" is confusing to users.
+
+* When adding case-attributes, new columns should be added on the fly.
+
+* Useful idea: For small datasets, allow edits on UI. For large datasets, or data that has new case-attributes, provide excel files.
+
+* There are some fields which are important, but not really used much: "lab code", "Authorised Users".
+
+* UI tweaks: left justify buttons.
+
+* No need to edit the case attribute names that are similar in the db. I'll need to find a way to infer this using existing information. This means to remove this hack: Sex(3), Sex(14). Notice the id's embedded in the names.
+
+* Set up a meet with Suheeta. See how she uploads the data.
+
+* Typos: "Pre" is not a word on it's own. "Pre Publication" should be "Pre-publication". Key idea here is to correct typos when spotted, and not to leave this to the hands of the end-user.
+
+* Hints on certain forms. When the authors form is empty, the user is showed a grayed templet of the input format for the authors. For other form element, if feasible, collaborate with Rob to see what useful hints we can provide the end-user.
+
+A note about some confusion about PublicationId and PubMed_ID (credits: Zach):
 
 ```
 There might be some confusion over the "PublicationId" vs "PubMed_ID"; the
@@ -108,16 +125,10 @@ PMIDs with those attributes? Like a clickable link that would take you to that p
 
 ```
 
-### Fri 06 May 2022 12:44:54 EAT (Munyoki)
 
-See:
 
-=> https://github.com/genenetwork/genenetwork2/pull/705
+## Resolution
 
-- [X] Fix Typos
-- [X] Remove some form fields (Sequence)
-- [X] Adjust the size of some form fields
-- [X] Remove the "Reset" button
-- [X] Move the update history to it's own page
-- [X] Re-order form fields to match common citation styles
-- [-] Re-design the button for uploading the forms
+Most of the UI issues were fixed in:
+
+=> https://github.com/genenetwork/genenetwork2/pull/705 UI/Improvements to data uploader

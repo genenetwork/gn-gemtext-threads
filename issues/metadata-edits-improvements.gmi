@@ -9,6 +9,11 @@
 * keywords: metadata, phenotypes
 
 ## Tasks
+
+This is closely related to:
+
+=> /issues/edit-metadata-bugs
+
 ### mRNA assay/Published Phenotypes
 * [X] All headers should be left justified. Please avoid centering headers of any type.  Why: Because all windows are made smaller from the right to the left.  Centered headers therefore "squirrel" about depending on window width.  We are not designing wedding invitations.
 
@@ -42,9 +47,9 @@
 
 Fixes [so far]:
 
-=> https://github.com/genenetwork/genenetwork2/pull/696
+=> https://github.com/genenetwork/genenetwork2/pull/696  Metadata Upload UI Improvements
 
-=> https://github.com/genenetwork/genenetwork2/commit/36d2cbc96bd5219e044ce1728f750ceefd0fa5f6
+=> https://github.com/genenetwork/genenetwork2/commit/36d2cbc96bd5219e044ce1728f750ceefd0fa5f6 Style improvements for editing phenotypes
 
 
 Use-case (mRNA assay):
