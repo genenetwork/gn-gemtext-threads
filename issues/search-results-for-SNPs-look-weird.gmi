@@ -2,7 +2,7 @@
 
 ## Tags
 
-* assigned: bonfacem, zsloan
+* assigned: zsloan
 * type: bug
 * priority: medium
 * status: in progress
