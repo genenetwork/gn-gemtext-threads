@@ -2,9 +2,9 @@
 
 ## Tags
 
-* assigned: bonfacem, alex,zac
+* assigned: bonfacem, alex, zachs
 * type: ui, enhancement
-* status: inprogess
+* status: stalled
 * priority: medium
 * keywords: ui, guix
 
