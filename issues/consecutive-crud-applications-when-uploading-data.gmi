@@ -6,6 +6,7 @@
 * status: stalled
 * type: bug
 * keywords: case attributes, data editing
+* priority: medium
 
 ## Tasks
 
