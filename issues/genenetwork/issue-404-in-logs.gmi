@@ -5,10 +5,9 @@
 * type: enhancement
 * keywords: deployment, 404
 * assigned: bonfacem, pjotrp
-* status: unclear
 * priority: low
 
-## Notes
+## Introduction
 
 => https://flask.palletsprojects.com/en/2.0.x/errorhandling/
 
@@ -58,3 +57,22 @@ I'll look a way for removing this:
 ```
 
 with a more sane, but probably still useful, log. That's where I problem IIUC lies.
+
+### Resolution
+
+The problem of improving better logging has been documented in:
+
+=> /topics/better-logging
+
+Most recently, all noisy logging was removed in:
+
+=> https://github.com/genenetwork/genenetwork2/pull/730/commits/313b041a1c382042b6028054c6c17218eed1c9c5 Delete logger import (commit)
+
+=> https://github.com/genenetwork/genenetwork2/pull/730/commits/afe2bd8ce689994da6f2f0cca420b472ee3b7fff Delete utility.logger (commit)
+
+=> https://github.com/genenetwork/genenetwork2/commit/9d0f492d8a999c1a3eb6525b0ae72bbbcaad4279 Remove usage of "logger" and un-necessary comments wrt the same
+
+We are aware that at the moment we are using one error-handler for everything, and this, together with any other logging issues should be tackled in another separate issue.
+
+* closed
+
