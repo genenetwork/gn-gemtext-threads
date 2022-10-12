@@ -21,10 +21,11 @@ The "Tx" attribute (an attribute that exists twice in the CaseAttribute table an
 
 ### Issue 3
 When Suheeta was trying to add two new case attributes, I manually added them to the CaseAttribute table (with (id,name) of (48, 'MBS2022') and (49, 'DA2022') respectively), but they weren't added when I submitted a CSV with those two extra columns.
+
 ## Tags
 
 * assigned: bonfacem, zachs
 * keywords: metadata, case-attributes
 * type: bug
-* status: in progress
+* status: stalled
 * priority: high
