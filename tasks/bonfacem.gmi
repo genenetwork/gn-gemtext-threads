@@ -1,17 +1,47 @@
 # Tasks for Munyoki
 
-## Tags
-
-* assigned: bonfacem
-* status: in progress
-* priority: high
-
 ## Tasks
 
-For all tasks currently being worked on tasks see:
+### On going tasks
 
-=> https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Ain-progress+AND+is%3Aopen&type=open-issue Munyoki's in-progress tasks
+=> https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Ain-progress+AND+is%3Aopen&type=open-issue All in-progress tasks
 
-For currently closed issues see:
+Rank-ordered list of on-going tasks:
 
-=> https://issues.genenetwork.org/search?type=closed-issue&query=assigned%3Abonfacem%20AND%20type%3Aissue%20AND%20is%3Aclosed Munyoki's closed issues
+=> https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Ain-progress+AND+is%3Aopen&type=open-issue&priority%3A+high High Priority
+
+=> https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Ain-progress+AND+is%3Aopen&type=open-issue&priority%3A+medium Medium Priority
+
+=> https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Ain-progress+AND+is%3Aopen&type=open-issue&priority%3A+low Low Priority
+
+### Stalled (To Be Done/Completed)
+
+=> https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Astalled+AND+is%3Aopen&type=open-issue All in-progress tasks
+
+Rank-ordered list of stalled tasks:
+
+=> https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Astalled+AND+is%3Aopen&type=open-issue&priority%3A+high High Priority
+
+=> https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Astalled+AND+is%3Aopen&type=open-issue&priority%3A+low Low Priority
+
+=> https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Astalled+AND+is%3Aopen&type=open-issue&priority%3A+low Low Priority
+
+=> https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Astalled+AND+is%3Aopen&type=open-issue&priority%3A+unclear Unclear
+
+### Unclear Issues
+
+Ad-hoc issues that were picked some where some how:
+
+=> https://issues.genenetwork.org/search?type=open-issue&query=assigned%3Abonfacem%20AND%20status%3Aunclear%20OR%20priority%3Aunclear%20AND%20type%3Aopen-issue%20AND%20is%3AOpen%20AND%20NOT%20tag%3Ain-progress
+
+
+### Closed Issues
+
+Should something missing, we can always re-open an issue.
+
+currently closed issues are:
+
+=> https://issues.genenetwork.org/search?type=closed-issue&query=assigned%3Abonfacem%20AND%20type%3Aissue%20AND%20is%3Aclosed Closed Issues
+
+
+
