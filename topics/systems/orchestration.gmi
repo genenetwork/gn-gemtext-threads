@@ -8,12 +8,12 @@ What is GN today in terms of services
 Matching GN3 server and REST endpoint (Python: less dependencies)
 Mariadb
 * [X] redis
-* [ ] virtuoso
+* [X] virtuoso
 * [X] GN-proxy (Racket, authentication handler: redis, mariadb)
 * [X] Alias proxy (Racket, gene aliases wikidata)
 * [X] opar server
 * [ ] Jupyter, R-shiny and Julia notebooks, nb-hub server
-* [ ] BNW server (Octave)
+* [X] BNW server (Octave)
 * [ ] UCSC browser
 * [X] GN1 instances (older python, 12 instances in principle, 2 running today)
 * [ ] Access to HPC for GEMMA (coming)
@@ -28,7 +28,7 @@ Mariadb
 
 Somewhat decoupled services:
 
-* [+] genecup
+* [X] genecup
 * [ ] R/shiny power service Dave
 * [ ] biohackrxiv
 * [ ] covid19

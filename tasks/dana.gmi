@@ -11,6 +11,9 @@
 ## Tasks
 
 * [X] Move tux02 into position p2
+* [ ] Rabbit https and GN2 https
+* [ ] get data from summer211.uthsc.edu (access machine room)
+* [ ] Decommission out-racked machines
 
 => ../issues/systems/decommission-machines.gmi
 

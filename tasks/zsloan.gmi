@@ -4,12 +4,21 @@
 
 * assigned: zsloan
 * keywords: genewiki
-* status: unclear
+* status: in progress
 * priority: unclear
 
 ## Tasks
 
+* [ ] Reconnect BNW server
+* [X] Set XAPIAN_DB_PATH=/export/data/genenetwork/xapian on tux01
 * [ ] Geno files incomplete?
 => http://gn2.genenetwork.org/api/v_pre1//genotypes/HSNIH-Palmer.geno
+
 * [ ] GN1 migrate genewiki pages
 => ../issues/genenetwork/genewiki.gmi
+
+* [ ] Production server is running with mariadb over network
+
+=> ../issues/data/MIKK-panel.gmi MIKK genotypes
+
+* [X] Production server is no longer running with DEBUG
