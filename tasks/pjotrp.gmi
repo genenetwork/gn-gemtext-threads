@@ -4,19 +4,28 @@
 
 * kanban: pjotrp
 * assigned: pjotrp
-* status: unclear
-* keywords: pjotrp, to remove
+* status: in progress
 
 ## Notes
 
 The tasks here should probably be broken out into appropriately tagged issues, where they have not - they can be found and filtered out with tissue (formerly gnbug).
 
+=> https://issues.genenetwork.org
+
 ## Tasks
 
-* [ ] Julia with Gregory
-* [ ] Pluto tool with Zach
-=> http://gn1.genenetwork.org/webqtl/main.py?FormID=sharinginfo&GN_AccessionId=2
+=> ./dana.gmi See Dan's list for machine room
+
 * [ ] Restart luna
+* [ ] Order drives and caddies (with @haoc)
+* [ ] Julia with Gregory
+* [ ] Check Tony's list
+* [ ] Update mars (fallback)
+* [ ] Get status list from epysode on GN2(?)
+* [ ] Pluto tool with Zach
+* [ ] Fix issues
+=> https://genenetwork.org/show_trait?trait_id=10441&dataset=HSNIH-PalmerPublish slow mapping
+=> http://gn1.genenetwork.org/webqtl/main.py?FormID=sharinginfo&GN_AccessionId=2
 => ../topics/systems/tux02-production.gmi Set up stable GN service
 => ../issues/genenetwork1/gn1-production-system-issues.gmi
 * [ ] GN3: make sure GN3 services are running
