@@ -16,6 +16,7 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 
 => ./dana.gmi See Dan's list for machine room
 
+* [ ] Reinstate backups on tux02, p2 and epysode.
 * [ ] Restart luna
 * [ ] Order drives and caddies (with @haoc)
 * [ ] Julia with Gregory
