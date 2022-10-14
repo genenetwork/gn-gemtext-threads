@@ -1,6 +1,20 @@
 # Tasks for Munyoki
 
+## Tags
+
+* kanban: bonfacem
+* assigned: bonfacem
+* status: in progress
+
 ## Tasks
+
+### Meta tasks
+
+This is @pjotr's list, do not remove!
+
+* [ ] get RDF example on testing and CD
+* [ ] get RDF example to production as a turtle dump and query code (virtuoso server is running)
+* [ ] final stages (meta)data editing GN2
 
 ### On going tasks
 
@@ -42,6 +56,3 @@ Should something in one of these closed issues be amiss, we can always and shoul
 Currently closed issues are:
 
 => https://issues.genenetwork.org/search?type=closed-issue&query=assigned%3Abonfacem%20AND%20type%3Aissue%20AND%20is%3Aclosed Closed Issues
-
-
-
