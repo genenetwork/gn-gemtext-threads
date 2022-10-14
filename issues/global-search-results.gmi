@@ -24,3 +24,9 @@
 > => http://luna.genenetwork.org/gsearch?type=gene&terms=brca2
 
 @pjotr @zsloan, it seems to me this might be fixed, but please have a look and fix it in case it is not
+
+## Resolution
+
+With the new xapian search, this issue is no more.
+
+* closed

@@ -22,3 +22,9 @@ generating 6Mb of log file info.
 
 
 In fact, every row in the table has a SQL query that does not close the connection properly.
+
+## Resolution
+
+The new xapian search does not use the SQL database at all. Therefore issue may be closed.
+
+* closed

@@ -17,3 +17,9 @@ Note we are replacing search with xapian. So this is less important.
 * [X] BRCA2 does not render results in table
 * [ ] 'Brca2' with quotes gives a SQL error, see
 => http://genenetwork.org/gsearch?type=gene&terms=%27Brca2%27
+
+## Resolution
+
+With the new xapian search, this issue is no more.
+
+* closed
