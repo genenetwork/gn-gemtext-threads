@@ -16,11 +16,13 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 
 => ./dana.gmi See Dan's list for machine room
 
+* [ ] Fix genecup errors
 * [ ] Reinstate backups on tux02, p2 and epysode.
 * [ ] Restart luna
 * [ ] Order drives and caddies (with @haoc)
 * [ ] Julia with Gregory
 * [ ] Check Tony's list
+* [ ] Check Adrian's compiler w. odgi
 * [ ] Update mars (fallback)
 * [ ] Get status list from epysode on GN2(?)
 * [ ] Pluto tool with Zach
