@@ -25,6 +25,7 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 * [ ] Order drives and caddies tux01 & tux02 (with @haoc)
 * [ ] Julia with Gregory
 * [ ] Check Tony's list
+* [ ] Improve search for SNPs and Hs
 * [ ] Complete vcflib work
 * [ ] Check Adrian's compiler w. odgi
 * [ ] Update mars (fallback)
@@ -32,6 +33,7 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 * [ ] DOI support GN (Paris)
 * [ ] GeneNetwork paper
 * [ ] Batch run GEMMA and faster file handling
+* [ ] Improve search for significant and suggestive hits
 * [ ] Fix issues:
 => https://genenetwork.org/show_trait?trait_id=10441&dataset=HSNIH-PalmerPublish slow mapping
 => http://gn1.genenetwork.org/webqtl/main.py?FormID=sharinginfo&GN_AccessionId=2
