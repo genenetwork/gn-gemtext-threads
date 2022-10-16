@@ -1,0 +1,12 @@
+# Interesting links for coders
+
+## Interesting projects that may be relevant
+
+### Browser
+
+=> https://htmx.org/docs/#introduction htmx allows updating HTML elements without having to use Javascript and/or React
+
+### Lisp stuff
+
+=> https://lips.js.org/ Scheme interpreter in the browser
+=> https://quickref.common-lisp.net/cl-css.html CSS as a language - but in CL
