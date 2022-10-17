@@ -1,0 +1,21 @@
+# Authentication/authorisation design
+
+## Authentication
+
+* Local database should be independent from other services and copied as a file (SQLite with JSON?)
+* Later use other providers, such as gmail
+* Later provide REST API & token access
+
+## Authorisation
+
+* Users (authenticated)
+* Groups (users are members and you have a group leader) - every user belongs to one group!
+* Roles define access control (groups have flexible roles) - group can create unique roles
+* Resources (pretty flexible, give access to roles) - every data resource is owned by one group!
+* Some users can add themselves to groups/roles
+* Local database should be independent from other services and copied as a file (SQLite with JSON?)
+* Later provide REST API & token access
+
+## Web front-end
+
+* Web front-end which allows management of these users/groups/roles/resources
