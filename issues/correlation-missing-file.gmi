@@ -8,11 +8,16 @@
 * keywords: correlations
 
 ## Description
-- https://genenetwork.org/show_trait?trait_id=P40630_SWEEQMAEVGR_2&dataset=EPFL-ETHZ-BXD-LivProtCD-HF-1119
-- Use the default dataset for correlation (the same as the trait)
-- You should get the following error:
+Go to
+=> https://genenetwork.org/show_trait?trait_id=P40630_SWEEQMAEVGR_2&dataset=EPFL-ETHZ-BXD-LivProtCD-HF-1119
 
+Use the default dataset for correlation (the same as the trait)
+
+You should get the following error:
+
+```
 GeneNetwork tux01:gene:2.11-rc2-gn_20221013-4eb4beafd 
     [Errno 2] No such file or directory: '/home/gn2/production/tmp/gn2/gn2/ProbeSetFreezeId_886_EPFL/ETHZ BXD Liver Proteome CD-HFD (Nov19)' (error)
+```
     
 This obviously has something to do with the sample data files, though not sure what yet. 
