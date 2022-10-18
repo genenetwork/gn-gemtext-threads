@@ -20,4 +20,20 @@ GeneNetwork tux01:gene:2.11-rc2-gn_20221013-4eb4beafd
     [Errno 2] No such file or directory: '/home/gn2/production/tmp/gn2/gn2/ProbeSetFreezeId_886_EPFL/ETHZ BXD Liver Proteome CD-HFD (Nov19)' (error)
 ```
     
-This obviously has something to do with the sample data files, though not sure what yet. 
+This obviously has something to do with the sample data files, though not sure what yet.
+
+### 2022-10-18
+
+I (fredm) was able to successfully reproduce the issue.
+
+The issue here is that the code
+=> https://github.com/genenetwork/genenetwork2/blob/testing/wqflask/wqflask/correlation/pre_computes.py#L212-L219
+generates the file name does not sanitize the input from the database, leading to issues with the final path.
+
+In this case, the dataset name used to generate the file is (** Note the forward slash **):
+```
+EPFL/ETHZ BXD Liver Proteome CD-HFD (Nov19)
+```
+
+The following commit should fix the issue for most part:
+=> https://github.com/genenetwork/genenetwork2/commit/c8f606b0080a7dd343515c7c2ae830dfeecdf341
