@@ -1,0 +1,123 @@
+# Debug RISC-V assembly with QEMU and GDB
+
+In this tutorial, we will write RISC-V assembly code, run it in the QEMU emulator and debug it using GDB, the GNU debugger.
+
+First, we write a short manifest file so that we can pull in all the tools we need using the ever-convenient Guix.
+
+## Install the required tools
+
+```
+(use-modules (gnu packages cross-base)
+             (gnu packages gdb)
+             (gnu packages virtualization))
+
+(define cross-base
+  (@@ (gnu packages cross-base) cross))
+
+(packages->manifest
+ (list (cross-base gdb "riscv64")
+       (cross-binutils "riscv64")
+       qemu))
+```
+Put the above in a file manifest.scm, and run
+```
+$ guix shell -m manifest.scm
+```
+This drops us into a shell with a gdb, as, ld and qemu for riscv64.
+```
+[env]$ which riscv64-gdb riscv64-as riscv64-ld qemu-riscv64
+/gnu/store/…-profile/bin/riscv64-gdb
+/gnu/store/…-profile/bin/riscv64-as
+/gnu/store/…-profile/bin/riscv64-ld
+/gnu/store/…-profile/bin/qemu-riscv64
+```
+
+## Assemble, link and run a Hello World RISC-V assembly program
+
+Here we have a simple Hello World program that prints the string "Hello World" using the write syscall (64) and exits with status 0 using the exit syscall (93).
+```
+        .global _start
+        
+        .data
+str:    .string "Hello world!\n"
+
+        .text
+_start: li a0, 1                # stdout file descriptor
+        la a1, str              # load address of str
+        li a2, 13               # length of str
+        li a7, 64               # write syscall
+        ecall
+
+exit:   li a0, 0                # set exit code
+        li a7, 93               # exit syscall
+        ecall
+```
+We put this in a file hello.s, assemble and link it. When assembling, we pass the -gstabs flag so that GDB debugging information is generated.
+```
+[env]$ riscv64-as hello.s -gstabs -o hello.o
+[env]$ riscv64-ld hello.o -o hello
+```
+Now that we have our executable, we can run it in qemu.
+```
+[env]$ qemu-riscv64 hello
+Hello World!
+```
+
+## Debug using GDB
+
+We run the hello executable in qemu but tell it to wait for a gdb connection on port 1234.
+```
+[env]$ qemu-riscv64 -g 1234 hello
+```
+While qemu is waiting in a shell, in another shell we run gdb and connect to port 1234.
+```
+[env]$ riscv64-gdb hello
+(gdb) target remote :1234
+Remote debugging using :1234
+_start () at hello.s:7
+7	_start: li a0, 1                # stdout file descriptor
+```
+We have dropped into debugging the program at the _start label in the program. We may step through the instructions one by one using the next command.
+```
+(gdb) next
+8	        la a1, str              # load address of str
+(gdb) next
+9	        li a2, 13               # length of str
+(gdb) next
+10	        li a7, 64               # write syscall
+```
+We may continue normal execution using the continue command.
+```
+(gdb) continue
+Continuing.
+[Inferior 1 (process 1) exited normally]
+```
+Finally, quit.
+```
+(gdb) quit
+```
+
+## Other useful gdb commands
+
+We may also set breakpoints at different labels using the break command. For example, to break execution at the exit label:
+```
+(gdb) break exit
+```
+We may print memory or the value of CPU registers. To print the value of CPU register a0 using
+```
+(gdb) print $a0
+```
+If register a0 contains a memory address, we may print, say 10 bytes, at that address using
+```
+(gdb) x/10xb $a0
+0x12000:	0x48	0x65	0x6c	0x6c	0x6f	0x20	0x77	0x6f
+0x12008:	0x72	0x6c
+```
+Or, we may print 10 characters at that address.
+```
+(gdb) x/10cb $a0
+0x12000:	72 'H'	101 'e'	108 'l'	108 'l'	111 'o'	32 ' '	119 'w'	111 'o'
+0x12008:	114 'r'	108 'l'
+```
+There are many more commands. Here is a good GDB cheatsheet listing the commonly used ones.
+=> https://darkdust.net/files/GDB%20Cheat%20Sheet.pdf
