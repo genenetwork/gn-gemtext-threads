@@ -1,0 +1,25 @@
+# Database Migrations
+
+## Tags
+
+* assigned:
+* type: feature
+* priority: high
+* keywords: database migrations
+* status: pending
+
+## Description
+
+There might need to be some form of database migration to help keep the
+
+* schema
+* triggers
+* views
+* materialised views
+
+etc synchronised across all the databases (i.e. development, CI/CD, staging, production etc.).
+
+Some issues that might benefit from this are the following:
+
+=> /issues/systems/mariadb/move-to-innodb
+=> /issues/materialised-views-for-correlations
