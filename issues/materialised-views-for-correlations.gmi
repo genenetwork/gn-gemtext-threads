@@ -18,6 +18,10 @@ As part of the optimisation effort, we need to look into materialised views to s
 
 MySQL/MariaDB does not support materialised views (there is no `CREATE MATERIALIZED VIEW ...` command or equivalent) but there are ways around that, to simulate the materialized views.
 
+There is some work on
+=> /topics/genotype-database the genotype database
+that should allow intermediate materialised views to be stored in lmdb
+
 ### Implementation Concerns
 
 The implementation of the materialised views will need to concern itself with the following issues:
