@@ -10,7 +10,8 @@
 
 ## Description
 
-- https://genenetwork.org/show_trait?trait_id=5612792&dataset=UMUTAffyExon_0209_RMA
-- Do correlations against the same dataset
+=> https://genenetwork.org/show_trait?trait_id=5612792&dataset=UMUTAffyExon_0209_RMA
+
+Do correlations against the same dataset
 
 This might be the same issue as the one in correlation-missing-file.gmi, but I'm not sure.
