@@ -17,13 +17,13 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 => ./dana.gmi See Dan's list for machine room
 
 * [X] Fix genecup errors (with @efraimf)
-* [ ] Shelby's application
+* [+] Shelby's application
 * [ ] Output sheepdog monitor
 *     - [ ] Get status list from epysode,tux02,rabbit on GN2
-* [ ] Reinstate backups on tux02, p2 and epysode.
+* [+] Reinstate backups on tux02, p2 and epysode.
 * [ ] Restart luna
-* [ ] Order drives and caddies tux01 & tux02 (with @haoc)
-* [ ] Julia with Gregory
+* [+] Order drives and caddies tux01 & tux02 (with @haoc)
+* [ ] Guix and Julia with Gregory
 * [ ] Check Tony's list
 * [ ] Improve search for SNPs and Hs
 * [ ] Complete vcflib work

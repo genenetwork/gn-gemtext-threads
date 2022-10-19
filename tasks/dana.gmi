@@ -11,10 +11,12 @@
 ## Tasks
 
 * [X] Move tux02 into position p2
-* [ ] Mount new hard disks
+* [ ] Connect 10Gbs to p2
+* [ ] Connect 10Gbs to tux01(?)
+* [ ] Mount new hard disks on tux02 and tux01 (with @haoc)
 * [ ] Rabbit https and GN2 https
 * [ ] get data from summer211.uthsc.edu (access machine room)
-* [ ] Decommission out-racked machines
+* [ ] Decommission out-racked machines (whith @arthurc)
 
 => ../issues/systems/decommission-machines.gmi
 
