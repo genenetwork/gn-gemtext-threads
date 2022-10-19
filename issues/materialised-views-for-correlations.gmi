@@ -1,0 +1,34 @@
+# Materialised Views for Correlations
+
+## Tags
+
+* assigned:
+* type: feature, improvement
+* priority: high
+* keywords: correlations, materialised views, optimisation
+* status: pending
+
+## Description
+
+Running correlations on some traits, for example
+=> https://genenetwork.org/show_trait?trait_id=5612792&dataset=UMUTAffyExon_0209_RMA
+takes such a huge amount of time, that the either the back-end server, or the browser times out.
+
+As part of the optimisation effort, we need to look into materialised views to speed up fetching of the data.
+
+MySQL/MariaDB does not support materialised views (there is no `CREATE MATERIALIZED VIEW ...` command or equivalent) but there are ways around that, to simulate the materialized views.
+
+### Implementation Concerns
+
+The implementation of the materialised views will need to concern itself with the following issues:
+
+* Indexing the view to speed up the queries significantly
+* Refreshing the data in the view if data in source table(s) changes (ideally) or periodically (less ideal).
+
+### Other Concerns
+
+Maybe, if we are going down the materialised views road, we should also have migrations in place - that way we can keep track of what schema, triggers, views, etc are in place, and be able to reproduce them automatically (or semi-automatically).
+
+The reason for the concern above is, for example, The developers (alex, arun, bonz, fredm, etc) can implement whatever schema changes, triggers and views locally, but they do not (and probably should not) have access to production. As such, there should be provided a sort of CLI endpoint for the deployment system (or person) to run to implement the changes on the production (and CI/CD) database to get similar results.
+
+The problem here, is that the migration might be moot, if the data is then moved out of the database, as is being planned.
