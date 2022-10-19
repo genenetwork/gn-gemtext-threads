@@ -1,0 +1,27 @@
+# Run Correlations in External Process
+
+## Tags
+
+* assigned:
+* type: feature
+* priority: high
+* keywords: correlations, asynchronous jobs, external process
+* status: pending
+
+## Description
+
+Currently on GeneNetwork2, we run the computations in an external process, but the application keeps the request alive until the entire computation is complete, and the results parsed.
+
+For a lot of the computations, this is not a problem, but there are cases where the computation and data processing takes a huge amount of time, leading to timeouts either on the back-end, or on the browser end. This is a
+* bug
+
+I (fredm) propose to implement a "Request Architecture" that works as follows:
+
+* STEP 01: User requests a correlation computation
+* STEP 02: The application triggers an asynchronous external job and responds to the user with the job identifier
+* STEP 03: After a short delay, nhe user's browser uses the identifier to query the job status
+* STEP 04: If the job is not completed, go to "STEP 03" above, otherwise go to "STEP 05" below
+* STEP 05: If the job completed with no error, go to "STEP 06" below, otherwise jump to "STEP 07" below
+* STEP 06: Process the results and produce the HTML page to display to the user. Jump to "STEP 08"
+* STEP 07: Process the error and display the errors page. Jump to "STEP 08"
+* STEP 08: Correlations computation process is complete
