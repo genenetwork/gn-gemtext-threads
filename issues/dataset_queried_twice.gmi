@@ -1,0 +1,19 @@
+# Dataset Queried Twice
+
+## Tags
+
+* assigned:
+* type: bug
+* priority: medium
+* keywords: performance enhancement, optimisation
+* status: pending
+
+## Description
+
+In the function
+=> https://github.com/genenetwork/genenetwork2/blob/6457f7e3516a04e238eeb061db358eea29cd2332/wqflask/base/trait.py#L21-L50 base.trait.create_trait
+the dataset is queried twice:
+* once in lines 30 to 33
+* once in the call to GeneralTrait (line 42) - lines 67 to 74
+
+Maybe, pass the dataset created in lines 30 to 33 to GeneralTrait to avoid re-querying the data.
