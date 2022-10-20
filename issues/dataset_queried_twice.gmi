@@ -2,7 +2,7 @@
 
 ## Tags
 
-* assigned:
+* assigned: alexm
 * type: bug
 * priority: medium
 * keywords: performance enhancement, optimisation
