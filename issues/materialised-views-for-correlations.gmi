@@ -90,3 +90,12 @@ The following are the database tables classified into their various functions (i
 * ProbeSetData and ProbeSetSE
 * PublishData and PublishSE
 * TempData
+
+
+There might also need to be materialised views for the `Tissue*` tables, i.e.:
+
+* Tissue
+* TissueProbeFreeze
+* TissueProbeSetData
+* TissueProbeSetFreeze
+* TissueProbeSetXRef
