@@ -22,7 +22,7 @@ There is some work on
 => /topics/genotype-database the genotype database
 that should allow intermediate materialised views to be stored in lmdb
 
-There might need to be multiple materialised views for the different types of traits, i.e.
+There might need to be multiple materialised views for the different types of datasets/traits, i.e.
 * Phenotypes (Publish)
 * Genotypes (Geno)
 * mRNA (ProbeSet)
@@ -52,9 +52,41 @@ Possible candidate queries for materialisation are:
 The method above is doing way too much - it should probably be split into separate methods for each class, to simplify the code a little and make it clearer what each part does before reworking the queries for the materialized view.
 
 
-=> https://github.com/genenetwork/genenetwork2/blob/a2b837801d479ed2fb06ca33c07de9c271532c46/wqflask/base/trait.py#L386-L610
+=> https://github.com/genenetwork/genenetwork2/blob/a2b837801d479ed2fb06ca33c07de9c271532c46/wqflask/base/trait.py#L386-L610	
 
 The method above is also doing way too much.
 
 
 Both methods above do not have the metadata, so probably also have a look at adding the metadata to the materialized views
+
+### Possible "Entities" in Materialised Views
+
+In my early (2022-10-10) assessment, for each of the different types of datasets/traits mentioned in the description, we might need the data for the following "entities" in the materialized views:
+
+* Species data (db tables: Species)
+* Strains data (db tables: Strain, NStrain)
+* Group info (db tables: InbredSet)
+* Dataset Info and Metadata
+* Trait data and metadata
+
+The following are the database tables classified into their various functions (in the order order: Genotypes, mRNA, Phenotypes, Temp):
+
+#### Dataset Information Tables
+
+* GenoFreeze
+* ProbeSetFreeze
+* PublishFreeze
+
+#### Dataset Metadata Tables
+
+* Geno
+* ProbeSet
+* Phenotype
+* Temp
+
+#### Sample Data
+
+* GenoData and GenoSE
+* ProbeSetData and ProbeSetSE
+* PublishData and PublishSE
+* TempData
