@@ -18,7 +18,7 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 
 * [X] Fix genecup errors (with @efraimf)
 * [+] Shelby's application
-* [ ] Copy database to space (@arthurc)
+* [ ] Copy database to space (space3 dir) (@arthurc)
 * [ ] Output sheepdog monitor
 *     - [ ] Get status list from epysode,tux02,rabbit on GN2
 * [+] Reinstate backups on tux02, p2 and epysode; reduce incoming IP

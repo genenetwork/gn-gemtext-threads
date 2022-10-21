@@ -14,6 +14,7 @@
 * [X] disconnect tux02 from 10Gbs
 * [+] connect 10Gbs to p2
 * [+] connect 10Gbs to tux01(?)
+* [ ] space server out-of-band
 * [ ] mount new hard disks on tux02 and tux01 (with @haoc)
 * [ ] rabbit https and GN2 https
 * [ ] get data from summer211.uthsc.edu (access machine room)
