@@ -1,0 +1,21 @@
+# Genotype correlations only returning results from first chromosome
+
+## Tags
+
+* assigned: fredm, alexm, zsloan
+* type: bug
+* priority: high
+* status: ongoing
+* keywords: correlations
+
+## Description
+
+=> http://gn2-zach.genenetwork.org/show_trait?trait_id=rsm10000006649&dataset=BXDGeno
+
+Do correlations against "NHLBI BXD All Ages Heart RNA-Seq (Nov20) TMP Log2 **" (the final Heart dataset)
+
+Only 261 results appear, and all from Chromosome 1
+
+I initially suspected this had something to do with the new filtering options, but this isn't the case. 
+
+I think there might be some issue in the correlations logic specific to Genotype correlations (where the trait is Genotype and the target DB is any type). At the very least, it seems that it isn't returning the top 500 results and is instead returning the first 500 results (with no sort by the actual correlation)
