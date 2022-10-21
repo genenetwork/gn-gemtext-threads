@@ -1,0 +1,16 @@
+# Do Bulk Query for Correlation Results' Display
+
+## Tags
+
+* assigned:
+* priority: high
+* status
+* keywords: correlations, bulk queries, optimisation
+* type: enhancement, optimisation
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork2/blob/6457f7e3516a04e238eeb061db358eea29cd2332/wqflask/wqflask/correlation/show_corr_results.py#L112-L220 This loop
+in lines 118 to 120 (call to `create_trait(...)) queries the database at least once every iteration, which leads to performance issues.
+
+We need to replace this with a single bulk query that gets all the appropriate data and sets up all the expected data.
