@@ -1,0 +1,19 @@
+# Correlations are wrongly always using all samples
+
+## Tags
+
+* assigned: fredm, zsloan, alexm
+* type: bug
+* priority: high
+* status: ongoing
+* keywords: correlations
+
+## Description
+
+Do any BXD correlation (for example https://genenetwork.org/show_trait?trait_id=1457022_at&dataset=HC_M2_0606_P against the default/same dataset)
+
+It uses all 71 samples regardless of what the user chooses in the "Samples" drop-down. 
+
+It should instead use the logic in the lines below (which was initially wrong and I just fixed), but this logic seems like it isn't being used at all with the new rust-correlations code:
+
+https://github.com/genenetwork/genenetwork2/blob/400320ea0063954f027fa918f77f7518b904c6ba/wqflask/wqflask/correlation/correlation_gn3_api.py#L160-L170
