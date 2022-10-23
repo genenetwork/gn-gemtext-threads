@@ -33,3 +33,7 @@ Public files are hosted on tux02
 I have added a git repo that is now 11Gb. Looks like it can perform alright, as long as we expose textual files. A cgit frontend can deal with versions.
 
 => https://git.zx2c4.com/cgit/
+
+See also
+
+=> https://eris.codeberg.page/spec/ Block level storage with URN
