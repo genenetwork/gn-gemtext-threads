@@ -14,28 +14,35 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 
 ## Tasks
 
+### Meta-tasks
+
+* [+] Shelby's application
+* [ ] Check Tony's list and improve search for SNPs and Hs
+* [ ] GeneNetwork paper
+* [ ] DOI support GN (Paris)
+* [ ] Batch run GEMMA and faster file handling
+* [ ] Improve search for significant and suggestive hits
+* [ ] GEMMA speedups
+* [ ] Aging studies
+* [ ] RISC-V
+
+### Ongoing tasks
+
 => ./dana.gmi See Dan's list for machine room
 
-* [X] Fix genecup errors (with @efraimf)
-* [+] Shelby's application
-* [ ] Copy database to space (space3 dir) (@arthurc)
-* [ ] Output sheepdog monitor
-*     - [ ] Get status list from epysode,tux02,rabbit on GN2
-* [+] Reinstate backups on tux02, p2 and epysode; reduce incoming IP
+* [ ] Complete vcflib work in Zig and release
+* [ ] Get status list from sheepdog on epysode, tux02 and rabbit on GN2
+* [+] Reinstate backups on tux02, p2, space and epysode; reduce incoming IP
 * [+] Add accounts &Erik, Andrea, Hao to P2
-* [ ] Restart luna
+* [ ] Add accounts Bonz, Fred, Alex to tux02
+* [ ] Consolidate website monitor script so it is shared between rabbit and epysode
 * [+] Order drives and caddies tux01 & tux02 (with @haoc)
 * [+] Guix and Julia with Gregory
-* [ ] Check Tony's list
-* [ ] Improve search for SNPs and Hs
-* [ ] Complete vcflib work
 * [ ] Check Adrian's compiler w. odgi
 * [ ] Update mars (fallback)
 * [ ] Pluto tool with Zach
-* [ ] DOI support GN (Paris)
-* [ ] GeneNetwork paper
-* [ ] Batch run GEMMA and faster file handling
-* [ ] Improve search for significant and suggestive hits
+* [ ] Introduce disk space & mdstat monitor
+* [ ] Restart luna
 * [ ] Fix issues:
 => https://genenetwork.org/show_trait?trait_id=10441&dataset=HSNIH-PalmerPublish slow mapping
 => http://gn1.genenetwork.org/webqtl/main.py?FormID=sharinginfo&GN_AccessionId=2
@@ -46,3 +53,9 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 * [ ] GN2: add link to wikidata gene aliases
 => ../topics/systems/fallbacks-and-backups.gmi
 * [ ] fix GN1 images linking to http://www.webqtl.org/array_images/S238-1F1-U74Av2.png
+
+## Done
+
+* [X] Fix genecup errors (with @efraimf)
+* [X] Copy database to space (space3 dir) (@arthurc)
+* [X] Output sheepdog monitor
