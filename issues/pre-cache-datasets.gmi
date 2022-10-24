@@ -1,0 +1,28 @@
+# Pre-Cache Datasets
+
+## Tags
+
+* assigned:
+* priority: medium
+* type: enhancement
+* status: open
+* keywords: cache, optimisation
+
+## Description
+
+To improve the performance of the system when running computations (correlations, mappings, etc), we need to pre-cache the datasets in text files.
+
+The triggers for pre-caching could be:
+* creation of a new dataset
+* changes in data for (a) trait(s) in the dataset
+* changes in sample list for a dataset
+
+I propose an external job be triggered whenever any of the triggers above happen. The job could, among other things:
+* Delete existing cache file
+* Create new cache file with new data
+
+Maybe, if possible, we could have the pre-cache service generate the cache files based on dates for latest changes without deleting older cache files -- we could look into whether this is possible.
+
+## Related Issues
+
+=> /issues/sample-data-caching-problem Sample Data Caching Bug
