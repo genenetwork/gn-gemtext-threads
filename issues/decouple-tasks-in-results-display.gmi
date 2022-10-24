@@ -1,0 +1,13 @@
+# Decouple Tasks in Correlations Results Display
+
+## Tags
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork2/blob/f03127d751cd629596c2595d700fbb044725e01c/wqflask/wqflask/correlation/show_corr_results.py#L112 The loop processing the results
+is doing way too much.
+
+We need to slowly decouple the different tasks into separate functions that can be called successively on each individual trait to build up the results, with something like the `map` function, or list comprehensions.
+
+=> https://github.com/genenetwork/genenetwork2/blob/f03127d751cd629596c2595d700fbb044725e01c/wqflask/wqflask/correlation/show_corr_results.py#L116-L122 The conditional fetching of traits data
+should probably be done before we enter the looping part of the results processing to make the logic easier and decouple the fetching from the results processing.
