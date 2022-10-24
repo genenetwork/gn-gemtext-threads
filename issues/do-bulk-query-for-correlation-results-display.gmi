@@ -2,9 +2,9 @@
 
 ## Tags
 
-* assigned:
+* assigned: fredm
 * priority: high
-* status
+* status: closed
 * keywords: correlations, bulk queries, optimisation
 * type: enhancement, optimisation
 
@@ -14,3 +14,6 @@
 in lines 118 to 120 (call to `create_trait(...)) queries the database at least once every iteration, which leads to performance issues.
 
 We need to replace this with a single bulk query that gets all the appropriate data and sets up all the expected data.
+
+This new issue has been superceded by
+=> /issues/decouple-tasks-in-results-display this one
