@@ -15,5 +15,5 @@ in lines 118 to 120 (call to `create_trait(...)) queries the database at least o
 
 We need to replace this with a single bulk query that gets all the appropriate data and sets up all the expected data.
 
-This new issue has been superceded by
+This new issue has been superseded by
 => /issues/decouple-tasks-in-results-display this one
