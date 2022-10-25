@@ -43,20 +43,16 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 * [ ] Update mars (fallback)
 * [ ] Pluto tool with Zach
 * [ ] Introduce disk space & mdstat monitor
-* [X] Restart luna
 * [ ] Fix issues:
 => https://genenetwork.org/show_trait?trait_id=10441&dataset=HSNIH-PalmerPublish slow mapping
 => http://gn1.genenetwork.org/webqtl/main.py?FormID=sharinginfo&GN_AccessionId=2
-=> ../topics/systems/tux02-production.gmi Set up stable GN service
+* [ ] Fix GN1 uploader:
 => ../issues/genenetwork1/gn1-production-system-issues.gmi
-* [ ] GN3: make sure GN3 services are running
-=> ../topics/systems/gn-services.gmi
-* [ ] GN2: add link to wikidata gene aliases
-=> ../topics/systems/fallbacks-and-backups.gmi
 * [ ] fix GN1 images linking to http://www.webqtl.org/array_images/S238-1F1-U74Av2.png
 
 ## Done
 
+* [X] Restart luna
 * [X] Fix genecup errors (with @efraimf)
 * [X] Copy database to space (space3 dir) (@arthurc)
 * [X] Output sheepdog monitor
