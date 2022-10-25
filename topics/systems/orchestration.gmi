@@ -5,8 +5,8 @@ After the Penguin2 crash in Aug. 2022 it has become increasingly clear how hard 
 What is GN today in terms of services
 
 * [X] Main GN2 server (Python, 20+ processes, 3+ instances: depends on all below)
-Matching GN3 server and REST endpoint (Python: less dependencies)
-Mariadb
+* [X] Matching GN3 server and REST endpoint (Python: less dependencies)
+* [X] Mariadb
 * [X] redis
 * [X] virtuoso (@aruni)
 * [X] GN-proxy (Racket, authentication handler: redis, mariadb)
@@ -14,23 +14,25 @@ Mariadb
 * [X] opar server
 * [+] Jupyter, R-shiny and Julia notebooks, nb-hub server
 * [X] BNW server (@efraimf)
-* [ ] UCSC browser (@efraimf)
+* [+] UCSC browser (@efraimf)
 * [X] GN1 instances (older python, 12 instances in principle, 2 running today)
 * [ ] Access to HPC for GEMMA (coming)
-* [ ] Backup services (sheepdog, rsync, borg)
-* [ ] monitoring services (incl. systemd, gunicorn, shepherd, sheepdog)
+* [+] Backup services (sheepdog, rsync, borg)
+* [+] monitoring services (incl. systemd, gunicorn, shepherd, sheepdog)
 * [ ] mail server
-* [+] https certificates
+* [X] https certificates
 * [X] http(s) proxy (nginx)
 * [X] CI/CD services (with github webhooks)
 * [+] git server (gitea or cgit)
 * [X] file server (formerly IPFS)
+* [ ] SPARQL endpoint
 
 Somewhat decoupled services:
 
 * [X] genecup
-* [ ] R/shiny power service Dave
+* [X] R/shiny power service Dave
 * [ ] biohackrxiv
+* [ ] hegp
 * [ ] covid19
 * [ ] guix publish server (runs on penguin2, needs tux02 @efraimf)
 
