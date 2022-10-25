@@ -102,6 +102,13 @@ SQL> SPARQL SELECT * WHERE {?s ?p ?o};
 After running virtuoso, you will want to change the default password of the `dba` user. The default password of the `dba` user is `dba`. You can change passwords using the isql command-line client. See
 => http://docs.openlinksw.com/virtuoso/defpasschange/ Virtuoso users and how to set their passwords
 
+In a typical production virtuoso installation, you will want to change the password of the dba user and disable the dav user. Here are the commands to do so. Pay attention to the single versus double quoting.
+```
+SQL> set password "dba" "new-password";
+SQL> UPDATE ws.ws.sys_dav_user SET u_account_disabled=1 WHERE u_name='dav';
+SQL> CHECKPOINT;
+```
+
 ## Loading data into virtuoso
 
 Virtuoso supports at least three different ways to load RDF.
