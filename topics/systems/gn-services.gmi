@@ -12,17 +12,29 @@ In addition to gn1 and gn2 we have 3 running gn3 services:
 
 1. gn-proxy - deployed as gn3 user in production
 
+```
 curl localhost:8080/version
 {"version":"0.2.1"}
+```
 
 2. gn3 aliases
 
+```
 curl http://localhost:8000/gene/aliases/BRCA2
 ["FACD","FAD","FANCD","BROVCA2","FAD1","FANCD1","BRCC2","GLM3","PNCA2","XRCC11"]
-
+```
 3. genenetwork3 (python3)
 
-And then there are mariadb and redis.
+```
+curl https://luna.genenetwork.org/gn3/
+[ "Hello GeneNetwork3!"  ]
+```
+
+## Notes
+
+We track services now on
+
+=> https://rabbit.genenetwork.org/sheepdog/index.html
 
 ## See also
 

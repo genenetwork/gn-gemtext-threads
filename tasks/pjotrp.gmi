@@ -30,9 +30,9 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 
 => ./dana.gmi See Dan's list for machine room
 
-* [ ] run sheepdog as root: redis password error; introduce SHEEPDOG_CONF
+* [+] run sheepdog as root: redis password error; introduce SHEEPDOG_CONF
 * [ ] Complete vcflib work in Zig and release
-* [ ] Get status list from sheepdog on epysode, tux02 and rabbit on GN2
+* [+] Get status list from sheepdog on epysode, tux02 and rabbit on GN2
 * [+] Reinstate backup drops on tux02, p2, space and epysode; reduce incoming IP
 * [+] Add accounts &Erik, Andrea, Hao to P2
 * [ ] Add accounts Bonz, Fred, Alex to tux02
@@ -43,7 +43,7 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 * [ ] Update mars (fallback)
 * [ ] Pluto tool with Zach
 * [ ] Introduce disk space & mdstat monitor
-* [ ] Restart luna
+* [X] Restart luna
 * [ ] Fix issues:
 => https://genenetwork.org/show_trait?trait_id=10441&dataset=HSNIH-PalmerPublish slow mapping
 => http://gn1.genenetwork.org/webqtl/main.py?FormID=sharinginfo&GN_AccessionId=2
