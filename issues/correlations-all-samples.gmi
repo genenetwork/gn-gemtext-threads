@@ -17,3 +17,14 @@ It uses all 71 samples regardless of what the user chooses in the "Samples" drop
 It should instead use the logic in the lines below (which was initially wrong and I just fixed), but this logic seems like it isn't being used at all with the new rust-correlations code:
 
 https://github.com/genenetwork/genenetwork2/blob/400320ea0063954f027fa918f77f7518b904c6ba/wqflask/wqflask/correlation/correlation_gn3_api.py#L160-L170
+
+
+## Notes 25/10/22
+
+Pr that fixes the issues raised are:
+
+=> https://github.com/genenetwork/genenetwork2/pull/739
+
+=>  https://github.com/genenetwork/genenetwork3/pull/102
+
+
