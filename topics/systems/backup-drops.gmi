@@ -48,7 +48,15 @@ And run
 systemctl reload ssh
 ```
 
-You may need to add to allowusers for ssh access.
+You may need to add to allowusers for ssh access. If you use allowusers (recommended) you can even specify the sending host with
+
+```
+AllowUsers bacchus@remote
+```
+
+where remote can be an IP address.
+
+Warning: if you introduce this `AllowUsers` command all users should be listed or people may get locked out of the machine.
 
 Next create a special key on the backup machine's ibackup user (just hit enter):
 
@@ -112,5 +120,11 @@ touch ~/mnt/dropserver/drop/HELLO
 ```
 
 And the remote directory should be ready for dropping files!
+
+To unmount the dir
+
+```
+fusermount -u ~/mnt/dropserver
+```
 
 IMPORTANT: it is important to try ssh and read /var/log/auth.log to deal with permission issues. sshfs and the underlying sftp protocol are fussy.
