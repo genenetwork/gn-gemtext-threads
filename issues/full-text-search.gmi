@@ -1,9 +1,14 @@
 # Full text search
 
-Implement full text search on the dumped RDF using xapian. This may be a feature to be implemented in the dump-genenetwork-database repo using guile-xapian. It is also worth considering that virtuoso supports full text search in SPARQL. But, the query syntax is not as natural language like as xapian, and there may be no stemming.
+Implement full text search on the dumped RDF using xapian. This may be a feature to be implemented in the dump-genenetwork-database repo using guile-xapian.
 
 => https://xapian.org/ Xapian search engine library
 => https://git.genenetwork.org/arunisaac/dump-genenetwork-database dump-genenetwork-database repository
-=> http://docs.openlinksw.com/virtuoso/rdfsparqlrulefulltext/ Virtuoso full text search
 
 * assigned: aruni, bonfacem
+
+## Virtuoso full text search
+
+We also considered that virtuoso supports full text search in SPARQL. But, the query syntax is not as natural as xapian, and there may be no stemming. So, this option was rejected.
+
+=> http://docs.openlinksw.com/virtuoso/rdfsparqlrulefulltext/ Virtuoso full text search
