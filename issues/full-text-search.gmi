@@ -7,6 +7,8 @@ Implement full text search on the dumped RDF using xapian. This may be a feature
 
 * assigned: aruni, bonfacem
 
+* [ ] Add type hinting to the index-genenetwork script in gn3
+
 ## Virtuoso full text search
 
 We also considered that virtuoso supports full text search in SPARQL. But, the query syntax is not as natural as xapian, and there may be no stemming. So, this option was rejected.
