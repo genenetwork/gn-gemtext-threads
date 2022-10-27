@@ -30,6 +30,7 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 
 => ./dana.gmi See Dan's list for machine room
 
+* [ ] research.gov submit Postdoc plan
 * [+] run sheepdog as root: redis password error; introduce SHEEPDOG_CONF
 * [ ] Complete vcflib work in Zig and release
 * [+] Get status list from sheepdog on epysode, tux02 and rabbit on GN2

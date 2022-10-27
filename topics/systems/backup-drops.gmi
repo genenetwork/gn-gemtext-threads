@@ -1,0 +1,116 @@
+# Backup Drops
+
+To make backups we use a combination of sheepdog, borg, sshfs, rsync. sheepdog is the monitor and status is tracked using a redis queue. borg does incremental backups as a local user. Next we drop the backup to a remote machine using a special user on the remote with very limited access - only one directory can be mounted with sshfs and there is no ssh login. Finally the data gets rsync'd across.
+
+This system proves pretty resilient over time. Only on the synology server I can't get it to work because of some CRON permission issue.
+
+# Tags
+
+* assigned: pjotrp
+* keywords: systems, backup, sheepdog, database
+
+# Info
+
+## Borg backups
+
+
+## Running sheepdog on rabbit
+
+=> https://github.com/pjotrp/deploy sheepdog monitor running on redis queue
+=> https://rabbit.genenetwork.org/sheepdog/index.html current web monitor for GN sheepdog on rabbit
+
+## Create a drop user on remote
+
+```
+adduser bacchus
+```
+
+Disable the password, just to be sure. Next add the following to /etc/ssh/sshd.conf:
+
+```diff
+-# override default of no subsystems
+-Subsystem      sftp    /usr/lib/openssh/sftp-server
++Subsystem      sftp    internal-sftp -f AUTH -l VERBOSE
++
++Match User bacchus
++    # ChrootDirectory /export/backup/%u
++    ChrootDirectory /export/backup/%u
++    X11Forwarding no
++    AllowTcpForwarding no
++    ForceCommand internal-sftp
++    PasswordAuthentication no
++    PubkeyAuthentication yes
+```
+
+And run
+
+```
+systemctl reload ssh
+```
+
+You may need to add to allowusers for ssh access.
+
+Next create a special key on the backup machine's ibackup user (just hit enter):
+
+```
+su ibackup
+ssh-keygen -t ecdsa -f $HOME/.ssh/id_ecdsa_backup
+```
+
+and copy the public key into the remote /home/bacchus/.ssh/authorized_keys
+
+Now test it from the backup server with
+
+```
+ssh -v bacchus@dropserver
+```
+
+it should give a Permission denied (publickey).
+
+On the drop server you can track messages by
+
+```
+tail -40 /var/log/auth.log
+```
+
+Next
+
+```
+ssh -v -i ~/.ssh/id_ecdsa_backup bacchus@dropserver
+```
+
+should give a Broken pipe(!). In auth.log you may see something like
+
+fatal: bad ownership or modes for chroot directory component "/export/backup/"
+
+This is a tricky bit. This directory should be owned by root and have permissions. The inside user directory has different permissions:
+
+```
+ls -ld /export/backup/
+drwxr-xr-x 3 root root 4096 Oct 21 02:08 /export/backup/
+drwxr-xr-x 3 root root 4096 Oct 21 02:07 /export/backup/bacchus
+drwx------ 3 bacchus bacchus 4096 Oct 21 02:26 /export/backup/bacchus/drop
+```
+
+So, as root
+
+```
+mkdir -p /export/backup/bacchus/drop
+chown bacchus.bacchus /export/backup/bacchus/drop/
+chmod 0700 /export/backup/bacchus/drop/
+```
+
+If auth.log says error: /dev/pts/11: No such file or directory on ssh we are good to go!
+Next use sshfs
+
+```
+su ibackup
+mkdir -p ~/mnt/dropserver
+sshfs -o IdentityFile=~/.ssh/id_ecdsa_backup bacchus@dropserver:/ ~/mnt/dropserver/
+df -h|grep mnt
+touch ~/mnt/dropserver/drop/HELLO
+```
+
+And the remote directory should be ready for dropping files!
+
+IMPORTANT: it is important to try ssh and read /var/log/auth.log to deal with permission issues. sshfs and the underlying sftp protocol are fussy.
