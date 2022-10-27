@@ -13,6 +13,7 @@ This system proves pretty resilient over time. Only on the synology server I can
 
 ## Borg backups
 
+It is advised to use a backup password and not store that on the remote.
 
 ## Running sheepdog on rabbit
 
@@ -128,3 +129,21 @@ fusermount -u ~/mnt/dropserver
 ```
 
 IMPORTANT: it is important to try ssh and read /var/log/auth.log to deal with permission issues. sshfs and the underlying sftp protocol are fussy.
+
+## Using rsync over sshfs with sheepdog
+
+A backup script with sheepdog may look like
+
+```
+sheepdog_run.rb -h rabbit --always -v --tag "drop-mount-dropserver" -c "sshfs -o IdentityFile=~/.ssh/id_ecdsa_backup bacchus@dropserver:/ ~/mnt/this"
+
+sheepdog_run.rb -h rabbit --always -v --tag "drop-rsync-dropserver" -c "rsync -vrltDP this/* borg/* ~/mnt/this/drop/this/ --delete"
+
+sheepdog_run.rb -h rabbit --always -v --tag "drop-unmount-dropserver" -c "fusermount -u ~/mnt/this"
+```
+
+It may be useful to add the following options to sshfs:
+
+```
+sshfs -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,IdentityFile=~/.ssh/id_ecdsa_backup ...
+```
