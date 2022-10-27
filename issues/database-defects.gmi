@@ -1,0 +1,55 @@
+# Errors, defects and missing data in the database
+
+There are a number of errors in the database, which we try to track in this issue. These are best fixed directly in the database rather than by working around them in code.
+
+## LRS values listed as 0.000
+
+Some LRS values in the database are wrongly listed as 0.000. They should be NULLs.
+```
+MariaDB> SELECT COUNT(*) FROM ProbeSetXRef WHERE LRS=0;
++----------+
+| COUNT(*) |
++----------+
+|   237327 |
++----------+
+
+MariaDB> SELECT COUNT(*) FROM PublishXRef WHERE LRS=0;
++----------+
+| COUNT(*) |
++----------+
+|     1687 |
++----------+
+```
+
+## Years are sometimes blank or other strings
+
+Some years are blank strings or strings that contain text other than the year. These should be fixed and the year field must be made an integer.
+```
+MariaDB> SELECT COUNT(*) FROM Publication WHERE CONVERT(Year, UNSIGNED)=0;
++----------+
+| COUNT(*) |
++----------+
+|      854 |
++----------+
+```
+
+## E-mail IDs with spaces
+
+At least one e-mail IDs has spaces in it.
+```
+MariaDB> SELECT * FROM Investigators WHERE Email LIKE '% %';
+```
+
+## Blank E-mail IDs
+
+At least one e-mail ID is blank.
+```
+MariaDB> SELECT * FROM Investigators WHERE Email="";
+```
+
+## Encodings and unprintable characters
+
+At least one last name is encoded incorrectly and appear as unprintable characters.
+```
+MariaDB> SELECT LastName FROM Investigators WHERE FirstName='Yohan';
+```
