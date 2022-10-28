@@ -16,10 +16,10 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 
 ### Meta-tasks
 
-* [+] Shelby's application
-* [ ] Check Tony's list and improve search for SNPs and Hs
-* [ ] GeneNetwork paper
 * [ ] DOI support GN (Paris)
+* [+] Shelby's application
+* [.] Check Tony's list and improve search for SNPs and Hs
+* [.] GeneNetwork paper
 * [ ] Batch run GEMMA and faster file handling
 * [ ] Improve search for significant and suggestive hits
 * [ ] GEMMA speedups
@@ -36,8 +36,6 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 * [+] Get status list from sheepdog on epysode, tux02 and rabbit on GN2
 * [+] Reinstate backup drops on tux02, p2, space and epysode; reduce incoming IP
 * [+] Add accounts &Erik, Andrea, Hao to P2
-* [ ] Add accounts Bonz, Fred, Alex to tux02
-* [ ] Consolidate website monitor script so it is shared between rabbit and epysode
 * [+] Order drives and caddies tux01 & tux02 (with @haoc)
 * [+] Guix and Julia with Gregory
 * [ ] Check Adrian's compiler w. odgi
@@ -53,6 +51,7 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 
 ## Done
 
+* [X] Add accounts Bonz, Fred, Alex to tux02
 * [X] Restart luna
 * [X] Fix genecup errors (with @efraimf)
 * [X] Copy database to space (space3 dir) (@arthurc)
