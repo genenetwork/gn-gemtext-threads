@@ -53,3 +53,20 @@ At least one last name is encoded incorrectly and appear as unprintable characte
 ```
 MariaDB> SELECT LastName FROM Investigators WHERE FirstName='Yohan';
 ```
+
+## Author list is not always a comma-separated string
+
+The list of authors is not always a strictly comma-separated string. Sometimes, there is an "and" at the end instead of a comma.
+```
+MariaDB> SELECT Authors FROM Publication WHERE Authors LIKE '% and %';
+```
+Sometimes, not all authors are listed by name. They are only mentioned as "and colleagues".
+```
+MariaDB> SELECT Authors FROM Publication WHERE Authors LIKE '%colleagues%';
+```
+At other times, there is a trailing comma at the end of the string.
+```
+MariaDB> SELECT Authors FROM Publication WHERE Authors LIKE '%,';
+```
+
+
