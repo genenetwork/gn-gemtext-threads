@@ -1,0 +1,19 @@
+# Xapian indexing
+
+Due to the enormous size of the GeneNetwork database, indexing it in a reasonable amount of time is a tricky process that calls for careful identification and optimization of the performance bottlenecks. This document is a description of how we achieve it.
+
+Indexing happens in the following three phases.
+
+* Phase 1: retrieve data from SQL
+* Phase 2: index text
+* Phase 3: write Xapian index to disk
+
+Phases 1 and 3 (that is, the retrieval of data from SQL and writing of the Xapian index to disk) are I/O bound processes. Phase 2 (the actual indexing of text) is CPU bound. So, we parallelize phase 2 while keeping phases 1 and 3 sequential.
+
+There is a long delay in retrieving data from SQL and loading it into memory. In this time, the CPU is waiting on I/O and idling away. In order to avoid this, we retrieve SQL data chunk by chunk and spawn off phase 2 worker processes. Thus, we interleave phase 1 and 2 so that they don't block each other. Despite this, on tux02, the indexing script is only able to keep around 10 of the 128 CPUs busy. As phase 1 is dishing out jobs to phase 2 worker processes, before it can finish dishing out jobs to all 128 CPUs, the earliest worker processes finish and exit. The only way to avoid this and improve CPU utilization would be to further optimize the I/O of phase 1.
+
+Building a single large Xapian index is not scalable. See detailed report on Xapian scalability.
+=> xapian-scalability
+So, we let each process of phase 2 build its own separate Xapian index. Finally, we compact and combine them into one large index. When writing smaller indexes in parallel, we take care to lock access to the disk so that only one process is writing to the disk at any given time. If many processes try to simultaneously write to the disk, the write speed is slowed down, often considerably, due to I/O contention.
+
+It is important to note that the performance bottlenecks identified in this document are machine-specific. For example, on my laptop with only 2 cores, CPU performance in phase 2 is the bottleneck. Phase 1 I/O waits on the CPU to finish instead of the other way around.
