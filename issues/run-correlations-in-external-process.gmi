@@ -2,11 +2,11 @@
 
 ## Tags
 
-* assigned:
+* assigned: fredm
 * type: feature
 * priority: high
 * keywords: correlations, asynchronous jobs, external process
-* status: pending
+* status: completed, closed
 
 ## Description
 
@@ -25,3 +25,7 @@ I (fredm) propose to implement a "Request Architecture" that works as follows:
 * STEP 06: Process the results and produce the HTML page to display to the user. Jump to "STEP 08"
 * STEP 07: Process the error and display the errors page. Jump to "STEP 08"
 * STEP 08: Correlations computation process is complete
+
+----
+
+This has been completed.
