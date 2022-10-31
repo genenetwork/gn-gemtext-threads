@@ -9,8 +9,8 @@
 ## Authorisation
 
 * Users (authenticated)
-* Groups (users are members and you have a group leader) - every user belongs to one group!
-* Roles define access control (groups have flexible roles) - group can create unique roles
+* Groups (users are members and you have a group leader) - every user belongs to one group! Groups own the resources.
+* Roles define access control (groups have flexible roles) - group can create unique roles. Roles are essentially collections of privileges.
 * Resources (pretty flexible, give access to roles) - every data resource is owned by one group!
 * Some users can add themselves to groups/roles
 * Local database should be independent from other services and copied as a file (SQLite with JSON?)
@@ -19,3 +19,11 @@
 ## Web front-end
 
 * Web front-end which allows management of these users/groups/roles/resources
+
+## Some Related Issues
+
+The following issues are related to this topic.
+
+* issues/authorisation Clean Up Authorisation (contains extra info)
+* topics/authentication/replace-hard-coded-auth-with-gn-proxy Replace Hard coded authentication with gn-proxy
+* topics/authentication/user-info Put user info in the a/c name in the menu
