@@ -6,19 +6,142 @@
 * Later use other providers, such as gmail
 * Later provide REST API & token access
 
+### Local Authentication
+
+This section tracks the possible flow for user authentication, specifically for users with accounts registered on GeneNetwork (Local).
+
+* User loads login page
+* User provides email and password
+* If email does not exist in local database, quit authentication process with an error message, e.g. "Email or Password provided do not match our records."
+* If email exist, check whether the provided password matches with the one in the database for the given password.
+* If password does not match, quit authentication process with an error message, e.g. "Email or Password provided do not match our records."
+* If password matches, then user has authenticated and a new session can be created.
+
+### External Services Authentication
+
+The system will, in the near future, allow user authentication from external services such as Git(hu|la)b, OrcID, Google (gmail), etc. The services mentioned here are just examples - there is no guarantee that any of them will be used in our system!
+
+* User loads the GeneNetwork login page
+* User clicks on link to the service they wish to authenticate with
+* System redirects user to service's authentication page
+* User authenticates with selected service
+* If authentication fails, then the authentication process ends.
+* If authentication is successful, the external service provides GeneNetwork with some token
+* If it's the user's first time ever authenticating with the external service, then GeneNetwork uses the token to fetch relevant user data from the external service, and creates a local user linked to the external service
+* GeneNetwork uses the data from the service to identify the relevant local user details
+* GeneNetwork uses local user details to create new session
+
+### WONTFIX
+
+The following features will not be considered:
+
+* Allowing multiple login options for a single user (e.g. local, github, orcid). User will be expected to choose one and only one login option and stick with it. This will reduce complexity of the system.
+
 ## Authorisation
 
-* Users (authenticated)
-* Groups (users are members and you have a group leader) - every user belongs to one group! Groups own the resources.
-* Roles define access control (groups have flexible roles) - group can create unique roles. Roles are essentially collections of privileges.
-* Resources (pretty flexible, give access to roles) - every data resource is owned by one group!
-* Some users can add themselves to groups/roles
-* Local database should be independent from other services and copied as a file (SQLite with JSON?)
-* Later provide REST API & token access
+Once a user is authenticated they are able to access and act upon the system in the ways restricted by the authority/privileges granted to them. This section discusses the high-level details of the authorisation system used in GeneNetwork2.
+
+### Resources
+
+Data Resources are the "meat" of the system. They are what the users and the system act on.
+
+* Resources will be (are) pretty flexible.
+* Every data resource is owned by one, and only one group!
+
+Examples of data resources:
+
+* Datasets (for mRNA traits)
+* Traits (for phenotype and genotype traits)
+
+### Privileges
+
+Privileges will be linked to roles and resources.
+
+As will become apparent (on reading the sub-sections below), there will need to be a way to distinguish the different types of privileges to prevent accidental provision of privileges to users.
+
+The privileges can be categorised into:
+
+* Resource Access Privileges
+* User Management Privileges
+* Group Management Privileges
+* Special Privileges
+
+The sub-sections below list a number of possible privileges for each category.
+
+#### Resource Management
+
+* view_resource
+* create_resource
+* view_resource
+* add_resource_data
+* edit_resource_data
+* delete_resource_data
+* add_resource_metadata
+* edit_resource_metadata
+* delete_resource_metadata
+* curate_resource
+* transfer_resource: maybe enable tranfer of the resource to another group, losing access to it in the process.
+
+#### User Management
+
+These are really group-management privileges, but they can be assigned to certain non-group-leader users to help with group management.
+
+* add_user: does not create the user; just adds an existing user, who is not a member of any group, to the group.
+* remove_user: does not delete the user; just kicks them out of the group.
+* create_edit_role
+* delete_role: if a role is deleted, it should be automatically unassigned to any/all users in tandem.
+* assign_role: assign a role to (a) user(s)
+
+#### Group Management
+
+These privileges are only accessible to group leaders
+
+* create_group: the user that create a group becomes that group's "group leader"
+* transfer_leadership: transfer leadership to another member in the group, losing leadership in the process
+* delete_group: the group should be empty (no users, roles or resources) before deletion is possible
+
+
+#### Special Privileges
+
+These are special privileges that provide special access to the system.
+
+These demand some bureaucracy to access due to security and privacy considerations.
+
+* masquerade: allows a user to masquerade as another user getting the same privileges as them.
+* add_self_to_group: allows a user to add themselves to a group
+* assign_role_to_self: allows a user to assign themselves a particular role
+
+### Roles
+
+The roles will be collections of privileges that can be assigned to users. They are the system's main way of controlling access to the system and restricting user access.
+
+### Groups
+
+The group is the main organisational scheme for the authorisation system.
+
+* Each group will have a group leader
+* Each user in the system belongs to either no group or one and only one group
+* Each group can define any number of roles to control access to their resources
+
+EXAMPLE: A "Visitor Role" could be created to allow a user that IS NOT a member of a particular group to access (a) resource(s) that is (are) otherwise non-accessible.
+
+### Users
+
+Users are not really a part of the authorisation system per-se, but we do need to link the users of the system to the resources somehow (after all, that's the point of the system, to be useful to others).
+
+Users will be linked to the resources mainly by the groups, and roles.
+
+A user who is not a member of any group will only have access to publicly accessible resources.
 
 ## Web front-end
 
-* Web front-end which allows management of these users/groups/roles/resources
+There will be a need for a web front-end to allow for management of groups, roles, resources and users, accessible to group leaders and their assistants (where applicable).
+
+The privileges shall come as part of the system, and shall not be UI manageable. Any changes to the privileges shall require a system redeployment.
+
+## Other Implementation Concerns
+* Local database should be independent from other services and copied as a file (SQLite with JSON?)
+* Later provide REST API & token access
 
 ## Some Related Issues
 
