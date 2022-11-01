@@ -31,6 +31,10 @@ The system will, in the near future, allow user authentication from external ser
 * GeneNetwork uses the data from the service to identify the relevant local user details
 * GeneNetwork uses local user details to create new session
 
+### Implementation Concerns
+
+The passwords (and other authentication tokens) should be in a separate database table from the unifying users table. This should provide for a somewhat unifying table for the different authentication schemes that will be provided by the system.
+
 ### WONTFIX
 
 The following features will not be considered:
