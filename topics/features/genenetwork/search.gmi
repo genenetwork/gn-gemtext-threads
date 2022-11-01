@@ -1,0 +1,34 @@
+# Search
+
+## Overview
+
+One of the key features of GN is the powerful search functionality. For most users it is the entry point for using the GeneNetwork web service. On the front-page a menu is offered that allows selecting species, e.g. mouse or rat, and relevant datasets grouped by family, e.g. BXD, and type, e.g. Hippocampus mRNA.
+Recently we introduced the Xapian search engine that allows for fast lookups and powerful search queries.
+A example search for the BRCA2 results in GN searching for the term "BRCA2" in 754 datasets and 39,765,944 traits across 10 species and found 7998 results that match the query.
+The search URL looks like 'https://genenetwork.org/gsearch?type=gene&terms=BRCA2' and can be copy-pasted and shared with other users.
+
+More powerful queries will narrow down on field in the result table. For example to get only mouse results "species:mouse BRCA2" found 5916 results.
+
+Example search terms:
+
+species:mouse BRCA2 - looks good, has Liver
+species:mouse Tissue:Liver - 0 results
+species:mouse tissue:Liver - 0 results
+brca - only renders 2 results, why not BRCA2?
+
+Keywords like tissue appear to be case sensitive. Should not be the case.
+
+## Future
+
+* Add human SNP search and synteny
+* Support more sources, e.g. geneweaver
+
+## Methods
+
+GN search is built on
+Xapian, an Open Source Search Engine Library, released under the GPL v2+. It's written in C++, with bindings to allow use from Python, Guile and other languages.
+Xapian is actively maintained and current Xapian users include, for example, the Debian website and the notmuch E-mail indexer.
+Xapian is a highly adaptable toolkit which allows developers to easily add advanced indexing and search facilities to their own applications. It has built-in support for several families of weighting models and also supports a rich set of boolean query operators\cite{Xapian}.
+We build the Xapian index from SQL data and RDF data in the GN databases.
+
+=> topics/xapian-indexing.gmi indexing optimizations
