@@ -18,6 +18,10 @@ brca - only renders 2 results, why not BRCA2?
 
 Keywords like tissue appear to be case sensitive. Should not be the case.
 
+In the paper `New Insights on Gene by Environmental Effects of Drugs of Abuse in Animal Models Using GeneNetwork' the authors reanalyzed an older experimental data in the GeneNetwork database.
+They discovered QTLs on mouse chromosomes 3, 5, 9, 11, and 14, not found in the original study
+and found new candidate genes included Slitrk6 and Cdk14. Slitrk6, in a Chromosome14 QTL for locomotion, was found to be part of a co-expression network involved in voluntary movement and associated with neuropsychiatric phenotypes. Cdk14, one of only three genes in a Chromosome5 QTL, is associated with handling induced convulsions after ethanol treatment, that is regulated by the anticonvulsant drug valproic acid\cite{PMC9024903}.
+
 ## Future
 
 * Add human SNP search and synteny
