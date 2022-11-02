@@ -1,0 +1,16 @@
+# User Registration
+
+The GeneNetwork system will provide a way for users to register accounts with the system. This document deals with the User-Registration system design.
+
+Data to be collected for user registration:
+
+* email address
+* password
+* Name of user (for display purposes)
+
+Maybe verify the email by sending a confirmation link?
+
+## Related Issues
+
+=> /topics/authentication/authentication-authorisation-design Auth* Design
+=> /topics/authentication/password-reset Password Reset

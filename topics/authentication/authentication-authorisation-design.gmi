@@ -8,7 +8,8 @@
 
 ### Local Authentication
 
-This section tracks the possible flow for user authentication, specifically for users with accounts registered on GeneNetwork (Local).
+This section tracks the possible flow for user authentication, specifically for users with accounts
+=> /topics/authentication/user-registration registered on GeneNetwork.
 
 * User loads login page
 * User provides email and password
