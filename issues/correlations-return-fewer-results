@@ -25,3 +25,9 @@ an example  of such a case is computing the below dataset against the against BX
 Probably causes are :-
 
 => https://github.com/genenetwork/gn-gemtext-threads/blob/main/issues/fix-include-f1-parents-correlations.gmi
+
+## Updates 
+
+The samplelist issue doesn't appear to be causing the issue with fewer results, since it still exists after the fix. There also seems to be an additional - or related - issue where it's either returning wrong results or not returning the actual top results (or both)
+
+Using the sample example above, after the change, the first result has a sample(r) of 0.265. This isn't the top result when run in GN1. There also appears to be a mismatch between the result displayed in the table and the r displayed in the scatterplot (what you see if you click the sample(r) link); those should be roughly the same.
