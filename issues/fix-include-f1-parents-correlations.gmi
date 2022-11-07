@@ -1,0 +1,14 @@
+# Correlations are not including f1 parents
+
+
+## Tags
+
+* assigned:alexm,zsloan
+* type:bug
+* priority: high
+* status:ongoing
+* keywords: correlation,f1
+
+## Description
+
+Correlations should  be including parents/F1s  among the samples
