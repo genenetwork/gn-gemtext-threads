@@ -12,3 +12,10 @@
 ## Description
 
 Correlations should  be including parents/F1s  among the samples
+
+
+## Notes
+
+pr to fix this
+
+https://github.com/genenetwork/genenetwork2/pull/741
