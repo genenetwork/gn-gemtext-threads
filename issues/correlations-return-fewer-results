@@ -1,0 +1,27 @@
+
+# Tags
+
+* assigned: alexm
+* priority: high
+* status: ongoing
+
+* keywords: correlations,fewer results
+
+
+
+
+## Description
+
+in some cases correlaton return fewer number of results
+than are required
+
+an example  of such a case is computing the below dataset against the against BXD Phenotype,  gets 477 results when you select Top 500
+
+=> http://gn2-zach.genenetwork.org/show_trait?trait_id=rsm10000006649&dataset=BXDGeno
+
+
+## Notes
+
+Probably causes are :-
+
+=> https://github.com/genenetwork/gn-gemtext-threads/blob/main/issues/fix-include-f1-parents-correlations.gmi
