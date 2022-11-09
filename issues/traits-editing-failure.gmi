@@ -1,0 +1,13 @@
+# Editing traits for BXDs is failing now — what did I manage to bread
+
+## Tags
+
+* assigned: bonfacem
+* type: bug
+* priority: high
+
+In the screenshot below, a user tried to change the word "percent" to the symbol "%".
+
+=> /pictures/percent-failure.png
+
+Submitting the change did not work for the user.  It worked earlier from the many traits that were modified, but now the submit form seems to be hung.
