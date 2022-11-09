@@ -4,9 +4,9 @@
 
 * type: bug
 * priority: medium
-* assigned:
+* assigned: alexm
 * keywords: correlations
-* status: pending
+* status: ongoing
 
 ## Description
 
@@ -17,3 +17,11 @@ We need to slowly decouple the different tasks into separate functions that can 
 
 => https://github.com/genenetwork/genenetwork2/blob/f03127d751cd629596c2595d700fbb044725e01c/wqflask/wqflask/correlation/show_corr_results.py#L116-L122 The conditional fetching of traits data
 should probably be done before we enter the looping part of the results processing to make the logic easier and decouple the fetching from the results processing.
+
+
+
+## Notes 9/11/22
+
+pr to fix this issue
+
+=> https://github.com/genenetwork/genenetwork2/pull/742
