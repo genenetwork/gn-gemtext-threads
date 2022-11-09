@@ -1,4 +1,4 @@
-# Editing traits for BXDs is failing now — what did I manage to bread
+# Editing traits for BXDs is failing for "%" substitution
 
 ## Tags
 
