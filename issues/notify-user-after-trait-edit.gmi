@@ -1,0 +1,21 @@
+# Notify a user after a minor change
+
+## Tags
+
+* assigned: bonfacem
+* type: ui, refactor, enhancement
+* priority: medium
+
+## Description
+
+When the user submits a change of a trait in GN it looks like this:
+
+=> ./pictures/probeset-editing-form.png
+
+Note that we misspell the "Homologene Id" in our form.
+
+Assuming that you are editing the "Homologene Id": when the user clicks on the *Submit Change* button there is a momentary update but there is no update to the form. This is confusing, since the user does not get any confirmation that the update has been made.
+
+=> ./pictures/probeset-editing-form-2.png
+
+A possible solution for the above confusion would be to add a line of text that confirms that: "Thanks. Update has been received. Continue editing or close window."
