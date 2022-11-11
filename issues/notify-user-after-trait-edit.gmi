@@ -19,3 +19,13 @@ Assuming that you are editing the "Homologene Id": when the user clicks on the *
 => /pictures/probeset-editing-form-2.png
 
 A possible solution for the above confusion would be to add a line of text that confirms that: "Thanks. Update has been received. Continue editing or close window."
+
+#### Resolution
+
+This has been addressed in the following PR's
+
+=> https://github.com/genenetwork/genenetwork2/pull/745 https://github.com/genenetwork/genenetwork2/pull/745
+
+=> https://github.com/genenetwork/genenetwork2/pull/744 Fix typo in probeset editing form
+
+* closed
