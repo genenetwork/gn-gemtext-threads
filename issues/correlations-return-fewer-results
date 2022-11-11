@@ -8,8 +8,6 @@
 * keywords: correlations,fewer results
 
 
-
-
 ## Description
 
 in some cases correlaton return fewer number of results
@@ -31,3 +29,7 @@ Probably causes are :-
 The samplelist issue doesn't appear to be causing the issue with fewer results, since it still exists after the fix. There also seems to be an additional - or related - issue where it's either returning wrong results or not returning the actual top results (or both)
 
 Using the sample example above, after the change, the first result has a sample(r) of 0.265. This isn't the top result when run in GN1. There also appears to be a mismatch between the result displayed in the table and the r displayed in the scatterplot (what you see if you click the sample(r) link); those should be roughly the same.
+
+An additional error has been reported by Beni where there's an error about NoneType being passed into string formatting (so I think it's returning None for some results). Steps to reproduce are below:
+- https://genenetwork.org/show_trait?trait_id=ENSMUST00000031535&dataset=UTHSC-BXD-Harv_Liv-1019
+- Correlate against the default dataset (same one as the trait)
