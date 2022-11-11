@@ -1,0 +1,15 @@
+# Global search doesn't seem to return phenotype traits
+
+## Tags
+
+* priority: high
+* type: bug
+* assigned: zsloan, aruni
+* status: ongoing
+* keywords: global search, phenotypes
+
+## Description
+
+For a search like the following, only ProbeSet results seem to be returned (which causes a JS error since it expects a Publication Year column):
+
+https://genenetwork.org/gsearch?type=phenotype&terms=liver
