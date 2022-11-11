@@ -26,3 +26,5 @@ a field in the database.
 #### Wed 25 May 2022 22:01:44 EAT
 
 This was fixed in #a4ae3a4d1bb680f8a0d38d37f8ceffe0f3a1b2a9 in GN3
+
+* closed
