@@ -1,0 +1,15 @@
+# Long samplenames overflow in Haplotype Analyst
+
+## Tags
+
+* priority: medium
+* type: UI
+* assigned: zsloan
+* status: ongoing
+* keywords: global search, phenotypes
+
+## Description
+
+For any BXD mapping, when Haplotype Analyst is selected, some of the more recently added samples have very long names that don't fit in the table
+
+I guess the solution to this is just to let the margins become bigger
