@@ -33,3 +33,12 @@ Using the sample example above, after the change, the first result has a sample(
 An additional error has been reported by Beni where there's an error about NoneType being passed into string formatting (so I think it's returning None for some results). Steps to reproduce are below:
 - https://genenetwork.org/show_trait?trait_id=ENSMUST00000031535&dataset=UTHSC-BXD-Harv_Liv-1019
 - Correlate against the default dataset (same one as the trait)
+
+
+
+## Notes 13/11/22
+
+ issue on  handling non float values while parsing
+ addressed on this Pr
+ 
+=> https://github.com/genenetwork/genenetwork2/pull/746/files
