@@ -6,7 +6,7 @@
 * type: bug
 * priority: medium
 * keywords: performance enhancement, optimisation
-* status: pending
+* status: closed ,complete
 
 ## Description
 
