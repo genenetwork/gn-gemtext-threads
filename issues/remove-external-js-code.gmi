@@ -24,3 +24,14 @@ The jquery-ui was packaged and currently no other  cdn package exist
 A quick check up on the codebase shows jquery css is loaded from
 => https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css
 
+
+
+## Notes 21/11/22
+
+new  packages being loaded with cdn 
+
+=> https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css
+=> https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css
+=> https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js
+=> https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.css
+=> https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/css/uikit.min.css
