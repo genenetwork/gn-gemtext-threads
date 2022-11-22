@@ -1,0 +1,13 @@
+# Correlations: Fewer Results than Expected
+
+## Tags
+
+* type: bug
+* priority: critical
+* status: open
+* assigned: zsloan, zachs
+* keywords: correlations
+
+## Description
+
+Doing a search for top 500 covariates and get this instead—the top 435.
