@@ -18,4 +18,4 @@ Correlations should  be including parents/F1s  among the samples
 
 pr to fix this
 
-https://github.com/genenetwork/genenetwork2/pull/741
+=> https://github.com/genenetwork/genenetwork2/pull/741
