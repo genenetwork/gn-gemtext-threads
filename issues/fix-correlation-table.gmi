@@ -13,5 +13,5 @@ Since these issues don't appear to occur in the search results table, I'm going 
 * assigned: zsloan
 * priority: medium
 * type: bug, feature-enhancement
-* status: in progress
+* status: closed
 * keywords: correlation, datatables, javascript
