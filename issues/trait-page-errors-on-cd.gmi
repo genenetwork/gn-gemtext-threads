@@ -1,0 +1,16 @@
+# Trait Page Errors on CD
+
+## Tags
+
+* type: bug
+* priority: critical, high
+* status: open
+* keywords: trait page
+* assigned:
+
+## Description
+
+A few examples of pages that fail on CD, but work as expected on production
+
+=> https://cd.genenetwork.org/show_trait?trait_id=ENSG00000244734&dataset=GTEXv8_Wbl_tpm_0220
+=> https://cd.genenetwork.org/show_trait?trait_id=5612792&dataset=UMUTAffyExon_0209_RMA
