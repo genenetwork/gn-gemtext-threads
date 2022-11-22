@@ -176,7 +176,7 @@ thats is :-
 * assigned: alexm, fredm, zsloan
 * type: bug
 * keywords: correlations
-* status: in-progress
+* status: closed, completed
 * priority: high
 
 ## Notes

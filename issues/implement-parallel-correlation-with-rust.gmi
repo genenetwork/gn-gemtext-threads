@@ -12,7 +12,7 @@ parralel computation
 * assigned:alem,Fred
 * type: upgrade
 * priority: medium
-* status: in progress
+* status: closed, completed
 * keywords: correlation,rust,parralel
 
 

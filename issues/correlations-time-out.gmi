@@ -11,7 +11,7 @@ It looks like correlations don't finish - and worse the running processes take a
 * assigned: pjotrp, zachs, alexm
 * keywords: correlations, time out
 * type: bug
-* status: in progress
+* status: closed, completed
 * priority: critical
 
 ## Tasks
@@ -75,3 +75,7 @@ In the logs we see also quite a bit of noise. Should disable that:
 ```
 Werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
 ```
+
+## 2022-11-22
+
+Tested this issue, and there was no timeout. Closing this as completed.

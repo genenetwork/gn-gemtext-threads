@@ -5,7 +5,7 @@
 * assigned: fredm, zsloan, alexm
 * type: bug
 * priority: high
-* status: ongoing
+* status: closed, completed
 * keywords: correlations
 
 ## Description
