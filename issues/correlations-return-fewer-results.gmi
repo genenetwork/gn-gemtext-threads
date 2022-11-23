@@ -55,3 +55,9 @@ with a selection of top 500 results I got the following:
 * Location: Chr: 5, Mb: 70 to 150 => I get 327 results
 
 I think the issue here is the sequence of events - the system takes the top 500 results, and then applies the given filters, rather than applying the filters first, then selecting the top 500 of the filtered results.
+
+
+Pull requests to fix this issue:
+
+* https://github.com/genenetwork/genenetwork3/pull/105
+* https://github.com/genenetwork/genenetwork2/pull/750
