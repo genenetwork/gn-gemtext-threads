@@ -1,5 +1,6 @@
+# Correlations: Returning Fewer Results
 
-# Tags
+## Tags
 
 * assigned: alexm
 * priority: high
@@ -42,3 +43,15 @@ An additional error has been reported by Beni where there's an error about NoneT
  addressed on this Pr
  
 => https://github.com/genenetwork/genenetwork2/pull/746/files
+
+## Notes 2022-11-23
+
+=> https://genenetwork.org/show_trait?trait_id=rsm10000006649&dataset=BXDGeno On production
+
+with a selection of top 500 results I got the following:
+
+* Without changing any of the filters, I get 500 results
+* Location: Chr: 5, Mb: 105 to 107 => I get 18 results
+* Location: Chr: 5, Mb: 70 to 150 => I get 327 results
+
+I think the issue here is the sequence of events - the system takes the top 500 results, and then applies the given filters, rather than applying the filters first, then selecting the top 500 of the filtered results.
