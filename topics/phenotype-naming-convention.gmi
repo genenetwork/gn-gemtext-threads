@@ -1,0 +1,33 @@
+# Phenotype Naming Conventions
+
+In our phenotype data entry in GeneNetwork we have two fields for users to enter abbreviations of their phenotypes - abbreviation before publication and abbreviation after publication.  The former must have value but can be cryptic such as EJC_Trait749.  But the later abbreviation - which MUST be entered at the same time - is the permanent abbreviation to be used in graphs and figures.
+
+Many of these abbreviations are getting way way too long to be useful on graphs and plots.  The painful reality is that there is almost no rhyme or reason to the format of these abbreviations because we have bad curation:
+
+* ymaze_SponAlt_12m_NtgBXD_Males
+* Barnesiella_genus_HFD_log10_fraction
+* OTU_12_CD_log10_fraction
+* HW_BW_Male_16_months_and_older
+* Log2Fold_vs_CTL_IL6_M_CORT_PFC
+* Complex motor Learning
+* M_CONSTRICT
+* F_LD_TRANSITIONS
+* LOC OFLD 20-25
+* Cnt_AdrWts
+* Hbidm
+
+Since we have a second-generation curation tool in progress, it would be great to apply some formal reasoning and formatting conventions to our phenotype descriptions at a higher level.  We can build a system that begs or demands that the use follow a particular structure on BUILDING up their abbreviations for their study.  For example, we might ask users to use the following conventions for age and sex of cases
+
+* "_M6-8m" for males 6 to 8 months of age
+* "_F>24m" for females older than 24 months,
+* "_MF6-8d" for both males and females at 6 to 8 days of age
+
+1. First we need to impose a limit of 15 characters for true graph-compatible abbreviations. The main purpose of abbreviations is to add labels to graphs and figures. Even 15 characters may be too long, but we can truncate middle characters and just keep the first and last 5 characters if we need to be brutal.  We can also allow a "Wordy Abbreviation" or the "Data Owner's Laboratory Style Abbreviation".
+
+2. Our GN abbreviations must be unique within a particular study but not necessarily across studies. But "across study" is a problem if we have *BW_M_6m* as the body weight of males at 6 months for 6 or more publications. Then we may need to programmatically add further tags such as year of publication (last two digits).
+
+3. We have to decide on a format that WE IMPOSE. For better or for worse, we are apparently one of the major curators for formats for phenotype abbreviations. Perhaps we need to formalize this with the Phenome Database team.
+
+Given the above concerns, the real way to think about metadata is descriptive RDF. I.e. separate terms for species, breed, trait, individual. It is fine to come up with identifiers that look descriptive, but they really should not be more than identifiers. Our current practice of parsing identifiers for 'logic' is very fragile and therefore a bad idea.
+
+There are better ways to do computable semantics; we have some need for “pretty” abbreviations but these are not required to be unique and must be useable on charts so we constrain the length and usually include uid. We are still able to do the curation for mouse traits, so you can access.
