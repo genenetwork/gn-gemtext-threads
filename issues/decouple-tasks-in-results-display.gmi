@@ -25,3 +25,14 @@ should probably be done before we enter the looping part of the results processi
 pr to fix this issue
 
 => https://github.com/genenetwork/genenetwork2/pull/742
+
+## 2022-11-25
+
+### Bulk Querying
+
+The code in the
+=> https://github.com/genenetwork/genenetwork2/blob/d318b1d649a3ece1a5a6c24bcd3496e14dbc69cd/wqflask/wqflask/correlation/show_corr_results.py#L169-L179 `generate_table_metadata` function
+is still fetching the data one trait at a time, which is a performance bottleneck.
+
+This could be changed to operate
+=> https://github.com/genenetwork/genenetwork3/blob/4a9fd93d01b6d4bd9d9880dbf2274b3c7f2de37b/gn3/db/partial_correlations.py#L751-L791 something like this
