@@ -61,3 +61,11 @@ Pull requests to fix this issue:
 
 => https://github.com/genenetwork/genenetwork3/pull/105
 => https://github.com/genenetwork/genenetwork2/pull/750
+
+## Notes 2022-11-25
+
+An error was reported involving a ProbeSet vs. ProbeSet correlation (which is notable since I thought the issue was only when non-ProbeSet datasets were involved).
+
+=> https://genenetwork.org/show_trait?trait_id=57581_TIPAWATLSASQLAR_2&dataset=JAX-BXD-Hip-Pro-0219
+
+with correlation against the default (same) dataset, gives a "IndexError: list index out of range" error
