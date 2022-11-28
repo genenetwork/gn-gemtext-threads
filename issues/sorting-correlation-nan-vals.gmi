@@ -1,0 +1,29 @@
+## Tags
+
+* type: bug
+* assigned:alexm
+* priority: medium
+* status:in progress
+* keywords: correlations, sorting,nan
+
+##  Description
+
+sorting floats (correlation values) where
+some cases have nan values is inconsistent
+
+### Notes
+given a list of correlation values the sorting
+should occur in this order
+
+* sort results in descending order
+* nan value and INF values should be placed last
+
+
+###  pr to fix this
+
+=> https://github.com/Alexanderlacuna/correlation_rust/pull/2/files
+
+
+
+
+
