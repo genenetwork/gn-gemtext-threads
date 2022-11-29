@@ -1,0 +1,11 @@
+# Genotype Metadata
+
+# Tags
+
+* assigned: bonfacem
+* type: feature
+* priority: medium
+
+## Description
+
+At the moment, you can only edit phenotype and probeset metadata.  We also need to put in place a way of editing genotype metadata and also displaying it in GN2.
