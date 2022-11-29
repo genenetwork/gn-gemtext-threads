@@ -9,3 +9,7 @@
 ## Description
 
 We have jumbled up text in our database and this has been the case for years.  It's impractical for a user to do the fixes using the metadata editing form because there are too many cases.  A script that fixes this should be created to fix this issue.
+
+This thread has some really nice ideas
+
+=> https://stackoverflow.com/questions/1476356/detecting-utf8-broken-characters-in-mysql Detecting broken characters in mysql
