@@ -10,12 +10,12 @@
 
 ## Tasks
 
-* [X] move tux02 into position p2
-* [X] disconnect tux02 from 10Gbs
 * [+] connect 10Gbs to p2
 * [+] connect 10Gbs to tux01(?)
+* [+] mount new hard disks on tux02 and tux01 (with @haoc)
+* [ ] move lily inside VPN
+* [ ] move quadxeon inside VPN
 * [ ] space server out-of-band
-* [ ] mount new hard disks on tux02 and tux01 (with @haoc)
 * [ ] rabbit https and GN2 https
 * [ ] get data from summer211.uthsc.edu (access machine room)
 * [ ] decommission out-racked machines (whith @arthurc)
@@ -29,3 +29,8 @@ Tux02 and Penguin2 switched network IP addresses. The second is now only availab
 => tux02.genenetwork.org
 
 => penguin2.genenetwork.org
+
+## Done
+
+* [X] move tux02 into position p2
+* [X] disconnect tux02 from 10Gbs
