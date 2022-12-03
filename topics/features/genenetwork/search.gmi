@@ -11,12 +11,18 @@ More powerful queries will narrow down on field in the result table. For example
 
 Example search terms:
 
+```
 species:mouse BRCA2 - looks good, has Liver
 species:mouse Tissue:Liver - 0 results
 species:mouse tissue:Liver - 0 results
 brca - only renders 2 results, why not BRCA2?
+```
 
 Keywords like tissue appear to be case sensitive. Should not be the case.
+
+GeneNetwork search functionality is used in the publication `Integrative Functional Genomics for Systems Genetics in GeneWeaver.org`. The authors present their webservice by searching for a "nociception" QTL in a region on chromosome 4 found in GN. They export the details and use it for further analysis in GeneWeaver\cite{bubier2016}.
+
+In the publication `Systems Genetics of Obesity` GeneNetwork search is used to find genes contributing to collagen content in adipose tissue in the BXD and find similar cis-eQTL connected with adipose tissue that exist in other studies hosted on GN\cite{brockmann2016}.
 
 In the paper `New Insights on Gene by Environmental Effects of Drugs of Abuse in Animal Models Using GeneNetwork' the authors reanalyzed an older experimental data in the GeneNetwork database.
 They discovered QTLs on mouse chromosomes 3, 5, 9, 11, and 14, not found in the original study
