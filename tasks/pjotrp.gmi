@@ -22,6 +22,7 @@ Now
 * [ ] Opar.io move to dnsimple
 * [.] Check Tony's list and improve search for SNPs and Hs
 * [.] GeneNetwork paper
+* [ ] GeneNetwork consortium
 * [ ] Machine room HDDs
 * [ ] Byron epigenetics paper
 
