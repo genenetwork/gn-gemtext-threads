@@ -153,3 +153,52 @@ When virtuoso has just been started up with a clean state (that is, the virtuoso
 =>https://github.com/genenetwork/dump-genenetwork-database/commit/8f60fde7f5499e5ffe352d7ae98a2de34a91b89f
  Retry uploading to virtuoso (commit from dump-genenetwork-database repo)
  formerly (https://git.genenetwork.org/arunisaac/dump-genenetwork-database/commit/8f60fde7f5499e5ffe352d7ae98a2de34a91b89f)
+
+## Dumping data from a MySQL database
+
+To dump data into a ttl file, first make sure that you are in the guix environment in the "dump-genenetwork-database" repository
+
+=> https://github.com/genenetwork/dump-genenetwork-database/ Dump Genenetwork Database
+
+Next, drop into a development environment with:
+
+```
+$ guix shell
+```
+
+Build the sources:
+
+```
+$ make
+```
+
+Describe the database connection parameters in a file *conn.scm* file as shown below. Take care to replace the placeholders within angle brackets with the appropriate values.
+
+```
+((sql-username . "root")
+ (sql-password . "root")
+ (sql-database . "db_webqtl_s")
+ (sql-host . "localhost")
+ (sql-port . 3306)
+ (virtuoso-port . 8891)
+ (virtuoso-username . "dba")
+ (virtuoso-password . "dba")
+ (sparql-scheme . http)
+ (sparql-host . "localhost")
+ (sparql-port . 8892))
+```
+
+Then, to dump the database to \~/data/dump, run:
+
+```
+$ ./pre-inst-env ./dump.scm conn.scm ~/data/dump
+```
+
+Make sure there is enough free space! It\'s best to dump the database on penguin2 where disk space and bandwidth are not significant constraints.
+
+Then, validate the dumped RDF using `rapper` and load it into virtuoso. This will load the dumped RDF into the `http://genenetwork.org` graph, and will delete all pre-existing data in that graph.
+
+```
+$ rapper --input turtle --count ~/data/dump/dump.ttl
+$ ./pre-inst-env ./load-rdf.scm conn.scm ~/data/dump/dump.ttl
+```
