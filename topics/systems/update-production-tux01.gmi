@@ -1,0 +1,51 @@
+# Update production
+
+In this document we describe the specific steps required to update production.
+
+# Virtuoso RDF
+
+Once we have an RDF dump of the database in a file 'data.ttl' we can test it for correctness with:
+
+```
+tux01:~$ rapper --input turtle --count  dump.ttl
+rapper: Parsing URI file:///home/wrk/dump.ttl with parser turtle
+rapper: Parsing returned 652395 triples
+```
+
+Test the virtuoso endpoint with
+
+```
+curl http://localhost:8892/sparql
+```
+
+Then, upload it to a virtuoso SPARQL endpoint running at port 8892
+
+```
+curl -v -X PUT --digest -u dba:password -T data.ttl -G http://localhost:8892/sparql-graph-crud-auth --data-urlencode graph=http://genenetwork.org
+```
+
+To test
+
+```
+curl "http://localhost:8892/sparql?default-graph-uri=&query=prefix+gn%3A+%3Chttp%3A%2F%2Fgenenetwork.org%2F%3E+%0D%0A%0D%0ASELECT+distinct+*+WHERE+%7B%3Fu++gn%3AbinomialName+%3Fo%7D&format=application%2Fsparql-results%2Bjson&timeout=0&signal_void=on"
+```
+
+and you should see the data:
+
+```js
+      {
+        "u": {
+          "type": "uri",
+          "value": "http://genenetwork.org/inbredSet_srxshrspf2"
+        },
+        "o": {
+          "type": "literal",
+          "value": "UIOWA SRxSHRSP F2"
+        }
+      },
+      ...
+```
+
+For more information see
+
+=> ./virtuoso.gmi Virtuoso setup documentation
