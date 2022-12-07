@@ -19,11 +19,14 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 Now
 
 * [+] Shelby's application
-* [ ] Opar.io move to dnsimple
+* [+] Opar.io move to dnsimple
 * [.] Check Tony's list and improve search for SNPs and Hs
 * [.] GeneNetwork paper
+
+=> https://github.com/genenetwork/gn-docs/blob/master/features/introduction.md
+
 * [ ] GeneNetwork consortium
-* [ ] Machine room HDDs
+* [+] Machine room HDDs
 * [ ] Byron epigenetics paper
 
 Later

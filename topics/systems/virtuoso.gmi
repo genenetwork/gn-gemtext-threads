@@ -134,6 +134,8 @@ We recap the same here.
 When uploading data, the virtuoso server often does not report errors properly. It simply freezes up. So, it is very helpful to validate your RDF before uploading. For this, use rapper from the raptor2 package. To validate data.ttl, a turtle file, run
 ```
 rapper --input turtle --count data.ttl
+rapper: Parsing URI file:///home/wrk/dump.ttl with parser turtle
+rapper: Parsing returned 652395 triples
 ```
 Then, upload it to a virtuoso SPARQL endpoint running at port 8892
 ```
