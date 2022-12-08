@@ -18,8 +18,11 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 
 Now
 
+* [ ] Fix https on tux01
+* [ ] Fix Lily edit form
+=> http://gn1.genenetwork.org/infoshare/manager/member-studies-edit.html?DatasetId=101
 * [+] Shelby's application
-* [+] Opar.io move to dnsimple
+* [X] Opar.io move to dnsimple
 * [.] Check Tony's list and improve search for SNPs and Hs
 * [.] GeneNetwork paper
 
@@ -38,6 +41,7 @@ Later
 * [ ] Aging studies
 * [ ] RISC-V
 * [+] DOI support GN (Paris)
+* [ ] Automate tux01 restart for GN2+GN3 services
 
 ### Ongoing tasks
 

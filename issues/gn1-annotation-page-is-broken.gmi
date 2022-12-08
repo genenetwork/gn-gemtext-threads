@@ -1,5 +1,6 @@
 # GN1 annotation page broken
 
+
 ## Tags
 
 * assigned: zsloan, pjotrp
@@ -8,10 +9,18 @@
 * type: bug
 * keywords: GN1, genenetwork1, annotation, from github
 
+## Tasks
+
+* [ ] Fix PHP view
+* [ ] Fix CKEDITOR
+
 ## Description
+
+Turns out that it is a PHP page that is not working. Also CKEDITOR is not visible.
 
 => https://github.com/genenetwork/genenetwork2/issues/421 From GitHub
 
-
 => http://gn1.genenetwork.org/webqtl/main.py?FormID=annotation The annotations page in GN1
 is broken. An exception stack trace is displayed, instead of the annotations page content.
+
+## Info
