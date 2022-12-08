@@ -1,0 +1,41 @@
+# Starting GN1
+
+On tux01 GN1 is running inside a Guix container.
+
+## Updating on lily
+
+```
+   restart apache in lily
+   [root@lily base]# /etc/init.d/httpd restart
+   Stopping httpd:                                            [  OK  ]
+   Starting httpd:                                            [  OK  ]
+   [root@lily base]# pwd
+   /gnshare/gn/web/webqtl/base
+   [root@lily base]#
+   /gnshare/gn/web/webqtl/base/webqtlConfigLocal.py
+   #######################################'
+   #      Environment Variables - private
+   #########################################
+   # sql_host = '[1]tux02.uthsc.edu'
+   # sql_host = '128.169.4.67'
+   sql_host = '172.23.18.213'
+   SERVERNAME = sql_host
+   MYSQL_SERVER = sql_host
+   DB_NAME = 'db_webqtl'
+   DB_USER = 'x'
+   DB_PASSWD = 'x'
+   MYSQL_UPDSERVER = sql_host
+   DB_UPDNAME = 'db_webqtl'
+   DB_UPDUSER = 'x'
+   DB_UPDPASSWD = 'x'
+   GNROOT = '/gnshare/gn/'
+   PythonPath = '/usr/bin/python'
+   PIDDLE_FONT_PATH =
+   '/usr/lib/python2.4/site-packages/piddle/truetypefonts/'
+```
+
+SQL may also need to be updated here:
+
+=> /gnshare/gn/web/webqtl/base/webqtlConfigLocal.py
+=> /gnshare/gn/web/infoshare/includes/config.html
+=> /gnshare/gn/web/infoshare/includes/db.inc
