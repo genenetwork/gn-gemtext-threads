@@ -1,0 +1,20 @@
+# How to Start GN2 and GN3
+
+This details how GN2/GN3 production are currently started. It's probably a good idea to create a shell script for starting GN3 like we have for GN2 at some point, since currently environment variables are set manually.
+
+# GN3
+
+1. Set PATH/PYTHONPATH/GN2_PROFILE environment variables
+
+Example:
+export GN2_PROFILE=/home/zas1024/opt/gn-latest-20221206
+export PATH=$GN2_PROFILE/bin:$PATH
+export PYTHONPATH="$GN2_PROFILE/lib/python3.9/site-packages"
+
+2. Start GN3 from the relevant directory (in this case production
+env FLASK_DEBUG=1 FLASK_APP="main.py" CORS_ORIGINS="http://gn2-zach.genenetwork.org:*,https://gn2-zach.genenetwork.org:*,http://genenetwork.org:*,https://genenetwork.org:*" flask run --port=8081
+
+# GN2
+
+1. Just run /home/gn2/production/run_production.sh
+
