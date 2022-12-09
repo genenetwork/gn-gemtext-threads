@@ -1,0 +1,89 @@
+# GN1 metadata
+
+If we edit metadata on GN1 it shows a missing PHP.
+
+The problem can be replitated by logging into GN1 and selecting a dataset. Hit the info button and 'edit' next.
+
+## Tags
+
+* assigned: pjotrp
+* priority: high
+* status: overdue
+* type: bug
+* keywords: GN1, genenetwork1, annotation
+
+## Tasks
+
+* [ ] Update guix, guix-bioinformatics for gn1
+* [ ] Fix PHP view in Guix
+* [ ] Fix CKEDITOR in Guix
+
+## Description
+
+Turns out that it is a PHP page that is not working. Also CKEDITOR is not visible.
+
+## Info
+
+On lily the file
+
+=> /gnshare/gn/web/infoshare/manager/investigator.html
+
+is written in PHP(!)
+
+lily has a configuration setting:
+
+* AddType application/x-httpd-php .htm .html
+
+With running PHP 5.5 or 5.6 versions and i added this code to the .htaccess file. Remember both AddHandler and AddType must be present
+
+```
+AddHandler application/x-httpd-ea-php56 .htm .html .shtml
+AddType application/x-httpd-php5 .php
+```
+
+=> https://www.howtoforge.com/installing-apache2-with-php5-and-mysql-support-on-fedora-18-lamp Some hints here.
+
+### Building genenetwork1
+
+For the python2.4 packages
+
+```
+gaeta:~/guix-past$ guix build -L ~/guix-past/modules/ -L ~/guix-bioinformatics/ genenetwork1
+```
+
+Gets
+
+```
+`thirdparty/htmlgen/polyfunc.py' -> `/gnu/store/hh21dq96kbmby3dks45ngxd6lzx1lx83-python24-htmlgen-GN1-2.5/lib/python2.4/site-packages/htmlgen//polyfunc.py'
+phase `install' succeeded after 0.0 seconds
+starting phase `add-install-to-pythonpath'
+error: in phase 'add-install-to-pythonpath': uncaught exception:
+wrong-type-arg "string-append" "Wrong type (expecting ~A): ~S" ("string" #f) (#f)
+phase `add-install-to-pythonpath' failed after 0.0 seconds
+Backtrace:
+           9 (primitive-load "/gnu/store/5x73mpqayj6xi2ag5l8yblvh4hv…")
+In guix/build/gnu-build-system.scm:
+    906:2  8 (gnu-build #:source _ #:outputs _ #:inputs _ #:phases . #)
+In ice-9/boot-9.scm:
+  1752:10  7 (with-exception-handler _ _ #:unwind? _ # _)
+In srfi/srfi-1.scm:
+    634:9  6 (for-each #<procedure 7fffeff39000 at guix/build/gnu-b…> …)
+In ice-9/boot-9.scm:
+  1752:10  5 (with-exception-handler _ _ #:unwind? _ # _)
+In guix/build/gnu-build-system.scm:
+   927:23  4 (_)
+In guix/build/python-build-system.scm:
+   186:28  3 (add-installed-pythonpath (("python" . "/gnu/store…") …) …)
+In unknown file:
+           2 (string-append "/gnu/store/hh21dq96kbmby3dks45ngxd6lzx…" …)
+In ice-9/boot-9.scm:
+  1685:16  1 (raise-exception _ #:continuable? _)
+  1685:16  0 (raise-exception _ #:continuable? _)
+
+ice-9/boot-9.scm:1685:16: In procedure raise-exception:
+In procedure string-append: Wrong type (expecting string): #f
+builder for `/gnu/store/m4cvh8f83ry9saja47ap7bgzmc58gmk1-python24-htmlgen-GN1-2.5.drv' failed with exit code 1
+build of /gnu/store/m4cvh8f83ry9saja47ap7bgzmc58gmk1-python24-htmlgen-GN1-2.5.drv failed
+View build log at '/var/log/guix/drvs/m4/cvh8f83ry9saja47ap7bgzmc58gmk1-python24-htmlgen-GN1-2.5.drv.gz'.
+guix build: error: build of `/gnu/store/m4cvh8f83ry9saja47ap7bgzmc58gmk1-python24-htmlgen-GN1-2.5.drv' failed
+```

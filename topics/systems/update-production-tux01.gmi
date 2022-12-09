@@ -2,6 +2,10 @@
 
 In this document we describe the specific steps required to update production.
 
+See also
+
+=> gn-services.gmi
+
 # Virtuoso RDF
 
 Once we have an RDF dump of the database in a file 'data.ttl' we can test it for correctness with:
