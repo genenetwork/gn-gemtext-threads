@@ -1,0 +1,17 @@
+# Upgrading from python 2.4 to 2.7
+
+It may be a good idea to upgrade GN1 from 2.4 to 2.7. These links should help:
+
+=> https://docs.python.org/release/2.5/whatsnew/porting.html
+=> https://docs.python.org/3/whatsnew/2.6.html#porting-to-python-2-6
+=> https://docs.python.org/3/whatsnew/2.7.html#porting-to-python-2-7
+
+The main challenge will be to see if some of the shared libraries will work that we have in binary form (only). Test coverage is not so important - as long as we can fix stuff. Also the Apache module may be a bit different. Important to try and load that first.
+
+Note that GN1 also uses PHP5(?).
+
+# Tasks
+
+* [ ] test python 2.7 with apache
+* [ ] run GN1
+* [ ] fix issues as we go along

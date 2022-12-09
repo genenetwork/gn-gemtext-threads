@@ -2,7 +2,11 @@
 
 On tux01 GN1 is running inside a Guix container.
 
-## Updating on lily
+Start a screen and run the guix deploy script. See the README file in
+
+gn1@tux01:~/production/gnshare/gn
+
+## Updating mariadb connection on lily
 
 ```
    restart apache in lily

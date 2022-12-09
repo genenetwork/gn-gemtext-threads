@@ -33,3 +33,8 @@ We are moving thing to a new DNS hosting service. We have accounts on both. To m
   + dig systemsgenetics.org +trace
   + whois systemsgenetics.org (check for privacy setting!)
   + https://dnssec-analyzer.verisignlabs.com/genenetwork.org
+
+For UTHSC services the following primary DNS should be used:
+
+* UTDNS1.UTHSC.EDU
+* UTDNS2.UTHSC.EDU
