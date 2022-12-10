@@ -36,11 +36,25 @@ curl localhost:8087/api/version
 
 On epysode it is running on 8081
 
+
 ## Notes
 
 We track services now on
 
 => https://rabbit.genenetwork.org/sheepdog/index.html
+
+## System container
+
+```
+systemctl stop genenetwork-development-container
+mv /var/guix-containers /export2
+systemctl start genenetwork-development-container
+```
+
+The commit that changes the mounts is at
+
+=> https://github.com/genenetwork/genenetwork-machines/commit/8ce668562b0443ed7eb5b22225692f6f4383ea89
+
 
 ## See also
 
