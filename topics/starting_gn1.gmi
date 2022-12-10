@@ -6,6 +6,25 @@ Start a screen and run the guix deploy script. See the README file in
 
 gn1@tux01:~/production/gnshare/gn
 
+# Guix
+
+At this point GN1 is fixed at Feb 2021:
+
+guix: 1.2.0-12.dffc918
+guix-past: 159be3d7e86e1f22b2b7b1efc938ed63120dc973
+guix-bioinformatics: 697a66bf0e897a101e8e3cefbaf250491039fe93
+
+# Building
+
+On an update of guix the build may fail. Try
+
+```
+~/opt/guix-gn1/bin/guix build
+    -L /home/gn1/guix-past/modules/ \
+    -L /home/gn1/guix-bioinformatics/ \
+    genenetwork1
+```
+
 ## Updating mariadb connection on lily
 
 ```
