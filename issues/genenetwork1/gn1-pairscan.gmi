@@ -20,7 +20,7 @@ ImportError: No module named direct
 * priority: critical
 * keywords: missing dependency, binary blob, GN1
 * assigned: pjotrp
-* status: unclear
+* status: testing
 
 # Notes
 
@@ -39,7 +39,7 @@ from my gn1-python24-site-packages folder from lily there's a direct.so{,.bak} f
 and a fix in guix-bioinformatics:
 
 ```
-gn: Add python24-direct
+gn: Add python24-direct-gn
 ```
 
 it is not on Tux01, so let's update from
@@ -102,3 +102,9 @@ we are now using that for genenetwork1. Patchelf makes it refer to the correct
 libstdc++.so.6 (namely one provided by Guix) so we don't need to worry about it
 being specifically propagated. I'm having trouble actually running the
 genenetwork1 container so Pjotr said he'd test it out.
+
+# Testing
+
+The direct.so binary is now on files.genenetwork.org.
+
+=> https://files.genenetwork.org/software/
