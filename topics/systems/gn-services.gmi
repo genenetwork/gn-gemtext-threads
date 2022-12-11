@@ -28,14 +28,24 @@ curl https://luna.genenetwork.org/gn3/
 
 3. genenetwork3 (python3)
 
+If the menu does not load, this is the culprit. It should be an external API link.
+
 ```
 curl localhost:8087/api/version
 "1.0"
-
+curl localhost:8087/api/menu/generate/json
+...
+curl https://genenetwork.org/api3/api/version
+"1.0"
+curl https://genenetwork.org/api3/api/menu/generate/json
 ```
 
-On epysode it is running on 8081
+On epysode:
 
+```
+http://mars.genenetwork.org/gn3/api/version
+http://gn2-fallback.genenetwork.org/gn3/api/menu/generate/json
+```
 
 ## Notes
 

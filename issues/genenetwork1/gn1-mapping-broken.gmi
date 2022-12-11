@@ -19,5 +19,5 @@ AttributeError: 'genotype' object has no attribute 'regression'
 * type: bug
 * priority: high
 * status: unclear
-* keywords: marker
+* keywords: marker,GN1
 * status: unclear

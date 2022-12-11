@@ -10,14 +10,19 @@
 
 ## Tasks
 
-* [+] connect 10Gbs to p2
-* [+] connect 10Gbs to tux01(?)
+
+* [ ] tux01 should see rabbit - there is a route, but no access
+  traceroute to 128.169.4.91 (128.169.4.91), 30 hops max, 60 byte packets
+   1  128.169.4.1 (128.169.4.1)  0.735 ms  0.725 ms  0.756 ms
+   2  rabbit.uthsc.edu (128.169.4.91)  0.689 ms  0.695 ms  0.698 ms
+* [ ] rabbit should access tux01 on ssh+http(s)
+* [ ] connect 10Gbs to tux01(?) - needs to be a new IP
 * [+] mount new hard disks on tux02 and tux01 (with @haoc)
-* [.] move lily inside VPN
-* [.] move quadxeon inside VPN
+* [X] move lily inside VPN
+* [X] move quadxeon inside VPN
 * [ ] machine room access for Pjotr
 * [ ] space server out-of-band
-* [ ] rabbit https and GN2 https
+* [+] rabbit https and GN2 https
 * [ ] get data from summer211.uthsc.edu (access machine room)
 * [ ] decommission out-racked machines (whith @arthurc)
 
