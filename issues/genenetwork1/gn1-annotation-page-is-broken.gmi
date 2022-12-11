@@ -24,3 +24,9 @@ Turns out that it is a PHP page that is not working. Also CKEDITOR is not visibl
 is broken. An exception stack trace is displayed, instead of the annotations page content.
 
 ## Info
+
+Lily runs a PHP from 2006(!)
+
+PHP 5.1.6 (cli) (built: Mar 18 2014 20:48:55)
+Copyright (c) 1997-2006 The PHP Group
+Zend Engine v2.1.0, Copyright (c) 1998-2006 Zend Technologies
