@@ -1,0 +1,14 @@
+# Add LICENSE page to GN2
+
+GN1 has a nice license page
+
+=> http://gn1.genenetwork.org/conditionsofUse.html
+
+we should copy that on GN2.
+
+## Tags
+
+* assigned: zsloan, pjotrp
+* priority: medium
+* type: enhancement
+* keywords: GN2, license
