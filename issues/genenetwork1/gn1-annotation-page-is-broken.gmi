@@ -30,3 +30,61 @@ Lily runs a PHP from 2006(!)
 PHP 5.1.6 (cli) (built: Mar 18 2014 20:48:55)
 Copyright (c) 1997-2006 The PHP Group
 Zend Engine v2.1.0, Copyright (c) 1998-2006 Zend Technologies
+
+In guix-bioinformatics we have
+
+```
+php     5.6.40  out     /home/gn1/guix-bioinformatics/gn/packages/php.scm:14:2
+```
+
+Even if this page is for windows, it is the best description of using PHP:
+
+=> https://www.thesitewizard.com/php/install-php-5-apache-windows.shtml
+
+On lily:
+
+```
+AddType application/x-httpd-php .htm .html
+```
+
+And Apache:
+
+```
+[root@lily conf]# /usr/sbin/httpd -V
+Server version: Apache/2.2.3
+Server built:   Sep 16 2014 11:05:09
+Server's Module Magic Number: 20051115:3
+Server loaded:  APR 1.2.7, APR-Util 1.2.7
+Compiled using: APR 1.2.7, APR-Util 1.2.7
+Architecture:   64-bit
+Server MPM:     Prefork
+  threaded:     no
+    forked:     yes (variable process count)
+Server compiled with....
+ -D APACHE_MPM_DIR="server/mpm/prefork"
+ -D APR_HAS_SENDFILE
+ -D APR_HAS_MMAP
+ -D APR_HAVE_IPV6 (IPv4-mapped addresses enabled)
+ -D APR_USE_SYSVSEM_SERIALIZE
+ -D APR_USE_PTHREAD_SERIALIZE
+ -D SINGLE_LISTEN_UNSERIALIZED_ACCEPT
+ -D APR_HAS_OTHER_CHILD
+ -D AP_HAVE_RELIABLE_PIPED_LOGS
+ -D DYNAMIC_MODULE_LIMIT=128
+ -D HTTPD_ROOT="/etc/httpd"
+ -D SUEXEC_BIN="/usr/sbin/suexec"
+ -D DEFAULT_PIDLOG="run/httpd.pid"
+ -D DEFAULT_SCOREBOARD="logs/apache_runtime_status"
+ -D DEFAULT_LOCKFILE="logs/accept.lock"
+ -D DEFAULT_ERRORLOG="logs/error_log"
+ -D AP_TYPES_CONFIG_FILE="conf/mime.types"
+ -D SERVER_CONFIG_FILE="conf/httpd.conf"
+```
+
+This is similar what we have in Guix GN1. No mention of PHP in either.
+
+For simplicity we may switch to php-cgi
+
+=> https://stackoverflow.com/questions/28823252/installing-php-5-3-29-from-sources-on-ubuntu-14-with-apache-2-module
+
+=> https://www.bobulous.org.uk/coding/apache-php-cgi.html
