@@ -112,3 +112,83 @@ Created a file in web/test/index.html and it displays as
 Now a php version
 
 => http://gn1-pjotr.genenetwork.org/test/index.php
+
+works after setting
+
+```
+# CUSTOM: Add PHP 5 parsing (via CGI) handler and action
+ScriptAlias /local-bin /gnu/store/213zqkj0r6q41cqarwkz5x568ybhd62b-profile/bin
+AddHandler application/x-httpd-php5 php
+Action application/x-httpd-php5 /local-bin/php-cgi
+<Directory "/usr/local/bin">
+    Order allow,deny
+    Allow from all
+</Directory>
+
+<Directory /home/gn1/production/gnshare/gn-pjotr-test/web/test>
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+</Directory>
+```
+
+## Finding PHP files
+
+All files that have ?php are in ./infoshare. Try
+
+```
+gn1@tux01:~/production/gnshare/gn-pjotr-test$ grep '?php' -r > phpfiles.txt
+```
+
+they end in .htm and .html so we need to wire that together.
+
+So adding a test in
+
+=> http://gn1-pjotr.genenetwork.org/infoshare/manager/test/index.html
+
+and updating Addhandler to parse .htm and .html works.
+
+```
+AddHandler application/x-httpd-php5 php htm html
+```
+
+## MySQL connector
+
+We need to tell GN1 to use a more recent mysql connector and drive it over sockets, rather than the web interface. This requires telling it where the INI file is.
+
+This required adding a path for Apache:
+
+```
+SetEnv PHP_INI_SCAN_DIR /home/gn1/production/gnshare/gn-pjotr-test
+```
+
+and a php.ini file with
+
+```
+[Pdo_mysql]
+pdo_mysql.default_socket= /run/mysqld/mysqld.sock
+
+[MySQLi]
+mysqli.default_socket = /run/mysqld/mysqld.sock
+```
+
+Now it remains to replace the mysql connectors with mysqli - a newer driver for PHP. For this we use a translation script from
+
+=> https://github.com/rubo77/php-mysql-fix/blob/master/fix_mysql.inc.php
+
+that gets included with
+
+```
+include_once('../includes/fix_mysql.inc.php')
+```
+
+At the final step we have to fix CKEDITOR
+
+## CKEDITOR
+
+FF console says:
+
+```
+Uncaught ReferenceError: CKEDITOR is not defined
+    <anonymous> Ember
+```
