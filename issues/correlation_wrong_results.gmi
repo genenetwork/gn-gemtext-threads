@@ -1,0 +1,27 @@
+# Correlation results wrong for certain traits/datasets
+
+## Tags
+
+* assigned: alexm, zsloan, fredm
+* priority: high
+* status: ongoing
+
+* keywords: correlations
+
+## Description
+
+(Note that this uses the update to using GN! text files, but I don't think it's caused by that update)
+
+There are still a few remaining issues with correlations where the results are at least partially wrong. The ones I'm aware of are as follows:
+
+### Examples
+
+- http://gn2-zach.genenetwork.org/show_trait?trait_id=10710&dataset=BXDPublish (my branch linked because it's using the text file update)
+
+Correlate against "HQF Striatum Affy Mouse Exon 1.0ST Exon Level (Dec09) RMA"
+
+The results are a mix of correct and wrong ones. The top GN2 results have the same r/p values as their GN1 counterparts, but a number of top GN1 results are far lower on the list of GN2 results and have r values that are drastically lower. For example, 5200673 has the same r/p value in both GN1 and GN2, but 5169291 is the top GN1 result (with an r of -0.755), but in GN2 has an r of just 0.275
+
+- https://genenetwork.org/show_trait?trait_id=24638&dataset=BXDPublish
+
+Correlate against BXD Published Phenotypes (the default). These results are almost all wrong, but in a way that is close to correct. I suspect the issue is that 0 values are being ommitted, since this seems to always occur when correlation with traits/datasets that have many sample values of 0.
