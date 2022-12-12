@@ -88,3 +88,27 @@ For simplicity we may switch to php-cgi
 => https://stackoverflow.com/questions/28823252/installing-php-5-3-29-from-sources-on-ubuntu-14-with-apache-2-module
 
 => https://www.bobulous.org.uk/coding/apache-php-cgi.html
+
+## Test instance of GN1
+
+I started a test instance that listens on port 8044 and is hosted in this dir and started with:
+
+```
+gn1@tux01:~/production/gnshare/gn-pjotr-test
+. .guix-deploy
+gn1@tux01 ~/production/gnshare/gn-pjotr-test [env]$ httpd -f `pwd`/etc/pjotr-test-httpd.conf
+```
+
+Restart with
+
+```
+pkill httpd ; sleep 1 ; httpd -f `pwd`/etc/pjotr-test-httpd.conf
+```
+
+Created a file in web/test/index.html and it displays as
+
+=> http://gn1-pjotr.genenetwork.org/test/index.html
+
+Now a php version
+
+=> http://gn1-pjotr.genenetwork.org/test/index.php
