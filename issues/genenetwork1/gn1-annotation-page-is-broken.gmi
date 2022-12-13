@@ -5,7 +5,7 @@
 
 * assigned: zsloan, pjotrp
 * priority: high
-* status: overdue
+* status: testing
 * type: bug
 * keywords: GN1, genenetwork1, annotation, from github
 
@@ -192,3 +192,7 @@ FF console says:
 Uncaught ReferenceError: CKEDITOR is not defined
     <anonymous> Ember
 ```
+
+Turns out that lily URLs were hard-coded in the source. So, that was an easy fix. There are still some complaints about CSS links missing in the browser console, but until someone sees a difference I does not need fixing.
+
+Changing the status to testing now.
