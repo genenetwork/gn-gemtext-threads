@@ -1,27 +1,61 @@
 # GN Services
 
-## Tags
+# Tags
 
 * type: documentation
 * status: in progress
 * keywords: gn services, documentation
 
-## Description
+# Description
+
+First make sure to have a stable guix checkout. E.g.
+
+```
+gn3@tux01:~/production/gn-proxy$ /home/wrk/opt/guix-pull/bin/guix pull -p ~/opt/guix-pull
+```
 
 In addition to gn1 and gn2 we have 3 running gn3 services:
 
-1. gn-proxy - deployed as gn3 user in production
+## gn-proxy - deployed as gn3 user in production
+
+gn-proxy runs in systemd. See
+
+=> https://github.com/genenetwork/gn-proxy/blob/master/.guix-run
+=> https://github.com/genenetwork/gn-proxy/blob/master/extra/guix-gn-proxy.service
+
+Test with
 
 ```
 curl localhost:8080/version
 {"version":"0.2.1"}
 ```
 
-2. gn3 aliases
+To deploy by hand use
+
+```
+su gn3
+alias guix=~/opt/guix/bin/guix
+gn3@tux01:~/production/gn-proxy
+source .guix-deploy
+raco pkg install --auto
+env TMPDIR=/home/gn3/tmp SQL_USER=*** SQL_PASSWORD=*** racket -L info server/rest.rkt
+```
+
+
+## gn3 aliases
+
+=> https://github.com/genenetwork/gn3/blob/master/.guix-run
+=> https://github.com/genenetwork/gn3/blob/master/etc/gn3-aliases.service
+
+Test with
 
 ```
 curl http://localhost:8000/gene/aliases/BRCA2
 ["FACD","FAD","FANCD","BROVCA2","FAD1","FANCD1","BRCC2","GLM3","PNCA2","XRCC11"]
+
+curl http://localhost:8000/
+[ "Hello GeneNetwork3!"  ]
+
 curl https://luna.genenetwork.org/gn3/
 [ "Hello GeneNetwork3!"  ]
 ```
@@ -29,6 +63,8 @@ curl https://luna.genenetwork.org/gn3/
 3. genenetwork3 (python3)
 
 If the menu does not load, this is the culprit. It should be an external API link.
+
+Test iwth
 
 ```
 curl localhost:8087/api/version
@@ -38,13 +74,16 @@ curl localhost:8087/api/menu/generate/json
 curl https://genenetwork.org/api3/api/version
 "1.0"
 curl https://genenetwork.org/api3/api/menu/generate/json
+tomato
 ```
 
 On epysode:
 
 ```
 http://mars.genenetwork.org/gn3/api/version
+"1.0"
 http://gn2-fallback.genenetwork.org/gn3/api/menu/generate/json
+tomato
 ```
 
 ## Notes
