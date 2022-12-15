@@ -165,7 +165,7 @@ To dump data into a ttl file, first make sure that you are in the guix environme
 Next, drop into a development environment with:
 
 ```
-$ guix shell
+$ guix shell -m manifest.scm
 ```
 
 Build the sources:
