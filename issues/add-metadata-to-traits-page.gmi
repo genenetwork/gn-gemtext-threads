@@ -73,18 +73,45 @@ Metadata about this dataset can be found in:
 
 ## Display the metadata in GN2 as HTML
 
-* [ ] Display the metadata as part of GN2 web-page.  This data is stored as HTML.  How do work around this WRT displaying in a UI friendly way?
-* [ ] Determine whether to load the RDF metadata as part of the response or create an entirely different endpoint for it
-* [ ] Submit patches for review
+* [x] Display the metadata as part of GN2 web-page.  This data is stored as HTML.  How do work around this WRT displaying in a UI friendly way?
+* [x] Determine whether to load the RDF metadata as part of the response or create an entirely different endpoint for it
+* [x] Submit patches for review
 
 ## Editing metadata
 
-* [ ] Research ways of editing that text if the user really wants to
-* [ ] Inspect how GN1 did the edits
-* [ ] Work out if the edits are feasible/important to work on and communicate to PJ/Arun
+* [x] Research ways of editing that text if the user really wants to
+* [x] Inspect how GN1 did the edits
+* [x] Work out if the edits are feasible/important to work on and communicate to PJ/Arun
 
 ## Next steps
 
-* [ ] Spec out LMDB integration and how it would work out with current statistical operations.  Collaborate with Alex/Fred on this
+* [x] Spec out LMDB integration and how it would work out with current statistical operations.  Collaborate with Alex/Fred on this
 
+## Resolution
+
+This has been worked on in
+
+=> https://github.com/genenetwork/genenetwork3/pull/108 GN3#108
+
+=> https://github.com/genenetwork/genenetwork3/pull/107 GN3#107
+
+=> https://github.com/genenetwork/genenetwork3/pull/106 GN3#106
+
+=> https://github.com/genenetwork/genenetwork3/pull/104 GN3#104
+
+=> https://github.com/genenetwork/genenetwork3/pull/101 GN3#101
+
+=> https://github.com/genenetwork/genenetwork2/pull/757 GN2#757
+
+=> https://github.com/genenetwork/genenetwork2/pull/756 GN2#756
+
+=> https://github.com/genenetwork/genenetwork2/pull/755 GN2#755
+
+=> https://github.com/genenetwork/genenetwork2/pull/753 GN2#753
+
+=> https://github.com/genenetwork/genenetwork2/pull/751 GN2#751
+
+=> https://github.com/genenetwork/genenetwork2/pull/747 GN2#747
+
+* closed
 
