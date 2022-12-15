@@ -60,11 +60,16 @@ curl https://luna.genenetwork.org/gn3/
 [ "Hello GeneNetwork3!"  ]
 ```
 
-3. genenetwork3 (python3)
+## genenetwork3 (python3)
 
 If the menu does not load, this is the culprit. It should be an external API link.
 
-Test iwth
+
+```
+gn3@tux02:~/production/genenetwork3$ env GUIX_PACKAGE_PATH=~/guix-bioinformatics/ ~/opt/guix-gn3/bin/guix shell -C -D --network --expose=/home/gn2/production/genotype_files/ -f guix.scm -- gunicorn --bind 0.0.0.0:8087 --workers 8 --keep-alive 6000 --max-requests 10 --max-requests-jitter 5 --timeout 1200 wsgi:app
+```
+
+Test with
 
 ```
 curl localhost:8087/api/version
@@ -75,7 +80,11 @@ curl https://genenetwork.org/api3/api/version
 "1.0"
 curl https://genenetwork.org/api3/api/menu/generate/json
 tomato
+curl -L https://luna.genenetwork.org/api3/version
+"1.0"
 ```
+
+note the menu is more recent GN3.
 
 On epysode:
 

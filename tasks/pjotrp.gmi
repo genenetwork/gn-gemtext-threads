@@ -28,6 +28,7 @@ Now
 
 => https://github.com/genenetwork/gn-docs/blob/master/features/introduction.md
 
+* [ ] Check backups of etc etc.
 * [ ] GeneNetwork consortium
 * [+] Machine room HDDs
 * [ ] Byron epigenetics paper
