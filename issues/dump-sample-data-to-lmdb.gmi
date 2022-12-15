@@ -1,0 +1,44 @@
+# Dump sample data to LMDB
+
+* assigned: bonfacem
+* priority: high
+* status: in progress
+* keywords: lmdb, rdf
+
+## Description
+
+For GeneNetwork2, a dataset is made up of multiple traits, each with its own sample data. The trait's name is a combination of the species name and the trait's ID (for genotypes/probesets this may not be the case), which is obtained from a SQL table. The objective of this task is to store each trait's sample data in LMDB, allowing it to be accessed quickly in GN2/3 via RDF, which will decouple the data from the python-base classes/objects it is associated with, significantly improving sample data access speed.
+
+## Tasks
+Dump data and add relevant RDF Metadata for LMDB for:
+
+* [-] [un-]published phenotypes
+* [ ] probesets
+* [ ] genotypes
+* [ ] GN2/3 Integration
+
+## General Notes
+
+To fetch all data, including case-attributes data, for published phenotypes in SQL (using BXD_10007 as an example), you would use the following:
+
+=> http://genenetwork.org/show_trait?trait_id=10007&dataset=BXDPublish
+
+```
+SELECT A.Name, A.Value, A.SE, A.Count, B.CaseAttributes FROM
+(SELECT DISTINCT st.Name as 'Name', ifnull(pd.value, 'x') as 'Value',
+ifnull(ps.error, 'x') as 'SE', ifnull(ns.count, 'x') as 'Count', ps.StrainId as 'StrainId'
+FROM PublishFreeze pf JOIN PublishXRef px ON px.InbredSetId = pf.InbredSetId
+JOIN PublishData pd ON pd.Id = px.DataId JOIN Strain st ON pd.StrainId = st.Id
+LEFT JOIN PublishSE ps ON ps.DataId = pd.Id AND ps.StrainId = pd.StrainId
+LEFT JOIN NStrain ns ON ns.DataId = pd.Id AND ns.StrainId = pd.StrainId
+WHERE px.PhenotypeId = 35 ORDER BY st.Name) A
+JOIN
+(SELECT cxref.StrainId as StrainId, group_concat(ca.Name, '=', cxref.Value) as "CaseAttributes"
+FROM CaseAttributeXRefNew cxref LEFT JOIN CaseAttribute ca
+ON ca.Id = cxref.CaseAttributeId 
+GROUP BY InbredSetId, cxref.StrainId) B ON A.StrainId = B.StrainId;	
+```
+
+See this answer for how a join was performed on 2 different queries:
+
+=> https://dba.stackexchange.com/questions/146509/joining-results-of-two-mysql-queries
