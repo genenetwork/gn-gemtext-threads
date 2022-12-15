@@ -1,0 +1,11 @@
+# Add Sample Size to RDF
+
+* assigned: bonfacem
+* priority: high
+* status: in progress
+* keywords: rdf, metadata
+
+## Description
+
+Add sample size at the trait level for a given dataset.
+
