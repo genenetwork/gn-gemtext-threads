@@ -18,6 +18,9 @@ AttributeError: 'genotype' object has no attribute 'regression'
 * assigned: zachs, pjotrp
 * type: bug
 * priority: high
-* status: unclear
+* status: closed
 * keywords: marker,GN1
-* status: unclear
+
+## Info
+
+Works on production now.

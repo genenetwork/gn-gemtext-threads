@@ -20,7 +20,7 @@ ImportError: No module named direct
 * priority: critical
 * keywords: missing dependency, binary blob, GN1
 * assigned: pjotrp
-* status: testing
+* status: closed
 
 # Notes
 
@@ -108,3 +108,5 @@ genenetwork1 container so Pjotr said he'd test it out.
 The direct.so binary is now on files.genenetwork.org.
 
 => https://files.genenetwork.org/software/
+
+and part of deployment in guix-bioinformatics. Works on production.

@@ -1,0 +1,53 @@
+# GN1 github problem
+
+When trying to push to github, a commit from 2018 is blocking:
+
+```
+tux01:~/genenetwork1$ git push
+Enumerating objects: 41, done.
+Counting objects: 100% (41/41), done.
+Delta compression using up to 128 threads
+Compressing objects: 100% (21/21), done.
+Writing objects: 100% (23/23), 118.03 MiB | 23.15 MiB/s, done.
+Total 23 (delta 20), reused 3 (delta 2)
+remote: Resolving deltas: 100% (20/20), completed with 18 local objects.
+remote: error: File web/images/upload/MouseTissuesRWWMay08.xls is 262.53 MB; this exceeds GitHub's file size limit of 100.00 MB
+remote: error: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.
+To github.com:genenetwork/genenetwork1.git
+ ! [remote rejected] lily -> lily (pre-receive hook declined)
+error: failed to push some refs to 'git@github.com:genenetwork/genenetwork1.git'
+```
+
+This is because of a resync of lily. I should not do that again.
+
+
+# Tags
+
+* assigned: pjotrp
+* status: in progress
+* priority: medium
+* type: system administration
+* keywords: systems, tux02, production, gn1
+
+# Info
+
+To solve this I have to remove the large file(s). Fortunately not many people are using genenetwork1 code base, so I can rewrite the git store.
+
+```
+find . -size +20M -exec ls -lh \{\} \;
+-rwxr-xr-x 1 wrk wrk 263M Dec 15 15:38 ./web/images/upload/MouseTissuesRWWMay08.xls
+```
+
+Make a backup(!)
+
+Remove a file (dir with rm -rf). Make sure you do it for open branches too
+
+```
+rm ./web/images/upload/MouseTissuesRWWMay08.xls
+git filter-branch --tree-filter 'rm -f web/images/upload/MouseTissuesRWWMay08.xls' HEAD
+git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch \
+  MouseTissuesRWWMay08.xls' --prune-empty --tag-name-filter cat -- --all
+git reflog expire --expire=now --all && git gc --prune=now --aggressive
+```
+
+Note this rewrites git history. It is a dangerous command. Also, make sure all others do a fresh checkout of the repo.

@@ -196,3 +196,7 @@ Uncaught ReferenceError: CKEDITOR is not defined
 Turns out that lily URLs were hard-coded in the source. So, that was an easy fix. There are still some complaints about CSS links missing in the browser console, but until someone sees a difference I does not need fixing.
 
 Changing the status to testing now.
+
+## Updating production
+
+The source code is now in sync on 'master' branch. Now I need to update guix-bioinformatics package to set up the container correctly with Apache httpd.conf.

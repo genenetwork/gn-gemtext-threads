@@ -1,5 +1,17 @@
 # Starting GN1
 
+The GN1 repos are at
+
+=> https://github.com/genenetwork/genenetwork1
+
+Branches are:
+
+* master: my main branch - used in pjotr-test
+* lily: running but almost discontinued
+* production: on tux01
+
+Note that there are some hard coded paths/IPs - so simply merging is not a great idea.
+
 On tux01 GN1 is running inside a Guix container.
 
 Start a screen and run the guix deploy script. See the README file in
@@ -62,3 +74,21 @@ SQL may also need to be updated here:
 => /gnshare/gn/web/webqtl/base/webqtlConfigLocal.py
 => /gnshare/gn/web/infoshare/includes/config.html
 => /gnshare/gn/web/infoshare/includes/db.inc
+
+## Updating from lily
+
+Git sync
+
+```
+gn1@tux01:~/production/gnshare/gn-pjotr-test$
+git checkout lily
+git pull pjotr@lily.genenetwork.org:/gnshare/gn/
+```
+
+Menu sync
+
+```
+gn1@tux01:~/production/gnshare/gn-pjotr-test$
+scp pjotr@lily.genenetwork.org:/gnshare/gn/web/javascript/*.js web/javascript/
+git status
+```
