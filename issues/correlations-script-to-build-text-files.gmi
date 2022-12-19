@@ -1,0 +1,24 @@
+# CLI Script to Generate Text Files
+
+## Tags
+
+* assigned:
+* type: feature, improvement
+* priority: high
+* keywords: correlations, materialised views, optimisation, script
+* status: pending
+
+## Description
+
+This issue supercedes the
+=> /issues/materialised-views-for-correlations Materialised Views for Correlations
+issue, but the information in the older issues is helpful here too.
+
+A command-line script needs to be created in GN2 that can be invoked any time there is need to regenerate the text files that help speed up the computations.
+
+The script could be triggered in any of the following ways
+* manually: a human invokes the script manually to generate the text file(s)
+* periodically/scheduled: An automated scheduler invokes the script at predefined times/intervals
+* on-change: A "job" is run in the background to recreate the text file whenever data for a particular text dataset/trait/... is changed (created/updated/deleted).
+
+The automated triggers can be built in later once we have a working script. My (fredm) preferred method is to have the "on-change" trigger to avoid running the script even when data has not changed.

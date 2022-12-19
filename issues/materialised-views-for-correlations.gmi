@@ -2,11 +2,11 @@
 
 ## Tags
 
-* assigned:
+* assigned: alex, fred, zachs
 * type: feature, improvement
 * priority: high
 * keywords: correlations, materialised views, optimisation
-* status: pending
+* status: closed, completed
 
 ## Description
 
