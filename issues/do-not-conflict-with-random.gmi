@@ -1,0 +1,8 @@
+# Do not conflict with 'random' module
+
+gn3/random.py conflicts with Python's built-in 'random' module. This results in breakage such as
+=> https://ci.genenetwork.org/jobs/genenetwork3-build-xapian-index/7
+
+We should therefore gn3/random.py to something else. Assigning this to Fred since he created gn3/random.py
+
+* assigned: fred
