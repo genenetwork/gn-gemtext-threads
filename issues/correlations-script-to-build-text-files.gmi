@@ -2,11 +2,11 @@
 
 ## Tags
 
-* assigned:
+* assigned: alexm
 * type: feature, improvement
 * priority: high
 * keywords: correlations, materialised views, optimisation, script
-* status: pending
+* status: inprogress
 
 ## Description
 
