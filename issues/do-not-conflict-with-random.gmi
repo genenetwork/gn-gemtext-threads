@@ -6,3 +6,13 @@ gn3/random.py conflicts with Python's built-in 'random' module. This results in 
 We should therefore gn3/random.py to something else. Assigning this to Fred since he created gn3/random.py
 
 * assigned: fred
+* status: closed, completed
+
+This is an interesting albeit weird failure though, since the module name is actually gn3.random and not simply random.
+
+It should (ideally) not conflict, but here we are...
+
+This should be fixed with
+=> https://github.com/genenetwork/genenetwork3/commit/daa3a9cade431b21bbc48b690c16dcb8746f3dce this commit
+
+I renamed the module to "chancy" - hopefully it gives the developer an idea of what to expect in the module 🤷
