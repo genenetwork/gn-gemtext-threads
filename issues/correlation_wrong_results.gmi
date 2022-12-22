@@ -25,3 +25,11 @@ The results are a mix of correct and wrong ones. The top GN2 results have the sa
 - https://genenetwork.org/show_trait?trait_id=24638&dataset=BXDPublish
 
 Correlate against BXD Published Phenotypes (the default). These results are almost all wrong, but in a way that is close to correct. I suspect the issue is that 0 values are being ommitted, since this seems to always occur when correlation with traits/datasets that have many sample values of 0.
+
+### Updates
+
+The second example (with BXDPublish 24638) seems to have a cause that has likely always existed with any trait that has a very small range of values. Because the trait page only shows values out to 3 decimal places, and those values are passed directly from the form, there ends up being a mismatch between it and the values in the DB (which go out to far more decimal places).
+
+There are a couple ways to potentially deal with this, but I think the best might be to just show more decimal places when the range of values is less than a certain amount. This would preserve the ability for users to edit values, which is the reason they're passed from the form instead of just pulled directly from the DB.
+
+The first example seems to have been fixed by this commit - https://github.com/genenetwork/genenetwork2/commit/a2796900a34056cfba2dfa4c995764ea60ff8e45 (which addresses an issue where compute_top_n_sample was being pointlessly run again for Publish trait sample correlations and returning a lot of wrong results)
