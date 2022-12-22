@@ -1,0 +1,17 @@
+# Build Registration Page for OAuth2 Clients
+
+## Tags
+
+* assigned: fredm, zsloan, zachs
+* priority: high
+* status: pending
+* keywords: authentication, authorisation, oauth2
+* type: feature request
+
+## Description
+
+There is a need to register the OAuth2 clients that users can use to access the GN3 service with the new auth system.
+
+## Related Topic(s)
+
+=> /topics/authentication/authentication-authorisation-design Authentication/authorisation design

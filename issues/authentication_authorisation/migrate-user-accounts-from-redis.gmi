@@ -1,0 +1,26 @@
+# Migrate User Accounts from Redis to new Auth DB
+
+## Tags
+
+* assigned: fredm, zsloan, zachs
+* priority: high
+* status: pending
+* keywords: authentication, authorisation, oauth2
+* type: feature request
+
+## Description
+
+Currently, on GN2, user details are stored in Redis. We need to migrate these to the new auth database (SQLite3) in order to be able to use that system.
+
+As part of that migration, we need that any particular user's privileges be maintained across all the resources they have access to - in the best possible way.
+
+### Notes
+
+* In GN2 resources are owned by users, in GN3, resources are owned by groups
+* Resource owners can have a group created for them
+* A newly created groups (as above) will contain those users with privileges ONLY for the resources in the group
+* Any users with privileges that cross groups will be harder to handle, but are hopefully fewer
+
+## Related Topic(s)
+
+=> /topics/authentication/authentication-authorisation-design Authentication/authorisation design
