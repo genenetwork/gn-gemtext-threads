@@ -1,0 +1,102 @@
+# R/qtl JSONDecodeError
+
+When we have a deployment problem R/qtl throws this error. It comes from the GN3 API and it means there is some problem with the R code. Obviously GN2 should show a proper error message. Not only that, there should be a hint in the logs and we should test for regressions.
+
+* [ ] Give informative message
+* [ ] Log in error log
+* [X] Add test regressions
+
+## Info
+
+Now qtlreaper works. That suggests a problem with R. Zach says there is a problem with the load path in
+
+=> ./genenetwork3/scripts/rqtl_wrapper.R
+
+The current Guix profile is in
+
+```
+export GN2_PROFILE=/home/zas1024/opt/gn-latest-20221206
+```
+
+So we can run a shell
+
+```
+source /home/zas1024/opt/gn-latest-20221206/etc/profile
+```
+
+and test the script with
+
+```
+gn2@tux01:~/production$ Rscript ./genenetwork3/scripts/rqtl_wrapper.R
+```
+
+This works fine, so there is no path problem that I can tell. At least with the load path.
+
+Now, on production we have two flask servers running on port 8081 and 8087. According to production settings the last is used, probably in a tmux. Zach has written
+
+=> ../topics/starting_gn2_and_gn3.gmi
+
+which uses the same startup profile but uses a different port number(!)
+
+## GN3
+
+After restarting GN3 properly we are getting errors on R/qtl
+
+```
+Fatal error: cannot open file 'None': No such file or directory
+[2022-12-23 16:39:30,575] ERROR in app: Exception on /api/rqtl/compute [POST]
+Traceback (most recent call last):
+  File "/gnu/store/lj173vcx5w60mzp203x17p7yhcz5ifwx-profile/lib/python3.9/site-packages/flask/app.py", line 2077, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/gnu/store/lj173vcx5w60mzp203x17p7yhcz5ifwx-profile/lib/python3.9/site-packages/flask/app.py", line 1525, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/gnu/store/lj173vcx5w60mzp203x17p7yhcz5ifwx-profile/lib/python3.9/site-packages/flask/app.py", line 1523, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/gnu/store/lj173vcx5w60mzp203x17p7yhcz5ifwx-profile/lib/python3.9/site-packages/flask/app.py", line 1509, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/gn2/gn3_production/genenetwork3/gn3/api/rqtl.py", line 55, in compute
+    rqtl_output['results'] = process_rqtl_mapping(rqtl_cmd.get('output_file'))
+  File "/home/gn2/gn3_production/genenetwork3/gn3/computations/rqtl.py", line 65, in process_rqtl_mapping
+    with open(
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/output/d41d8cd98f00b204e9800998ecf8427eLnBwXfCEpZ9SqYsOI0dPtAvGj6hf+TA2Ra7FIrlrT4Pw-output.csv'
+```
+
+Some issues there. First of all, why are we using /tmp? TMPDIR should be set to something that gets cleaned up. It looks like /tmp/output is not created(!?). Trying
+
+```
+mkdir /tmp/output
+```
+
+Gives the same error, suggesting that R has not done its thing.
+
+## Another error
+
+Another error shows up
+
+```
+[2022-12-23 16:42:14,906] ERROR in app: Exception on /api/search/ [GET]
+Traceback (most recent call last):
+  File "/gnu/store/lj173vcx5w60mzp203x17p7yhcz5ifwx-profile/lib/python3.9/site-packages/flask/app.py", line 2077, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/gnu/store/lj173vcx5w60mzp203x17p7yhcz5ifwx-profile/lib/python3.9/site-packages/flask/app.py", line 1525, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/gnu/store/lj173vcx5w60mzp203x17p7yhcz5ifwx-profile/lib/python3.9/site-packages/flask/app.py", line 1523, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/gnu/store/lj173vcx5w60mzp203x17p7yhcz5ifwx-profile/lib/python3.9/site-packages/flask/app.py", line 1509, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/gn2/gn3_production/genenetwork3/gn3/api/search.py", line 45, in search_results
+    with xapian_database(current_app.config["XAPIAN_DB_PATH"]) as db:
+  File "/gnu/store/qar3sks5fwzm91bl3d3ngyrvxs7ipj5z-python-3.9.9/lib/python3.9/contextlib.py", line 119, in __enter__
+    return next(self.gen)
+  File "/home/gn2/gn3_production/genenetwork3/gn3/db_utils.py", line 55, in xapian_database
+    db = xapian.Database(path)
+  File "/gnu/store/lj173vcx5w60mzp203x17p7yhcz5ifwx-profile/lib/python3.9/site-packages/xapian/__init__.py", line 8483, in __init__
+    _xapian.Database_swiginit(self, _xapian.new_Database(*args))
+xapian.DatabaseOpeningError: Couldn't stat 'xapian' (No such file or directory)
+```
+
+## Test regression
+
+A test has been added to sheepdog using a POST request. See
+
+=> ../topics/testing/using-curl.gmi

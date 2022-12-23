@@ -12,7 +12,9 @@ See also
 
 GN2 depends on GN3 for REST services and libraries.
 
-1. Set PATH/PYTHONPATH/GN2_PROFILE environment variables
+## Environment
+
+Set PATH/PYTHONPATH/GN2_PROFILE environment variables
 
 Example:
 
@@ -22,11 +24,24 @@ export PATH=$GN2_PROFILE/bin:$PATH
 export PYTHONPATH="$GN2_PROFILE/lib/python3.9/site-packages"
 ```
 
-2. Start GN3 from the relevant directory (in this case production
+## Start development on port 8081
+
+Start GN3 from the relevant directory
 
 ```
 env FLASK_DEBUG=1 FLASK_APP="main.py" CORS_ORIGINS="http://gn2-zach.genenetwork.org:*,https://gn2-zach.genenetwork.org:*,http://genenetwork.org:*,https://genenetwork.org:*" flask run --port=8081
 ```
+
+## Start production on port 8087
+
+```
+gn2@tux01:
+cd ~/gn3_production/genenetwork3
+gunicorn --bind 0.0.0.0:8087 --workers 8 --keep-alive  6000 --max-requests 10 --max-requests-jitter 5 --timeout 1200 wsgi:app
+```
+
+Note I had to comment out some oauth stuff on the latest.
+
 
 # GN2
 
