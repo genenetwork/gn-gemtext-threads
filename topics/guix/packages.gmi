@@ -1,0 +1,65 @@
+# Guix packages
+
+To deploy GN we have packages in Guix itself (that comes with a distribution), in guix-bioinformatics and in guix-past (for older packages).
+
+Typically run a guix pull to get the latest guix:
+
+```
+mkdir -p ~/opt
+guix package -i guix -p ~/opt/guix
+```
+
+and checkout guix-past and guix-bioinformatics using git.
+
+Now Guix should be happy with
+
+```
+~/opt/guix-pull/bin/guix package -L ~/guix-bioinformatics/ -L ~/guix-past/modules/ -A genenetwork
+genenetwork1            0.0.0-2.acf65ac out     /home/wrk/guix-bioinformatics/gn/past/genenetwork1.scm:148:4
+genenetwork2            3.11-2.1328932  out     /home/wrk/guix-bioinformatics/gn/packages/genenetwork.scm:452:4
+genenetwork3            0.1.0-2.e781996 out     /home/wrk/guix-bioinformatics/gn/packages/genenetwork.scm:107:4
+```
+
+and we can try building
+
+```
+~/opt/guix-pull/bin/guix build -L ~/guix-bioinformatics/ -L ~/guix-past/modules/ genenetwork2
+```
+
+Any errors at either command means that we have to fix packages.
+
+Note that you can use tux02 as a substitute server, see the README in guix-bioinformatics. That means that any package you build on tux02 can be downloaded from guix.genenetwork.org. So, best to build on tux02 - so everyone can share!
+
+On tux02, to ramp up parallel building speed, you may want to use `-c 24 -M 24 -k` switches.
+
+## Fixing a package
+
+Here python-pingouin failed. Which is pulled in by
+
+```
+tux02:~/guix-bioinformatics$ grep -r pingouin *
+gn/packages/genenetwork.scm:             python-pingouin
+```
+
+git blame shows it was added in summer by Arun as part of the genenetwork3 package. A check of genenetwork3 shows
+
+```
+tux02:~/genenetwork3$ git blame gn3/computations/correlations.py
+```
+
+it was added by Alex in 2021.
+
+Now it is not puzzling why the tests fail for this package as the Guix package does not build on the build farm, see
+
+=> https://packages.guix.gnu.org/packages/python-pingouin/0.5.2/
+
+I am going to disable it for testing. By introducing the override
+
+```
+(define python-pingouin-without-tests
+ (package
+   (inherit python-pingouin)
+   (arguments
+    (substitute-keyword-arguments (package-arguments python-pingouin)
+      ((#:tests? _ #f) #f)))))
+```
