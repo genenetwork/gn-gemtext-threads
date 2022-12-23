@@ -92,3 +92,11 @@ gn1@tux01:~/production/gnshare/gn-pjotr-test$
 scp pjotr@lily.genenetwork.org:/gnshare/gn/web/javascript/*.js web/javascript/
 git status
 ```
+
+## Updating httpd.conf
+
+To update the httpd.conf you need to edit the system file in guix-bioinformatics. It can be built with
+
+```
+guix build -L ~/guix-past/modules/ -L ~/guix-bioinformatics/ -e '(@ (gn services gn1-httpd-config) GN1-httpd-config)'
+```

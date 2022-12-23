@@ -28,6 +28,9 @@ Test with
 ```
 curl localhost:8080/version
 {"version":"0.2.1"}
+
+curl https://genenetwork.org/gn3-proxy/version
+{"version":"0.2.1"}
 ```
 
 To deploy by hand use
@@ -54,6 +57,9 @@ curl http://localhost:8000/gene/aliases/BRCA2
 ["FACD","FAD","FANCD","BROVCA2","FAD1","FANCD1","BRCC2","GLM3","PNCA2","XRCC11"]
 
 curl http://localhost:8000/
+[ "Hello GeneNetwork3!"  ]
+
+curl https://genenetwork.org/gn3
 [ "Hello GeneNetwork3!"  ]
 
 curl https://luna.genenetwork.org/gn3/
