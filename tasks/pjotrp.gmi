@@ -18,8 +18,9 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 
 Now
 
-* [ ] Fix https on tux01
-* [ ] Fix Lily edit form
+* [ ] Write test for R/qtl, GEMMA and other mapping
+* [X] Fix https on tux01
+* [X] Fix Lily edit form
 => http://gn1.genenetwork.org/infoshare/manager/member-studies-edit.html?DatasetId=101
 * [+] Shelby's application
 * [X] Opar.io move to dnsimple

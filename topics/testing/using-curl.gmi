@@ -1,0 +1,30 @@
+# Using curl
+
+Curl is a command line tool that can be used for testing. We use it extensively for 'sheepdog' monitoring. See
+
+=> ../systems/gn-services.gmi
+
+## GET fetch
+
+A simple fetch may look like
+
+```
+URL=https://ci.genenetwork.org/channels.scm
+sheepdog_run.rb -c "curl --max-time 20 $URL|grep -i bioinformatics" --tag $URL $*
+```
+
+and with GET parameters
+
+```
+URL="$host/search?species=mouse&group=BXD&type=Hippocampus+mRNA&dataset=HC_M2_0606_P&search_terms_or=sh*&search_terms_and=&FormID=searchResult"
+FIND="2310010I16Rik"
+sheepdog_run.rb -c "curl \"$URL\"|grep -i $FIND" --tag "wild-card-search-$URL" $*
+```
+
+## POST fetch
+
+Post fetches are a bit harder. First use firefox console and click of Debugger tab. Next click on the POST field in the tabel (you may need to reload the page and cancel any redirections). At the bottom you'll find 'Request payload'. Copy that using a right click and save it in a file named post.in. Next run POST with something like
+
+```
+cat data/post-hk.in |curl --max-time 60 -d @- https://genenetwork.org/run_mapping |grep 'Mapping Results'
+```
