@@ -1,6 +1,8 @@
 # How to Start GN2 and GN3
 
-This document describes how we run GN2 and GN3 on the current production setup.
+This document describes in a short how we run GN2 and GN3 on the current production setup.
+
+Note that we should replace this with a system container.
 
 This details how GN2/GN3 production are currently started. It's probably a good idea to create a shell script for starting GN3 like we have for GN2 at some point, since currently environment variables are set manually.
 
@@ -31,6 +33,8 @@ Start GN3 from the relevant directory
 ```
 env FLASK_DEBUG=1 FLASK_APP="main.py" CORS_ORIGINS="http://gn2-zach.genenetwork.org:*,https://gn2-zach.genenetwork.org:*,http://genenetwork.org:*,https://genenetwork.org:*" flask run --port=8081
 ```
+
+GN3 has a settings.py file now. See the README.
 
 ## Start production on port 8087
 
