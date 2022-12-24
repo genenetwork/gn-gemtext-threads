@@ -2,9 +2,15 @@
 
 When we have a deployment problem R/qtl throws this error. It comes from the GN3 API and it means there is some problem with the R code. Obviously GN2 should show a proper error message. Not only that, there should be a hint in the logs and we should test for regressions.
 
-* [ ] Give informative message
-* [ ] Log in error log
+* [X] Give informative message
+* [X] Log in error log
 * [X] Add test regressions
+
+These have been fixed by Zach and Pjotr
+
+## Tags
+
+* status: closed
 
 ## Info
 
