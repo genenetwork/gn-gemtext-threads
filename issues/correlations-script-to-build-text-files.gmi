@@ -22,3 +22,26 @@ The script could be triggered in any of the following ways
 * on-change: A "job" is run in the background to recreate the text file whenever data for a particular text dataset/trait/... is changed (created/updated/deleted).
 
 The automated triggers can be built in later once we have a working script. My (fredm) preferred method is to have the "on-change" trigger to avoid running the script even when data has not changed.
+
+
+
+## tasks
+
+[x] fetching all possible strains for specific probeset
+
+[x] fetch all probesetfreezes for script
+
+[] table tracker for change in tables then invoke the script
+
+[] add as a  job
+
+
+## Notes
+
+while using innodb engine last update time is  null possibly write
+a script/table o create track of this
+
+relevant resources
+
+=> https://dba.stackexchange.com/questions/291291/how-to-check-the-last-time-a-table-has-been-modified
+ 
