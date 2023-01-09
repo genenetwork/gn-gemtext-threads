@@ -1,0 +1,20 @@
+# List of proposed changes for PCA traits/figures in Correlation Matrix page
+
+## Tags
+* type: feature, chore
+* priority: medium
+* assigned: zsloan
+* status: in-progress
+* keywords: pca, correlations
+
+## Description
+
+Rob proposed the following changes to the PCA traits/figures:
+
+1. Add the percentage of variance accounted for by each trait to the table (these values should have been calculated for the Scree Plot, so they should be available)
+
+2. Add option to switch axes for the Factor Loadings Plot
+
+3. Change Factor Loadings Plot to not use blue text
+
+4. Fix width of Factor Loadings Tables
