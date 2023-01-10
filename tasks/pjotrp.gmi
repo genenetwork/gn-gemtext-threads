@@ -18,16 +18,12 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 
 Now
 
-* [ ] Write test for R/qtl, GEMMA and other mapping
-* [X] Fix https on tux01
-* [X] Fix Lily edit form
-=> http://gn1.genenetwork.org/infoshare/manager/member-studies-edit.html?DatasetId=101
-* [+] Shelby's application
-* [X] Opar.io move to dnsimple
+* [ ] NSF report with UTHSC
+* [+] Shelby's application and biosketch
 * [.] Check Tony's list and improve search for SNPs and Hs
 * [.] GeneNetwork paper
-
-=> https://github.com/genenetwork/gn-docs/blob/master/features/introduction.md
+* [ ] Machine room security and access
+* [ ] Tree of life
 
 * [ ] Check backups of etc etc.
 * [ ] GeneNetwork consortium
@@ -49,6 +45,10 @@ Later
 
 => ./dana.gmi See Dan's list for machine room
 
+* [ ] VPN access and FoUT
+* [ ] DMZ plan
+* [ ] Setup VM on Tux02
+* [ ] Key 410H
 * [ ] research.gov submit Postdoc plan
 * [+] Complete vcflib work in Zig and release
 * [+] Reinstate backup drops on tux02, rabbit, &space and &epysode; reduce incoming IP
@@ -68,6 +68,11 @@ Later
 
 ## Done
 
+* [X] Write test for R/qtl, GEMMA and other mapping
+* [X] Fix https on tux01
+* [X] Fix Lily edit form
+=> http://gn1.genenetwork.org/infoshare/manager/member-studies-edit.html?DatasetId=101
+* [X] Opar.io move to dnsimple
 * [X] Run tux01 backups serially
 * [X] Add tux02 to rabbit's sheepdog
 * [X] Get status list from sheepdog on epysode, tux02 and rabbit on GN2
