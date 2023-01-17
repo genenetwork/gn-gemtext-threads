@@ -1,0 +1,65 @@
+# Running postgres in a Guix container
+
+GNU Guix never fails to amaze me.
+Here is a simple recipe to run Postgres in userland on a system that has a guix daemon running
+
+## Steps
+
+Select a recent version of guix (note the leading dot)
+
+```
+. ~/opt/guix-pull/etc/profile
+```
+
+Install postgres (here we opt for v14) with
+
+```
+guix packages -A postgres
+mkdir -p ~/data/pgdata
+cd ~/data
+guix shell -C -N postgresql@14.4 glibc-locales binutils coreutils which \
+  --share=$HOME/data/pgdata --share=/var/run/postgresql
+```
+
+To share `/var/run` make sure your user id is member of the postgres group.
+
+Inside the shell
+
+```
+mkdir -p /var/run/postgresql
+initdb -k -D pgdata/14
+pg_ctl -D pgdata/14 -l logfile start
+createdb test
+psql test
+```
+
+and you should be able to work with everything. Note the user is the same as the user that runs the container.
+
+Test then network interface with
+
+```
+telnet localhost 5432
+```
+
+To run a container in the background you may want to use screen and/or tmux.
+
+To have the postgres client outside the container install it with
+
+```
+. ~/opt/guix-pull/etc/profile
+guix package -i postgresql@14.4 -p ~/opt/postgresql14
+```
+
+Now you can add this
+
+```
+. ~/opt/postgresql14/etc/profile
+psql test
+\dt
+etc etc
+```
+
+## More
+
+=> https://fluca1978.github.io/2021/09/30/GNU_GUIX_PostgreSQL.html
+=> https://guix.gnu.org/cookbook/en/html_node/A-Database-Container.html

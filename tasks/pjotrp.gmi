@@ -22,8 +22,9 @@ Now
 * [+] Shelby's application and biosketch
 * [.] Check Tony's list and improve search for SNPs and Hs
 * [.] GeneNetwork paper
-* [ ] Machine room security and access
-* [ ] Tree of life
+* [ ] Machine room security and access for bonz, fred, shelby, others...
+* [ ] Set up student VM
+* [.] Tree of life
 
 * [ ] Check backups of etc etc.
 * [ ] GeneNetwork consortium
