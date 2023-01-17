@@ -1,0 +1,36 @@
+# Big File Upload Fails
+
+## Tags
+
+* assigned: fredm
+* priority: high
+* type: bug
+* status: open, started
+* keywords: qc, quality control
+
+## Description
+
+Trying to upload big files (>= 500MB) fails quietly, dropping the user back to the home page.
+
+### Troubleshooting
+
+This issue is reproducible on https://bioart.io/ but not locally.
+
+There is an error in the Apache2 logs of the form:
+
+```
+Broken pipe: [client 41.90.70.47:1460] AH01084: pass request body failed to 127.0.0.1:5050 (127.0.0.1), referer: https://bioart.io/
+```
+
+It seems like the issue is the Apache2 configurations.
+
+I tried adding the following to the VirtualHost definition, to no avail
+
+```
+Timeout 900
+ProxyTimeout 900
+KeepAliveTimeout 900
+LimitRequestBody 53687091200
+```
+
+but it does not seem to change matters.
