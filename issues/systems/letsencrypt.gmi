@@ -15,6 +15,12 @@
 
 ## Notes
 
+Setup
+
+```
+certbot --nginx -d host.genenetwork.org
+```
+
 ```
 certbot renew --dry-run
 ```
