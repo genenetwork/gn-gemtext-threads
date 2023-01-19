@@ -1,0 +1,13 @@
+# Add option to directly link to mapping results
+
+## Tags
+
+* assigned: zsloan
+* keywords: mapping
+* priority: medium
+
+## Description
+
+Currently it's not possible to link to mapping results, so I'm adding a feature where you can get a "Share" link to allow other people to see your results.
+
+The way I'm currently doing this is to link an ID (generated as a hash from the mapping inputs) with JSON of all the options/sample-data/filenames. A URL with that ID as input will then just pull all the options and output files and show the results.
