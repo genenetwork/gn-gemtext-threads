@@ -27,9 +27,13 @@ The automated triggers can be built in later once we have a working script. My (
 
 ## tasks
 
+[x] enable to compute with cache and without
+
 [x] fetching all possible strains for specific probeset
 
 [x] fetch all probesetfreezes for script
+
+[] store results in lmdb   
 
 [] table tracker for change in tables then invoke the script
 
@@ -44,4 +48,11 @@ a script/table o create track of this
 relevant resources
 
 => https://dba.stackexchange.com/questions/291291/how-to-check-the-last-time-a-table-has-been-modified
+
+
+=> https://github.com/genenetwork/genenetwork2/pull/764
+
+
+
+
  
