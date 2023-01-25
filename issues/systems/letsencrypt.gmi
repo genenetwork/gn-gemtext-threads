@@ -25,6 +25,12 @@ certbot --nginx -d host.genenetwork.org
 certbot renew --dry-run
 ```
 
+CRON, for example
+
+```
+22 4 * * 3 sheepdog_run.rb -c '/usr/bin/certbot renew --quiet' --always --tag CERTBOT >> ~/cron.log 2>&1
+```
+
 Add certificate
 
 ```

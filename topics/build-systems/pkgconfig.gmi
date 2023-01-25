@@ -1,0 +1,31 @@
+# Pkgconfig
+
+## Creating pkgconfig files with cmake
+
+=> https://gist.github.com/scivision/ed109f7a1256141b3e821e2a82ec17f1
+
+Cmake can write files and fill in/expand variables. For pkg-config
+
+```cmake
+configure_file(pkg-config.pc.in my_package.pc @ONLY)
+```
+
+expands
+
+```
+# pkg-config.pc.in
+prefix="@CMAKE_INSTALL_PREFIX@"
+exec_prefix="${prefix}"
+libdir="${prefix}/lib"
+includedir="${prefix}/include"
+
+Name: @PROJECT_NAME@
+Description: @CMAKE_PROJECT_DESCRIPTION@
+URL: @CMAKE_PROJECT_HOMEPAGE_URL@
+Version: @PROJECT_VERSION@
+Requires: @pc_req_public@
+Requires.private: @pc_req_private@
+Cflags: -I"${includedir}"
+Libs: -L"${libdir}" -l@target1@ -l@target2@
+Libs.private: -L"${libdir}" -l@target1@ -l@target2@ @pc_libs_private@
+```
