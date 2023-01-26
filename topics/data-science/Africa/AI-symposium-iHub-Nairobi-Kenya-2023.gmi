@@ -4,7 +4,7 @@ Monday Jan 30, 2023 at 2-4pm we are organising a short open community symposium 
 
 ## GPT-3
 
-Everyone has heard about OpenAI ChatGPT by now and experts agree that natural language processing has turned a corner with exciting potential. Dr Shelby Solomon Darnell, an independent AI expert formerly with IBM Research and Strathmore University, is working together with Nairobi startup Fahamu Inc to create an application where researchers can ask biomedical questions to a specialised document repository. Shelby will explain the state-of-the-art with examples. Shelby and Adrian Kibet, CEO of Fahamu, will field questions. Brian Muhia (aka popping tonic) is writing the software and will be available for questions too.
+Everyone has heard about OpenAI ChatGPT by now and experts agree that natural language processing has turned a corner with exciting potential. Dr Shelby Solomon Darnell, an independent AI expert formerly with IBM Research and Strathmore University, is working together with Nairobi startup Fahamu Inc to create The GeneNetwork Digest, an application where researchers can ask biomedical questions to a specialised document repository. Shelby will explain the state-of-the-art with examples. Shelby and Adrian Kibet, CEO of Fahamu, will field questions. Brian Muhia is writing the software and will be available for questions too.
 
 ## Data Science Africa
 
