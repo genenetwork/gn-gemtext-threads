@@ -12,7 +12,8 @@ Bonface Munyoki is a master student with the data science program at Strathmore 
 
 ## Icipe
 
-Caleb Kibet is writing this.
+Dr Caleb Kibet is a bioinformatics researcher, a lecturer, an open science advocate, and a mentor. He has a Ph.D. in Bioinformatics from Rhodes University, South Africa. In addition to teaching bioinformatics at Pwani University, Dr. Kibet is a PostDoc at icipe, The International Centre of Insect Physiology and Ecology in Nairobi. Icipe's mission is to help alleviate poverty, ensure food security and improve the overall health status of peoples of the tropics, by developing and extending management tools and strategies for harmful and useful arthropods, while preserving the natural resource base through research and capacity building.
+Caleb will talk about ICIPE and what they are doing with data science and AI in Africa.
 
 ## Discussion forum
 
