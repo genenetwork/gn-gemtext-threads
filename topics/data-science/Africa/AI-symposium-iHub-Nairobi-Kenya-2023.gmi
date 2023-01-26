@@ -10,10 +10,9 @@ Everyone has heard about OpenAI ChatGPT by now and experts agree that natural la
 
 Bonface Munyoki is a master student with the data science program at Strathmore University who won a junior data science award with Data Science Africa http://www.datascienceafrica.org/ to work on making data available for machine learning and AI. Bonface will talk about his project converting a traditional SQL database with 80+ tables to RDF -- the language of the semantic web. The idea is that RDF databases include their relationships and with ontology machines and computer software can *reason* about content. We are planning to feed this information to GPT-3 to add to the power of the earlier presentation.
 
-## Icipe
+## Leveraging Data Science for a Strategic Advantage in Agriculture: Case of icipe
 
-Dr Caleb Kibet is a bioinformatics researcher, a lecturer, an open science advocate, and a mentor. He has a Ph.D. in Bioinformatics from Rhodes University, South Africa. In addition to teaching bioinformatics at Pwani University, Dr. Kibet is a PostDoc at icipe, The International Centre of Insect Physiology and Ecology in Nairobi. Icipe's mission is to help alleviate poverty, ensure food security and improve the overall health status of peoples of the tropics, by developing and extending management tools and strategies for harmful and useful arthropods, while preserving the natural resource base through research and capacity building.
-Caleb will talk about ICIPE and what they are doing with data science and AI in Africa.
+Dr. Kennedy Senagi will talk about how the International Centre of Insect Physiology and Ecology is Leveraging Data Science for a Strategic Advantage in Agriculture. Dr. Senagi holds a Ph.D. in Computer Science (Artificial Intelligence and Parallel Computing) from Université Paris8, France. He is a Postdoctoral Fellow (Data Management) under the Data Management, Modelling, and Geo-Information Unit. Dr. Caleb Kibet is a bioinformatics postDoc at icipe, a lecturer, and an open science advocate. Icipe's mission is to help alleviate poverty, ensure food security and improve the overall health status of peoples of the tropics by developing and extending management tools and strategies for harmful and useful arthropods while preserving the natural resource base through research and capacity building. Dr. Senagi and Dr. Kibet will take questions on Genomics Data Science.  
 
 ## Discussion forum
 
