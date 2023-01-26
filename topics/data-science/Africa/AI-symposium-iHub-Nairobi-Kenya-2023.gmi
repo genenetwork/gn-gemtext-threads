@@ -12,10 +12,12 @@ Bonface Munyoki is an open source developer and a Masters student at Strathmore 
 
 ## Leveraging Data Science for a Strategic Advantage in Agriculture: Case of icipe
 
-Dr. Kennedy Senagi will talk about how the International Centre of Insect Physiology and Ecology is Leveraging Data Science for a Strategic Advantage in Agriculture. Dr. Senagi holds a Ph.D. in Computer Science (Artificial Intelligence and Parallel Computing) from Université Paris8, France. He is a Postdoctoral Fellow (Data Management) under the Data Management, Modelling, and Geo-Information Unit. Dr. Caleb Kibet is a bioinformatics postDoc at icipe, a lecturer, and an open science advocate. Icipe's mission is to help alleviate poverty, ensure food security and improve the overall health status of peoples of the tropics by developing and extending management tools and strategies for harmful and useful arthropods while preserving the natural resource base through research and capacity building. Dr. Senagi and Dr. Kibet will take questions on Genomics Data Science.  
+Dr. Kennedy Senagi will talk about how the International Centre of Insect Physiology and Ecology is Leveraging Data Science for a Strategic Advantage in Agriculture. Dr. Senagi holds a Ph.D. in Computer Science (Artificial Intelligence and Parallel Computing) from Université Paris8, France. He is a Postdoctoral Fellow (Data Management) under the Data Management, Modelling, and Geo-Information Unit. Dr. Caleb Kibet is a bioinformatics postDoc at icipe, a lecturer, and an open science advocate. Icipe's mission is to help alleviate poverty, ensure food security and improve the overall health status of peoples of the tropics by developing and extending management tools and strategies for harmful and useful arthropods while preserving the natural resource base through research and capacity building. Dr. Senagi and Dr. Kibet will take questions on Genomics Data Science.
 
 ## Discussion forum
 
 We will conclude with an open discussion forum between speakers and audience. You can not only ask questions about the discussed topics, but also about joining a data science masters, running a startup and other career opportunities in Science. Dr Pjotr Prins will chair the forum. Pjotr is faculty with the University of Tennesee and an adjunct professor of bioinformatics with the university of Pwani, Kilifi and affiliated with KEMRI/Wellcome Trust. Pjotr takes much interest in software development and making research data available for analysis.
 
-We will try to keep a zoom line open during the conference. We'll send an invitation closer to the time. If you want an invite you can write email@.
+Note: to enter iHub you need to bring an ID.
+
+Note: We will try to keep a zoom line open during the conference. We'll send an invitation closer to the time. If you want an invite you can write email@.
