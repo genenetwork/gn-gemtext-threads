@@ -8,7 +8,7 @@ Everyone has heard about OpenAI ChatGPT by now and experts agree that natural la
 
 ## Data Science Africa
 
-Bonface Munyoki is a master student with the data science program at Strathmore University who won a junior data science award with Data Science Africa http://www.datascienceafrica.org/ to work on making data available for machine learning and AI. Bonface will talk about his project converting a traditional SQL database with 80+ tables to RDF -- the language of the semantic web. The idea is that RDF databases include their relationships and with ontology machines and computer software can *reason* about content. We are planning to feed this information to GPT-3 to add to the power of the earlier presentation.
+Bonface Munyoki is an open source developer and a Masters student at Strathmore Univesity who won a junior data science award with Data Science Africa http://www.datascienceafrica.org/ to work on making data available for machine learning and AI for biomedical data in Africa. Bonface will talk about his project that entails converting a traditional SQL database, comprising over 80 tables, to RDF, the language of the semantic web. The goal of this conversion is to leverage the benefits of RDF databases, which are known for their flexibility in data storage and retrieval, the ability to store and query relationships, and their ability to enable machines to reason about content. This information will be fed to GPT-3, augmenting the work of Dr. Shelby and Fahamu in the process.
 
 ## Leveraging Data Science for a Strategic Advantage in Agriculture: Case of icipe
 
