@@ -1,0 +1,21 @@
+# AI Community Symposium at iHub
+
+Monday Jan 30, 2023 at 2-4pm we are organising a short open community symposium on data science and AI at iHub Nairobi.
+
+## GPT-3
+
+Everyone has heard about OpenAI ChatGPT by now and experts agree that natural language processing has turned a corner with exciting potential. Dr Shelby Solomon Darnell, an independent AI expert formerly with IBM Research and Strathmore University, is working together with Nairobi startup Fahamu Inc to create an application where researchers can ask biomedical questions to a specialised document repository. Shelby will explain the state-of-the-art with examples. Shelby and Adrian Kibet, CEO of Fahamu, will field questions. Brian Muhia (aka popping tonic) is writing the software and will be available for questions too.
+
+## Data Science Africa
+
+Bonface Munyoki is a master student with the data science program at Strathmore University who won a junior data science award with Data Science Africa http://www.datascienceafrica.org/ to work on making data available for machine learning and AI. Bonface will talk about his project converting a traditional SQL database with 80+ tables to RDF -- the language of the semantic web. The idea is that RDF databases include their relationships and with ontology machines and computer software can *reason* about content. We are planning to feed this information to GPT-3 to add to the power of the earlier presentation.
+
+## Icipe
+
+Caleb Kibet is writing this.
+
+## Discussion forum
+
+We will conclude with an open discussion forum between speakers and audience. You can not only ask questions about the discussed topics, but also about joining a data science masters, running a startup and other career opportunities in Science. Dr Pjotr Prins will chair the forum. Pjotr is faculty with the University of Tennesee and an adjunct professor of bioinformatics with the university of Pwani, Kilifi and affiliated with KEMRI/Wellcome Trust. Pjotr takes much interest in software development and making research data available for analysis.
+
+We will try to keep a zoom line open during the conference. We'll send an invitation closer to the time. If you want an invite you can write email@.
