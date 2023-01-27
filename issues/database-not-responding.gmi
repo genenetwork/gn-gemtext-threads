@@ -273,3 +273,5 @@ MariaDB [db_webqtl]> SHOW VARIABLES LIKE '%timeout%';
 | wait_timeout                          | 28800    |
 +---------------------------------------+----------+
 ```
+
+If you set wait_timeout and interactive_timeout values they get reset after a while.
