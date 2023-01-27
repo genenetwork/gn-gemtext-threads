@@ -1,5 +1,11 @@
 (import (tissue tissue))
 
+(define %css
+  "/style.css")
+
+(define %engine
+  (html-engine #:css %css))
+
 (define %github-repo-uri
   "https://github.com/genenetwork/gn-gemtext-threads")
 
@@ -42,7 +48,6 @@
                                               'web-uri
                                               (string-append "/" (string-remove-suffix ".gmi" filename))))
                                   (gemtext-files-in-directory "topics")))
- #:web-css "/style.css"
  #:web-files (cons* (file "style.css"
                           (copier "style.css"))
                     (filter-map (lambda (filename)
@@ -52,7 +57,8 @@
                                                         "README.gmi")))
                                     (file (replace-extension filename "html")
                                           (gemtext-exporter filename
-                                                            (genenetwork-gemtext-reader filename))))
+                                                            #:reader (genenetwork-gemtext-reader filename)
+                                                            #:engine %engine)))
                                    ((or (string-suffix? ".jpg" filename)
                                         (string-suffix? ".png" filename)
                                         (string-suffix? ".svg" filename))
