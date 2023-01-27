@@ -26,7 +26,6 @@
          ,@body)))))
 
 (tissue-configuration
- #:project "GeneNetwork issue tracker"
  #:aliases '(("Alexander Kabui" "Alexander" "alex" "alexk")
              ("Arun Isaac" "aruni")
              ("BonfaceKilz" "Bonface Kilz" "bonfacem")
