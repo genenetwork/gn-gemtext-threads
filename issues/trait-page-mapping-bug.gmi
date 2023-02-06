@@ -1,0 +1,15 @@
+# Bug when a user quickly clicks "Compute" for mapping on the trait page
+
+## Tags
+
+* assigned: zsloan
+* type: bug
+* priority: high
+* status: ongoing
+* keywords: mapping, trait-page
+
+## Description
+
+The user sometimes gets a 405 error when they click the "Compute" button on the trait page. This is because the page needs to fully load in beforehand, which can take up to a couple seconds.
+
+I'm not sure how best to address this. The most simple option would be to have the Compute button be greyed out until all the JS is finished loading. I'll probably do this for now, since I'm not sure how else to address the issue of the DataTable needing to load in (since it needs to be in the DOM in order for the sample values to be used in mapping).
