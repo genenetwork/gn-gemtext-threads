@@ -79,7 +79,7 @@ it should give a Permission denied (publickey).
 On the drop server you can track messages by
 
 ```
-tail -40 /var/log/auth.log
+n0tail -40 /var/log/auth.log
 ```
 
 Next
@@ -104,13 +104,15 @@ drwx------ 3 bacchus bacchus 4096 Oct 21 02:26 /export/backup/bacchus/drop
 So, as root
 
 ```
-mkdir -p /export/backup/bacchus/drop
-chown bacchus.bacchus /export/backup/bacchus/drop/
-chmod 0700 /export/backup/bacchus/drop/
+cd /export
+mkdir -p backup/bacchus/drop
+chown bacchus.bacchus backup/bacchus/drop/
+chmod 0700 backup/bacchus/drop/
 ```
 
-If auth.log says error: /dev/pts/11: No such file or directory on ssh we are good to go!
-Next use sshfs
+If auth.log says error: /dev/pts/11: No such file or directory on ssh, or received disconnect (...) disconnected by user we are good to go!
+
+Next try sshfs
 
 ```
 su ibackup
@@ -147,3 +149,7 @@ It may be useful to add the following options to sshfs:
 ```
 sshfs -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,IdentityFile=~/.ssh/id_ecdsa_backup ...
 ```
+
+The recent scripts can be found at
+
+=> https://github.com/genenetwork/gn-deploy-servers/blob/master/scripts/tux01/backup_drop.sh

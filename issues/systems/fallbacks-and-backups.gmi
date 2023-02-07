@@ -2,6 +2,10 @@
 
 As a hurricane is barreling towards our machine room in Memphis we are checking our fallbacks and backups for GeneNetwork. For years we have been making backups on Amazon - both S3 and a running virtual machine. The latter was expensive, so I replaced it with a bare metal server which earns itself (if it hadn't been down for months, but that is a different story).
 
+See also
+
+=> restore-backups.gmi
+
 ## Tags
 
 * type: enhancement

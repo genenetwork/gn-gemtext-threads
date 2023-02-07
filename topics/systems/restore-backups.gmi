@@ -1,0 +1,37 @@
+# Restore backup
+
+## Borg
+
+We use borg backups. Load a recent borg, for example from my profile
+
+```
+source /home/wrk/opt/borg/etc/profile
+```
+
+
+The backup passphrase needs to be set.
+
+```
+source /home/ibackup/.borg-pass
+```
+
+Now run against a repo on 'tux02'
+
+```
+borg list /export3/backup/tux01/borg/borg-tux01/
+borg-backup-mariadb-20221004-03:13-Tue Mon, 2022-10-03 22:13:11
+```
+
+The last backup on 'tux02' is from October 2022 - after I did a reinstall. That is not great.
+
+According to sheepdog the drops are happening to 'space' and 'epysode', but 'tux02' is missing:
+
+=> https://rabbit.genenetwork.org/sheepdog/index.html
+
+## Mariadb
+
+The first step is to find where the current mariadb is running. This will be a symlink in /var/lib/mysgl -> some dir.
+
+We typically run the database on an nvme partition. Check if there is enough space(!). It may be you need to remove the old database after making a backup (if it is not in borg).
+
+Next, find the backup. Typically it is in /export/backup
