@@ -32,6 +32,66 @@ According to sheepdog the drops are happening to 'space' and 'epysode', but 'tux
 
 The first step is to find where the current mariadb is running. This will be a symlink in /var/lib/mysgl -> some dir.
 
+```
+mysql -> /export2/mysql/borg-backup-mariadb-20211024-03:09-Sun
+```
+
 We typically run the database on an nvme partition. Check if there is enough space(!). It may be you need to remove the old database after making a backup (if it is not in borg).
 
-Next, find the backup. Typically it is in /export/backup
+Next, find the backup. Typically it is symlinked from /export/backup. On
+
+```
+tux02:/export5/backup/bacchus/drop/tux01
+```
+
+### Unpack from backup
+
+We need a place to unpack the DB. On tux02 export5 is large, so let's try that and pick the last backup
+
+```
+cd /export5/mysql
+tux02:/export5/mysql# borg list /export5/backup/bacchus/drop/tux01/borg-tux01
+borg extract --progress /export5/backup/bacchus/drop/tux01/borg-tux01::borg-backup-mariadb-20230207-02:31-Tue
+```
+
+As it happened, this was an incomplete backup! Check original size with
+
+```
+borg info --last 3 /export5/backup/bacchus/drop/tux01/borg-tux01
+```
+
+so I went with
+
+```
+borg extract --progress /export5/backup/bacchus/drop/tux01/borg-tux01::borg-backup-mariadb-20230205-03:38-Sun
+```
+
+Mariadb's own ibdata1 is still at 100Gb. Too large, and we'll muck it out at some point. The total mariadb database at this point is 430Gb.
+
+### Move DB in place
+
+To move the new DB in place we first have to stop mariadb, move the old database out of the way, move the new one in, and restart the DB after making sure permissions and symlink are right.
+
+Just to be sure we copy the old DB somewhere.
+
+```
+systemctl stop mariadb
+cd /export2/mysql
+cp -vau /export2/mysql/borg-backup-mariadb-20211024-03:09-Sun .
+root@tux02:/export2/mysql# cp -vau /export5/mysql/home/backup/tux01_mariadb_new/latest/* borg-backup-mariadb-20230205-03:38-Sun
+cd /var/lib
+rm mysql
+ln -s /export2/mysql/borg-backup-mariadb-20230205-03\:38-Sun mysql
+systemctl start mariadb
+systemctl status mariadb
+```
+
+Oops. Can't create test file /var/lib/mysql. We need to set permissions.
+
+```
+root@tux02:/var/lib# chown mysql.mysql mysql
+```
+
+And we are running.
+
+Next stop update genotype files.

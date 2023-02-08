@@ -1,0 +1,5 @@
+# Typical tasks
+
+## Restoring the database from backups
+
+=> ../topics/systems/restore-backups.gmi

@@ -18,7 +18,6 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 
 Now
 
-* [ ] NSF report with UTHSC
 * [+] Shelby's application and biosketch
 * [.] Check Tony's list and improve search for SNPs and Hs
 * [.] GeneNetwork paper
@@ -69,6 +68,7 @@ Later
 
 ## Done
 
+* [X] NSF report with UTHSC
 * [X] Write test for R/qtl, GEMMA and other mapping
 * [X] Fix https on tux01
 * [X] Fix Lily edit form
