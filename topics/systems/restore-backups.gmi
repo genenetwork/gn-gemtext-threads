@@ -95,3 +95,34 @@ root@tux02:/var/lib# chown mysql.mysql mysql
 And we are running.
 
 Next stop update genotype files.
+
+## Files
+
+GN has a file repo for genotype files, lmdb and such, next to MariaDB. Typically
+
+```
+root@tux02:/home/gn2/production/genotype_files# du -sh .
+38G     .
+```
+
+the backup in drop lists, for example
+
+```
+root@tux02:/export5/backup/bacchus/drop/tux01# borg list borg-genenetwork/
+borg-GN2-home-20230207-04:00-Tue     Mon, 2023-02-06 22:00:02
+borg-GN1-home-20230207-04:40-Tue     Mon, 2023-02-06 22:40:01
+borg-GN3-home-20230207-04:41-Tue     Mon, 2023-02-06 22:41:27
+borg-GN2s-home-20230207-04:41-Tue    Mon, 2023-02-06 22:41:45
+borg-ZACH-home-20230207-04:42-Tue    Mon, 2023-02-06 22:42:01
+borg-datafiles-home-20230207-04:42-Tue Mon, 2023-02-06 22:42:32
+```
+
+At this poing ZACH-home is the main dir, so this fetches all files
+
+```
+borg extract --verbose borg-genenetwork::borg-ZACH-home-20230207-04:42-Tue home/zas1024/gn2-zach/genotype_files
+```
+
+and we copy it to /home/gn2/production.
+
+We also have a separate data files 'warehouse', but that is not linked up with the webserver right now.
