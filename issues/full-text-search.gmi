@@ -14,3 +14,13 @@ Implement full text search on the dumped RDF using xapian. This may be a feature
 We also considered that virtuoso supports full text search in SPARQL. But, the query syntax is not as natural as xapian, and there may be no stemming. So, this option was rejected.
 
 => http://docs.openlinksw.com/virtuoso/rdfsparqlrulefulltext/ Virtuoso full text search
+
+## Completion
+
+An initial full text search has been implemented. This initial implementation indexes data from the SQL database and provides an API to search that index. See the index-genenetwork script and the search API implementation in the genenetwork3 repository.
+=> https://github.com/genenetwork/genenetwork3/blob/main/scripts/index-genenetwork
+=> https://github.com/genenetwork/genenetwork3/blob/main/gn3/api/search.py
+
+In the future, full text search must index RDF rather than data from SQL. Please open a new issue or reopen this issue when working on that.
+
+* closed
