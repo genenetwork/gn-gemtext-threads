@@ -1,0 +1,22 @@
+# Andrea tasks
+
+## Tags
+
+* kanban: andreag
+* assigned: andreag
+* status: in progress
+
+## Notes
+
+=> https://issues.genenetwork.org
+
+## Tasks
+
+### Meta-tasks
+
+
+* [ ] Pjotr should give root access on all nodes
+* [ ] Move /gnu to new partition on Oct01 and update nfs /etc/exports
+* [ ] /dev/sdc1 is giving errors on Oct03 (XFS)
+      - Disk /dev/sdc: 3.7 TiB, Disk model: Samsung SSD 870
+* [ ] visit all lizardfs drives, remove USB (see /etc/lizardfs; fdisk -l)

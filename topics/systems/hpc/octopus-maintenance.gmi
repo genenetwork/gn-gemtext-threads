@@ -1,0 +1,36 @@
+# Octopus Maintenance
+
+## Slurm
+
+Status of slurm
+
+```
+sinfo
+sinfo -R
+squeue
+```
+
+we have draining nodes, but no jobs running on them
+
+Reviving draining node (as root)
+
+```
+scontrol
+  update NodeName=octopus05 State=DOWN Reason="undraining"
+  update NodeName=octopus05 State=RESUME
+  show node octopus05
+```
+
+Kill time can lead to drain state
+
+```
+scontrol show config | grep kill
+UnkillableStepProgram   = (null)
+UnkillableStepTimeout   = 60 sec
+```
+
+check valid configuration with `slurmd -C` and update nodes with
+
+```
+scontrol reconfigure
+```
