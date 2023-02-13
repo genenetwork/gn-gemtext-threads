@@ -70,12 +70,12 @@ mean:7..
 
 ## Synteny search
 
-Search for results near (± 50 kbases) base 9930021 of chromosome 4 of the human species and syntenic locations in other species.
+Search for results near (+/- 50 kbases) base 9930021 of chromosome 4 of the human species and syntenic locations in other species.
 ```
 Hs:chr4:9930021
 ```
 
-Search for results near (± 50 kbases) base 9930021 of chromosome 4 of the human species and syntenic locations in mouse alone.
+Search for results near (+/- 50 kbases) base 9930021 of chromosome 4 of the human species and syntenic locations in mouse alone.
 ```
 Hs:chr4:9930021 species:mouse
 ```
