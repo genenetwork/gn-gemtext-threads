@@ -1,0 +1,7 @@
+# Default search query in search field
+
+* assigned: alex
+
+On a search results page such as
+=> https://cd.genenetwork.org/gsearch?type=gene&terms=cytochrome+NOT+P450
+the current query should be in the search field by default. This will let the user quickly edit the search query and rerun the search. Currently, the search field is empty by default and the user has to retype the entire search query or copy-paste it from somewhere. This is very frustrating user experience.
