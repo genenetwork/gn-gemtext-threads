@@ -7,7 +7,7 @@ Implement full text search on the dumped RDF using xapian. This may be a feature
 
 * assigned: aruni, bonfacem
 
-* [ ] Add type hinting to the index-genenetwork script in gn3
+* [x] Add type hinting to the index-genenetwork script in gn3
 
 ## Virtuoso full text search
 
