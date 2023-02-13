@@ -1,6 +1,6 @@
 # Xapian search queries
 
-This page documents search queries as understood by our xapian search engine (aka “the global search”).
+This page documents search queries as understood by our xapian search engine (aka "the global search").
 
 General xapian search query syntax is documented on the xapian website.
 => https://getting-started-with-xapian.readthedocs.io/en/latest/concepts/search/queryparser.html
@@ -8,22 +8,22 @@ The specifics of GeneNetwork's use of xapian differs slightly in the choice of p
 
 ## Free text search
 
-Search for the term “cytochrome” in the free text.
+Search for the term "cytochrome" in the free text.
 ```
 cytochrome
 ```
 
-Search for the term “cytochrome” and the term “P450” in the free text. Only results that have both are shown.
+Search for the term "cytochrome" and the term "P450" in the free text. Only results that have both are shown.
 ```
 cytochrome AND P450
 ```
 
-Search for occurrences of the term “cytochrome” near the term “P450” in the free text.
+Search for occurrences of the term "cytochrome" near the term "P450" in the free text.
 ```
 cytochrome NEAR P450 
 ```
 
-Search for the term “cytochrome” in the free text but exclude results that have the term “P450”.
+Search for the term "cytochrome" in the free text but exclude results that have the term "P450".
 ```
 cytochrome -P450
 cytochrome NOT P450
