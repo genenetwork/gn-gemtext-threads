@@ -1,0 +1,9 @@
+# Enter key in global search field
+
+* assigned: alex
+
+In the home page, putting in a search query in the global search field and pressing the Enter key takes us to a page with search results. This is correct behaviour.
+
+But, once in the search results page, putting in a search query and pressing the Enter key does nothing. You have to click the "Search All" button to get a response. For example, put in a search query at
+=> https://cd.genenetwork.org/gsearch?type=gene&terms=cytochrome+NOT+P450
+and try pressing the Enter key.
