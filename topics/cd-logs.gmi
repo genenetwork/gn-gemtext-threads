@@ -1,0 +1,6 @@
+# Continuous Deployment logs
+
+The logs of the continuously deployed development instances of genenetwork may be found at /export2/guix-containers/genenetwork/var/log/cd in tux02.
+
+This documentation may be out of date. So, if you can't find the logs on that path, read the container building script and look in the path that is mounted at /var/log/cd in the container.
+=> https://github.com/genenetwork/genenetwork-machines/blob/main/genenetwork-development-deploy.sh
