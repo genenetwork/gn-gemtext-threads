@@ -1,0 +1,10 @@
+# Support searching using SNP names
+
+* tags: enhancement
+
+SNPs are named in an rs### form (for example, rs429358).
+=> https://en.wikipedia.org/wiki/Single-nucleotide_polymorphism#Nomenclature
+We should permit the user to search genenetwork using these SNP names. Currently, we only permit searching using explicit coordinates (for example, "chr:19 position:44908684"). The user has to look up the SNP name in an external database and resolve it to coordinates before searching. This is a needless extra step and can be automated.
+
+Implementing this will require us to have a database (perhaps dbSNP) of all SNP names somewhere in GeneNetwork.
+=> https://en.wikipedia.org/wiki/DbSNP dbSNP
