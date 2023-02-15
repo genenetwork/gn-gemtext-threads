@@ -77,6 +77,24 @@ MariaDB [db_webqtl]> show open tables where in_use > 1;
 11 rows in set (0.001 sec)
 ```
 
+```
+MariaDB [db_webqtl]> show open tables where in_use > 1;
++-----------+----------------+--------+-------------+
+| Database  | Table          | In_use | Name_locked |
++-----------+----------------+--------+-------------+
+| db_webqtl | ProbeFreeze    |    191 |           0 |
+| db_webqtl | ProbeSet       |      6 |           0 |
+| db_webqtl | ProbeSetXRef   |      6 |           0 |
+| db_webqtl | PublishFreeze  |     13 |           0 |
+| db_webqtl | Species        |    106 |           0 |
+| db_webqtl | Tissue         |    106 |           0 |
+| db_webqtl | ProbeSetFreeze |      6 |           0 |
+| db_webqtl | InbredSet      |    132 |           0 |
+| db_webqtl | GenoFreeze     |     13 |           0 |
++-----------+----------------+--------+-------------+
+9 rows in set (0.001 sec)
+```
+
 In the error log we seeing a lot of
 
 ```
