@@ -584,6 +584,442 @@ On Penguin2 we are already runing ProbeSetData as
 
 which is pretty massive! It includes the index, which is 180G, so the difference is not that great. Also we should try a 4kb page size. Also make sure to enable innodb_file_per_table.
 
+## Updating tux01
+
+With a recent update the following tables appeared to lock up:
+ProbeSet, ProbeSetFreeze, ProbeSetXRef. All of them small, so let's move them to innodb.
+
+```
+select count(*) from ProbeSetFreeze limit 2;
++----------+
+| count(*) |
++----------+
+|      931 |
++----------+
+SHOW CREATE TABLE ProbeSetFreeze;
+CREATE TABLE `ProbeSetFreeze` (
+  `Id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  `ProbeFreezeId` smallint(5) unsigned NOT NULL DEFAULT 0,
+  `AvgID` smallint(5) unsigned NOT NULL DEFAULT 0,
+  `Name` varchar(40) DEFAULT NULL,
+  `Name2` varchar(100) NOT NULL DEFAULT '',
+  `FullName` varchar(100) NOT NULL DEFAULT '',
+  `ShortName` varchar(100) NOT NULL DEFAULT '',
+  `CreateTime` date NOT NULL DEFAULT '0000-00-00',
+  `OrderList` int(5) DEFAULT NULL,
+  `public` tinyint(4) NOT NULL DEFAULT 0,
+  `confidentiality` tinyint(4) NOT NULL DEFAULT 0,
+  `AuthorisedUsers` varchar(300) NOT NULL,
+  `DataScale` varchar(20) NOT NULL DEFAULT 'log2',
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `FullName` (`FullName`),
+  UNIQUE KEY `Name` (`Name`),
+  KEY `NameIndex` (`Name2`)
+) ENGINE=MyISAM AUTO_INCREMENT=1054 DEFAULT CHARSET=latin1
+```
+
+There is a primary key. Good.
+
+ALTER TABLE ProbeSetSE
+  ADD PRIMARY KEY(DataId,StrainId);
+Query OK, 688744613 rows affected (15 min 13.830 sec)
+Records: 688744613  Duplicates: 0  Warnings: 0
+```
+
+Unsurprisingly the index grew
+
+```
+-rw-rw---- 1 mysql mysql  16G Dec 28 11:06 ProbeSetSE.MYI
+```
+
+### Change charset
+
+```
+MariaDB [db_webqtl]> SHOW CHARACTER SET LIKE 'utf8mb4';
++---------+---------------+--------------------+--------+
+| Charset | Description   | Default collation  | Maxlen |
++---------+---------------+--------------------+--------+
+| utf8mb4 | UTF-8 Unicode | utf8mb4_general_ci |      4 |
++---------+---------------+--------------------+--------+
+1 row in set (0.000 sec)
+```
+
+```
+MariaDB [db_webqtl]> ALTER TABLE ProbeSetSE CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+Stage: 2 of 2 'Enabling keys'      0% of stage done
+Query OK, 688744613 rows affected (15 min 14.380 sec)
+Records: 688744613  Duplicates: 0  Warnings: 0
+```
+
+For this table it has no effect since there are not text fields. Still this looks good:
+
+```
+SHOW CREATE TABLE ProbeSetSE;
+| ProbeSetSE | CREATE TABLE "ProbeSetSE" (
+  "DataId" int(10) unsigned NOT NULL DEFAULT 0,
+  "StrainId" smallint(5) unsigned NOT NULL DEFAULT 0,
+  "error" float NOT NULL,
+  PRIMARY KEY ("DataId","StrainId"),
+  UNIQUE KEY "DataId" ("DataId","StrainId")
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 |
+```
+
+Looking good! Now there are two indexes which are the same to
+
+```
+MariaDB [db_webqtl]> DROP INDEX DataId ON ProbeSetSE;
+```
+
+```
+MariaDB [db_webqtl]> show index from ProbeSetSE;
+2 rows in set (0.000 sec)
+```
+
+
+### Convert to innodb
+
+So, on to converting to innodb
+
+=> https://mariadb.com/kb/en/converting-tables-from-myisam-to-innodb/
+
+=> https://dataedo.com/kb/query/mysql/list-innodb-tables Show existing innodb tables
+
+Unfortunately we can't swith to 4k page tables because we have existing tables. We'll do that later some day in a controlled fashion.
+
+```
+MariaDB [db_webqtl]> ALTER TABLE ProbeSetSE ENGINE = InnoDB;
+Query OK, 688744613 rows affected (1 hour 51 min 36.273 sec)
+Records: 688744613  Duplicates: 0  Warnings: 0
+```
+
+2 hours for a lousy table conversion!
+
+The new file sizes are:
+
+```
+-rw-rw---- 1 mysql mysql 1.5K Dec 28 11:33 ProbeSetSE.frm
+-rw-rw---- 1 mysql mysql  51G Dec 28 13:25 ProbeSetSE.ibd
+```
+
+So the has tripled (including a new index) and during conversion it has both the old and the new on disk. I'll need to make space for this baby.
+
+Let's try OPTIMIZE
+
+```
+OPTIMIZE NO_WRITE_TO_BINLOG TABLE ProbeSetSE;
+```
+
+Ah, now the size is similar to myisam and loading the mapping page is slighty faster.
+
+## Run tests again
+
+What about performance?
+
+```
+MariaDB [db_webqtl]> select count(*) from ProbeSetSE where strainid<20 and error<0.10;
++----------+
+| count(*) |
++----------+
+| 61625074 |
++----------+
+1 row in set (3 min 22.958 sec)
+```
+
+Whoah. 3 times slower - which makes sense if you know the physical size of the data. Full table scans should be rare, but we need to make sure we don't slow them down that much!
+
+Again I exported the CSV from
+
+=> http://genenetwork.org/show_trait?trait_id=1427571_at&dataset=HC_M2_0606_P
+
+It took the server 1.46351s seconds to process this page.
+It took your browser 2.119 second(s) to render this page
+
+and it shows practically the same results.
+
+
+## Table template
+
+Prototocol from
+
+=> ./move-to-innodb.gmi
+
+Every table update has to follow the template:
+
+### Check recent backups
+
+* [ ] ascertain there is a backup
+* [ ] copy original files
+
+### Make temporary table
+
+If you have enough space, you can create a copy of the actual table and do the work on that:
+
+```
+CREATE TABLE new_tbl [AS] SELECT * FROM MYTABLE;
+```
+
+Then you can change the column as desired:
+
+```
+ALTER TABLE tbl_name MODIFY COLUMN col_name BIGINT AUTO_INCREMENT;
+```
+
+Once the process is done, you can rename the tables:
+
+```
+DROP MYTABLE;
+RENAME TABLE tbl_name TO new_tbl_name, tbl_name2 TO MYTABLE;
+```
+
+### Check table structure
+
+```
+SHOW CREATE TABLE MYTABLE;
+```
+
+```
+select * from MYTABLE limit 2;
+```
+
+```
+select count(*) from MYTABLE;
+```
+
+Do this also on Penguin2.
+
+### Check GN1,2,3 code for use of table
+
+```
+rg MYTABLE --color=always |less -R
+rg MYTABLE --type=py -l|fzf --preview="rg --color=always -A 20 MYTABLE {}" --preview-window=right:85%:wrap
+```
+
+### Create test
+
+Some select statement and maybe a page of GN2.
+
+### Create primary key
+
+```
+ALTER TABLE MYTABLE
+  ADD PRIMARY KEY(col1,col2);
+```
+
+### Create indices
+
+```
+SHOW INDEX FROM MYTABLE;
+DROP INDEX ProbeSetId ON MYTABLE;
+```
+
+### Convert to innodb
+
+```
+ALTER TABLE MYTABLE ENGINE = InnoDB;
+```
+
+### Change charset
+
+```
+ALTER TABLE ProbeSetSE CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+```
+
+### Update fulltext
+
+For those cases see bottom of move-to-innodb.gmi.
+
+### Run optimiser
+
+```
+OPTIMIZE NO_WRITE_TO_BINLOG TABLE MYTABLE;
+```
+
+After running the optimiser rename the tables
+
+```
+RENAME TABLE orig TO orig_old, mytest TO orig;
+```
+
+### Check test
+
+## ProbeSetXRef
+
+=> ProbeSetXRef.gmi
+
+## Notes captured from Trello:
+
+In an earlier track I wrote how to deal with Fulltext fields
+
+pjotrp 16 Oct 2019 at 10:47
+
+Fulltext
+
+To list fulltext info for one table do:
+
+```
+select group_concat(distinct column_name) from information_schema.STATISTICS where table_schema = 'db_webqtl' and table_name = 'Probeset' and index_type = 'FULLTEXT';
+```
+
+Or
+
+```
+SHOW CREATE TABLE ProbeSet;
+
+E.g.
+
+  FULLTEXT KEY `SEARCH_GENE_IDX` (`Symbol`,`alias`),
+  FULLTEXT KEY `SEARCH_FULL_IDX` (`Name`,`description`,`Symbol`,`alias`,`GenbankId`,`UniGeneId`,`Probe_Target_Description`),
+  FULLTEXT KEY `RefSeq_FULL_IDX` (`RefSeq_TranscriptId`)
+```
+
+To see all:
+
+```
+root@tux02:/var/lib/mysql/db_webqtl# for x in ls -1 *.MYD|sed -e 's,\.MYD,,' ; do echo $x ; mysql -u webqtlout -pwebqtlout db_webqtl -e "select group_concat(distinct column_name) from information_schema.STATISTICS where table_schema = 'db_webqtl' and table_name = '$x' and index_type = 'FULLTEXT'" ; done
+```
+
+So we have to fix only
+
+```
+ProbeSet
+GeneRIF_BASIC
+pubmedsearch
+```
+
+```
+REPAIR TABLE ProbeSet QUICK;
+REPAIR TABLE GeneRIF_BASIC QUICK;
+REPAIR TABLE pubmedsearch QUICK;
+```
+
+Note that GN1 search only appears to use ProbeSet. Reindexing takes
+about 10 minutes on Tux02.
+
+After updating to ProbeSet to innodb the following query failed
+
+
+```
+SELECT distinct ProbeSet.Name as TNAME, 0 as thistable, ProbeSetXRef.Mean as TMEAN, ProbeSetXRef.LRS as TLRS, ProbeSetXRef.PVALUE as TPVALUE, ProbeSet.Chr_num as TCHR_NUM, ProbeSet.Mb as TMB, ProbeSet.Symbol as TSYMBOL, ProbeSet.name_num as TNAME_NUM FROM ProbeSetXRef, ProbeSet WHERE ((MATCH (ProbeSet.Name, ProbeSet.description, ProbeSet.symbol, alias, GenbankId, UniGeneId, Probe_Target_Description) AGAINST ('shh' IN BOOLEAN MODE)) or (MATCH (ProbeSet.symbol) AGAINST ('"Hx" "ShhNC" "9530036O11Rik" "Dsh" "Hhg1" "Hxl3" "M100081"' IN BOOLEAN MODE))) and ProbeSet.Id = ProbeSetXRef.ProbeSetId and ProbeSetXRef.ProbeSetFreezeId = 112 ORDER BY ProbeSet.symbol ASC;
+```
+
+with
+
+```
+ERROR 1191 (HY000): Can't find FULLTEXT index matching the column list
+```
+
+The shorter version works
+
+```
+SELECT distinct ProbeSet.Name as TNAME, 0 as thistable, ProbeSetXRef.Mean as TMEAN, ProbeSetXRef.LRS as TLRS, ProbeSetXRef.PVALUE as TPVALUE, ProbeSet.Chr_num as TCHR_NUM, ProbeSet.Mb as TMB, ProbeSet.Symbol as TSYMBOL, ProbeSet.name_num as TNAME_NUM FROM ProbeSetXRef, ProbeSet WHERE ((MATCH (ProbeSet.Name, ProbeSet.description, ProbeSet.symbol, alias, GenbankId, UniGeneId, Probe_Target_Description) AGAINST ('"Shh" "ShhNC" "9530036O11Rik" "Dsh" "Hhg1"' IN BOOLEAN MODE))) and ProbeSet.Id = ProbeSetXRef.ProbeSetId and ProbeSetXRef.ProbeSetFreezeId = 112;
+```
+
+when you remove any column in the MATCH statement we get this
+error. Which kinda makes sense I suppose. We need to add an index
+for the single ProbeSet.symbol match. Create it with
+
+```
+CREATE FULLTEXT INDEX ft_ProbeSet_Symbol ON ProbeSet(Symbol);
+```
+
+Now we have
+
+```
+FULLTEXT KEY `SEARCH_GENE_IDX` (`Symbol`,`alias`),
+FULLTEXT KEY `SEARCH_FULL_IDX` (`Name`,`description`,`Symbol`,`alias`,`GenbankId`,`UniGeneId`,`Probe_Target_Description`),
+FULLTEXT KEY `RefSeq_FULL_IDX` (`RefSeq_TranscriptId`),
+FULLTEXT KEY `ft_ProbeSet_Symbol` (`Symbol`)
+```
+
+and the query works.
+
+pjotrp 16 Oct 2019 at 09:24 (edited)
+
+Full text search is the least straightforward, see
+
+and
+
+Now for ProbeSet - one of the critical locked tables we need this.
+
+pjotrp 15 Oct 2019 at 16:38 (edited)
+
+```
+time mysqlcheck -c -u webqtlout -pwebqtlout db_webqtl
+db_webqtl.Docs
+warning : 1 client is using or hasn't closed the table properly
+status : OK
+
+real 16m52.567s
+```
+
+## Convert to InnoDB
+
+The largest tables are
+
+```
+1.6G Aug 27  2019 Probe.MYD
+2.1G Aug 27  2019 LCorrRamin3.MYD
+2.1G Dec  4 22:15 ProbeSetXRef.MYD
+2.3G Dec 18 14:56 ProbeSet.MYD
+2.6G Aug 27  2019 ProbeSE.MYD
+7.1G Nov  2 05:07 ProbeSetSE.MYD
+8.3G Aug 28  2019 SnpPattern.MYD
+ 11G Aug 27  2019 ProbeData.MYD
+ 11G May 22  2020 GenoData.MYD
+ 11G Aug 27  2019 SnpAll.MYD
+ 63G Dec  4 22:15 ProbeSetData.MYD
+```
+
+On Penguin2 we are already runing ProbeSetData as
+
+```
+238G Jul 10  2020 ProbeSetData.ibd
+```
+
+which is pretty massive! It includes the index, which is 180G, so the difference is not that great. Also we should try a 4kb page size. Also make sure to enable innodb_file_per_table.
+
+## Updating tux01
+
+With a recent update the following tables appeared to lock up:
+ProbeSet, ProbeSetFreeze, ProbeSetXRef. All of them small, so let's move them to innodb.
+
+```
+select count(*) from ProbeSetFreeze limit 2;
++----------+
+| count(*) |
++----------+
+|      931 |
++----------+
+SHOW CREATE TABLE ProbeSetFreeze;
+CREATE TABLE `ProbeSetFreeze` (
+  `Id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  `ProbeFreezeId` smallint(5) unsigned NOT NULL DEFAULT 0,
+  `AvgID` smallint(5) unsigned NOT NULL DEFAULT 0,
+  `Name` varchar(40) DEFAULT NULL,
+  `Name2` varchar(100) NOT NULL DEFAULT '',
+  `FullName` varchar(100) NOT NULL DEFAULT '',
+  `ShortName` varchar(100) NOT NULL DEFAULT '',
+  `CreateTime` date NOT NULL DEFAULT '0000-00-00',
+  `OrderList` int(5) DEFAULT NULL,
+  `public` tinyint(4) NOT NULL DEFAULT 0,
+  `confidentiality` tinyint(4) NOT NULL DEFAULT 0,
+  `AuthorisedUsers` varchar(300) NOT NULL,
+  `DataScale` varchar(20) NOT NULL DEFAULT 'log2',
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `FullName` (`FullName`),
+  UNIQUE KEY `Name` (`Name`),
+  KEY `NameIndex` (`Name2`)
+) ENGINE=MyISAM AUTO_INCREMENT=1054 DEFAULT CHARSET=latin1
+```
+
+There is a primary key. Good. You might want to check
+
+```
+mysql -uwebqtlout -pwebqtlout db_webqtl
+SHOW FULL PROCESSLIST;
+flush tables;
+ALTER TABLE ProbeSetFreeze CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+```
 
 ## Tags
 

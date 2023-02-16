@@ -34,3 +34,7 @@ check valid configuration with `slurmd -C` and update nodes with
 ```
 scontrol reconfigure
 ```
+
+## Password management
+
+AllowUsers wrk kranz@!::1,128.169.4.91 root@!::1,128.169.4.91 efraimf erikg flaviav gdama guarracino hchen heumos ibackup@!::1,128.169.4.91 junh@!::1,* wrk

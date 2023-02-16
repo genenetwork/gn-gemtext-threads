@@ -32,6 +32,7 @@ Now
 
 Later
 
+* [ ] Hao's idea for counting cis-qtl
 * [ ] Batch run GEMMA and faster file handling
 * [ ] Run any2any alignments of pathogens
 * [ ] Improve search for significant and suggestive hits
