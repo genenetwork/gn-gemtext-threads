@@ -37,4 +37,8 @@ scontrol reconfigure
 
 ## Password management
 
-AllowUsers wrk kranz@!::1,128.169.4.91 root@!::1,128.169.4.91 efraimf erikg flaviav gdama guarracino hchen heumos ibackup@!::1,128.169.4.91 junh@!::1,* wrk
+So we create a script that can deploy files from octopus01 (head node). Unfortunately ids in passwd do no match, so we can't copy those yet.
+
+See /etc/nodes for script and ssh files, sudoers (etc)
+
+Basically the root user can copy across.

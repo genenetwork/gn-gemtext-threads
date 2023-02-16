@@ -1021,6 +1021,8 @@ flush tables;
 ALTER TABLE ProbeSetFreeze CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ```
 
+This makes GN a bit snappier, it appears. Next to fix is the AccessLog because Gn1 writes to it.
+
 ## Tags
 
 * assigned: pjotr

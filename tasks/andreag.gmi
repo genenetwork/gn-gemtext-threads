@@ -15,8 +15,14 @@
 ### Meta-tasks
 
 
-* [ ] Pjotr should give root access on all nodes
+* [ ] visit all lizardfs drives, remove USB (see /etc/lizardfs; fdisk -l)
+      - look at configuration /etc/lizardfs
+      - look dmesg output (errors) dmesg --color=always |less -R
+      - /scratch and /tmp status
+      - df -h
+* [ ] check scontrol status for nodes
+* [X] Pjotr should give root access on all nodes
 * [ ] Move /gnu to new partition on Oct01 and update nfs /etc/exports
 * [ ] /dev/sdc1 is giving errors on Oct03 (XFS)
       - Disk /dev/sdc: 3.7 TiB, Disk model: Samsung SSD 870
-* [ ] visit all lizardfs drives, remove USB (see /etc/lizardfs; fdisk -l)
+* [ ] sync ids on nodes
