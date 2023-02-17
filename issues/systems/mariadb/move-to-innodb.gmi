@@ -1023,6 +1023,16 @@ ALTER TABLE ProbeSetFreeze CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_gene
 
 This makes GN a bit snappier, it appears. Next to fix is the AccessLog because Gn1 writes to it.
 
+So:
+
+```
+show create table TempData;
+ALTER TABLE TempData CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+ALTER TABLE TempData ENGINE = InnoDB;
+alter table TempData add primary key (Id);
+show create table TempData;
+```
+
 ## Tags
 
 * assigned: pjotr
