@@ -42,3 +42,13 @@ So we create a script that can deploy files from octopus01 (head node). Unfortun
 See /etc/nodes for script and ssh files, sudoers (etc)
 
 Basically the root user can copy across.
+
+## Execute binaries on mounted devices
+
+To avoid `./scratch/script.sh: Permission denied` on `device_file`:
+
+- `sudo bash`
+- `ls /scratch -l` to check where `/scratch` is
+- `vim /etc/fstab`
+- replace `noexec` with `exec` for `device_file`
+- `mount -o remount [device_file]` to remount the partition with its new configuration.
