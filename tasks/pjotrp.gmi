@@ -28,7 +28,6 @@ Now
 * [ ] Check backups of etc etc.
 * [ ] GeneNetwork consortium
 * [+] Machine room HDDs
-* [ ] Byron epigenetics paper
 
 Later
 
@@ -41,6 +40,12 @@ Later
 * [ ] RISC-V
 * [+] DOI support GN (Paris)
 * [ ] Automate tux01 restart for GN2+GN3 services
+* [ ] tux01 has unused 4TB spinning disk
+* [ ] tux02 has unused 2x4TB spinning disks and 2TB nvme /dev/nvme0n1 on adapter
+      https://www.cyberciti.biz/faq/upgrade-update-samsung-ssd-firmware/
+      apt-get install fwupd fwupdate
+      fwupdmgr get-devices
+      The previously problematic Samsung 980 Pro was basically using the 3B2QGXA7, and now Samsung has introduced a new 5B2QGXA7 firmware to fix the problem. The problem mainly affects the 2TB version of the 980 Pro
 
 ### Ongoing tasks
 

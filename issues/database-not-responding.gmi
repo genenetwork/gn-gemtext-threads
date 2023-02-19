@@ -293,3 +293,22 @@ MariaDB [db_webqtl]> SHOW VARIABLES LIKE '%timeout%';
 ```
 
 If you set wait_timeout and interactive_timeout values they get reset after a while.
+
+# Monitor connections
+
+Use the general log as described in
+
+```
+ALTER TABLE mysql.general_log ENGINE = MyISAM;
+ALTER TABLE mysql.general_log ADD INDEX (event_time);
+SET GLOBAL general_log = 'ON';
+SET GLOBAL log_output = 'TABLE';
+```
+
+and we start logging all connections and queries! Let this run for a while and we switch it off again for analysis.
+
+To stop logging
+
+```
+SET GLOBAL general_log = 'OFF';
+```
