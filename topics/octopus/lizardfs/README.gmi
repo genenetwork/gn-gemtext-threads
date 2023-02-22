@@ -1,6 +1,6 @@
 # Information about lizardfs, and some usage suggestions
 
-On the octopus cluster the lizardfs head node is on octopus01, with disks being added mainly from the other nodes. SSDs are added to the lizardfs-chunkserver.service systemd service and HDDs added to the lizardfs-chunkserver-hdd.service. The storage pool is available on all nodes at /lizardfs, with the default storage option of "slow", which corresponds to two copies of the data, both on HDDs.
+On the octopus cluster the lizardfs head node is on octopus01, with disks being added mainly from the other nodes. SSDs are added to the lizardfs-chunkserver.service systemd service and SDDs added to the lizardfs-chunkserver-hdd.service. The storage pool is available on all nodes at /lizardfs, with the default storage option of "slow", which corresponds to two copies of the data, both on SDDs.
 
 ## Interacting with lizardfs
 
@@ -71,10 +71,11 @@ Chunks deletion state:
         slow    68      15      2081    27598   201022  20      -       -       -       -       -
         fast    12603   720     1880    5377    23902   -       -       -       -       -       -
         2ssd    7984    -       -       -       -       -       -       -       -       -       -
-
 ```
 
 To query how the individual disks are filling up and if there are any errors:
+
+List all disks
 
 ```
 lizardfs-admin list-disks octopus01 9421 | less
@@ -103,7 +104,7 @@ It should be noted that any goal using erasure_coding is incredibly slow to writ
 ```
 # CHUNKS_SOFT_DEL_LIMIT = 100
 # CHUNKS_HARD_DEL_LIMIT = 250
-# CHUNKS_WRITE_REP_LIMIT = 20 
+# CHUNKS_WRITE_REP_LIMIT = 20
 # CHUNKS_READ_REP_LIMIT = 100
 ```
 

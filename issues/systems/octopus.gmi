@@ -26,3 +26,14 @@ default via 172.23.16.1 dev ens1f0np0
 172.23.16.0/21 dev eno1 proto kernel scope link src 172.23.18.68
 172.23.16.0/21 dev eno2 proto kernel scope link src 172.23.17.134
 ```
+
+# Current topology
+
+```
+ip a
+ip route
+```
+
+- Octopus01 uses eno1 172.23.18.188/21 gateway 172.23.16.1 (eno1: Link is up at 1000 Mbps)
+- Octopus02 uses eno1 172.23.17.63/21  gateway 172.23.16.1 (eno1: Link is up at 1000 Mbps)
+                      172.23.x.x

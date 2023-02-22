@@ -294,6 +294,49 @@ MariaDB [db_webqtl]> SHOW VARIABLES LIKE '%timeout%';
 
 If you set wait_timeout and interactive_timeout values they get reset after a while.
 
+# Recent crash
+
+```
+| Max_used_connections                          | 1030   |
+| Threads_connected                             | 1030   |
+
+show open tables where in_use > 1;
+
++-----------+----------------+--------+-------------+
+| Database  | Table          | In_use | Name_locked |
++-----------+----------------+--------+-------------+
+| db_webqtl | ProbeFreeze    |    182 |           0 |
+| db_webqtl | ProbeSet       |      3 |           0 |
+| db_webqtl | ProbeSetXRef   |      3 |           0 |
+| db_webqtl | PublishFreeze  |      7 |           0 |
+| db_webqtl | Species        |     94 |           0 |
+| db_webqtl | Tissue         |     94 |           0 |
+| db_webqtl | ProbeSetFreeze |      3 |           0 |
+| db_webqtl | InbredSet      |    108 |           0 |
+| db_webqtl | GenoFreeze     |      7 |           0 |
++-----------+----------------+--------+-------------+
+```
+
+```
+FLUSH NO_WRITE_TO_BINLOG TABLES
+
+Waiting for table flush SELECT confidentiality, AuthorisedUsers FROM ProbeSetFreeze WHERE Name = 'EL_BXDCDScWAT_0216' 0.000
+
+Waiting for table flush SELECT DISTINCT Tissue.Name FROM ProbeFreeze,ProbeSetFreeze, InbredSet, Tissue, Species WHERE Speci  0.000
+```
+
+Another one to check next time is
+
+```
+SHOW ENGINE INNODB STATUS
+```
+
+and
+
+```
+mariabackup --backup --kill-long-query-type=SELECT --kill-long-queries-timeout=120
+```
+
 # Monitor connections
 
 Use the general log as described in

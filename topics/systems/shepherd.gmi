@@ -8,6 +8,14 @@
 * status: wip
 * priority: unclear
 
+## Quick overview
+
+Shepherd runs in systemd as a shepherd user
+
+```
+systemctl status user-shepherd.service
+```
+
 ## Description
 
 On Debian based systems we run shepherd as a shepherd user. The service gets started up through systemd.
@@ -17,9 +25,11 @@ repository.
 
 The process for deploying the services:
 
+```
 symlink shepherd-services/shepherd to $HOME/.config/shepherd
 symlink shepherd-services/cron to $home/.config/cron
 symlink shepherd-services/*sh to $HOME
+```
 
 When shepherd starts up it should start all the services. So currently
 that's bnw, gitea, ipfs, power, rn6app, singlecell and the mcron
@@ -28,7 +38,10 @@ services, gitea-dump and pubmed.
 To use shepherd's herd command the command is 'sudo -u shepherd
 /home/shepherd/.guix-profile/bin/herd status'.
 
-: /home/shepherd/.guix-profile/bin/herd status
+```
+su shepherd
+/home/shepherd/.guix-profile/bin/herd status
+```
 
 Adding a bash alias, such as "alias herd-herd='sudo -u shepherd
 /home/shepherd/.guix-profile/bin/herd'", will make it easier to
