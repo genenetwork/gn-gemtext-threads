@@ -45,6 +45,7 @@ Later
       https://www.cyberciti.biz/faq/upgrade-update-samsung-ssd-firmware/
       apt-get install fwupd fwupdate
       fwupdmgr get-devices
+      fwupdmgr update
       The previously problematic Samsung 980 Pro was basically using the 3B2QGXA7, and now Samsung has introduced a new 5B2QGXA7 firmware to fix the problem. The problem mainly affects the 2TB version of the 980 Pro
 
 ### Ongoing tasks
