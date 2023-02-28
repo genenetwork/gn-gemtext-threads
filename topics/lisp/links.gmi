@@ -1,0 +1,3 @@
+# Lisp links
+
+* https://betterprogramming.pub/why-i-still-lisp-and-you-should-too-18a2ae36bd8?gi=101f4b169624
