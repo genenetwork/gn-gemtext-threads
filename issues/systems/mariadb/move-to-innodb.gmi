@@ -1027,8 +1027,8 @@ So:
 
 ```
 show create table TempData;
-ALTER TABLE TempData CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ALTER TABLE TempData ENGINE = InnoDB;
+ALTER TABLE TempData CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 alter table TempData add primary key (Id);
 show create table TempData;
 ```

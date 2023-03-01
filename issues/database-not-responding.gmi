@@ -306,7 +306,7 @@ show open tables where in_use > 1;
 | Database  | Table          | In_use | Name_locked |
 +-----------+----------------+--------+-------------+
 | db_webqtl | ProbeFreeze    |    182 |           0 |
-| db_webqtl | ProbeSet       |      3 |           0 |
+| db_webqtl | ProbeSet       |      3 |           0 | <- text, still latin1
 | db_webqtl | ProbeSetXRef   |      3 |           0 |
 | db_webqtl | PublishFreeze  |      7 |           0 |
 | db_webqtl | Species        |     94 |           0 |
