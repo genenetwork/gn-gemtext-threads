@@ -1,0 +1,17 @@
+# Some correlations running very slowly
+
+## Tags
+
+* assigned: zsloan, pjotrp
+* type: bug
+* priority: high
+* status: in-progress
+* keywords: correlations, database
+
+## Description
+
+Some correlations (it specifically seems to be ones done against ProbeSet databases) are running extremely slowly.
+
+After looking into this, the cause seemed to be a specific query*, which leads me to think it might be related to the recent DB changes. All the actual calculations only take a couple seconds, but then this query takes like ~80 seconds.
+
+* https://github.com/genenetwork/genenetwork2/blob/98602d24c64ffafe2c4af150236b72f77709f8de/wqflask/wqflask/correlation/rust_correlation.py#L23-L55
