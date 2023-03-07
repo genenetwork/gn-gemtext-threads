@@ -22,6 +22,20 @@ I am starting with the two SE tables first - because they are small.
 
 Actually ProbeData and ProbeSE (containing the Affy data) are not referenced in GN2. I need to check that.
 
+## Tasks
+
+* assigned: pjotrp
+* priority: high
+* status: in-progress
+* keywords: correlations, database
+
+For every table
+
+* [ ] Check for primary key
+* [ ] Check fulltext fields (see below)
+* [ ] Convert to innodb
+* [ ] Convert to utf8 and utf_general_ci (don't use utf8mb, see below)
+
 ## Report
 
 With the SQL database we need to move from myisam to innodb format,
@@ -531,13 +545,38 @@ CREATE FULLTEXT INDEX ft_ProbeSet_Symbol ON ProbeSet(Symbol);
 Now we have
 
 ```
+PRIMARY KEY ('Id'),
+UNIQUE KEY 'ProbeSetId' ('ChipId','Name'),
+KEY 'Name_IDX' ('Name'),
+KEY 'symbol_IDX' ('Symbol'),
+KEY 'RefSeq_TranscriptId' ('RefSeq_TranscriptId'),
+KEY 'GENBANK_IDX' ('GenbankId'),
+KEY 'TargetId' ('TargetId'),
+KEY 'Position' ('Chr'),
+KEY 'GeneId_IDX' ('GeneId'),
 FULLTEXT KEY 'SEARCH_GENE_IDX' ('Symbol','alias'),
-FULLTEXT KEY 'SEARCH_FULL_IDX' ('Name','description','Symbol','alias','GenbankId','UniGeneId','Probe_Target_Description'),
 FULLTEXT KEY 'RefSeq_FULL_IDX' ('RefSeq_TranscriptId'),
+FULLTEXT KEY 'SEARCH_FULL_IDX' ('Name','description','Symbol','alias','GenbankId','UniGeneId','Probe_Target_Description'),
 FULLTEXT KEY 'ft_ProbeSet_Symbol' ('Symbol')
 ```
 
 and the query works.
+
+Converting to unicode I was getting
+
+```
+Specified key was too long; max key length is 3072 bytes
+```
+
+Turned out simple utf8 worked:
+
+```
+ALTER TABLE ProbeSet CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
+```
+
+and utf8mb is not recommended. We'll need fix that FIXME. See
+
+=> https://stackoverflow.com/questions/766809/whats-the-difference-between-utf8-general-ci-and-utf8-unicode-ci
 
 pjotrp 16 Oct 2019 at 09:24 (edited)
 
