@@ -470,14 +470,11 @@ Or
 
 ```
 SHOW CREATE TABLE ProbeSet;
-
-E.g.
-
-  FULLTEXT KEY `SEARCH_GENE_IDX` (`Symbol`,`alias`),
-  FULLTEXT KEY `SEARCH_FULL_IDX` (`Name`,`description`,`Symbol`,`alias`,`GenbankId`,`UniGeneId`,`Probe_Target_Description`),
-  FULLTEXT KEY `RefSeq_FULL_IDX` (`RefSeq_TranscriptId`)
+  FULLTEXT KEY 'SEARCH_GENE_IDX' ('Symbol','alias'),
+  FULLTEXT KEY 'SEARCH_FULL_IDX' ('Name','description','Symbol','alias','GenbankId','UniGeneId','Probe_Target_Description'),
+  FULLTEXT KEY 'RefSeq_FULL_IDX' ('RefSeq_TranscriptId')
+ENGINE=MyISAM AUTO_INCREMENT=12806592 DEFAULT CHARSET=latin1
 ```
-
 To see all:
 
 ```
@@ -501,8 +498,11 @@ REPAIR TABLE pubmedsearch QUICK;
 Note that GN1 search only appears to use ProbeSet. Reindexing takes
 about 10 minutes on Tux02.
 
-After updating to ProbeSet to innodb the following query failed
+```
+ALTER TABLE ProbeSet ENGINE = InnoDB;
+```
 
+After updating to ProbeSet to innodb the following query failed
 
 ```
 SELECT distinct ProbeSet.Name as TNAME, 0 as thistable, ProbeSetXRef.Mean as TMEAN, ProbeSetXRef.LRS as TLRS, ProbeSetXRef.PVALUE as TPVALUE, ProbeSet.Chr_num as TCHR_NUM, ProbeSet.Mb as TMB, ProbeSet.Symbol as TSYMBOL, ProbeSet.name_num as TNAME_NUM FROM ProbeSetXRef, ProbeSet WHERE ((MATCH (ProbeSet.Name, ProbeSet.description, ProbeSet.symbol, alias, GenbankId, UniGeneId, Probe_Target_Description) AGAINST ('shh' IN BOOLEAN MODE)) or (MATCH (ProbeSet.symbol) AGAINST ('"Hx" "ShhNC" "9530036O11Rik" "Dsh" "Hhg1" "Hxl3" "M100081"' IN BOOLEAN MODE))) and ProbeSet.Id = ProbeSetXRef.ProbeSetId and ProbeSetXRef.ProbeSetFreezeId = 112 ORDER BY ProbeSet.symbol ASC;
@@ -531,10 +531,10 @@ CREATE FULLTEXT INDEX ft_ProbeSet_Symbol ON ProbeSet(Symbol);
 Now we have
 
 ```
-FULLTEXT KEY `SEARCH_GENE_IDX` (`Symbol`,`alias`),
-FULLTEXT KEY `SEARCH_FULL_IDX` (`Name`,`description`,`Symbol`,`alias`,`GenbankId`,`UniGeneId`,`Probe_Target_Description`),
-FULLTEXT KEY `RefSeq_FULL_IDX` (`RefSeq_TranscriptId`),
-FULLTEXT KEY `ft_ProbeSet_Symbol` (`Symbol`)
+FULLTEXT KEY 'SEARCH_GENE_IDX' ('Symbol','alias'),
+FULLTEXT KEY 'SEARCH_FULL_IDX' ('Name','description','Symbol','alias','GenbankId','UniGeneId','Probe_Target_Description'),
+FULLTEXT KEY 'RefSeq_FULL_IDX' ('RefSeq_TranscriptId'),
+FULLTEXT KEY 'ft_ProbeSet_Symbol' ('Symbol')
 ```
 
 and the query works.
@@ -597,24 +597,24 @@ select count(*) from ProbeSetFreeze limit 2;
 |      931 |
 +----------+
 SHOW CREATE TABLE ProbeSetFreeze;
-CREATE TABLE `ProbeSetFreeze` (
-  `Id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `ProbeFreezeId` smallint(5) unsigned NOT NULL DEFAULT 0,
-  `AvgID` smallint(5) unsigned NOT NULL DEFAULT 0,
-  `Name` varchar(40) DEFAULT NULL,
-  `Name2` varchar(100) NOT NULL DEFAULT '',
-  `FullName` varchar(100) NOT NULL DEFAULT '',
-  `ShortName` varchar(100) NOT NULL DEFAULT '',
-  `CreateTime` date NOT NULL DEFAULT '0000-00-00',
-  `OrderList` int(5) DEFAULT NULL,
-  `public` tinyint(4) NOT NULL DEFAULT 0,
-  `confidentiality` tinyint(4) NOT NULL DEFAULT 0,
-  `AuthorisedUsers` varchar(300) NOT NULL,
-  `DataScale` varchar(20) NOT NULL DEFAULT 'log2',
-  PRIMARY KEY (`Id`),
-  UNIQUE KEY `FullName` (`FullName`),
-  UNIQUE KEY `Name` (`Name`),
-  KEY `NameIndex` (`Name2`)
+CREATE TABLE 'ProbeSetFreeze' (
+  'Id' smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  'ProbeFreezeId' smallint(5) unsigned NOT NULL DEFAULT 0,
+  'AvgID' smallint(5) unsigned NOT NULL DEFAULT 0,
+  'Name' varchar(40) DEFAULT NULL,
+  'Name2' varchar(100) NOT NULL DEFAULT '',
+  'FullName' varchar(100) NOT NULL DEFAULT '',
+  'ShortName' varchar(100) NOT NULL DEFAULT '',
+  'CreateTime' date NOT NULL DEFAULT '0000-00-00',
+  'OrderList' int(5) DEFAULT NULL,
+  'public' tinyint(4) NOT NULL DEFAULT 0,
+  'confidentiality' tinyint(4) NOT NULL DEFAULT 0,
+  'AuthorisedUsers' varchar(300) NOT NULL,
+  'DataScale' varchar(20) NOT NULL DEFAULT 'log2',
+  PRIMARY KEY ('Id'),
+  UNIQUE KEY 'FullName' ('FullName'),
+  UNIQUE KEY 'Name' ('Name'),
+  KEY 'NameIndex' ('Name2')
 ) ENGINE=MyISAM AUTO_INCREMENT=1054 DEFAULT CHARSET=latin1
 ```
 
@@ -886,10 +886,24 @@ GeneRIF_BASIC
 pubmedsearch
 ```
 
+(probably should not try the following)
+
 ```
 REPAIR TABLE ProbeSet QUICK;
 REPAIR TABLE GeneRIF_BASIC QUICK;
 REPAIR TABLE pubmedsearch QUICK;
+```
+
+after a repair I had to
+
+```
+root@tux01:/var/lib/mysql/db_webqtl# myisamchk ProbeSet -r
+- recovering (with sort) MyISAM-table 'ProbeSet'
+Data records: 0
+- Fixing index 1
+- Fixing index 2
+- Fixing index 3
+etc
 ```
 
 Note that GN1 search only appears to use ProbeSet. Reindexing takes
