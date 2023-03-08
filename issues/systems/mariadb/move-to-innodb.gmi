@@ -36,6 +36,14 @@ For every table
 * [ ] Convert to innodb
 * [ ] Convert to utf8 and utf_general_ci (don't use utf8mb, see below)
 
+## Tags
+
+* assigned: pjotr
+* type: enhancement, documentation
+* status: unclear
+* priority: medium
+* keywords: database, mariadb, innodb
+
 ## Report
 
 With the SQL database we need to move from myisam to innodb format,
@@ -840,8 +848,7 @@ Some select statement and maybe a page of GN2.
 ### Create primary key
 
 ```
-ALTER TABLE MYTABLE
-  ADD PRIMARY KEY(col1,col2);
+ALTER TABLE MYTABLE ADD PRIMARY KEY(Id);
 ```
 
 ### Create indices
@@ -1086,10 +1093,15 @@ alter table TempData add primary key (Id);
 show create table TempData;
 ```
 
-## Tags
+## Disk space
 
-* assigned: pjotr
-* type: enhancement, documentation
-* status: unclear
-* priority: medium
-* keywords: database, mariadb, innodb
+I needed more disk space to move the largest tables note the new SSD disk is twice as slow as the old SSD:
+
+```
+/dev/nvme0n1p2:
+ Timing buffered disk reads: 364 MB in  3.00 seconds = 121.23 MB/sec
+/dev/nvme2n1p6:
+ Timing buffered disk reads: 760 MB in  3.00 seconds = 253.27 MB/sec
+```
+
+This is due to the caddy interface. Copying mariadb data is really slow. Meanwhile rsync shows a sustained 50Mbs to the new drive.

@@ -1,0 +1,13 @@
+# Testing performance
+
+See the drive specs by using the identifier
+
+```
+fdisk -l
+```
+
+For disk speeds make sure there is no load and run
+
+```
+hdparm -Ttv /dev/sdc1
+```
