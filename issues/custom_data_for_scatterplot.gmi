@@ -1,0 +1,15 @@
+## Allow Correlation Scatterplot to use edited sample data
+
+## Tags
+
+* assigned: zsloan
+* type: feature
+* priority: high
+* status: in-progress
+* keywords: scatterplot, correlation
+
+## Description
+
+Currently the correlation scatterplot just takes the two trait/dataset names as input (so the page can be linked to others). The problem with this is that it means that any edits to sample data a user does for correlations are not reflected in the scatterplots.
+
+I'm thinking of dealing with this similarly to the way I dealt with the mapping links - just using the hash as a key in Redis that is linked to the sample values, and having the key be used as in the URL instead of trait/dataset (when values have been edited).
