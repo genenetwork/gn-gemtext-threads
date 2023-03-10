@@ -1093,6 +1093,13 @@ alter table TempData add primary key (Id);
 show create table TempData;
 ```
 
+Some tables showed problems with AUTO_INCREMENT. Simply redefine the column without the attribute:
+
+```
+ALTER TABLE Chr_Length CHANGE Id Id smallint(5) UNSIGNED NOT NULL;
+```
+
+
 ## Disk space
 
 I needed more disk space to move the largest tables note the new SSD disk is twice as slow as the old SSD:
