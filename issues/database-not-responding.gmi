@@ -355,3 +355,68 @@ To stop logging
 ```
 SET GLOBAL general_log = 'OFF';
 ```
+
+# Query slowness
+
+When queries are slow they show up in MariaDB's slow log. This is a useful tool for monitoring issues. After converting tables to innodb this query slowed down to a crawl:
+
+```
+SELECT PublishXRef.Id, CAST(Phenotype.Pre_publication_description AS BINARY), CAST(Phenotype.Post_publication_description AS BINARY), Publication.Authors, Publication.Year, Publication.PubMed_ID, PublishXRef.mean, PublishXRef.LRS, PublishXRef.additive, PublishXRef.Locus, InbredSet.InbredSetCode, Geno.Chr, Geno.Mb FROM Species INNER JOIN InbredSet ON InbredSet.SpeciesId = Species.Id INNER JOIN PublishXRef ON PublishXRef.InbredSetId = InbredSet.Id INNER JOIN PublishFreeze ON PublishFreeze.InbredSetId = InbredSet.Id INNER JOIN Publication ON Publication.Id = PublishXRef.PublicationId INNER JOIN Phenotype ON Phenotype.Id = PublishXRef.PhenotypeId LEFT JOIN Geno ON PublishXRef.Locus = Geno.Name AND Geno.SpeciesId = Species.Id WHERE (((Phenotype.Post_publication_description REGEXP "[[:<:]]morphine[[:>:]]" OR Phenotype.Pre_publication_description REGEXP "[[:<:]]morphine[[:>:]]" OR Phenotype.Pre_publication_abbreviation REGEXP "[[:<:]]morphine[[:>:]]" OR Phenotype.Post_publication_abbreviation REGEXP "[[:<:]]morphine[[:>:]]" OR Phenotype.Lab_code REGEXP "[[:<:]]morphine[[:>:]]" OR Publication.PubMed_ID REGEXP "[[:<:]]morphine[[:>:]]" OR Publication.Abstract REGEXP "[[:<:]]morphine[[:>:]]" OR Publication.Title REGEXP "[[:<:]]morphine[[:>:]]" OR Publication.Authors REGEXP "[[:<:]]morphine[[:>:]]" OR PublishXRef.Id REGEXP "[[:<:]]morphine[[:>:]]") )) and PublishXRef.InbredSetId = 1 and PublishXRef.PhenotypeId = Phenotype.Id and PublishXRef.PublicationId = Publication.Id and PublishFreeze.Id = 1 ORDER BY PublishXRef.Id;
+```
+
+Initially I thought it was the mixing of innodb and myisam tables, but after converting all listed tables, the issue remained. Note I added it as a default test to sheepdog.
+
+Narrowing it down this search is also slow
+
+```
+SELECT PublishXRef.Id, CAST(Phenotype.Pre_publication_description AS BINARY), CAST(Phenotype.Post_publication_description AS BINARY), Publication.Authors, Publication.Year, Publication.PubMed_ID, PublishXRef.mean, PublishXRef.LRS, PublishXRef.additive, PublishXRef.Locus, InbredSet.InbredSetCode, Geno.Chr, Geno.Mb FROM Species INNER JOIN InbredSet ON InbredSet.SpeciesId = Species.Id INNER JOIN PublishXRef ON PublishXRef.InbredSetId = InbredSet.Id INNER JOIN PublishFreeze ON PublishFreeze.InbredSetId = InbredSet.Id INNER JOIN Publication ON Publication.Id = PublishXRef.PublicationId INNER JOIN Phenotype ON Phenotype.Id = PublishXRef.PhenotypeId LEFT JOIN Geno ON PublishXRef.Locus = Geno.Name AND Geno.SpeciesId = Species.Id WHERE Publication.Abstract LIKE "%viral%" OR Publication.Title LIKE "%viral%";
+```
+
+but this is fast
+
+```
+select * from Publication WHERE Publication.Abstract LIKE "%viral%" limit 10;
+```
+
+and this too
+
+```
+select * from Publication WHERE Publication.Abstract REGEXP "[[:<:]]viral[[:>:]]" limit 10;
+```
+
+So the pain pint must be in the joins when using REGEXP because this is fast:
+
+```
+SELECT Publication.Authors, Publication.Year, Publication.PubMed_ID FROM Species INNER JOIN InbredSet ON InbredSet.SpeciesId = Species.Id INNER JOIN PublishXRef ON PublishXRef.InbredSetId = InbredSet.Id INNER JOIN PublishFreeze ON PublishFreeze.InbredSetId = InbredSet.Id INNER JOIN Publication ON Publication.Id = PublishXRef.PublicationId INNER JOIN Phenotype ON Phenotype.Id = PublishXRef.PhenotypeId LEFT JOIN Geno ON PublishXRef.Locus = Geno.Name AND Geno.SpeciesId = Species.Id WHERE Publication.Abstract LIKE "%viral%" OR Publication.Title LIKE "%viral%";
+```
+
+and this is slow
+
+```
+SELECT PublishXRef.Id, CAST(Phenotype.Pre_publication_description AS BINARY), CAST(Phenotype.Post_publication_description AS BINARY), Publication.Authors, Publication.Year, Publication.PubMed_ID, PublishXRef.mean, PublishXRef.LRS, PublishXRef.additive, PublishXRef.Locus, InbredSet.InbredSetCode, Geno.Chr, Geno.Mb FROM Species INNER JOIN InbredSet ON InbredSet.SpeciesId = Species.Id INNER JOIN PublishXRef ON PublishXRef.InbredSetId = InbredSet.Id INNER JOIN PublishFreeze ON PublishFreeze.InbredSetId = InbredSet.Id INNER JOIN Publication ON Publication.Id = PublishXRef.PublicationId INNER JOIN Phenotype ON Phenotype.Id = PublishXRef.PhenotypeId LEFT JOIN Geno ON PublishXRef.Locus = Geno.Name AND Geno.SpeciesId = Species.Id WHERE Publication.Abstract REGEXP "[[:<:]]viral[[:>:]]" OR Publication.Title LIKE "%viral%";
+```
+
+Now Publication lacks text search indices
+
+```
+| Publication | CREATE TABLE Publication (
+  Id int(10) NOT NULL AUTO_INCREMENT,
+  PubMed_ID int(10) unsigned DEFAULT NULL,
+  Abstract mediumtext DEFAULT NULL,
+  Authors mediumtext NOT NULL,
+  Title varchar(255) DEFAULT NULL,
+  Journal varchar(255) DEFAULT NULL,
+  Volume varchar(255) DEFAULT NULL,
+  Pages varchar(255) DEFAULT NULL,
+  Month varchar(255) DEFAULT NULL,
+  Year varchar(255) NOT NULL DEFAULT '0',
+  PRIMARY KEY (Id),
+  UNIQUE KEY Name (PubMed_ID)
+) ENGINE=InnoDB AUTO_INCREMENT=38639 DEFAULT CHARSET=utf8mb4 |
+```
+
+and we may want to introduce FULLTEXT search
+
+=> https://mariadb.com/kb/en/full-text-index-overview/
+
+but that requires introducing a MATCH command. FULLTEXT index breaks fields into keywoard which will accelerate search.
