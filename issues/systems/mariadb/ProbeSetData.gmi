@@ -12,13 +12,16 @@
 
 This is by far the largest table (~200Gb). I need to add disk space to be able to host it on the NVME and move stuff around. Final move is GN2 code and we have over 400Gb free.
 
-This time I failed porting to InnoDB. Next time:
+This time I failed porting to InnoDB (see Migration below):
 
-* [ ] Move database to large drive
-* [ ] Run second instance of mariadb, upgrade too
-* [ ] Export a small version of ISAM to ISAM
+* [ ] Move database to larger drive
+* [ ] Run second instance of mariadb using a Guix container, upgrade too?
+* [ ] Stop binary log
+* [ ] Drop the indices
 * [ ] Try different sizes of innodb exports
 * [ ] Make (ordered) conversion and test performance
+* [ ] Rebuild indices
+* [ ] Restart binary log
 * [ ] Muck out ibdata1 and transaction logs
 
 I disabled these and they need to be restored:
@@ -61,7 +64,6 @@ Every table update has to follow the template:
 ## Reboot Tux01 and Tux02
 
 => ../reboot-tux01-tux02.gmi
-
 
 ## Table upgrade
 
@@ -266,6 +268,8 @@ ALTER TABLE ProbeSetData ENGINE = InnoDB;
 ALTER TABLE ProbeSetSE CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ```
 
+Use utf8 instead!
+
 ### Update fulltext
 
 For those cases see bottom of move-to-innodb.gmi.
@@ -283,6 +287,22 @@ RENAME TABLE orig TO orig_old, mytest TO orig;
 ```
 
 ### Check test
+
+## Migration (20230312)
+
+ProbeSetData is the final table that needs to be migrated to innodb. The main problem is that it is huge and transforming the table runs out of disk space. In the first step I made a borg snapshot on
+
+```
+root@tux01:/export2/backup# borg create --progress --stats borg-mariadb-snapshot::migrate1a /export/local/home/mariadb/
+```
+
+next copy the database to a new partition:
+
+```
+root@tux01:/export4/local/home/mariadb/database/db_webqtl# rsync -vaP /var/lib/mysql/db_webqtl/* . --delete --bwlimit=20M
+```
+
+Note I throttle the speed because the system can become quite unusable at full copy speed.
 
 ## Notes
 

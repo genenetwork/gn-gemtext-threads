@@ -2,7 +2,7 @@
 
 You need to set up a quick local database for development without polluting your environment.
 
-## Method 1 (Using Guix)
+## Method 1 (Using Guix system containers)
 
 Setting up mariadb in a Guix container is the preferred and easier method. But, you need root access to run the container. The genenetwork2 repo comes with a guix system container definition to run MariaDB and Redis. From the genenetwork2 repo, you can build and run the container using:
 ```
@@ -25,7 +25,73 @@ Since this is a develpoment server accessible only from localhost, it is ok to u
 SQL_URI="mysql://root@127.0.0.1:3306/db_webqtl_s"
 ```
 
-## Method 2 (Manual method without Guix)
+## Method 2 (running a local container)
+
+A local container runs as a normal user. It requires some juggling of dirs to load an existing database. Make sure to not run on the same dirs as another mariadb instance(!)
+
+```
+cd ~/tmp/mariadb
+mkdir var
+~/tmp/mariadb$ ~/opt/guix-pull/bin/guix shell -C -N coreutils binutils sed mariadb --expose=var
+```
+
+inside the container
+
+```
+mkdir -p /var/lib/data
+mkdir -p /var/lib/mysql
+mkdir /var/run
+```
+
+Initialize with
+
+```
+mysql_install_db
+```
+
+and run
+
+```
+mysqld_safe --datadir='./data' --user=$USER --nowatch --socket=/var/run/mysqld/mysqld.sock
+```
+
+Now from outside the container you should be able to connect with
+
+```
+stromboli:~/tmp/mariadb$ mysql --socket=var/run/mysqld/mysqld.sock
+```
+
+and
+
+```
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 3
+Server version: 10.5.12-MariaDB MariaDB Server
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| test               |
++--------------------+
+4 rows in set (0.001 sec)
+```
+
+If you need to tweak the server configuration you can load the my.cnf file with the `--defaults-file=var/my.cnf` inside and outside the container.
+
+
+
+
+## Method 3 (Manual method without Guix)
+
+/This is not recommended/
 
 * An assumption is made that the GeneNetwork2 profile is in ~/opt/gn_profiles/gn2_latest for the purposes of this documentation. Please replace as appropriate.
 * We install the database files under ~/genenetwork/mariadb. Change as appropriate.
