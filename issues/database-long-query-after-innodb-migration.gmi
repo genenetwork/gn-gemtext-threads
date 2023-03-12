@@ -1,0 +1,133 @@
+# slow text search query
+
+A slow query turned out to do a join on latin1 and utf8 columns. That was
+very slow!
+
+The query contains
+
+```
+WHERE (((Phenotype.Post_publication_description
+LIKE "%liver%" OR Phenotype.Pre_publication_description LIKE "%liver%" OR
+Phenotype.Pre_publication_abbreviation LIKE "%liver%" OR
+Phenotype.Post_publication_abbreviation LIKE "%liver%" OR
+Phenotype.Lab_code LIKE "%liver%" OR Publication.PubMed_ID LIKE "%liver%"
+OR Publication.Abstract LIKE "%liver%" OR Publication.Title LIKE "%liver%"
+OR Publication.Authors LIKE "%liver%" OR PublishXRef.Id LIKE "%liver%") ))
+```
+
+Below page describes the issue. Essentially an index won't help and
+mariadb will scan the whole file for every query. Not good.
+
+=> https://stackoverflow.com/questions/2042269/how-to-speed-up-select-like-queries-in-mysql-on-multiple-columns
+
+This is a typical candidate for FULLTEXT searches where we do a multi
+match against the larger fields, e.g.
+
+    Add a full text index on the columns that you need:
+
+        ALTER TABLE table ADD FULLTEXT INDEX index_table_on_x_y_z (x, y, z);
+
+    Then query those columns:
+
+        SELECT * FROM table WHERE MATCH(x,y,z) AGAINST("text")
+
+I think we can try creating a fulltext for index for Abstract, Title
+and Authors - since these are longer strings.
+
+Again, I note we are doing this the wrong way. We'll unify xapian -
+have you seen how fast that is? But Arun and I need more time to get
+the menu search in place.
+
+So, let's try some things.
+
+```
+ALTER TABLE Publication ADD FULLTEXT INDEX index_table (Title, Abstract, Authors);
+SELECT * FROM Publication WHERE MATCH(Title, Abstract, Authors) AGAINST("diabetes");
+```
+
+renders 23 rows in 0.001 seconds. The combined is still slow, so let's check the Phenotype table too. It has
+
+```
+Phenotype.Post_publication_description
+Phenotype.Pre_publication_description
+Phenotype.Pre_publication_abbreviation
+Phenotype.Post_publication_abbreviation
+Phenotype.Lab_code
+Publication.PubMed_ID
+```
+
+not sure why we need most of these, but let's create an index
+
+```
+ALTER TABLE Phenotype ADD FULLTEXT INDEX index_table (Post_publication_description,Pre_publication_description,Pre_publication_abbreviation,Post_publication_abbreviation,Lab_code);
+SELECT * FROM Phenotype WHERE MATCH(Post_publication_description,Pre_publication_description,Pre_publication_abbreviation,Post_publication_abbreviation,Lab_code) AGAINST("liver");
+```
+
+and that is fast too. Let's combine these. Still slow (darn!). So it must be on the joins.
+
+```
+                INNER JOIN InbredSet ON InbredSet.'SpeciesId' =
+ Species.'Id'
+                 INNER JOIN PublishXRef ON PublishXRef.'InbredSetId' =
+ InbredSet.'Id'
+                 INNER JOIN PublishFreeze ON PublishFreeze.'InbredSetId' =
+ InbredSet.'Id'
+                 INNER JOIN Publication ON Publication.'Id' =
+ PublishXRef.'PublicationId'
+                 INNER JOIN Phenotype ON Phenotype.'Id' =
+ PublishXRef.'PhenotypeId'
+                 LEFT JOIN Geno ON PublishXRef.Locus = Geno.Name AND
+ Geno.SpeciesId = Species.Id
+```
+
+when I remove the final left join the query is fast. That means we can focus on Geno and PublishXRef tables.
+
+First for some reason Geno was still latin1:
+
+```
+ALTER TABLE Geno CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
+```
+
+After that the search is fast.
+
+A nice search now:
+
+```
+SELECT PublishXRef.Id,
+                 CAST(Phenotype.'Pre_publication_description' AS BINARY),
+                 CAST(Phenotype.'Post_publication_description' AS BINARY),
+                 Publication.'Authors',
+                 Publication.'Year',
+                 Publication.'PubMed_ID',
+                 PublishXRef.'mean',
+                 PublishXRef.'LRS',
+                 PublishXRef.'additive',
+                 PublishXRef.'Locus',
+                 InbredSet.'InbredSetCode',
+                 Geno.'Chr',
+                 Geno.'Mb'
+                 FROM Species
+                 INNER JOIN InbredSet ON InbredSet.'SpeciesId' =
+ Species.'Id'
+                 INNER JOIN PublishXRef ON PublishXRef.'InbredSetId' =
+ InbredSet.'Id'
+                 INNER JOIN PublishFreeze ON PublishFreeze.'InbredSetId' =
+ InbredSet.'Id'
+                 INNER JOIN Publication ON Publication.'Id' =
+ PublishXRef.'PublicationId'
+                 INNER JOIN Phenotype ON Phenotype.'Id' =
+ PublishXRef.'PhenotypeId'
+                 LEFT JOIN Geno ON PublishXRef.Locus = Geno.Name AND
+ Geno.SpeciesId = Species.Id
+                         WHERE (((
+ MATCH(Post_publication_description,Pre_publication_description,Pre_publication_abbreviation,Post_publication_abbreviat
+ion,Lab_code) AGAINST("liver")
+ OR Publication.PubMed_ID LIKE "%liver%"
+ OR MATCH(Title, Abstract, Authors) AGAINST("liver")
+ OR PublishXRef.Id LIKE "%liver%") ))
+                         and PublishXRef.InbredSetId = 1
+                         and PublishXRef.PhenotypeId = Phenotype.Id
+                         and PublishXRef.PublicationId = Publication.Id
+                         and PublishFreeze.Id = 1
+                         ORDER BY PublishXRef.Id
+```

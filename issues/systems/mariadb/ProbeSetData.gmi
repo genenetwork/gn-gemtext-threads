@@ -14,15 +14,16 @@ This is by far the largest table (~200Gb). I need to add disk space to be able t
 
 This time I failed porting to InnoDB (see Migration below):
 
-* [ ] Move database to larger drive
-* [ ] Run second instance of mariadb using a Guix container, upgrade too?
-* [ ] Stop binary log
-* [ ] Drop the indices
-* [ ] Try different sizes of innodb exports
+* [X] Move database to larger drive (stop Mariadb for final stage)
+* [X] Stop binary log (SET sql_log_bin = 0;)
+* [X] Run second instance of mariadb using a Guix container, upgrade too?
+* [X] Drop the indices
+* [X] Try different sizes of innodb exports
 * [ ] Make (ordered) conversion and test performance
 * [ ] Rebuild indices
-* [ ] Restart binary log
+* [ ] Test performance
 * [ ] Muck out ibdata1 and transaction logs
+* [ ] Restart binary log (SET sql_log_bin = 1;)
 
 I disabled these and they need to be restored:
 
@@ -302,7 +303,75 @@ next copy the database to a new partition:
 root@tux01:/export4/local/home/mariadb/database/db_webqtl# rsync -vaP /var/lib/mysql/db_webqtl/* . --delete --bwlimit=20M
 ```
 
-Note I throttle the speed because the system can become quite unusable at full copy speed.
+Note I throttle the speed because the system can become quite unusable at full copy speed. Next I stopped Mariadb and made sure the copy is completed. After restarding mariadb I could continue work on the copy using a guix shell instance as described in
+
+=> setting-up-local-development-database.gmi
+
+Steps were as a normal user
+
+```
+tux01:/export4/local/home/mariadb$ ~/opt/guix-pull/bin/guix pull -p ~/opt/guix-latest
+. ~/opt/guix-latest/etc/profile
+mkdir var
+guix shell -C -N coreutils sed mariadb --share=var=/var
+mysqld_safe --datadir='./database' --user=$USER --nowatch --socket=/var/run/mysqld/mysqld.sock
+mysql --socket=/var/run/mysqld/mysqld.sock -uwebqtlout -p db_webqtl
+```
+
+OK, now it is running and we can start experimenting with the table outside the main database setup. Remember we had
+
+```
+ProbeSetData | CREATE TABLE 'ProbeSetData' (
+  'Id' int(10) unsigned NOT NULL DEFAULT 0,
+  'StrainId' int(20) NOT NULL,
+  'value' float NOT NULL,
+  UNIQUE KEY 'DataId' ('Id','StrainId'),
+  KEY 'strainid' ('StrainId')
+) ENGINE=MyISAM DEFAULT CHARSET=latin1
+```
+
+```
+DROP INDEX strainid ON ProbeSetData;
+DROP INDEX DataId ON ProbeSetData;
+```
+
+of course it starts making a copy of the whole table and takes hours(!) This is why we need over 200Gb free both on the DB directory and the tempdir of the mariadb server.
+
+```
+select count(Id) from ProbeSetData;
++------------+
+| count(Id)  |
++------------+
+| 5173425135 |
++------------+
+MariaDB [db_webqtl]> select max(Id),max(StrainId) from ProbeSetData;
++----------+---------------+
+| max(Id)  | max(StrainId) |
++----------+---------------+
+| 92199993 |         71224 |
++----------+---------------+
+MariaDB [db_webqtl]> select * from ProbeSetData limit 4;
++----+----------+-------+
+| Id | StrainId | value |
++----+----------+-------+
+|  1 |        1 | 5.742 |
+|  1 |        2 | 5.006 |
+|  1 |        3 | 6.079 |
+|  1 |        4 | 6.414 |
++----+----------+-------+
+```
+
+```
+ALTER TABLE ProbeSetData MODIFY StrainId mediumint UNSIGNED NOT NULL;
+```
+
+Now the table is 58Gb without indices. Convert to innodb and add indices
+
+```
+CREATE INDEX id_index ON ProbeSetData(Id);
+ALTER TABLE ProbeSetData ENGINE = InnoDB;
+```
+
 
 ## Notes
 

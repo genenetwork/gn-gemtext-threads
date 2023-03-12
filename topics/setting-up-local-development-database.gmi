@@ -32,7 +32,7 @@ A local container runs as a normal user. It requires some juggling of dirs to lo
 ```
 cd ~/tmp/mariadb
 mkdir var
-~/tmp/mariadb$ ~/opt/guix-pull/bin/guix shell -C -N coreutils binutils sed mariadb --expose=var
+~/tmp/mariadb$ ~/opt/guix-pull/bin/guix shell -C -N coreutils sed mariadb --share=var=/var --share=/export2/tmp=/tmp
 ```
 
 inside the container
@@ -52,7 +52,8 @@ mysql_install_db
 and run
 
 ```
-mysqld_safe --datadir='./data' --user=$USER --nowatch --socket=/var/run/mysqld/mysqld.sock
+export TMPDIR=/tmp
+mysqld_safe --datadir='./database' --port=3307 --user=$USER --nowatch --socket=/var/run/mysqld/mysqld.sock
 ```
 
 Now from outside the container you should be able to connect with
