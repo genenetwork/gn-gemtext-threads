@@ -1,5 +1,7 @@
 # ProbeSetData
 
+Here we take a closer look at the ProbeSetData table and indices. At the end we have reduced the size by 25% and decided to keep the myisam format for this single table. In the future it may be replaced by lmdb or similar.
+
 ## Tags
 
 * assigned: pjotrp
@@ -19,9 +21,9 @@ This time I failed porting to InnoDB (see Migration below):
 * [X] Run second instance of mariadb using a Guix container, upgrade too?
 * [X] Drop the indices
 * [X] Try different sizes of innodb exports
-* [ ] Make (ordered) conversion and test performance
-* [ ] Rebuild indices
-* [ ] Test performance
+* [X] Make (ordered) conversion and test performance
+* [X] Rebuild indices
+* [X] Test performance
 * [ ] Muck out ibdata1 and transaction logs
 * [ ] Restart binary log (SET sql_log_bin = 1;)
 
@@ -29,7 +31,7 @@ I disabled these and they need to be restored:
 
 * [X] binary log
 * [X] backup script
-* [ ] flush db - leave that off for now
+* [X] flush db - leave that off for now
 * [X] cron system-check
 * [X] systemd MYSQLD_OPTS setting
 
@@ -373,7 +375,9 @@ CREATE INDEX strainid_index ON ProbeSetData(StrainId);
 ALTER TABLE ProbeSetData ENGINE = InnoDB;
 ```
 
-The conversion to InnoDB, annoyingly, leads to an exceedingly large file. I think we'll keep the myisam version for ProbeSetData. It does not do text comparison, so we should see no slow downs mixing with InnoDB. From this exercise I know we can reduce the size a little. Also ProbeSet can probably be made smaller by combining id+strainid where id is dataset id and perhaps even reducing the value size by compressing it into a smaller float.
+Now we are at 150Gb.
+
+The conversion to InnoDB, annoyingly, leads to an exceedingly large file. I think we'll keep the myisam version for ProbeSetData for the time being. It does not do text comparison, so we should see no slow downs mixing with InnoDB. From this exercise I know we can reduce the size a little. Also ProbeSet can probably be made smaller by combining id+strainid where id is dataset id and perhaps even reducing the value size by compressing it into a smaller float. Using lmdb may not be that beneficial because, even though the data is a vector, it will be costly to traverse by strainid. Checking the code base that does not happen much without selecting on Id first. So keys on Id may work for vectors of strain id and values. Introducing lmdb would require rewriting about 5 queries in GN1 and GN2 each.
 
 ## Notes
 
