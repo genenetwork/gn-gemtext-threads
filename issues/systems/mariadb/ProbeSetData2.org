@@ -1,0 +1,703 @@
+* Slow ProbeSetData SQL query
+
+** The case
+
+We were looking to optimize a query for correlations. On Penguin2 (standard
+drives, RAID5) the query took 1 hour. On Tux01 (solid state NVME) it took 6
+minutes. Adding an index for StrainId (see explorations below) reduced that
+query to 3 minutes - which is kinda acceptable. The real problem, however is
+that this is a quadratic search - so it will get worse quickly - and we need
+to solve it. This table has doubled in size in the last 5 years.
+
+So what does ProbeSetData contain?
+
+#+BEGIN_SRC SQL
+select * from ProbeSetData limit 5;
++----+----------+-------+
+| Id | StrainId | value |
++----+----------+-------+
+|  1 |        1 | 5.742 |
+|  1 |        2 | 5.006 |
+|  1 |        3 | 6.079 |
+|  1 |        4 | 6.414 |
+|  1 |        5 | 4.885 |
++----+----------+-------+
+#+END_SRC
+
+You can see Id is sectioned in the file (and there are not that many Ids) but
+StrainId is *distributed* through the database file and some 'StrainIds' match
+many data points. Id stands for Dataset (item) and StrainId really means
+measurement type or trait measured(!)
+
+Our query looked for 1,236,088 measurement distributed over a 53Gb file (and
+an even larger index file). Turns out the full table is read many many times
+over for one particular query pivoting on strainid...
+
+We have the following options:
+
+1. Reorder the table
+2. Use column based storage
+3. Use compression
+4. Use a different storage layout
+
+*** Reorder the table
+
+We could reorder the table on StrainID which would make this search much faster
+but it would many common (dataset) queries slower. So, that is not a great
+idea. One thing we could try is add a copy of the first table. Not exactly
+elegant but a quick fix for sure. We'll need an embedded procedure to keep it
+up-to-data.
+
+*** Use column based storage
+
+Column-based storage works when you need a subset of the data in the table. In
+this case it won't help much because, even though the pivot itself would be
+faster, we still traverse all data to get IDs and values.
+
+*** Use compression
+
+Compression reduces the size on disk and may be beneficial. Real life metrics
+on the internet don't show that much improvement, but we could try native
+compression and/or ZFS.
+
+*** Use a different storage layout
+
+My prediction is that we can not get around this.
+
+** Result
+
+The final query is shown at the bottom of 'Exploration'. It takes 2 minutes
+on Penguin2 and Tux01. Essentially I took out the joins (which parsed the same
+table repeatedly) and added an index. The trick is to keep minimizing the query.
+
+The 2 minute query will do for now and it probably is no longer quadratic.
+
+We can probably improve things in the future by changing the way ProbeSetData
+is stored.
+
+
+** Exploration
+
+In the following steps I reduce the complex case to a simple case explaining
+the performance bottleneck we are seeing today. I did not add comments, but
+you can see what I did.
+
+#+BEGIN_SRC SQL
+MariaDB [db_webqtl]> select * from ProbeSetXRef limit 2;
++------------------+------------+--------+------------+--------------------+------------+------------------+---------------------+------------+------------------+--------+--------------------+------+
+| ProbeSetFreezeId | ProbeSetId | DataId | Locus_old  | LRS_old            | pValue_old | mean             | se                  | Locus      | LRS              | pValue | additive           | h2   |
++------------------+------------+--------+------------+--------------------+------------+------------------+---------------------+------------+------------------+--------+--------------------+------+
+|                1 |          1 |      1 | 10.095.400 |   13.3971627898894 |      0.163 | 5.48794285714286 | 0.08525787814808819 | rs13480619 |  12.590069931048 |  0.269 |        -0.28515625 | NULL |
+|                1 |          2 |      2 | D15Mit189  | 10.042057464356201 |      0.431 | 9.90165714285714 |  0.0374686634976217 | rs29535974 | 10.5970737900941 |  0.304 | -0.116783333333333 | NULL |
++------------------+------------+--------+------------+--------------------+------------+------------------+---------------------+------------+------------------+--------+--------------------+------+
+2 rows in set (0.001 sec)
+#+END_SRC
+
+#+BEGIN_SRC SQL
+MariaDB [db_webqtl]> SELECT ProbeSet.Name,T4.value FROM (ProbeSet, ProbeSetXRef, ProbeSetFreeze)  left join ProbeSetData as T4 on T4.Id = ProbeSetXRef.DataId
+    ->                         and T4.StrainId=4
+    -> limit 5;
++------+-------+
+| Name | value |
++------+-------+
+| NULL | 6.414 |
+| NULL | 6.414 |
+| NULL | 6.414 |
+| NULL | 6.414 |
+| NULL | 6.414 |
++------+-------+
+#+END_SRC
+
+
+#+BEGIN_SRC SQL
+MariaDB [db_webqtl]> SELECT ProbeSet.Name,T4.value FROM (ProbeSet, ProbeSetXRef)
+  left join ProbeSetData as T4 on T4.StrainId=4 and T4.Id = ProbeSetXRef.DataId
+  WHERE ProbeSet.Id = ProbeSetXRef.ProbeSetId order by ProbeSet.Id limit 5;
++-----------+-------+
+| Name      | value |
++-----------+-------+
+| 100001_at | 6.414 |
+| 100001_at | 6.414 |
+| 100001_at | 6.414 |
+| 100001_at | 8.414 |
+| 100001_at | 8.414 |
++-----------+-------+
+5 rows in set (20.064 sec)
+#+END_SRC SQL
+
+#+BEGIN_SRC SQL
+MariaDB [db_webqtl]> SELECT ProbeSet.Name,T4.value,T5.value FROM (ProbeSet, ProbeSetXRef, ProbeSetFreeze)
+left join ProbeSetData as T4 on T4.Id = ProbeSetXRef.DataId and T4.StrainId=4
+left join ProbeSetData as T5 on T5.Id = ProbeSetXRef.DataId and T5.StrainId=5
+WHERE ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id
+and ProbeSetFreeze.Name = 'UMUTAffyExon_0209_RMA'
+and ProbeSet.Id = ProbeSetXRef.ProbeSetId
+order by ProbeSet.Id  limit 5;
+
++---------+---------+
+| Name    | value   |
++---------+---------+
+| 4331726 | 5.52895 |
+| 5054239 | 6.29465 |
+| 4642578 | 9.13706 |
+| 4398221 | 6.77672 |
+| 5543360 | 4.30016 |
++---------+---------+
+#+END_SRC
+
+#+BEGIN_SRC SQL
+SELECT ProbeSet.Name,T4.value FROM (ProbeSet, ProbeSetXRef, ProbeSetFreeze)
+left join ProbeSetData as T4 on T4.Id = ProbeSetXRef.DataId and T4.StrainId=4
+WHERE ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id
+and ProbeSetFreeze.Name = 'UMUTAffyExon_0209_RMA'
+and ProbeSet.Id = ProbeSetXRef.ProbeSetId
+order by ProbeSet.Id ;
+
+1236087 rows in set (19.173 sec)
+#+END_SRC
+
+#+BEGIN_SRC SQL
+SELECT ProbeSet.Name,T4.value FROM (ProbeSet, ProbeSetXRef, ProbeSetFreeze)
+left join ProbeSetData as T4 on T4.StrainId=4 and T4.Id = ProbeSetXRef.DataId
+WHERE ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id
+and ProbeSetFreeze.Name = 'UMUTAffyExon_0209_RMA'
+and ProbeSet.Id = ProbeSetXRef.ProbeSetId
+order by ProbeSet.Id ;
+
+1236087 rows in set (19.173 sec)
+#+END_SRC
+
+#+BEGIN_SRC SQL
+SELECT ProbeSet.Name FROM (ProbeSet, ProbeSetXRef, ProbeSetFreeze)
+WHERE ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id
+and ProbeSetFreeze.Name = 'UMUTAffyExon_0209_RMA'
+and ProbeSet.Id = ProbeSetXRef.ProbeSetId
+order by ProbeSet.Id ;
+#+END_SRC
+
+Find all the probeset 'names' (probe sequence included) for one dataset:
+
+#+BEGIN_SRC SQL
+SELECT count(DISTINCT ProbeSet.Name) FROM (ProbeSet, ProbeSetXRef, ProbeSetFreeze)          WHERE ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id                       and ProbeSetFreeze.Name = 'UMUTAffyExon_0209_RMA'            and ProbeSet.Id = ProbeSetXRef.ProbeSetId                                   order by ProbeSet.Id;
++-------------------------------+
+| count(DISTINCT ProbeSet.Name) |
++-------------------------------+
+|                       1236087 |
++-------------------------------+
+#+END_SRC
+
+Now for each of those probesets:
+
+#+BEGIN_SRC SQL
+SELECT ProbeSet.Name,T4.value FROM (ProbeSet, ProbeSetXRef)
+left join ProbeSetData as T4 on T4.StrainId=4 and T4.Id = ProbeSetXRef.DataId
+WHERE ProbeSet.Id = ProbeSetXRef.ProbeSetId
+order by ProbeSet.Id limit 5;
+#+END_SRC
+
+ProbeSetXRef contains the p-values:
+
+#+BEGIN_SRC SQL
+select * from ProbeSetXRef limit 5;
++------------------+------------+--------+------------+--------------------+------------+-------------------+---------------------+------------+------------------+--------+--------------------+------+
+| ProbeSetFreezeId | ProbeSetId | DataId | Locus_old  | LRS_old            | pValue_old | mean              | se                  | Locus      | LRS              | pValue | additive           | h2   |
++------------------+------------+--------+------------+--------------------+------------+-------------------+---------------------+------------+------------------+--------+--------------------+------+
+|                1 |          1 |      1 | 10.095.400 |   13.3971627898894 |      0.163 |  5.48794285714286 | 0.08525787814808819 | rs13480619 |  12.590069931048 |  0.269 |        -0.28515625 | NULL |
+|                1 |          2 |      2 | D15Mit189  | 10.042057464356201 |      0.431 |  9.90165714285714 |  0.0374686634976217 | rs29535974 | 10.5970737900941 |  0.304 | -0.116783333333333 | NULL |
+#+END_SRC
+
+
+#+BEGIN_SRC SQL
+SELECT count(T4.value) FROM (ProbeSet, ProbeSetXRef)
+left join ProbeSetData as T4 on T4.StrainId=4 and T4.Id = ProbeSetXRef.DataId
+WHERE ProbeSet.Id = ProbeSetXRef.ProbeSetId ;
+#+END_SRC
+
+
+#+BEGIN_SRC SQL
+SELECT count(T4.value) FROM (ProbeSet, ProbeSetXRef) left join ProbeSetData as T4 on T4.StrainId=4 limit 5;
+#+END_SRC
+
+#+BEGIN_SRC SQL
+select value from (ProbeSetData) where StrainId=4 limit 5;
+#+END_SRC
+
+So, this is the sloooow baby:
+
+#+BEGIN_SRC SQL
+select count(id) from (ProbeSetData) where StrainId=4;
+
+| ProbeSetData |          0 | DataId   |            2 | StrainId    | A         |  4852908856 |     NULL | NULL   |      | BTREE      |         |               |
+
+-rw-rw---- 1 mysql mysql  53G Mar  3 23:49 ProbeSetData.MYD
+-rw-rw---- 1 mysql mysql  66G Mar  4 03:00 ProbeSetData.MYI
+#+END_SRC
+
+#+BEGIN_SRC SQL
+create index strainid on ProbeSetData(StrainId);
+Stage: 1 of 2 'Copy to tmp table'   8.77% of stage done
+Stage: 2 of 2 'Enabling keys'      0% of stage done
+#+END_SRC
+
+#+BEGIN_SRC SQL
+MariaDB [db_webqtl]> create index strainid on ProbeSetData(StrainId);
+Query OK, 5111384047 rows affected (2 hours 56 min 25.807 sec)
+Records: 5111384047  Duplicates: 0  Warnings: 0
+#+END_SRC
+
+#+BEGIN_SRC SQL
+MariaDB [db_webqtl]> select count(id) from (ProbeSetData) where StrainId=4;
+
++-----------+
+| count(id) |
++-----------+
+|  14267545 |
++-----------+
+1 row in set (19.707 sec)
+#+END_SRC
+
+
+#+BEGIN_SRC SQL
+MariaDB [db_webqtl]> select count(*) from ProbeSetData where strainid = 140;
++----------+
+| count(*) |
++----------+
+| 10717771 |
++----------+
+1 row in set (10.161 sec)
+#+END_SRC
+
+#+BEGIN_SRC SQL
+MariaDB [db_webqtl]> select count(*) from ProbeSetData where strainid = 140 and id=4;
++----------+
+| count(*) |
++----------+
+|        0 |
++----------+
+1 row in set (0.000 sec)
+#+END_SRC
+
+#+BEGIN_SRC SQL
+MariaDB [db_webqtl]> select count(*) from ProbeSetData where strainid = 4 and id=4;
++----------+
+| count(*) |
++----------+
+|        1 |
++----------+
+1 row in set (0.000 sec)
+#+END_SRC
+
+
+#+BEGIN_SRC SQL
+select id from ProbeSetFreeze where id=1;
+
+WHERE ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id
+and ProbeSetFreeze.Name = 'UMUTAffyExon_0209_RMA'
+and ProbeSet.Id = ProbeSetXRef.ProbeSetId
+order by ProbeSet.Id  limit 5;
+#+END_SRC
+
+#+BEGIN_SRC SQL
+select count(ProbeSetId) from ProbeSetXRef where ProbeSetFreezeId=1;
++-------------------+
+| count(ProbeSetId) |
++-------------------+
+|             12422 |
++-------------------+
+1 row in set (0.006 sec)
+#+END_SRC
+
+
+#+BEGIN_SRC SQL
+select count(ProbeSetId) from (ProbeSetXRef,ProbeSetFreeze) where
+ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id
+and ProbeSetFreeze.Name = 'UMUTAffyExon_0209_RMA';
+#+END_SRC
+
+#+BEGIN_SRC SQL
+MariaDB [db_webqtl]> select count(ProbeSetId) from (ProbeSetXRef,ProbeSetFreeze) where
+    -> ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id
+    -> and ProbeSetFreeze.Name = 'UMUTAffyExon_0209_RMA';
++-------------------+
+| count(ProbeSetId) |
++-------------------+
+|           1236087 |
++-------------------+
+1 row in set (0.594 sec)
+#+END_SRC
+
+ProbeSetXRef.ProbeSetFreezeId is 206, so
+
+#+BEGIN_SRC SQL
+MariaDB [db_webqtl]> select count(ProbeSetId) from (ProbeSetXRef) where ProbeSetXRef.ProbeSetFreezeId = 206;
++-------------------+
+| count(ProbeSetId) |
++-------------------+
+|           1236087 |
++-------------------+
+1 row in set (0.224 sec)
+#+END_SRC
+
+#+BEGIN_SRC SQL
+MariaDB [db_webqtl]> select count(*) from ProbeSetData where strainid = 1 and id=4;
++----------+
+| count(*) |
++----------+
+|        1 |
++----------+
+1 row in set (0.000 sec)
+#+END_SRC
+
+Now this query is fast because it traverses the ProbeSetData table only once and uses id as a starting point:
+
+#+BEGIN_SRC SQL
+MariaDB [db_webqtl]>  select count(*) from (ProbeSetData,ProbeSetXRef) where ProbeSetXRef.ProbeSetFreezeId = 206 and id=ProbeSetId;
++----------+
+| count(*) |
++----------+
+| 10699448 |
++----------+
+1 row in set (4.429 sec)
+#+END_SRC
+
+#+BEGIN_SRC SQL
+select id,strainid,value from (ProbeSetData,ProbeSetXRef) where
+  ProbeSetXRef.ProbeSetFreezeId = 206 and id=ProbeSetId
+limit 5;
++--------+----------+-------+
+| id     | strainid | value |
++--------+----------+-------+
+| 225088 |        1 |  7.33 |
+| 225088 |        2 | 7.559 |
+| 225088 |        3 |  7.84 |
+| 225088 |        4 | 7.835 |
+| 225088 |        5 | 7.652 |
++--------+----------+-------+
+5 rows in set (0.001 sec)
+#+END_SRC
+
+
+#+BEGIN_SRC SQL
+select id,strainid,value from (ProbeSetData,ProbeSetXRef) where   ProbeSetXRef.ProbeSetFreezeId = 206 and id=ProbeSetId   and strainid=4 limit 5;
++--------+----------+-------+
+| id     | strainid | value |
++--------+----------+-------+
+| 225088 |        4 | 7.835 |
+| 225089 |        4 | 9.595 |
+| 225090 |        4 | 8.982 |
+| 225091 |        4 | 8.153 |
+| 225092 |        4 | 7.111 |
++--------+----------+-------+
+5 rows in set (0.000 sec)
+#+END_SRC
+
+#+BEGIN_SRC SQL
+select ProbeSet.name,strainid,probesetfreezeid,value from (ProbeSet,ProbeSetData,ProbeSetFreeze,ProbeSetXRef)
+where ProbeSetData.id=ProbeSetId
+  and (strainid=4 or strainid=5)
+  and ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id
+  and ProbeSet.Id = ProbeSetXRef.ProbeSetId
+  and ProbeSetFreeze.Name = 'UMUTAffyExon_0209_RMA'
+limit 5;
++---------+----------+------------------+-------+
+| name    | strainid | probesetfreezeid | value |
++---------+----------+------------------+-------+
+| 4331726 |        4 |              206 | 7.835 |
+| 5054239 |        4 |              206 | 9.595 |
+| 4642578 |        4 |              206 | 8.982 |
+| 4398221 |        4 |              206 | 8.153 |
+| 5543360 |        4 |              206 | 7.111 |
++---------+----------+------------------+-------+
+5 rows in set (2.174 sec)
+#+END_SRC
+
+No more joins and super fast!!
+
+#+BEGIN_SRC SQL
+SELECT ProbeSet.Name,T4.StrainID,Probesetfreezeid,T4.value
+FROM (ProbeSet, ProbeSetXRef, ProbeSetFreeze)
+  left join ProbeSetData as T4 on T4.StrainId=4 and T4.Id = ProbeSetXRef.DataId
+WHERE ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id
+  and ProbeSetFreeze.Name = 'UMUTAffyExon_0209_RMA'
+  and ProbeSet.Id = ProbeSetXRef.ProbeSetId
+order by ProbeSet.Id limit 5;
++---------+----------+------------------+---------+
+| Name    | StrainID | Probesetfreezeid | value   |
++---------+----------+------------------+---------+
+| 4331726 |        4 |              206 | 5.52895 |
+| 5054239 |        4 |              206 | 6.29465 |
+| 4642578 |        4 |              206 | 9.13706 |
+| 4398221 |        4 |              206 | 6.77672 |
+| 5543360 |        4 |              206 | 4.30016 |
++---------+----------+------------------+---------+
+5 rows in set (0.000 sec)
+#+END_SRC
+
+The difference is the use of ProbeSetId and DataId in ProbeSetFreeze
+
+: left join ProbeSetData as T4 on T4.StrainId=4 and T4.Id = ProbeSetXRef.DataId
+
+#+BEGIN_SRC SQL
+select ProbeSetData.id,ProbeSet.name,strainid,probesetfreezeid,value from (ProbeSet,ProbeSetData,ProbeSetFreeze,ProbeSetXRef)
+where ProbeSetData.id=ProbeSetId
+  and (strainid=4 or strainid=5)
+  and ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id
+  and ProbeSet.Id = ProbeSetXRef.ProbeSetId
+  and ProbeSetFreeze.Name = 'UMUTAffyExon_0209_RMA'
+limit 5;
++---------+----------+------------------+-------+
+| name    | strainid | probesetfreezeid | value |
++---------+----------+------------------+-------+
+| 4331726 |        4 |              206 | 7.835 |
+| 5054239 |        4 |              206 | 9.595 |
+| 4642578 |        4 |              206 | 8.982 |
+| 4398221 |        4 |              206 | 8.153 |
+| 5543360 |        4 |              206 | 7.111 |
++---------+----------+------------------+-------+
+5 rows in set (2.174 sec)
+#+END_SRC
+
+
+#+BEGIN_SRC SQL
+MariaDB [db_webqtl]> select ProbeSetData.id,ProbeSet.name,strainid,probesetfreezeid,value from (ProbeSet,ProbeSetData,ProbeSetFreeze,ProbeSetXRef)
+    where ProbeSetData.id=ProbeSetId
+      and (strainid=4 or strainid=5)
+      and ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id
+      and ProbeSet.Id = ProbeSetXRef.ProbeSetId
+      and ProbeSetFreeze.Name = 'UMUTAffyExon_0209_RMA'
+    limit 5;
++--------+---------+----------+------------------+-------+
+| id     | name    | strainid | probesetfreezeid | value |
++--------+---------+----------+------------------+-------+
+| 225088 | 4331726 |        4 |              206 | 7.835 |
+| 225089 | 5054239 |        4 |              206 | 9.595 |
+| 225090 | 4642578 |        4 |              206 | 8.982 |
+| 225091 | 4398221 |        4 |              206 | 8.153 |
+| 225092 | 5543360 |        4 |              206 | 7.111 |
++--------+---------+----------+------------------+-------+
+5 rows in set (2.085 sec)
+#+END_SRC
+
+
+#+BEGIN_SRC SQL
+MariaDB [db_webqtl]> SELECT T4.id,ProbeSet.Name,T4.StrainID,Probesetfreezeid,T4.value
+    -> FROM (ProbeSet, ProbeSetXRef, ProbeSetFreeze)
+    ->   left join ProbeSetData as T4 on T4.StrainId=4 and T4.Id = ProbeSetXRef.DataId
+    -> WHERE ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id
+    ->   and ProbeSetFreeze.Name = 'UMUTAffyExon_0209_RMA'
+    ->   and ProbeSet.Id = ProbeSetXRef.ProbeSetId
+    -> order by ProbeSet.Id limit 5;
++----------+---------+----------+------------------+---------+
+| id       | Name    | StrainID | Probesetfreezeid | value   |
++----------+---------+----------+------------------+---------+
+| 38574432 | 4331726 |        4 |              206 | 5.52895 |
+| 39254882 | 5054239 |        4 |              206 | 6.29465 |
+| 38867352 | 4642578 |        4 |              206 | 9.13706 |
+| 38637053 | 4398221 |        4 |              206 | 6.77672 |
+| 39715382 | 5543360 |        4 |              206 | 4.30016 |
++----------+---------+----------+------------------+---------+
+5 rows in set (0.001 sec)
+#+END_SRC
+
+Now you can see the difference.
+
+#+BEGIN_SRC SQL
+select ProbeSetData.id,ProbeSet.name,strainid,probesetfreezeid,value from (ProbeSet,ProbeSetData,ProbeSetFreeze,ProbeSetXRef)
+    where ProbeSetData.id=ProbeSetXRef.DataId
+      and (strainid=4 or strainid=5)
+      and ProbeSetXRef.ProbeSetFreezeId = 206
+      and ProbeSet.Id = ProbeSetXRef.ProbeSetId
+      and ProbeSet.name = '4331726'
+    limit 5;
+
++----------+---------+----------+------------------+---------+
+| id       | name    | strainid | probesetfreezeid | value   |
++----------+---------+----------+------------------+---------+
+| 38574432 | 4331726 |        4 |              206 | 5.52895 |
++----------+---------+----------+------------------+---------+
+#+END_SRC
+
+It worked!
+
+BUT IT IS SLOW for the full query. This is now due to this table being huge
+and DataID distributed through the table (sigh!).
+
+#+BEGIN_SRC SQL
+MariaDB [db_webqtl]> select count(*) from ProbeSetXRef;
++----------+
+| count(*) |
++----------+
+| 47713039 |
++----------+
+1 row in set (0.000 sec)
+#+END_SRC
+
+
+#+BEGIN_SRC SQL
+select ProbeSetData.id,ProbeSet.name,strainid,probesetfreezeid,value from (ProbeSet,ProbeSetData,ProbeSetFreeze,ProbeSetXRef)
+         where
+           ProbeSetXRef.ProbeSetFreezeId = 206
+           and ProbeSet.Id = ProbeSetXRef.ProbeSetId
+           and ProbeSetFreeze.Id = 206
+           and ProbeSetData.id=ProbeSetXRef.DataId
+           and (strainid=4 or strainid=5)
+         limit 5;
+
++----------+---------+----------+------------------+---------+
+| id       | name    | strainid | probesetfreezeid | value   |
++----------+---------+----------+------------------+---------+
+| 38549183 | 4304920 |        4 |              206 | 4.97269 |
+| 38549184 | 4304921 |        4 |              206 | 6.25133 |
+| 38549185 | 4304922 |        4 |              206 | 6.03701 |
+| 38549186 | 4304923 |        4 |              206 | 9.10316 |
+| 38549187 | 4304925 |        4 |              206 | 8.90826 |
++----------+---------+----------+------------------+---------+
+5 rows in set (23.995 sec)
+
+select count(ProbeSetId) from ProbeSetXRef where ProbeSetFreezeId = 206;
++-------------------+
+| count(ProbeSetId) |
++-------------------+
+|           1236087 |
++-------------------+
+
+select count(ProbeSet.name) from (ProbeSet,ProbeSetXRef)
+  where ProbeSetFreezeId = 206
+  and ProbeSet.Id = ProbeSetXRef.ProbeSetId;
++----------------------+
+| count(ProbeSet.name) |
++----------------------+
+|              1236087 |
++----------------------+
+1 row in set (7.126 sec)
+
+select ProbeSet.name,ProbeSetData.id from (ProbeSet,ProbeSetXRef,ProbeSetData)
+  where ProbeSetFreezeId = 206
+  and ProbeSet.Id = ProbeSetXRef.ProbeSetId
+  and ProbeSetData.id = ProbeSetXRef.DataId
+;
+
+MariaDB [db_webqtl]> select count(ProbeSetData.id) from (ProbeSet,ProbeSetXRef,ProbeSetData)   where ProbeSetFreezeId = 206   and ProbeSet.Id = ProbeSetXRef.ProbeSetId   and ProbeSetData.id = ProbeSetXRef.DataId;
++------------------------+
+| count(ProbeSetData.id) |
++------------------------+
+|              114956091 |
++------------------------+
+1 row in set (35.836 sec)
+
+select count(*) from (ProbeSet,ProbeSetXRef,ProbeSetData)   where ProbeSetFreezeId = 206   and ProbeSet.Id = ProbeSetXRef.ProbeSetId   and ProbeSetData.id = ProbeSetXRef.DataId ;
++-----------+
+| count(*)  |
++-----------+
+| 114956091 |
++-----------+
+1 row in set (35.392 sec)
+
+
+select ProbeSet.name,ProbeSetData.value from (ProbeSet,ProbeSetXRef,ProbeSetData)
+  where ProbeSetFreezeId = 206
+  and ProbeSet.Id = ProbeSetXRef.ProbeSetId
+  and ProbeSetData.id = ProbeSetXRef.DataId
+;
+
+select count(value) from (ProbeSet,ProbeSetXRef,ProbeSetData)   where ProbeSetFreezeId = 206   and ProbeSet.Id = ProbeSetXRef.ProbeSetId   and ProbeSetData.id = ProbeSetXRef.DataId and strainid=5 ;
++--------------+
+| count(value) |
++--------------+
+|      1236087 |
++--------------+
+1 row in set (14.819 sec)
+
+
+select count(value) from (ProbeSet,ProbeSetXRef,ProbeSetData)
+where ProbeSetFreezeId = 206
+  and ProbeSet.Id = ProbeSetXRef.ProbeSetId
+  and ProbeSetData.id = ProbeSetXRef.DataId
+  and ((strainid>=4 and strainid<=31) or strainid in (33,35,36,37,39,98,100,103))
+;
+
++--------------+
+| count(value) |
++--------------+
+|     43263045 |
++--------------+
+1 row in set (1 min 40.498 sec)
+
+select name,strainid,value from (ProbeSet,ProbeSetXRef,ProbeSetData)
+where ProbeSetFreezeId = 206
+  and ProbeSet.Id = ProbeSetXRef.ProbeSetId
+  and ProbeSetData.id = ProbeSetXRef.DataId
+  and ((strainid>=4 and strainid<=31) or strainid in (33,35,36,37,39,98,100,103))
+limit 5;
++---------+----------+---------+
+| name    | strainid | value   |
++---------+----------+---------+
+| 4331726 |        4 | 5.52895 |
+| 4331726 |        5 | 6.76158 |
+| 4331726 |        6 | 6.06911 |
+| 4331726 |        7 | 6.24858 |
+| 4331726 |        8 | 6.36076 |
++---------+----------+---------+
+
+select name,strainid,value from (ProbeSet,ProbeSetXRef,ProbeSetData)
+where ProbeSetFreezeId = 206
+  and ProbeSet.Id = ProbeSetXRef.ProbeSetId
+  and ProbeSetData.id = ProbeSetXRef.DataId
+  and ((strainid>=4 and strainid<=31) or strainid in (33,35,36,37,39,98,100,103))
+;
+
+#+END_SRC
+
+The final query works in 2.2 minutes on both Penguin2 and Tux01.
+
+** Original query
+
+This is the original query generated by GN2 that takes 1 hour on
+Penguin2 and 3 minutes on Tux01. Note it fetches all values for these 'traits' so essentially
+traverses the full 53GB database table (and even larger index) for each of
+them.
+
+#+BEGIN_SRC SQL
+SELECT ProbeSet.Name,T4.value, T5.value, T6.value, T7.value, T8.value, T9.value, T10.value, T11.value, T12.value, T13.value, T14.value, T15.value, T16.value, T17.value, T18.value, T19.value, T20.value, T21.value, T22.value, T23.value, T24.value, T25.value, T26.value, T28.value,
+  T29.value, T30.value, T31.value, T33.value, T35.value, T36.value, T37.value, T39.value,
+  T98.value, T100.value, T103.value FROM (ProbeSet, ProbeSetXRef, ProbeSetFreeze)
+                        left join ProbeSetData as T4 on T4.Id = ProbeSetXRef.DataId and T4.StrainId=4
+                        left join ProbeSetData as T5 on T5.Id = ProbeSetXRef.DataId and T5.StrainId=5
+                        left join ProbeSetData as T6 on T6.Id = ProbeSetXRef.DataId and T6.StrainId=6
+                        left join ProbeSetData as T7 on T7.Id = ProbeSetXRef.DataId and T7.StrainId=7
+                        left join ProbeSetData as T8 on T8.Id = ProbeSetXRef.DataId and T8.StrainId=8
+                        left join ProbeSetData as T9 on T9.Id = ProbeSetXRef.DataId and T9.StrainId=9
+                        left join ProbeSetData as T10 on T10.Id = ProbeSetXRef.DataId and T10.StrainId=10
+                        left join ProbeSetData as T11 on T11.Id = ProbeSetXRef.DataId and T11.StrainId=11
+                        left join ProbeSetData as T12 on T12.Id = ProbeSetXRef.DataId and T12.StrainId=12
+                        left join ProbeSetData as T13 on T13.Id = ProbeSetXRef.DataId and T13.StrainId=13
+                        left join ProbeSetData as T14 on T14.Id = ProbeSetXRef.DataId and T14.StrainId=14
+                        left join ProbeSetData as T15 on T15.Id = ProbeSetXRef.DataId and T15.StrainId=15
+                        left join ProbeSetData as T16 on T16.Id = ProbeSetXRef.DataId and T16.StrainId=16
+                        left join ProbeSetData as T17 on T17.Id = ProbeSetXRef.DataId and T17.StrainId=17
+                        left join ProbeSetData as T18 on T18.Id = ProbeSetXRef.DataId and T18.StrainId=18
+                        left join ProbeSetData as T19 on T19.Id = ProbeSetXRef.DataId and T19.StrainId=19
+                        left join ProbeSetData as T20 on T20.Id = ProbeSetXRef.DataId and T20.StrainId=20
+                        left join ProbeSetData as T21 on T21.Id = ProbeSetXRef.DataId and T21.StrainId=21
+                        left join ProbeSetData as T22 on T22.Id = ProbeSetXRef.DataId and T22.StrainId=22
+                        left join ProbeSetData as T23 on T23.Id = ProbeSetXRef.DataId and T23.StrainId=23
+                        left join ProbeSetData as T24 on T24.Id = ProbeSetXRef.DataId and T24.StrainId=24
+                        left join ProbeSetData as T25 on T25.Id = ProbeSetXRef.DataId and T25.StrainId=25
+                        left join ProbeSetData as T26 on T26.Id = ProbeSetXRef.DataId and T26.StrainId=26
+                        left join ProbeSetData as T28 on T28.Id = ProbeSetXRef.DataId and T28.StrainId=28
+                        left join ProbeSetData as T29 on T29.Id = ProbeSetXRef.DataId and T29.StrainId=29
+                        left join ProbeSetData as T30 on T30.Id = ProbeSetXRef.DataId and T30.StrainId=30
+                        left join ProbeSetData as T31 on T31.Id = ProbeSetXRef.DataId and T31.StrainId=31
+                        left join ProbeSetData as T33 on T33.Id = ProbeSetXRef.DataId and T33.StrainId=33
+                        left join ProbeSetData as T35 on T35.Id = ProbeSetXRef.DataId and T35.StrainId=35
+                        left join ProbeSetData as T36 on T36.Id = ProbeSetXRef.DataId and T36.StrainId=36
+                        left join ProbeSetData as T37 on T37.Id = ProbeSetXRef.DataId and T37.StrainId=37
+                        left join ProbeSetData as T39 on T39.Id = ProbeSetXRef.DataId and T39.StrainId=39
+                        left join ProbeSetData as T98 on T98.Id = ProbeSetXRef.DataId and T98.StrainId=98
+                        left join ProbeSetData as T100 on T100.Id = ProbeSetXRef.DataId and T100.StrainId=100
+                        left join ProbeSetData as T103 on T103.Id = ProbeSetXRef.DataId and T103.StrainId=103
+                        WHERE ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id
+                        and ProbeSetFreeze.Name = 'UMUTAffyExon_0209_RMA'
+                        and ProbeSet.Id = ProbeSetXRef.ProbeSetId
+                        order by ProbeSet.Id
+#+END_SRC

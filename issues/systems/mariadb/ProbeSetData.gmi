@@ -369,9 +369,11 @@ Now the table is 58Gb without indices. Convert to innodb and add indices
 
 ```
 CREATE INDEX id_index ON ProbeSetData(Id);
+CREATE INDEX strainid_index ON ProbeSetData(StrainId);
 ALTER TABLE ProbeSetData ENGINE = InnoDB;
 ```
 
+The conversion to InnoDB, annoyingly, leads to an exceedingly large file. I think we'll keep the myisam version for ProbeSetData. It does not do text comparison, so we should see no slow downs mixing with InnoDB. From this exercise I know we can reduce the size a little. Also ProbeSet can probably be made smaller by combining id+strainid where id is dataset id and perhaps even reducing the value size by compressing it into a smaller float.
 
 ## Notes
 
