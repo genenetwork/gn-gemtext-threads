@@ -5,7 +5,7 @@
 * priority: high
 * type: bug
 * assigned: zsloan, aruni
-* status: ongoing
+* status: closed
 * keywords: global search, phenotypes
 
 ## Description
