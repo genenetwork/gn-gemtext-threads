@@ -27,7 +27,7 @@
 
 (tissue-configuration
  #:aliases '(("Alexander Kabui" "Alexander" "alex" "alexk")
-             ("Arun Isaac" "aruni")
+             ("Arun Isaac" "arun" "aruni")
              ("BonfaceKilz" "Bonface Kilz" "bonfacem")
              ("Efraim Flashner" "efraimf")
              ("Erik Garrison" "erikg")
