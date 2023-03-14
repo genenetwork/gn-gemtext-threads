@@ -4,7 +4,7 @@ Annotation, assembly and liftover are recurring themes because they are tied to 
 
 # Tags
 
-* assigned: arun,pjotrp,zsloan,arthurc,robw
+* assigned: pjotrp,zsloan,arthurc,robw
 * priority: medium
 * type: enhancement
 * status: open, in progress

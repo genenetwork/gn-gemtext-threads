@@ -2,7 +2,7 @@
 
 ## Tags
 
-* assigned: pjotrp, aruni
+* assigned: pjotrp
 * status: unclear
 * priority: medium
 * type: enhancement
