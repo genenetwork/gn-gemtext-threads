@@ -1,0 +1,10 @@
+# Search for brca
+
+* assigned: arun
+
+Search for brca does not return results for brca1 and brca2. It should.
+=> https://cd.genenetwork.org/gsearch?type=gene&terms=brca
+
+The xapian stemmer does not stem brca1 to brca. That's why when one searches for brca, results for brca1 are not returned.
+
+Perhaps we should write a custom stemmer that stems brca1 to brca. But, at the same time, we should be wary of stemming terms like p450 to p. Pjotr suggests the heuristic that we look for at least 2 or 3 alphabetic characters at the beginning. Another approach is to hard-code a list of candidates to look for.
