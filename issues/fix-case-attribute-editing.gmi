@@ -1,0 +1,24 @@
+# Editing Case Attribute
+
+## Tags
+
+* assigned: bonfacem
+* type: bug
+* keywords: case attributes, data editing
+
+
+The Metadata and Data Editing Form has several issues that need to be addressed to improve user experience and functionality. The following improvements are required:
+
+* Data editing options should be more prominent and highlighted as a separate section.
+* Improve the current data editing option text, which is cryptic and unclear, to enhance user experience.
+* Include metadata (E.g. index, trait name, date of export, and user ID) in the exported file's header.
+* Ensure the index order is the same as that shown in default mode by GN.
+* Provide clearer feedback on successful submission of edited data, and fix any issues that cause incorrect or messy data after submission.
+
+UI/UX is a recurring theme in this task, and attempts have been made in the past.  This being a big issue, this should be addressed as a separate issue entirely.
+
+Other related issues:
+
+=> /issues/consecutive-crud-applications-when-uploading-data
+
+=> /issues/fix-case-attribute-work.gmi
