@@ -1,0 +1,12 @@
+# Dump GeneWiki Metadata
+
+## Tags
+
+* assigned: bonfacem
+* type: feature
+* keywords: metadata, RDF
+
+Dump the tables:
+
+* GeneRIF
+* GeneRIF_BASIC
