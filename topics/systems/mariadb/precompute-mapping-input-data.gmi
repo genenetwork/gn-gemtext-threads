@@ -1,0 +1,7 @@
+# Precompute mapping input data
+
+The original reaper precompute lives in
+
+=> https://github.com/genenetwork/genenetwork2/blob/testing/scripts/maintenance/QTL_Reaper_v6.py
+
+This script first fetches

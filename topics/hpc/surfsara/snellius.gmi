@@ -1,0 +1,103 @@
+# Snellius
+
+## Login to head node
+
+After adding your ssh key to
+
+=> https://portal.cua.surf.nl/
+
+Use `ssh user@doornode.surfsara.nl`
+
+=> https://servicedesk.surf.nl/wiki/pages/viewpage.action?pageId=30660265#FAQSnellius/Lisa-systemfromabroad login from abroad
+
+## Stats
+
+```
+sinfo -s
+PARTITION AVAIL  TIMELIMIT   NODES(A/I/O/T) NODELIST
+thin*        up 5-00:00:00     483/27/8/518 tcn[5-522]
+course       up 5-00:00:00          0/1/1/2 tcn[1,4]
+fat          up 5-00:00:00        68/4/0/72 fcn[1-72]
+gpu          up 5-00:00:00       53/14/2/69 gcn[4-72]
+gpu_vis      up 1-00:00:00       53/14/2/69 gcn[4-72]
+himem_4tb    up 5-00:00:00          0/2/0/2 hcn[1-2]
+himem_8tb    up 5-00:00:00          0/2/0/2 hcn[3-4]
+staging      up 5-00:00:00          3/4/0/7 srv[1-7]
+cbuild       up 5-00:00:00          0/2/0/2 srv[1-2]
+```
+
+## Test build
+
+```
+git clone https://github.com/smarco/WFA2-lib.git
+cd WFA2-lib/
+mkdir build
+cd build
+cmake ..
+make
+make test
+Running tests...
+Test project /home/prins/WFA2-lib/build
+    Start 1: wfa2lib
+1/1 Test #1: wfa2lib ..........................   Passed    0.16 sec
+
+100% tests passed, 0 tests failed out of 1
+```
+
+using gcc version 8.5.0 20210514.
+
+## Run a test script
+
+Write a batch script using the hints from
+
+=> https://servicedesk.surf.nl/wiki/display/WIKI/SLURM+batch+system
+
+```sh
+#!/bin/bash
+#SBATCH -t 00:01:00
+#SBATCH -N 1
+pwd
+ls -l
+```
+
+submit the job with
+
+```
+sbatch my_job.sh
+Submitted batch job 2328193
+```
+
+and
+
+```
+[prins@int5 build]$ cat slurm-2328193.out
+/gpfs/home4/prins/WFA2-lib/build
+total 622
+-rw-r--r-- 1 prins prins  17487 Feb 28 10:41 CMakeCache.txt
+drwxr-xr-x 8 prins prins   4096 Feb 28 10:42 CMakeFiles
+-rw-r--r-- 1 prins prins    545 Feb 28 10:41 CTestTestfile.cmake
+-rw-r--r-- 1 prins prins  64644 Feb 28 10:41 Makefile
+drwxr-xr-x 3 prins prins   4096 Feb 28 10:42 Testing
+-rw-r--r-- 1 prins prins   9065 Feb 28 10:41 cmake_install.cmake
+-rw-r--r-- 1 prins prins 274742 Feb 28 10:42 libwfa2.a
+lrwxrwxrwx 1 prins prins     12 Feb 28 10:42 libwfa2.so -> libwfa2.so.0
+-rwxr-xr-x 1 prins prins 185672 Feb 28 10:42 libwfa2.so.0
+-rw-r--r-- 1 prins prins  18322 Feb 28 10:42 libwfa2cpp.a
+lrwxrwxrwx 1 prins prins     15 Feb 28 10:42 libwfa2cpp.so -> libwfa2cpp.so.0
+-rwxr-xr-x 1 prins prins  27032 Feb 28 10:42 libwfa2cpp.so.0
+-rw-r--r-- 1 prins prins     55 Feb 28 10:51 my_job.sh
+-rw-r--r-- 1 prins prins     33 Feb 28 10:52 slurm-2328193.out
+JOB STATISTICS
+==============
+Job ID: 2328193
+Cluster: snellius
+User/Group: prins/prins
+State: COMPLETED (exit code 0)
+Nodes: 1
+Cores per node: 32
+CPU Utilized: 00:00:00
+CPU Efficiency: 0.00% of 00:04:16 core-walltime
+Job Wall-clock time: 00:00:08
+Memory Utilized: 1.62 MB
+Memory Efficiency: 0.00% of 56.00 GB
+```
