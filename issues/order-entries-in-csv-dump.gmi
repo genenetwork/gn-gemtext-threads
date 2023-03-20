@@ -1,0 +1,9 @@
+# Order entries in CSV dump
+
+## Tags
+
+* assigned: bonfacem
+* type: improvement
+* keywords: csv, data
+
+Order entries in the CSV dump according to how they are ordered in the genotype files.  This way, it's consistent wrt how they appear.
