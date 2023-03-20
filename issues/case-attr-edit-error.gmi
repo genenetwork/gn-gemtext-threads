@@ -27,5 +27,13 @@ When Suheeta was trying to add two new case attributes, I manually added them to
 * assigned: bonfacem, zachs
 * keywords: metadata, case-attributes
 * type: bug
-* status: stalled
 * priority: high
+
+## Resolution
+
+For now case-attribute has been disabled here:
+
+* https://github.com/genenetwork/genenetwork2/pull/773
+* https://github.com/genenetwork/genenetwork3/pull/111
+
+* closed
