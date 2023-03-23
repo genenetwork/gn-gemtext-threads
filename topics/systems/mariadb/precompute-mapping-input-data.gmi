@@ -19,6 +19,7 @@ Above is the quick win for plugging in GEMMA value. We will make sure not to rec
 
 Next:
 
+* [ ] Track metadata of computed datasets in RDF
 * [ ] Store all GEMMA values efficiently
 * [ ] Compute significance with GEMMA or other LMM (bulkLMM?)
 * [ ] Store signficance and significant values for processing

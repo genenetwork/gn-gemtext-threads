@@ -20,6 +20,8 @@ with genodb.open('/tmp/bxd') as db:
     print(genodb.column(matrix, 13))
 ```
 
+Note: Pjotr has also written an implementation with zig for mgamma.
+
 The rest of this document describes the design and layout of genodb.
 
 ## Database layout
@@ -35,7 +37,7 @@ Being a functional database, genodb can store multiple versions of the genotype 
 
 ### Encoding
 
-LMDB maps octet vector keys to octet vector values. Any data we put into a LMDB database needs to be encoded to octets. genodb supports the following three data types with their respective encodings.
+LMDB maps octet vector keys to octet vector values. Any data we put into a LMDB database needs to be encoded to octets (effectively aka bytes). genodb supports the following three data types with their respective encodings.
 
 * integer: little-endian encoded 64-bit unsigned integer
 * string: UTF-8 encoded without a terminating null character
@@ -93,3 +95,15 @@ Note that though even though genodb is a functional immutable database, the sett
 The attentive reader familiar with Guix might note the similarities between the layout of the genodb database and that of Guix's /gnu/store. Indeed, both genodb and the Guix store are functional databases. genodb happens to be realized on LMDB, and the Guix store happens to be realized on the filesystem.
 
 Storing both rows and columns of older versions of the genotype matrix is redundant since the columns can be entirely derived from the rows. This is a happenstance due to the evolution of the genotype database layout, and may be removed in the future. Indeed, in the future, the older versions of the matrix could also be stored in compressed form for more efficient storage.
+
+### More thoughts
+
+The choice of lmdb for column/row based storage is an extremely good idea! I have been writing code against it and its performance is great.
+
+The storage of both columns and rows for all *versions* of data are perhaps not necessary (as people tend to use the latest and greatest). Having one final matrix blob may also be overkill and may not work for really large datasets. I suggest to store older versions as rows (vectors) only and the current matrix as cols + rows.
+
+The hashing is a good idea, though its value may be limited on updates where changes are sparse. Nevertheless I want to retain this feature.
+
+I will modify the format to retain metadata as more free-flow JSON records. This is useful when switching between languages and allows easy adding of various attributes. There will be a global metadata record and a per matrix metadata record.
+
+We should make it a point that the RDF graph store gets updated when we change one of these files. So they can easily be found with their metadata.
