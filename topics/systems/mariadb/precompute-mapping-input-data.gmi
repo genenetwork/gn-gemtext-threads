@@ -1,7 +1,113 @@
 # Precompute mapping input data
 
+GN relies on precomputed mapping scores for search and other functionality. Here we prepare for a new generation of functionality that introduces LMMs for compute and multiple significant scores for queries.
+
+# Tags
+
+* assigned: pjotrp
+* type: precompute, gemma
+* status: in progress
+* priority: high
+* keywords: ui, correlations
+
+# Tasks
+
+* [ ] Start using GEMMA for precomputed values as a background pipeline on a different machine
+* [ ] Update the table values using GEMMA output (single highest score)
+
+Above is the quick win for plugging in GEMMA value. We will make sure not to recompute the values that are already up to date.
+
+Next:
+
+* [ ] Store all GEMMA values efficiently
+* [ ] Compute significance with GEMMA or other LMM (bulkLMM?)
+* [ ] Store signficance and significant values for processing
+* [ ] Update search & correlations to use these
+* [ ] Further optimize computations so they can run continuously in the background
+
+# Info
+
+## Original qtlreaper version
+
 The original reaper precompute lives in
 
 => https://github.com/genenetwork/genenetwork2/blob/testing/scripts/maintenance/QTL_Reaper_v6.py
 
-This script first fetches
+This script first fetches inbredsets
+
+```
+MariaDB [db_webqtl]> select Id, Name from InbredSet limit 5;
++----+----------+
+| Id | Name     |
++----+----------+
+|  1 | BXD      |
+|  2 | B6D2F2   |
+|  4 | AXBXA    |
+|  5 | AKXD     |
+|  6 | B6BTBRF2 |
++----+----------+
+```
+
+and expands them to a .geno file, e.g. BXD.geno. Note that the script does not compute with the many variations of .geno files we have today. Next it sets the Id for ProbeSetFreeze which is the same as the InbredSet Id. So, ProbeSetFreeze.Id == IndbredSet.Id.
+
+Next for this Id we fetch, known as `ProbeSetXRefInfos`:
+
+```
+MariaDB [db_webqtl]> select ProbeSetId, Locus, DataId from ProbeSetXRef where ProbeSetFreezeId=1 limit 5;
++------------+----------------+--------+
+| ProbeSetId | Locus          | DataId |
++------------+----------------+--------+
+|          1 | rs13480619     |      1 |
+|          2 | rs29535974     |      2 |
+|          3 | rs49742109     |      3 |
+|          4 | rsm10000002321 |      4 |
+|          5 | rsm10000019445 |      5 |
++------------+----------------+--------+
+```
+
+Then we fetch the trait values:
+
+```
+MariaDB [db_webqtl]> select Strain.Name, ProbeSetData.value from Strain, ProbeSetData where Strain.Id = ProbeSetData.StrainId and ProbeSetData.Id = 1 limit 5;
++----------+-------+
+| Name     | value |
++----------+-------+
+| B6D2F1   | 5.742 |
+| C57BL/6J | 5.006 |
+| DBA/2J   | 6.079 |
+| BXD1     | 6.414 |
+| BXD2     | 4.885 |
++----------+-------+
+```
+
+with genotypes and these phenotypes qtlreaper is started and next we update the values for
+
+```
+select * from ProbeSetXRef where ProbeSetId=1 and ProbeSetFreezeId=1 limit 5;
++------------------+------------+--------+------------+------------------+------------+------------------+---------------------+------------+-----------------+--------+-------------+------+
+| ProbeSetFreezeId | ProbeSetId | DataId | Locus_old  | LRS_old          | pValue_old | mean             |
+se                  | Locus      | LRS             | pValue | additive    | h2   |
++------------------+------------+--------+------------+------------------+------------+------------------+---------------------+------------+-----------------+--------+-------------+------+
+|                1 |          1 |      1 | 10.095.400 | 13.3971627898894 |      0.163 | 5.48794285714286 |
+0.08525787814808819 | rs13480619 | 12.590069931048 |  0.269 | -0.28515625 | NULL |
++------------------+------------+--------+------------+------------------+------------+------------------+---------------------+------------+-----------------+--------+-------------+------+
+```
+
+the actual update is
+
+```
+update ProbeSetXRef set Locus=%s, LRS=%s, additive=%s where ProbeSetId=%s and ProbeSetFreezeId=%s
+```
+
+so Locus, LRS and additive fields are updated.
+
+From this exercise we can conclude:
+
+* Existing precomputed values are by linear regression (old QTLreaper)
+* Only one highest score is stored
+* Every time the script is run *all* datasets are recomputed
+* The _old valuse in the table are not touched by the script
+* h2 and mean are not updated
+* No significance score is computed
+
+Rob voiced a wish to retain all scores (at least above 1.0).
