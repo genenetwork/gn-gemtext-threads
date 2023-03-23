@@ -106,8 +106,8 @@ From this exercise we can conclude:
 * Existing precomputed values are by linear regression (old QTLreaper)
 * Only one highest score is stored
 * Every time the script is run *all* datasets are recomputed
-* The _old valuse in the table are not touched by the script
+* The '_old' named values in the table are not touched by the script
 * h2 and mean are not updated
-* No significance score is computed
+* No significance score is computed (needs permutations)
 
-Rob voiced a wish to retain all scores (at least above 1.0).
+Rob voiced a wish to retain all scores (at least those above 1.0). This is not feasible in mariadb, but we can retain GEMMA output if stored efficiently.
