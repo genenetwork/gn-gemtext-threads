@@ -113,4 +113,42 @@ From this exercise we can conclude:
 
 Rob voiced a wish to retain all scores (at least those above 1.0). This is not feasible in mariadb, but we can retain GEMMA output if stored efficiently.
 
-ProbeSetXRef is pretty small, currently @5.6Gb and 48,307,650 rows, so we could decide to add columns to track different mappers.
+## Notes on ProbeSetXRef
+
+ProbeSetXRef is pretty small, currently @5.6Gb and 48,307,650 rows, so we could decide to add columns to track different mappers. Something funny 
+
+```
+select count(LRS) from ProbeSetXRef;
++------------+
+| count(LRS) |
++------------+
+|   28335955 |
++------------+
+```
+
+half the fields are used. What to think of
+
+```
+MariaDB [db_webqtl]> select * from ProbeSetXRef where LRS=0 limit 5;
++------------------+------------+----------+-----------+---------+------------+------+------+----------------+------+--------+----------+------+
+| ProbeSetFreezeId | ProbeSetId | DataId   | Locus_old | LRS_old | pValue_old | mean | se   | Locus          | LRS  | pValue | additive | h2   |
++------------------+------------+----------+-----------+---------+------------+------+------+----------------+------+--------+----------+------+
+|              589 |    8599010 | 70606737 | NULL      |    NULL |       NULL |    0 | NULL | rsm10000000001 |    0 |   NULL |        0 | NULL |
+|              589 |    8593710 | 70606738 | NULL      |    NULL |       NULL |    0 | NULL | rsm10000000001 |    0 |   NULL |        0 | NULL |
+|              589 |    8607637 | 70606739 | NULL      |    NULL |       NULL |    0 | NULL | rsm10000000001 |    0 |   NULL |        0 | NULL |
+|              589 |    8594490 | 70606740 | NULL      |    NULL |       NULL |    0 | NULL | rsm10000000001 |    0 |   NULL |        0 | NULL |
+|              589 |    8591994 | 70606741 | NULL      |    NULL |       NULL |    0 | NULL | rsm10000000001 |    0 |   NULL |        0 | NULL |
++------------------+------------+----------+-----------+---------+------------+------+------+----------------+------+--------+----------+------+
+```
+
+```
+MariaDB [db_webqtl]> select count(*) from ProbeSetXRef where LRS=0 and Locus="rsm10000000001";
++----------+
+| count(*) |
++----------+
+|   291447 |
++----------+
+```
+
+There is obviously more.  I think this table can use some cleaning up? 
+
