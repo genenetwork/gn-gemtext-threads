@@ -112,3 +112,5 @@ From this exercise we can conclude:
 * No significance score is computed (needs permutations)
 
 Rob voiced a wish to retain all scores (at least those above 1.0). This is not feasible in mariadb, but we can retain GEMMA output if stored efficiently.
+
+ProbeSetXRef is pretty small, currently @5.6Gb and 48,307,650 rows, so we could decide to add columns to track different mappers.
