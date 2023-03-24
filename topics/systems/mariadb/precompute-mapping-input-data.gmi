@@ -115,7 +115,7 @@ Rob voiced a wish to retain all scores (at least those above 1.0). This is not f
 
 ## Notes on ProbeSetXRef
 
-ProbeSetXRef is pretty small, currently @5.6Gb and 48,307,650 rows, so we could decide to add columns to track different mappers. Something funny 
+ProbeSetXRef is pretty small, currently @5.6Gb and 48,307,650 rows, so we could decide to add columns to track different mappers. Something funny
 
 ```
 select count(LRS) from ProbeSetXRef;
@@ -150,5 +150,12 @@ MariaDB [db_webqtl]> select count(*) from ProbeSetXRef where LRS=0 and Locus="rs
 +----------+
 ```
 
-There is obviously more.  I think this table can use some cleaning up? 
+There is obviously more.  I think this table can use some cleaning up?
 
+## Preparing for GEMMA
+
+A good dataset to take apart is
+
+=> http://genenetwork.org/show_trait?trait_id=1436869_at&dataset=HC_M2_0606_P
+
+because it has 71 BXD samples and 32 other samples.

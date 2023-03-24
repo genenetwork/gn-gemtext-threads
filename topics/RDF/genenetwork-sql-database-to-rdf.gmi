@@ -1,0 +1,9 @@
+# GeneNetwork SQL Database to RDF
+
+We use RDF in virtuoso to handle metadata for GN using
+
+=> https://github.com/genenetwork/dump-genenetwork-database
+
+See also
+
+=> ../systems/virtuoso.gmi
