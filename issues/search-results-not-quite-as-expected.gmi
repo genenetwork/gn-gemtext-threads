@@ -1,0 +1,45 @@
+# Xapian Search Results not Quite as Expected
+
+## Tags
+
+* type: bug
+* assigned: arun, fredm
+* priority: medium
+*
+*
+
+## Description
+
+The following is a list of failing examples of search, with notes on what I expected.
+
+### Querying by Name
+
+=> https://genenetwork.org/gsearch?type=phenotype&terms=name%3ABXD_24417 with `name:BXD_24417`
+=> https://genenetwork.org/gsearch?type=phenotype&terms=species%3Amouse+AND+BXD_24417 with `BXD_24417`
+=> https://genenetwork.org/gsearch?type=phenotype&terms=species%3Amouse+AND+24417 with `24417`
+
+To verify that the trait exists, here is
+=> https://genenetwork.org/show_trait?trait_id=24417&dataset=BXDPublish the trait page
+
+That also means we cannot do an inverse search, where we say something like
+```
+species:mouse NOT BXD_24417
+```
+
+Here is
+=>https://github.com/genenetwork/genenetwork3/blob/98e9726405df3cce81356534335259a446b0c458/scripts/index-genenetwork#L215-L216 some related code
+relating to the indexing of the data for search.
+
+### `NOT` Operator not Working Right
+
+=>https://genenetwork.org/gsearch?type=phenotype&terms=species%3Amouse+AND+author%3Ahager+NOT+%22BXD+Published%22 Searching by dataset name
+works as expected, but should you want to, say, filter out one of the authors, with something like
+=>https://genenetwork.org/gsearch?type=phenotype&terms=species%3Amouse+AND+author%3Ahager+NOT+%28%22BXD+Published%22+AND+author%3A%22Lu+L%22%29 this search,
+you do not get the expected results.
+
+Changing the search to
+=>http://genenetwork.org/gsearch?type=phenotype&terms=species%3Amouse+AND+author%3Ahager+AND+%28NOT+author%3A%22Lu+L%22%29+AND+%28NOT+%22BXD+Published%22%29 more clearly bracketed queries
+leads to an outright exception: This should probably be handled.
+
+=>https://genenetwork.org/gsearch?type=phenotype&terms=species%3Amouse+AND+author%3Ahager+AND+NOT+author%3A%22Lu+L%22 Here is another example
+of the `NOT` operator acting a little weird: note that phenotypes with "Lu L" as an author still show up.
