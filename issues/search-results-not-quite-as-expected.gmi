@@ -5,8 +5,8 @@
 * type: bug
 * assigned: arun, fredm
 * priority: medium
-*
-*
+* status:
+* keywords: xapian, search
 
 ## Description
 
