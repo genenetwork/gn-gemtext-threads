@@ -1,0 +1,11 @@
+# Search queries with quoted author names don't work
+
+* assigned: arun
+
+Search queries with quoted author names don't work as expected. For example, the query
+=> https://cd.genenetwork.org/gsearch?type=phenotype&terms=author%3A%22Hager+R%22
+produces no results, while
+=> https://cd.genenetwork.org/gsearch?type=phenotype&terms=author%3Ahager
+produces results.
+
+This could be because the author: prefix is treated as a boolean prefix.
