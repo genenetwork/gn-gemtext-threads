@@ -90,3 +90,25 @@ Alternatively, this same query may be expressed using kilo or mega suffixes.
 Hs:chr4:9130k..9980k species:mouse
 Hs:chr4:9.13M..9.98M species:mouse
 ```
+
+## Gotchas
+
+### Pure `NOT` queries are not supported
+
+Due to
+=> https://xapian.org/docs/apidoc/html/classXapian_1_1QueryParser.html#ae96a58a8de9d219ca3214a5a66e0407eacafc7c8cf7c90adac0fc07d02125aed0 performance reasons,
+pure `NOT` queries are not supported.
+
+A search such as:
+
+```
+NOT author:hager
+```
+
+will fail.
+
+You will need to add something to the query to prevent the error, e.g.
+
+```
+species:mouse NOT author:hager
+```
