@@ -1,0 +1,16 @@
+# Dump GeneWiki data
+
+* assigned: bonfacem
+* priority: high
+* status: ongoing
+
+GeneWiki data comes from the GeneRIF database maintained by NCBI.  In GeneNetwork, this is stored in GeneRIF_BASIC.  [Authorised] Users of GN can add their own entries so that they are associated with a given symbol.  In SQL, these edits are stored in GeneRIF.
+
+Here's an example of a genewiki entry from GN1
+
+=> https://gn1.genenetwork.org/webqtl/main.py?FormID=geneWiki&symbol=Shh
+
+
+Work related to this dump can found in:
+
+=> https://github.com/genenetwork/dump-genenetwork-database/pull/7/
