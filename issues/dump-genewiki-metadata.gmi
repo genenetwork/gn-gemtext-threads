@@ -43,3 +43,21 @@ To query these entries:
 ```
 SELECT * FROM GeneRIF_BASIC WHERE symbol = 'NEWENTRY'\G
 ```
+
+* Broken UTF-8 character sets that rapper errored out on and that had to be manually fixed.  Here's a list:
+
+```
+'(("\x28" . "")
+  ("\x29" . "")
+  ("\xa0" . " ")
+  ("â\x81„" . "/")
+  ("â€\x9d" . #\")
+  ("â€™" . #\')
+  ("\x02" . "")
+  ("\x01" . "")
+  ("Î²" . "β")
+  ("Î±-Â\xad" . "α")
+  ("Â\xad" . "")
+  ("Î±" . "α")
+  ("â€“" . "-"))
+```
