@@ -1,0 +1,12 @@
+# Our virtuoso instances
+
+We run three instances of virtuoso.
+
+* virtuoso on tux01 for internal use by the production server
+* virtuoso on tux02 in the development (aka CI/CD) container for internal use by the CD
+* virtuoso on tux02 as a public SPARQL endpoint
+
+The public SPARQL endpoint is accessible at
+=> https://sparql.genenetwork.org/sparql
+
+Password based authentication is required to mutate the data in these virtuoso instances. These passwords are available with Pjotr and Arun. Please contact them if you need access.

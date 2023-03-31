@@ -3,3 +3,11 @@
 * assigned: arun
 
 List all running virtuoso instances across all our servers. Document where to find the passwords, etc. Make this a gemtext page in the topics section of gn-gemtext-threads.
+
+## Resolution
+
+Done!
+
+=> /topics/our-virtuoso-instances
+
+* closed
