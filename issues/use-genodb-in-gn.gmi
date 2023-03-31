@@ -1,6 +1,6 @@
 # Use genodb in genenetwork
 
-* assigned: aruni
+* assigned: pjotrp
 
 Use the genodb genotype database for at least one use case in genenetwork2 or genenetwork3. This will serve as an example based on which the team can port the rest of genenetwork to genodb.
 
