@@ -10,3 +10,29 @@ Dump the tables:
 
 * GeneRIF
 * GeneRIF_BASIC
+
+## Issues
+
+* Some entries in the GeneRIF table don't have any entries in the GeneRIF_BASIC table:
+
+```
+SELECT * FROM GeneRIF LEFT JOIN GeneRIF_BASIC USING (symbol) LEFT JOIN GeneRIFXRef ON GeneRIFXRef.GeneRIFId = GeneRIF.Id LEFT JOIN GeneCategory ON GeneRIFXRef.GeneCategoryId = GeneCategory.Id WHERE GeneRIF.display > 0 AND GeneRIF.VersionId = 0 AND GeneRIF_BASIC.GeneId IS NULL\G
+```
+
+* Missing data: some GeneIds stored in GN are not in GeneInfo.  These can be conceptualised as anonymous genewiki entries.  One example is the symbol "Mul1" with the GeneId 68350.  This example exists in GN with different GeneId's.  Example query:
+
+=>
+
+```
+SELECT * FROM GeneInfo WHERE GeneId = 68350\G 
+```
+
+* NEWENTRY: We have many genes with the "NEWENTRY".  In GN1, these are represented in one very big page:
+
+=> https://gn1.genenetwork.org/webqtl/main.py?FormID=geneWiki&symbol=NEWENTRY
+
+To query these entries:
+
+```
+SELECT * FROM GeneRIF_BASIC WHERE symbol = 'NEWENTRY'\G
+```
