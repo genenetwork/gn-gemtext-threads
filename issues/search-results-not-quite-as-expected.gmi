@@ -30,6 +30,10 @@ Here is
 =>https://github.com/genenetwork/genenetwork3/blob/98e9726405df3cce81356534335259a446b0c458/scripts/index-genenetwork#L215-L216 some related code
 relating to the indexing of the data for search.
 
+### Resolution
+
+Identifiers such as BXD_24417 are arbitrary internal identifiers that hold no meaning outside GeneNetwork. This is unlike something like a PubMed ID that holds meaning outside GeneNetwork. Arbitrary internal identifiers should not be exposed to the outside world.
+
 ### `NOT` Operator not Working Right
 
 =>https://genenetwork.org/gsearch?type=phenotype&terms=species%3Amouse+AND+author%3Ahager+NOT+%22BXD+Published%22 Searching by dataset name
@@ -43,3 +47,14 @@ leads to an outright exception: This should probably be handled.
 
 =>https://genenetwork.org/gsearch?type=phenotype&terms=species%3Amouse+AND+author%3Ahager+AND+NOT+author%3A%22Lu+L%22 Here is another example
 of the `NOT` operator acting a little weird: note that phenotypes with "Lu L" as an author still show up.
+
+### Resolution
+
+Due to
+=> https://xapian.org/docs/apidoc/html/classXapian_1_1QueryParser.html#ae96a58a8de9d219ca3214a5a66e0407eacafc7c8cf7c90adac0fc07d02125aed0 performance reasons,
+pure `NOT` queries are not supported.
+
+Queries involving author:"Lu L" not working is a bug. This has been moved to a separate bug report.
+=> /issues/search-queries-with-quoted-author-names-dont-work
+
+* closed
