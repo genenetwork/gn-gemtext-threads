@@ -11,6 +11,13 @@ Dump the tables:
 * GeneRIF
 * GeneRIF_BASIC
 
+## Resources
+
+=> https://www.w3.org/TR/rdf-schema/ RDF Schema 1.1
+=> https://www.clearbyte.org/?p=5895&lang=en RDF/S quick walk through
+=> https://www.dublincore.org/specifications/dublin-core/dcmi-terms/# DCMI Metadata Terms
+=> https://sparql.uniprot.org/.well-known/sparql-examples/ => UNIPROT sparql examples
+
 ## Issues
 
 * Some entries in the GeneRIF table don't have any entries in the GeneRIF_BASIC table:
