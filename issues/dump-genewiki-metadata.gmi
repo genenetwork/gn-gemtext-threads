@@ -18,6 +18,14 @@ Dump the tables:
 => https://www.dublincore.org/specifications/dublin-core/dcmi-terms/# DCMI Metadata Terms
 => https://sparql.uniprot.org/.well-known/sparql-examples/ UNIPROT sparql examples
 
+## Checking for duplicates
+
+```
+ag "Observational study of gene-disease association" dump.ttl --pager='less -R'
+ag "gn:symbol" | sort | less
+ag "gn:anonSymbol" | sort | less
+```
+
 ## Issues
 
 * Some entries in the GeneRIF table don't have any entries in the GeneRIF_BASIC table:
