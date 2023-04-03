@@ -16,19 +16,22 @@ Dump the tables:
 => https://www.w3.org/TR/rdf-schema/ RDF Schema 1.1
 => https://www.clearbyte.org/?p=5895&lang=en RDF/S quick walk through
 => https://www.dublincore.org/specifications/dublin-core/dcmi-terms/# DCMI Metadata Terms
-=> https://sparql.uniprot.org/.well-known/sparql-examples/ => UNIPROT sparql examples
+=> https://sparql.uniprot.org/.well-known/sparql-examples/ UNIPROT sparql examples
 
 ## Issues
 
 * Some entries in the GeneRIF table don't have any entries in the GeneRIF_BASIC table:
 
 ```
-SELECT * FROM GeneRIF LEFT JOIN GeneRIF_BASIC USING (symbol) LEFT JOIN GeneRIFXRef ON GeneRIFXRef.GeneRIFId = GeneRIF.Id LEFT JOIN GeneCategory ON GeneRIFXRef.GeneCategoryId = GeneCategory.Id WHERE GeneRIF.display > 0 AND GeneRIF.VersionId = 0 AND GeneRIF_BASIC.GeneId IS NULL\G
+SELECT * FROM GeneRIF LEFT JOIN GeneRIF_BASIC USING (symbol)
+LEFT JOIN GeneRIFXRef ON GeneRIFXRef.GeneRIFId = GeneRIF.Id
+LEFT JOIN GeneCategory ON GeneRIFXRef.GeneCategoryId = GeneCategory.Id
+WHERE GeneRIF.display > 0 AND GeneRIF.VersionId = 0
+AND GeneRIF_BASIC.GeneId IS NULL\G
 ```
 
 * Missing data: some GeneIds stored in GN are not in GeneInfo.  These can be conceptualised as anonymous genewiki entries.  One example is the symbol "Mul1" with the GeneId 68350.  This example exists in GN with different GeneId's.  Example query:
 
-=>
 
 ```
 SELECT * FROM GeneInfo WHERE GeneId = 68350\G 
@@ -68,3 +71,7 @@ SELECT * FROM GeneRIF_BASIC WHERE symbol = 'NEWENTRY'\G
 ```
 SELECT COUNT(*) FROM GeneRIF_BASIC WHERE symbol = '';
 ```
+
+* The are comments with the same values but different GeneIds.  Example:
+
+=> https://gn1.genenetwork.org/webqtl/main.py?FormID=geneWiki&symbol=A2m
