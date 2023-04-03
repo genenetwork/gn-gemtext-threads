@@ -62,8 +62,9 @@ SELECT * FROM GeneRIF_BASIC WHERE symbol = 'NEWENTRY'\G
   ("â€“" . "-"))
 ```
 
-* In the GeneRIF_BASIC table, there are rows with an empty symbol (empty string instead of NULL):
+* In the GeneRIF_BASIC table, there are 14,313 rows with an empty symbol:
+
 
 ```
-SELECT * FROM GeneRIF_BASIC WHERE TaxID=139 AND GeneId = 13917590 AND PubMed_ID = 23692497\G
+SELECT COUNT(*) FROM GeneRIF_BASIC WHERE symbol = '';
 ```
