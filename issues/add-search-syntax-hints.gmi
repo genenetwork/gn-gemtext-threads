@@ -1,7 +1,19 @@
 # Add search syntax hints to web UI
 
-* assigned: alex
+## Tags
+
+* assigned: alexm
+* status: completed, closed
+* keywords: xapian,search,UI
 
 The web UI of the global search should hint at the supported search syntax. For example, see how mumi (the Guix issue tracker) hints at the search query syntax when you click on the "Hint" dropdown.
 => https://issues.guix.gnu.org/
 This will serve as a kind of self-documentation. It will keep the documentation close to where it is needed, and will free the user from having to look up obscure documentation somewhere far away.
+
+
+## Notes 3/4/23
+
+issue completed and pushed to production
+also related to new issues/enhancement:
+
+=> issues/full_autocomplete_implementation
