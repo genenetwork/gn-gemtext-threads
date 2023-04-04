@@ -83,3 +83,5 @@ SELECT COUNT(*) FROM GeneRIF_BASIC WHERE symbol = '';
 * The are comments with the same values but different GeneIds.  Example:
 
 => https://gn1.genenetwork.org/webqtl/main.py?FormID=geneWiki&symbol=A2m
+
+* closed
