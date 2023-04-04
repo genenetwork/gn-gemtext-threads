@@ -6,4 +6,4 @@ We use RDF in virtuoso to handle metadata for GN using
 
 See also
 
-=> ../systems/virtuoso.gmi
+=> ../systems/virtuoso

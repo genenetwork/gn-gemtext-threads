@@ -160,7 +160,7 @@ When virtuoso has just been started up with a clean state (that is, the virtuoso
 
 See also
 
-=> ../RDF/genenetwork-sql-database-to-rdf.gmi
+=> ../RDF/genenetwork-sql-database-to-rdf
 
 To dump data into a ttl file, first make sure that you are in the guix environment in the "dump-genenetwork-database" repository
 
