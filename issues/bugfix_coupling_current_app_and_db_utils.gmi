@@ -29,3 +29,10 @@ by any settings provided via the `GN3_CONF` variable.
 The issue here is that the value in `gn3.settings` can be fetched from the shell environment variables, overwriting any default value in `gn3.settings` but that can then be overwritten by `GN3_CONF`. This implies that we need a more traceable configuration system.
 
 The scripts that use the same configuration values as the application should probably be run as **flask CLI** commands, or have the configuration variable(s) provided to the script(s) directly via the CLI.
+
+### Fix: Provide URI on the CLI
+
+Commits attempting to fix the issue
+
+=> https://github.com/genenetwork/genenetwork3/commit/d8c73f74a022540eec306399a4ad719089678579 in genenetwork3
+=> https://github.com/genenetwork/genenetwork-machines/commit/1fc0198aaf595719e9e5f1a182731073458c449e in genenetwork-machines
