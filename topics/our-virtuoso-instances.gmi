@@ -17,6 +17,25 @@ All our virtuoso instances are deployed in Guix system containers. The configura
 => https://github.com/genenetwork/genenetwork-machines/blob/main/genenetwork-development.scm Configuration for internal CD virtuoso on tux02
 => https://github.com/genenetwork/genenetwork-machines/blob/main/public-sparql.scm Configuration for public SPARQL endpoint virtuoso on tux02
 
+## Ports
+
+The ports these virtuoso instances are deployed on is subject to change, and you should really look up the Guix configuration file to find the correct port. But, here is a summary for quick lookup. Please fix this if it is inaccurate.
+
+### Internal production virtuoso on tux01
+
+* Server port: 8891
+* SPARQL endpoint port: 8892
+
+### Internal CD virtuoso on tux02
+
+* Server port: 9081
+* SPARQL endpoint port: 9082
+
+### Public SPARQL endpoint virtuoso on tux02
+
+* Server port: 8981
+* SPARQL endpoint port: 8982
+
 ## Passwords
 
 Password based authentication is required to mutate the data in these virtuoso instances. These passwords are available with Pjotr and Arun. Please contact them if you need access.
