@@ -1,9 +1,22 @@
 # Improve presentation of search results
 
-* assigned: arun, alex
+
+## Tags
+* assigned: arun, alexm
+
+* status: stalled,closed
+
+* keywords: xapian,search,UI
 
 At the moment, we present search results in tabular form. See, for example,
 => https://cd.genenetwork.org/gsearch?type=gene&terms=cytochrome+NOT+P450
 This is hardly the best way to present search results. Less important columns like species, group and tissue take up so much of the screen real estate. The user is not able to interact meaningfully with the search results. Sure, the user can sort the search results. But, the utility of sorting is questionable since the results are already sorted by search relevance.
 
 This is intentionally a very open ended and vaguely worded issue. I request Alex to experiment with different UX ideas, mockup those ideas, and seek feedback.
+
+## Notes 3/4/23
+
+splitting this to multiple issues
+
+=> issues/search-results-presentation-designs.gmi
+

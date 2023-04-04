@@ -1,7 +1,13 @@
+
+
 # Report invalid search queries passed to the search API
 
 * assigned: alex, arun
 * tags: enhancement
+
+* status: in progress
+
+
 
 genenetwork2 offloads search to the genenetwork3 search API. When there is an error in the genenetwork3 API call, genenetwork2 has no idea what went wrong and cannot produce a good stacktrace. The genenetwork3 API should do a better job of communicating errors.
 

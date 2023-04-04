@@ -1,0 +1,26 @@
+# Search results presentation
+
+## Tags
+
+* assigned: alex
+
+* status:in progress
+
+* keywords: UI,search
+
+
+
+## Notes
+
+
+The idea is to  research and  find good design  for  search results in global search
+Currently the results are displayed in tabular form and too many columns are presented to user overlapping the page
+
+Design should be simple and eye catching to user 
+links to suggesetd designs:
+
+=> https://www.ncbi.nlm.nih.gov/genome/?term=gene
+
+
+
+
