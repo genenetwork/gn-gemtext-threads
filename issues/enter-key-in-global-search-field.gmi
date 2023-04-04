@@ -1,9 +1,22 @@
 # Enter key in global search field
 
+## Tags
+
 * assigned: alex
+* status: completed, closed
+* keywords: search,UI
+
+## Notes
 
 In the home page, putting in a search query in the global search field and pressing the Enter key takes us to a page with search results. This is correct behaviour.
 
 But, once in the search results page, putting in a search query and pressing the Enter key does nothing. You have to click the "Search All" button to get a response. For example, put in a search query at
 => https://cd.genenetwork.org/gsearch?type=gene&terms=cytochrome+NOT+P450
 and try pressing the Enter key.
+
+## Notes 3/4/23
+
+issue fixed and closed
+See commits:
+
+=> https://github.com/genenetwork/gn-gemtext-threads/commit/0157169535bf001e7c0bf1fcfc064b9ff4eca11e
