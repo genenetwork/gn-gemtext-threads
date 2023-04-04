@@ -1,0 +1,12 @@
+# Give Examples of Fetching GeneRIF Metadata in Sparql
+
+## Tags
+
+* assigned: bonfacem
+* type: documentation
+* keywords: generif, metadata, RDF
+
+## Tasks
+
+* Upload GeneRIF data in Tux02.
+* Give example SPARQL queries.
