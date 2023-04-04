@@ -156,7 +156,7 @@ When virtuoso has just been started up with a clean state (that is, the virtuoso
  Retry uploading to virtuoso (commit from dump-genenetwork-database repo)
  formerly (https://git.genenetwork.org/arunisaac/dump-genenetwork-database/commit/8f60fde7f5499e5ffe352d7ae98a2de34a91b89f)
 
-## Dumping data from a MySQL database
+## Dumping to RDF from the GeneNetwork MySQL database
 
 See also
 
