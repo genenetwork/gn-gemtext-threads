@@ -1,0 +1,31 @@
+# Coupling current_app and db_utils
+
+## Tags
+
+* assigned: fredm, aruni
+* priority: high
+* type: bug
+* status: open, in progress
+* keywords: bug, configurations
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork3/commit/de20ab3834f2a84fd3f2ba9657650e28898e27f0 This commit
+couples current_app into db_utils
+
+db_utils is used in other scripts, such as `scripts/index-genenetwork` which are (arguably) not supposed to be aware of the application, which leads to
+=>https://ci.genenetwork.org/jobs/genenetwork3-build-xapian-index/108 application context errors.
+
+Unfortunately, the naive fix of simply reverting to using the configuration variable `SQL_URI` could lead to configuration differences between the application and the scripts that would rely on the gn3.settings.SQL_URI variable. This is due to
+=> https://github.com/genenetwork/genenetwork3/blob/98e9726405df3cce81356534335259a446b0c458/gn3/app.py#L32-L43 this section
+that sets up the application configuration.
+
+We start off with
+=> https://github.com/genenetwork/genenetwork3/blob/98e9726405df3cce81356534335259a446b0c458/gn3/app.py#L32 the default configuration values
+which could then
+=> https://github.com/genenetwork/genenetwork3/blob/98e9726405df3cce81356534335259a446b0c458/gn3/app.py#L35-L36 be overwritten
+by any settings provided via the `GN3_CONF` variable.
+
+The issue here is that the value in `gn3.settings` can be fetched from the shell environment variables, overwriting any default value in `gn3.settings` but that can then be overwritten by `GN3_CONF`. This implies that we need a more traceable configuration system.
+
+The scripts that use the same configuration values as the application should probably be run as **flask CLI** commands, or have the configuration variable(s) provided to the script(s) directly via the CLI.
