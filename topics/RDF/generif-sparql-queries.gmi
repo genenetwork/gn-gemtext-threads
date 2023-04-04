@@ -1,0 +1,7 @@
+# Querying SPARQL in GeneRIF
+
+
+=> https://sparql.genenetwork.org/sparql?default-graph-uri=http%3A%2F%2Fgenenetwork.org&qtxt=PREFIX%20gn%3A%20%3Chttp%3A%2F%2Fgenenetwork.org%2F%3E%0APREFIX%20dct%3A%20%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3E%0A%0ASELECT%20%3Fgenerif%20%3FgnEntry%20%3FcreatedOn%20%3Fpmid%20WHERE%20%7B%0A%3Fgenerif%20gn%3Asymbol%20%3Fsymbol%20.%0A%3Fgenerif%20gn%3AWikiEntryOfNCBI%20%5B%20gn%3AgeneWikiEntry%20%3FgnEntry%20%3B%20dct%3Acreated%20%3FcreatedOn%3B%20dct%3Asource%20%3Fpmid%5D%20.%0AFILTER(%20lcase(%3Fsymbol)%20%3D%20%22shh%22)%0A%7D%20ORDER%20BY%20ASC(%3FcreatedOn)&format=text%2Fhtml&timeout=0&signal_void=on Get all GN entered GeneWiki metadata for a particular symbol E.g. Shh.
+
+
+
