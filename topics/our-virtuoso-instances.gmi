@@ -9,4 +9,14 @@ We run three instances of virtuoso.
 The public SPARQL endpoint is accessible at
 => https://sparql.genenetwork.org/sparql
 
+## Configuration
+
+All our virtuoso instances are deployed in Guix system containers. The configuration for these containers is at
+
+=> https://github.com/genenetwork/genenetwork-machines/blob/main/virtuoso.scm Configuration for internal production virtuoso on tux01
+=> https://github.com/genenetwork/genenetwork-machines/blob/main/genenetwork-development.scm Configuration for internal CD virtuoso on tux02
+=> https://github.com/genenetwork/genenetwork-machines/blob/main/public-sparql.scm Configuration for public SPARQL endpoint virtuoso on tux02
+
+## Passwords
+
 Password based authentication is required to mutate the data in these virtuoso instances. These passwords are available with Pjotr and Arun. Please contact them if you need access.
