@@ -139,9 +139,9 @@ rapper: Parsing returned 652395 triples
 ```
 Then, upload it to a virtuoso SPARQL endpoint running at port 8892
 ```
-curl -v -X PUT --digest -u dba:password -T data.ttl -G http://localhost:8892/sparql-graph-crud-auth --data-urlencode graph=http://example.org
+curl -v -X PUT --digest -u 'dba:password' -T data.ttl -G http://localhost:8892/sparql-graph-crud-auth --data-urlencode graph=http://example.org
 ```
-where http://example.org is the name of the graph.
+where http://example.org is the name of the graph. Note that single quoting the password is good to do especially when you have special characters in the password.
 
 The PUT method deletes the existing data in the graph before loading the new one. So, there is no need to manually delete old data before loading new data. However, virtuoso is slow at deleting millions of triples, resulting in an apparent freeze-up. So, it is preferable to handle such deletes manually using a lower-level SQL statement issued via the isql client.
 ```
