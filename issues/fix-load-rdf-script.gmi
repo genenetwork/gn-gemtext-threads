@@ -1,0 +1,33 @@
+# Fix load-rdf.scm script
+* assigned: bonfacem
+
+At the moment, running load-rdf.scm in tux02 results in the following stack trace:
+
+```
+OpenLink Virtuoso Interactive SQL (Virtuoso)
+Version 07.20.3236 as of Jan  1 1970
+Type HELP; for help and EXIT; to exit.
+SQL> SQL> SQL>
+*** Error S2801: [Virtuoso Driver]CL033: Connect failed to localhost:8982 = localhost:8982.
+at line 3 of Top-Level:
+DELETE FROM rdf_quad WHERE g = iri_to_id ('http://genenetwork.org')
+Backtrace:
+In ice-9/boot-9.scm:
+  1752:10  8 (with-exception-handler _ _ #:unwind? _ # _)
+In unknown file:
+           7 (apply-smob/0 #<thunk 7fed6c9d8080>)
+In ice-9/boot-9.scm:
+    724:2  6 (call-with-prompt _ _ #<procedure default-prompt-handle…>)
+In ice-9/eval.scm:
+    619:8  5 (_ #(#(#<directory (guile-user) 7fed6c9dec80>)))
+In ice-9/boot-9.scm:
+   2835:4  4 (save-module-excursion _)
+  4380:12  3 (_)
+In load-rdf.scm:
+   181:15  2 (main . _)
+    167:4  1 (time-thunk #<procedure 7fed6a3fcd00 at load-rdf.scm:18…>)
+   117:24  0 (call-with-pipe _ _ _ . _)
+
+load-rdf.scm:117:24: In procedure call-with-pipe:
+Invocation of program failed ("isql")
+```
