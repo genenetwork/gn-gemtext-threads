@@ -1,0 +1,15 @@
+# Dump Data to LMDB
+
+Correlations are slow.  As of Tuesday April 4, 2023 at 1:37pm:
+
+GN1 took *29 sec* (completed) vs GN2 *38 sec* (completed) for 1457545_at in the Hippocampus Consortium M430v2 (Jun06) PDNN
+
+=> http://genenetwork.org/webqtl/main.py?FormID=sharinginfo&GN_AccessionId=112 Hippocampus Consortium M430v2 (Jun06) PDNN
+
+GN1 took *1.56 mins* (completed) vs GN2 *5.24 mins* (completed)  for 10528873 in the UTHSC BXD Aged Hippocampus Affy Mouse Gene 1.0 ST (Sep12) RMA Exon Level
+
+=> https://gn1.genenetwork.org/webqtl/main.py?FormID=sharinginfo&InfoPageName=UTHSC_BXD_H_0912 UTHSC BXD Aged Hippocampus Affy Mouse Gene 1.0 ST (Sep12) RMA Exon Level
+
+Research Question:  What effect would using LMDB have on correlations over text-file caching and sql fetches?
+
+* assigned: bonfacem, alexm
