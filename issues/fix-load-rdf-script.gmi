@@ -31,3 +31,9 @@ In load-rdf.scm:
 load-rdf.scm:117:24: In procedure call-with-pipe:
 Invocation of program failed ("isql")
 ```
+
+See the following for the fix:
+
+=> https://github.com/genenetwork/dump-genenetwork-database/pull/7/commits/07a5516df398d52ad31a16a4fbd1809c78177969 07a5516
+
+* closed
