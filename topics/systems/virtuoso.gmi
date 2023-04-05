@@ -152,9 +152,23 @@ SQL> DELETE FROM rdf_quad WHERE g = iri_to_id('http://example.org');
 
 When virtuoso has just been started up with a clean state (that is, the virtuoso state directory was empty before virtuoso started), uploading large amounts of data using the SPARQL 1.1 Graph Store HTTP Protocol fails the first time. It succeeds only the second time. It is not clear why. I can only recommend retrying as in this commit:
 
-=>https://github.com/genenetwork/dump-genenetwork-database/commit/8f60fde7f5499e5ffe352d7ae98a2de34a91b89f
+=> https://github.com/genenetwork/dump-genenetwork-database/commit/8f60fde7f5499e5ffe352d7ae98a2de34a91b89f
  Retry uploading to virtuoso (commit from dump-genenetwork-database repo)
  formerly (https://git.genenetwork.org/arunisaac/dump-genenetwork-database/commit/8f60fde7f5499e5ffe352d7ae98a2de34a91b89f)
+
+### Using load-rdf.scm script
+
+You can use the following script to upload data in rdf.
+
+=> https://github.com/genenetwork/dump-genenetwork-database/blob/master/load-rdf.scm load-rdf.scm
+
+This script first clears the database before uploading data.  To run it:
+
+```
+guix shell -N virtuoso-ose -m manifest.scm -- ./pre-inst-env ./load-rdf.scm conn.scm dump.ttl
+```
+
+=> https://github.com/genenetwork/dump-genenetwork-database/blob/master/conn.scm Example conn.scm
 
 ## Dumping to RDF from the GeneNetwork MySQL database
 
