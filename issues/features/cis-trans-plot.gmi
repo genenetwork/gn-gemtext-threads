@@ -1,0 +1,15 @@
+# Add Cis-Trans plot
+
+After we complete precompute we should add Cis-Trans plots for eQTL datasets.
+
+See also
+
+=> ../../topics/systems/mariadb/precompute-mapping-input-data.gmi
+
+# Tags
+
+* assigned: zsloan, pjotrp
+* priority: medium
+* type: enhancement
+* status: unclear
+* keywords: database, gemma
