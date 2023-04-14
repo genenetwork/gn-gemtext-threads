@@ -10,3 +10,7 @@
 
 * Upload GeneRIF data in Tux02.
 * Give example SPARQL queries.
+
+=> https://issues.genenetwork.org/topics/RDF/generif-sparql-queries Example GeneRIF sparql queries
+
+* closed
