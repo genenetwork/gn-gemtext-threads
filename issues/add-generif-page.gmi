@@ -1,0 +1,15 @@
+# Add GeneRIF page
+
+## Tags
+
+* assigned: bonfacem
+* type: feature
+* keywords: generif, metadata, RDF
+
+## Tasks
+
+* Create an endpoint in GN3 that queries virtuoso for generif metadata
+* Create a page to show generif data
+
+=> https://github.com/genenetwork/genenetwork2/pull/775 (PR) Add genewiki page
+=> https://github.com/genenetwork/genenetwork3/pull/113 (PR) Create new endpoint for fetching GeneRIF entries
