@@ -5,7 +5,7 @@
 * assigned: fredm, aruni
 * priority: high
 * type: bug
-* status: open, in progress
+* status: closed, completed, fixed
 * keywords: bug, configurations
 
 ## Description
@@ -36,3 +36,6 @@ Commits attempting to fix the issue
 
 => https://github.com/genenetwork/genenetwork3/commit/d8c73f74a022540eec306399a4ad719089678579 in genenetwork3
 => https://github.com/genenetwork/genenetwork-machines/commit/1fc0198aaf595719e9e5f1a182731073458c449e in genenetwork-machines
+
+=> https://github.com/genenetwork/genenetwork3/commit/dbf0f9f0d34c9969aa6ae76f556745a9eb122106 This commit
+finally decouples `gn3.db_utils` completely from `flask.current_app` and makes the `sql_uri` argument mandatory.
