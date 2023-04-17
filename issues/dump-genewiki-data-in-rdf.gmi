@@ -2,7 +2,7 @@
 
 * assigned: bonfacem
 * priority: high
-* status: ongoing
+* status: closed
 
 GeneWiki data comes from the GeneRIF database maintained by NCBI.  In GeneNetwork, this is stored in GeneRIF_BASIC.  [Authorised] Users of GN can add their own entries so that they are associated with a given symbol.  In SQL, these edits are stored in GeneRIF.
 
