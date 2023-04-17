@@ -13,3 +13,10 @@
 
 => https://github.com/genenetwork/genenetwork2/pull/775 (PR) Add genewiki page
 => https://github.com/genenetwork/genenetwork3/pull/113 (PR) Create new endpoint for fetching GeneRIF entries
+=> https://github.com/genenetwork/genenetwork3/pull/114 (PR) Update the default SPARQL endpoint
+
+ATM, metadata can't be uploaded to the CD, and that is being tracked as a separate issue:
+
+=> /issues/upload-genewiki-rdf-to-cd.gmi Upload GeneWiki metadata upload to CD
+
+* closed
