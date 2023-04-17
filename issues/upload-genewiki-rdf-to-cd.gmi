@@ -1,4 +1,4 @@
-# Upload GeneWiki metadata upload to CD
+# Upload GeneWiki RDF metadata to CD
 
 ## Tags
 
