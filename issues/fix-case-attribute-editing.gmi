@@ -21,4 +21,4 @@ Other related issues:
 
 => /issues/consecutive-crud-applications-when-uploading-data
 
-=> /issues/fix-case-attribute-work.gmi
+=> /issues/fix-case-attribute-work

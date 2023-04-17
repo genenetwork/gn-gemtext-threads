@@ -17,6 +17,6 @@
 
 ATM, metadata can't be uploaded to the CD, and that is being tracked as a separate issue:
 
-=> /issues/upload-genewiki-rdf-to-cd.gmi Upload GeneWiki metadata RDF to CD
+=> /issues/upload-genewiki-rdf-to-cd Upload GeneWiki metadata RDF to CD
 
 * closed
