@@ -14,3 +14,5 @@ Here's an example of a genewiki entry from GN1
 Work related to this dump can found in:
 
 => https://github.com/genenetwork/dump-genenetwork-database/pull/7/
+
+* closed
