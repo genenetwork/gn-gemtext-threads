@@ -1,0 +1,30 @@
+# Upload GeneWiki metadata upload to CD
+
+## Tags
+
+* assigned: bonfacem
+* keywords: generif, metadata, RDF
+
+Following this:
+
+=> /topics/our-virtuoso-instances.gmi Our Virtuoso Instances
+
+I've tried loading ttl files in our CD in tux02.  As a crude status check, I can successfully hit our public endpoint:
+
+```
+bonfacem@tux02:/export3/local/home/bonfacem/dump-genenetwork-database$ curl -I localhost:8982/sparql
+HTTP/1.1 200 OK
+Server: Virtuoso/07.20.3234 (Linux) x86_64-unknown-linux-gnu
+Connection: Keep-Alive
+Date: Mon, 17 Apr 2023 17:59:50 GMT
+Accept-Ranges: bytes
+Content-Type: text/html; charset=UTF-8
+Content-Length: 15620
+```
+
+But with the CD server in tux02:
+
+```
+bonfacem@tux02:/export3/local/home/bonfacem/dump-genenetwork-database$ curl -I localhost:9082/sparql
+curl: (7) Failed to connect to localhost port 9082: Connection refused
+```
