@@ -28,3 +28,9 @@ But with the CD server in tux02:
 bonfacem@tux02:/export3/local/home/bonfacem/dump-genenetwork-database$ curl -I localhost:9082/sparql
 curl: (7) Failed to connect to localhost port 9082: Connection refused
 ```
+
+### Resolution
+
+There was a database format mismatch due to a virrtuoso upgrade.  Now it's fixed.
+
+* closed
