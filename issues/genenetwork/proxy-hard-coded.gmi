@@ -29,3 +29,9 @@ wqflask/utility/authentication_tools.py
 * priority: medium
 * status: unclear
 * keywords: proxy, configuration, settings
+
+### Resolution
+
+The proxy will be replaced with a new auth system, thereby making this issue irrelevant.
+
+* closed

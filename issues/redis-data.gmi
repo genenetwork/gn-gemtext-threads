@@ -12,3 +12,10 @@ this was non-trivial for him.
 * assigned: bonfacem
 * status: unclear, stalled
 * keywords: documentation, data, redis
+
+
+### Resolution
+
+The authentication system is being revamped in sqlite by Fred.  Thereby, this issue has become irrelevant.
+
+* closed

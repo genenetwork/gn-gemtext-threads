@@ -23,3 +23,8 @@ What happens in the following scenarios:
 
 Above, there will be a race-condition.
 
+### Resolution
+
+The race condition is an edge-case that hasn't been hit by anyone.  Also, the entire authentication system is being re-worked, naturally killing this issue's relevance.
+
+* closed
