@@ -5,6 +5,7 @@
 * assigned: bonfacem
 * type: bug
 * priority: high
+* closed
 
 In the screenshot below, a user tried to change the word "percent" to the symbol "%".
 

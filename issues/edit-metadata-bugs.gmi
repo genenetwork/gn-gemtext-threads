@@ -4,8 +4,8 @@
 
 * assigned: bonfacem
 * keywords: metadata
-* status: stalled
 * priority: high
+* closed
 
 ## Tasks
 

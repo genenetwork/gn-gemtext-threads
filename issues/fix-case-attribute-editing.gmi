@@ -22,3 +22,9 @@ Other related issues:
 => /issues/consecutive-crud-applications-when-uploading-data
 
 => /issues/fix-case-attribute-work
+
+### Resolution
+
+Given we are integrating RDF into GN, we have to rethink how we do our edits.
+
+* closed

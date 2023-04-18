@@ -4,8 +4,8 @@
 
 * assigned: bonfacem,zachs
 * keywords: metatadata
-* status: unclear
 * priority: medium
+* closed
 
 ## Description
 

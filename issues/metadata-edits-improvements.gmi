@@ -5,8 +5,8 @@
 * assigned: bonfacem, zachs, robw
 * type: ui
 * priority: high
-* status: stalled
 * keywords: metadata, phenotypes
+* closed
 
 ## Tasks
 
