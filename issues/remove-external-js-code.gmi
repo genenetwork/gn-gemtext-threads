@@ -2,7 +2,7 @@
 
 ## Tags
 
-* assigned: bonfacem, alex, zachs
+* assigned: alex
 * type: ui, enhancement
 * status: stalled
 * priority: medium
