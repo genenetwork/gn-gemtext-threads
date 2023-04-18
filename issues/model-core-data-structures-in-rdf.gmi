@@ -1,0 +1,16 @@
+# Model Data Structures In RDF
+
+## Tags
+
+* assigned: bonfacem
+* type: modelling
+* status: in progress
+* priority: high
+* keywords: rdf, modelling
+
+
+## Description
+
+Read the following for more details:
+
+=> https://github.com/genenetwork/gn-docs/blob/master/features/data-structures.md Data Structures
