@@ -1,0 +1,16 @@
+# Troubleshoot CD Menu Failure
+
+## Tags
+
+* assigned: bonfacem
+* type: modelling
+* status: stalled
+
+## Description
+
+The menu in CD fails.  This is because the database in CD is out of sync with the one in production.  In particular:
+
+
+```
+2023-04-21 11:54:41 MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'Family' in 'field list'")
+```
