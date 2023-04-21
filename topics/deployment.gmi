@@ -19,3 +19,9 @@ DATA_DIR="/export/data/genenetwork"
 XAPIAN_DB_PATH="/export/data/genenetwork-xapian"
 ```
 DATA_DIR must contain two directories—genotype_files and synteny.
+
+## deploy guix
+
+See also
+
+=> guix-profiles.gmi
