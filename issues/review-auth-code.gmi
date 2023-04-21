@@ -1,0 +1,13 @@
+# Try out Auth Code Locally
+
+## Tags
+
+* assigned: bonfacem
+* type: review
+
+## Description
+
+Have a look at Fred's Auth code and in particular:
+
+* [ ] Set it up in a local development environment.
+* [ ] Improve documentation if it needs improvement
