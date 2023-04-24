@@ -4,7 +4,7 @@ As a hurricane is barreling towards our machine room in Memphis we are checking 
 
 See also
 
-=> topics/systems/restore-backups.gmi Restore Backups
+=> /topics/systems/restore-backups.gmi Restore Backups
 
 ## Tags
 
