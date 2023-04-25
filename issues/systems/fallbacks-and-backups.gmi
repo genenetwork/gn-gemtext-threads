@@ -9,7 +9,7 @@ See also
 ## Tags
 
 * type: enhancement
-* assigned: pjotrp
+* assigned: pjotrp, bonfacem
 * keywords: systems, fallback, backup, deploy
 * status: in progress
 * priority: critical
