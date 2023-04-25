@@ -9,7 +9,7 @@ See also
 ## Tags
 
 * type: enhancement
-* assigned: pjotrp, bonfacem
+* assigned: pjotrp
 * keywords: systems, fallback, backup, deploy
 * status: in progress
 * priority: critical
@@ -47,7 +47,7 @@ root@epysode:/# borg extract export2/backup/tux01/borg-genenetwork::TUX01_BORG_G
 
 Recently epysode was reinstated after hardware failure. I took the opportunity to reinstall the machine. The backups are described in the repo (genenetwork org members have access)
 
-=> https://github.com/genenetwork/gn-services/blob/master/services/backups.org
+=> https://github.com/genenetwork/gn-services/blob/master/services/backups.org BACKUPS
 
 As epysode was one of the main sheepdog messaging servers I need to reinstate:
 
