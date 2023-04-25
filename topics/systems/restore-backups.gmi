@@ -30,7 +30,7 @@ According to sheepdog the drops are happening to 'space' and 'epysode', but 'tux
 
 ## Mariadb
 
-The first step is to find where the current mariadb is running. This will be a symlink in /var/lib/mysgl -> some dir.
+The first step is to find where the current mariadb is running. This will be a symlink in /var/lib/mysql -> some dir.
 
 ```
 mysql -> /export2/mysql/borg-backup-mariadb-20211024-03:09-Sun
