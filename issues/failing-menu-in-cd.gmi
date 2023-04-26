@@ -14,3 +14,9 @@ The menu in CD fails.  This is because the database in CD is out of sync with th
 ```
 2023-04-21 11:54:41 MySQLdb._exceptions.OperationalError: (1054, "Unknown column 'Family' in 'field list'")
 ```
+
+## Resolution
+
+Sync'ed tux02 with tux01.
+
+* closed
