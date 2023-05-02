@@ -1,0 +1,9 @@
+# Xapian search
+
+Our main search engine (sometimes called the "global search" for historical reasons) is powered by Xapian, the excellent lightweight search engine library. This document aims to describe the architecture of the search code.
+
+The search engine consists of two separate parts---the indexer and the search query responder. In xapian (or rather, information retrieval) parlance, each possible search result is called a "document". Each document is associated with a set of "terms". The indexer builds an index mapping terms to documents. When a user submits a search query, the search query is decomposed into a set of terms and these terms are looked up in the index. "Terms" are often merely the words that constitute a document or search query. But these words are normalized to remove verb conjugations, plural forms of nouns, etc. For example, "using" is normalized to "use", "looked" is normalized to "look", "books" is normalized to "book", etc. This process is called stemming. Thanks to stemming and the trickery of statistics, the xapian search engine can pretend to a crude understanding of natural language.
+
+## Boolean terms, values, position information, and others
+
+TODO
