@@ -1,0 +1,14 @@
+# Broken Indexing
+
+## Tags
+
+* assigned: bonfacem, alex, fredm
+* type: CD
+* priority: high
+* keywords: xapian, search
+
+## Description
+
+Broken Search from:
+
+=> https://ci.genenetwork.org/jobs/genenetwork3-build-xapian-index/143 genenetwork3-build-xapian-index #143
