@@ -45,7 +45,7 @@ See this answer for how a join was performed on 2 different queries:
 
 => https://dba.stackexchange.com/questions/146509/joining-results-of-two-mysql-queries Joining results of two mysql queries
 
-#### Correlations
+## Correlations
 
 Correlations are slow.  As of Tuesday April 4, 2023 at 1:37pm:
 
