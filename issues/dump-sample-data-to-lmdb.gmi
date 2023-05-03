@@ -2,12 +2,8 @@
 
 * assigned: bonfacem
 * priority: high
-* status: in progress
+* status: stalled
 * keywords: lmdb, rdf
-
-## Description
-
-For GeneNetwork2, a dataset is made up of multiple traits, each with its own sample data. The trait's name is a combination of the species name and the trait's ID (for genotypes/probesets this may not be the case), which is obtained from a SQL table. The objective of this task is to store each trait's sample data in LMDB, allowing it to be accessed quickly in GN2/3 via RDF, which will decouple the data from the python-base classes/objects it is associated with, significantly improving sample data access speed.
 
 ## Tasks
 Dump data and add relevant RDF Metadata for LMDB for:
@@ -16,8 +12,11 @@ Dump data and add relevant RDF Metadata for LMDB for:
 * [ ] probesets
 * [ ] genotypes
 * [ ] GN2/3 Integration
+* [ ] Have files and named files available through RDF
 
-## General Notes
+## Description
+
+For GeneNetwork2, a dataset is made up of multiple traits, each with its own sample data. The trait's name is a combination of the species name and the trait's ID (for genotypes/probesets this may not be the case), which is obtained from a SQL table. The objective of this task is to store each trait's sample data in LMDB, allowing it to be accessed quickly in GN2/3 via RDF, which will decouple the data from the python-base classes/objects it is associated with, significantly improving sample data access speed.
 
 To fetch all data, including case-attributes data, for published phenotypes in SQL (using BXD_10007 as an example), you would use the following:
 
@@ -41,4 +40,18 @@ GROUP BY InbredSetId, cxref.StrainId) B ON A.StrainId = B.StrainId;
 
 See this answer for how a join was performed on 2 different queries:
 
-=> https://dba.stackexchange.com/questions/146509/joining-results-of-two-mysql-queries
+=> https://dba.stackexchange.com/questions/146509/joining-results-of-two-mysql-queries Joining results of two mysql queries
+
+#### Correlations
+
+Correlations are slow.  As of Tuesday April 4, 2023 at 1:37pm:
+
+GN1 took *29 sec* (completed) vs GN2 *38 sec* (completed) for 1457545_at in the Hippocampus Consortium M430v2 (Jun06) PDNN
+
+=> http://genenetwork.org/webqtl/main.py?FormID=sharinginfo&GN_AccessionId=112 Hippocampus Consortium M430v2 (Jun06) PDNN
+
+GN1 took *1.56 mins* (completed) vs GN2 *5.24 mins* (completed)  for 10528873 in the UTHSC BXD Aged Hippocampus Affy Mouse Gene 1.0 ST (Sep12) RMA Exon Level
+
+=> https://gn1.genenetwork.org/webqtl/main.py?FormID=sharinginfo&InfoPageName=UTHSC_BXD_H_0912 UTHSC BXD Aged Hippocampus Affy Mouse Gene 1.0 ST (Sep12) RMA Exon Level
+
+Research Question:  What effect would using LMDB have on correlations over text-file caching and sql fetches?
