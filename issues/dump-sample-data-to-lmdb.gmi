@@ -8,10 +8,13 @@
 ## Tasks
 Dump data and add relevant RDF Metadata for LMDB for:
 
-* [-] [un-]published phenotypes
+* [ ] phenotypes
 * [ ] probesets
 * [ ] genotypes
 * [ ] GN2/3 Integration
+
+For RDF:
+
 * [ ] Have files and named files available through RDF
 
 ## Description
