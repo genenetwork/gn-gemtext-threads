@@ -2,8 +2,43 @@
 
 Our main search engine (sometimes called the "global search" for historical reasons) is powered by Xapian, the excellent lightweight search engine library. This document aims to describe the architecture of the search code.
 
-The search engine consists of two separate parts---the indexer and the search query responder. In xapian (or rather, information retrieval) parlance, each possible search result is called a "document". Each document is associated with a set of "terms". The indexer builds an index mapping terms to documents. When a user submits a search query, the search query is decomposed into a set of terms and these terms are looked up in the index. "Terms" are often merely the words that constitute a document or search query. But these words are normalized to remove verb conjugations, plural forms of nouns, etc. For example, "using" is normalized to "use", "looked" is normalized to "look", "books" is normalized to "book", etc. This process is called stemming. Thanks to stemming and the trickery of statistics, the xapian search engine can pretend to a crude understanding of natural language.
+The search engine consists of two separate parts---the indexer and the search query responder. In xapian parlance (or rather, information retrieval parlance), each possible search result is called a "document". Each document is associated with an unordered set of "terms". The indexer builds an index mapping terms to documents. When a user submits a search query, the search query is decomposed into a set of terms and these terms are looked up in the index. "Terms" are often merely the words that constitute a document or search query. But these words are normalized to remove verb conjugations, plural forms of nouns, etc. For example, "using" is normalized to "use", "looked" is normalized to "look", "books" is normalized to "book", etc. This process is called stemming. Thanks to stemming and the trickery of statistics, the xapian search engine can pretend to a crude understanding of natural language.
 
-## Boolean terms, values, position information, and others
+## Prefixed terms
 
-TODO
+Xapian does not just support searching free text in a document, but also for text in specific fields, say description, author, abstract, etc. using prefixes such as description:, author: and abstract:. This is done using what are called "prefixed terms". While a regular term "foo" may be indexed as "foo", when it is indexed for the author field, it may be indexed as "Afoo". Here, the prefix "A" indicates that this term is for the author field. Note that the prefix "A" is an arbitrary choice. It does not matter what prefix you choose as long as the query parser also knows to convert the author: field label to an "A" prefix. Nevertheless, there are recommended conventions and you are encouraged to use multi-letter prefixes that start with X (such as XA, XB, XBC, etc.) for non-standard prefixes.
+
+=> https://xapian.org/docs/omega/termprefixes.html Recommended term prefix conventions
+
+## Boolean terms
+
+Usually, terms are matched to documents "fuzzily" with each term contributing to the relevance score of a document. Thus, you may have documents that match the query very weakly but are nevertheless present in the search results albeit towards the end. However this behaviour is unacceptable for some fields. For queries such as species:mouse, we only want results that strictly match and not documents that approximately match it in some fuzzy way. This kind of boolean information retrieval is supported in xapian using "boolean terms". Just as with prefixed terms, the indexer and the query parser should agree on which terms and prefixes are boolean.
+
+A common pitfall is to support boolean search queries by switching the default query operator to AND. This disrupts the relevance scoring, converts xapian to a purely boolean information retrieval system (as opposed to a hybrid probabilistic + boolean information retrieval system) greatly reducing its utility.
+
+## Values and slots
+
+Some aspects of a document are numeric values or dates. They cannot be matched in the same way that terms are. Xapian supports these using a separate mechanism---slots and values. Xapian documents come with several slots each addressed by a number. These slots can contain arbitrary values (often numeric, but also dates and others). Just as with prefixed terms and boolean terms, the indexer and query parser should agree on the numeric slot addresses that numeric fields correspond to. Sorting of search results and range queries are also implemented using slots and values.
+
+## Position information
+
+In addition to terms, the xapian indexer captures position information to support phrase searches, the NEAR operator, etc. These features are unimportant for some fields. For such fields, we may tell xapian to index without capturing position information. This will help save on disk space used by the index.
+
+## Document data
+
+In addition to all the terms, position information, slots and values associated with each document, xapian also allows storing "document data" with each document. This is an unstructured data field used to store data required to render search results. In GeneNetwork, we store a serialized JSON object as document data. It is a mistake to use slots and values to store data required for rendering. Slots and values come with performance overhead.
+
+## Manipulate queries only as AST objects, not strings
+
+A common pitfall is treating queries as strings and trying to extend the query parser by manipulating query strings using string manipulation functions. This leads to fragile code. Fragile code leads to fear of breaking things when editing code. Fear leads to anger. Anger leads to hate. Hate leads to suffering. Xapian instead exposes parsed query objects as ASTs and comes with an API to manipulate such ASTs. Extending the query parser is often relatively easy using the FieldProcessor API. Never use string operations.
+
+## The GeneNetwork xapian indexer
+
+The GeneNetwork xapian indexer lives as a script in the genenetwork3 repo.
+=> https://github.com/genenetwork/genenetwork3/blob/main/scripts/index-genenetwork
+It retrieves data using several SQL queries and indexes them to build the index. Due to the enormous size of the GeneNetwork database, this is quite an expensive operation and relies on various tricks to complete in reasonable time. These are described in a separate document.
+=> /topics/xapian-indexing
+
+The index is built once a day in a CI job.
+=> https://ci.genenetwork.org/jobs/genenetwork3-build-xapian-index
+The genenetwork3 web server process only reads the index and never mutates it. This means that the current index is a pure function of the current code and the current database. We do not have to worry about any additional state. State is evil.

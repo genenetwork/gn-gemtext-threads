@@ -3,3 +3,10 @@
 * assigned: arun
 
 Document xapian search code architecture in the topics section of gn-gemtext-threads so that someone else can pick up the work and continue it.
+
+## Resolution
+
+This is now complete.
+=> /topics/xapian-search
+
+* closed
