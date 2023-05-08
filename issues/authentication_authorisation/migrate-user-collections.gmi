@@ -1,0 +1,36 @@
+# Migrate User Collections
+
+## Tags
+
+* assigned: zachs
+* priority: critical
+* status: open
+* keywords: authentication, authorisation, oauth2, user collections
+* type: bug
+
+## Description
+
+With the successful deployment of the auth(entic|oris)ation system to staging/CD, we need to move some of the existing features over to using the new auth(entic|oris)ation system.
+
+This issue tracks the migration of user collections.
+
+### Implementation Notes
+
+The user collections are stored in redis, and linked to the user using [the user id][0]. This ID is entirely different from that in the auth(entic|oris)ation system, unless we get the go-ahead to [migrate the user accounts][1].
+
+The auth(entic|oris)ation system provides the following endpoint(s) for getting user details
+
+* `/oauth2/user/`: Note the trailing forward slash (/). This endpoint provides user data such as the user's ID, email and name, and their group membership information.
+
+There is no quick way to bridge the two systems. The most plausible is:
+
+* get the user-details from the GN3 endpoint
+* extract the email from the user-details
+* use email to fetch the old user-id from redis
+* use old user-id to fetch collections
+
+
+## Links
+
+=> https://github.com/genenetwork/genenetwork2/blob/5a8432adb56f9fddbc9e42a9eb8de5e4a0879ee6/wqflask/utility/redis_tools.py#L82-L83 0
+=> https://issues.genenetwork.org/issues/authentication_authorisation/migrate-user-accounts-from-redis 1
