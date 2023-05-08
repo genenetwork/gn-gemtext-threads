@@ -1,0 +1,25 @@
+# Use "Authorisation Code Flow" for Authentication
+
+## Tags
+
+* assigned: fredm
+* priority: critical
+* status: open
+* keywords: authentication, authorisation, oauth2, authorisation code flow
+* type: feature request, improvement
+
+## Description
+
+We use OAuth2 for our auth(entic|oris)ation system.
+
+Currently, the system is making use of the "Password Grant Flow"[0] which was easy to implement and use for verifying concepts during development, but is not recommended for actual web applications. This is because, the "Password Grant Flow"[0] is meant for highly-trusted applications.
+
+Instead, the OAuth2 specification recommends the use of the "Authorisation Code Flow"[1] (possibly with PKCE[2]) for web and mobile applications.
+
+With the "Authorisation Code Flow"[1] in place, we will also have the ability to reuse the auth(entic|oris)ation system for other applications, e.g. the QC App
+
+## Links
+
+=> https://oauth.net/2/grant-types/password/ 0
+=> https://oauth.net/2/grant-types/authorization-code/ 1
+=> https://www.oauth.com/oauth2-servers/pkce/ 2
