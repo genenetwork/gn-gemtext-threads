@@ -21,6 +21,17 @@ As part of that migration, we need that any particular user's privileges be main
 * A newly created groups (as above) will contain those users with privileges ONLY for the resources in the group
 * Any users with privileges that cross groups will be harder to handle, but are hopefully fewer
 
+
+We could have the migration be triggered by the user:
+
+* User logs in using existing credentials
+* System looks for credentials in auth system db
+* If credentials found, log the user in and end the login process
+* If credentials are not found, search for credentials in old system
+* If credentials are found in old system, log the user in, and transfer the credentials to the new system (including user id, email, name, password, etc)
+* Provide the user with the chance to trigger migration of their details from the old system
+* If credentials are not found in either system, that is not a valid user. Show error and end the login process.
+
 ## Related Topic(s)
 
 => /topics/authentication/authentication-authorisation-design Authentication/authorisation design
