@@ -1,0 +1,44 @@
+# Incorrect PubMed IDs in the Publication Table
+
+* assigned: arthur, bonfacem, pjotrp
+* priority: high
+* status: stalled
+* keywords: rdf, sql
+
+Consider the query:
+
+```
+SELECT * FROM PublishXRef WHERE InbredSetId NOT IN (SELECT PublishFreeze.InbredSetId FROM PublishFreeze);
+```
+
+which results in:
+
+```
+*************************** 1. row ***************************
+Id: 5772
+PubMed_ID: 14805
+Abstract: NULL
+Authors: Harenza, J, Muldoon, PP, De Biasi, M, Miles, MF, and Damaj, MI
+Title: Better title here
+Journal: NULL
+Volume: NULL
+Pages: NULL
+Month: NULL
+Year: 2013
+*************************** 2. row ***************************
+Id: 7276
+PubMed_ID: 15792
+Abstract: NULL
+Authors: Williams EG, Andreux P, Houtkooper R, Auwerx J
+Title: Recombinant Inbred BXD Mice as a Model for the Metabolic Syndrome
+Journal: NULL
+Volume: NULL
+Pages: NULL
+Month: NULL
+Year: 2013
+```
+
+The above pmids are off.  Check:
+
+=> https://pubmed.ncbi.nlm.nih.gov/14805/
+=> https://pubmed.ncbi.nlm.nih.gov/15792/
