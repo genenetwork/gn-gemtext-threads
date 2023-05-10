@@ -32,6 +32,28 @@ We could have the migration be triggered by the user:
 * Provide the user with the chance to trigger migration of their details from the old system
 * If credentials are not found in either system, that is not a valid user. Show error and end the login process.
 
+The user accounts information in redis is stored in a hash of the form:
+
+```
+{
+  <user-id:UUID>: {
+    "email_address": <:STRING>,
+    "full_name": <:STRING>,
+    "organization": <:STRING>,
+    "password": <pbkdf2-password-representation:MAPPING>,
+    "user_id": <user-id:UUID>,
+    "confirmed": <:int (0 or 1)>,
+    "registration_info": {
+        "timestamp": <:TIMESTAMP>,
+        "ip_address": <:IPv4ADDRESS>,
+        "user_agent": <:STRING>}
+    },
+  ...
+}
+```
+
+where both ```<user-id:UUID>``` values are the same.
+
 ## Related Topic(s)
 
 => /topics/authentication/authentication-authorisation-design Authentication/authorisation design
