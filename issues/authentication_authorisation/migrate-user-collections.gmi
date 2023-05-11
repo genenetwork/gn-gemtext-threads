@@ -37,8 +37,17 @@ The steps would be something like:
 * User click the "migrate data" button
 * System changes user-id on the identified collections from the old user-id to the new user-id
 
+#### Anonymous Collections
+
+Users can create and work with collections without being authenticated to the system. Such collections (which I dub "anonymous collections") are ephemeral. They were linked to the session[2] via an anonymous user_id.
+
+In the older system, a user was able to import such anonymous collections by selecting "Import existing collections" when they logged in (see the `import_traits_to_user` function in the sessions[2] module). We need to maintain this feature. This will probably require reworking the code, to get rid of the sessions[2] module while retaining most of what it does.
+
+
+
 
 ## Links
 
 => https://github.com/genenetwork/genenetwork2/blob/5a8432adb56f9fddbc9e42a9eb8de5e4a0879ee6/wqflask/utility/redis_tools.py#L82-L83 0
 => https://issues.genenetwork.org/issues/authentication_authorisation/migrate-user-accounts-from-redis 1
+=> https://github.com/genenetwork/genenetwork2/blob/96fb589371dd1700f0d0f7abc367098d6820c37a/wqflask/wqflask/user_session.py 2
