@@ -1,0 +1,210 @@
+# Amazon Web Services
+
+## Create a virtual machine
+
+In the browser:
+
+- Log in to Amazon Web Services as "Root user" (https://signin.aws.amazon.com/)
+- Click "Launch a virtual machine"
+- Select instance's O.S. and type
+- Create a key pair to securely connect to the instance
+- Download the created key pair (file `chosen_name.pem`)
+- Allow HTTPS/HTTP traffic from the internet
+- Click "Launch instance"
+
+In the local machine:
+
+```shell
+chmod 400 chosen_name.pem` # ensure your key is not publicly viewable
+ssh -i "chosen_name.pem" ubuntu@ec2-54-211-237-62.compute-1.amazonaws.com` # connect to the instance (the address changes every time the machine is restarted)
+```
+
+Note: select the instance and then click 'Instance state' and 'Stop Instance' to stop it.
+
+## Create multiple users
+
+In the virtual machine:
+
+```shell
+ssh -i "chosen_name.pem" ubuntu@ec2-54-211-237-62.compute-1.amazonaws.com # connect to the virtual machine
+sudo adduser user1 # create a new user
+sudo adduser user2 # create a new user
+sudo sed 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config -i # allow new users to use SSH with password authentication
+sudo systemctl restart sshd # restart the SSH service to apply the changes
+```
+
+## Clone a virtual machine
+
+- Select the instance
+- Click "Actions", "Image and templates", and "Create image"
+- Set "Image name" and click "Create image"
+- Click Images->"Create AMI in the menu on the left side
+- Select the AMI and click the "Launch instances from AMI" button
+
+## Set up a pangenomic virtual machine
+
+```shell
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install -y \
+                    git \
+                    bash \
+                    cmake \
+                    make \
+                    g++-11 \
+                    python3-dev \
+                    pybind11-dev \
+                    libbz2-dev \
+                    bc \
+                    libatomic-ops-dev \
+                    autoconf \
+                    libgsl-dev \
+                    zlib1g-dev \
+                    libzstd-dev \
+                    libjemalloc-dev \
+                    libhts-dev \
+                    build-essential \
+                    pkg-config \
+                    time \
+                    curl \
+                    pigz \
+                    tabix \
+                    bcftools \
+                    samtools \
+                    wget \
+                    pip \
+                    libcairo2-dev \
+                    unzip \
+                    parallel \
+    && sudo apt-get clean \
+    && sudo apt-get purge  \
+    && sudo rm -rf /var/lib/apt/lists/*
+sudo apt-get autoremove
+
+git clone --recursive https://github.com/waveygang/wfmash \
+    && cd wfmash \
+    && git pull \
+    && git checkout 8ba3c53f327731ca515abd1ef32179f15acb9732 \
+    && git submodule update --init --recursive \
+    && cmake -H. -DCMAKE_BUILD_TYPE=Release -Bbuild && cmake --build build -- -j $(nproc) \
+    && sudo cp build/bin/wfmash /usr/local/bin/wfmash \
+    && cd ../ \
+    && rm -rf wfmash
+
+git clone --recursive https://github.com/ekg/seqwish \
+    && cd seqwish \
+    && git pull \
+    && git checkout d9e7ab59e73258f57875f2a060437735a460475e \
+    && git submodule update --init --recursive \
+    && cmake -H. -DCMAKE_BUILD_TYPE=Release -Bbuild && cmake --build build -- -j $(nproc) \
+    && sudo cp bin/seqwish /usr/local/bin/seqwish \
+    && cd ../ \
+    && rm -rf seqwish
+
+git clone --recursive https://github.com/pangenome/smoothxg \
+    && cd smoothxg \
+    && git pull \
+    && git checkout 956eb75644522bb2b96b4cca44b7bafa9cf02f4a \
+    && git submodule update --init --recursive \
+    && cmake -H. -DCMAKE_BUILD_TYPE=Release -Bbuild && cmake --build build -- -j $(nproc) \
+    && sudo cp bin/smoothxg /usr/local/bin/smoothxg \
+    && sudo cp deps/odgi/bin/odgi /usr/local/bin/odgi \
+    && cd ../ \
+    && rm -rf odgi
+
+curl https://sh.rustup.rs -sSf | sh -s -- -y
+PATH="$HOME/.cargo/bin:${PATH}"
+
+git clone https://github.com/marschall-lab/GFAffix.git \
+    && cd GFAffix \
+    && git pull \
+    && git checkout 3784c7ee03ee82df576474d2e119fdd88616914b \
+    && cargo install --force --path . \
+    && sudo mv $HOME/.cargo/bin/gfaffix /usr/local/bin/gfaffix \
+    && cd ../ \
+    && rm -rf GFAffix
+
+
+wget https://github.com/vgteam/vg/releases/download/v1.40.0/vg \
+    && chmod +x vg \
+    && sudo mv vg /usr/local/bin/vg
+
+git clone https://github.com/pangenome/vcfbub \
+    && cd vcfbub \
+    && git pull \
+    && git checkout 26a1f0cb216a423f8547c4ad0e0ce38cb9d324b9 \
+    && cargo install --force --path . \
+    && sudo mv $HOME/.cargo/bin/vcfbub /usr/local/bin/vcfbub \
+    && cd ../ \
+    && rm -rf vcfbub
+
+git clone --recursive https://github.com/vcflib/vcflib.git \
+    && cd vcflib \
+    && git checkout 4f2bce873bc520449ec549f36aaaad65bace51ca \
+    && mkdir -p build \
+    && cd build \
+    && cmake -DZIG=OFF -DCMAKE_BUILD_TYPE=Release .. && cmake --build . -- -j $(nproc) \
+    && sudo mv vcfwave /usr/local/bin/vcfwave \
+    && sudo mv vcfuniq /usr/local/bin/vcfuniq \
+    && cd ../../ \
+    && rm -rf vcflib
+
+git clone https://github.com/ekg/fastix.git \
+    && cd fastix \
+    && git pull \
+    && git checkout 331c1159ea16625ee79d1a82522e800c99206834 \
+    && cargo install --force --path . \
+    && sudo mv $HOME/.cargo/bin/fastix /usr/local/bin/fastix \
+    && cd ../ \
+    && rm -rf fastix
+
+git clone https://github.com/ekg/pafplot.git \
+    && cd pafplot \
+    && git pull \
+    && git checkout 7dda24c0aeba8556b600d53d748ae3103ec85501 \
+    && cargo install --force --path . \
+    && sudo mv $HOME/.cargo/bin/pafplot /usr/local/bin/ \
+    && cd ../ \
+    && rm -rf pafplot
+
+pip install igraph==0.10.4
+pip install pycairo==1.23.0
+pip install multiqc==1.14
+sudo mv /home/ubuntu/.local/bin/* /usr/local/bin/
+
+git clone https://github.com/pangenome/pggb.git
+cd pggb
+git checkout de5303e24d3e5594a5a2c9bdeb49aba420b24b0c
+sudo cp pggb /usr/local/bin/pggb
+sudo chmod 777 /usr/local/bin/pggb
+sudo cp partition-before-pggb /usr/local/bin/partition-before-pggb
+sudo chmod 777 /usr/local/bin/partition-before-pggb
+sudo cp scripts/* /usr/local/bin/ # copy required scripts
+
+# Hacky-way to easily get versioning info
+sudo cp -r .git /usr/local/bin/
+git config --global --add safe.directory /usr/local/bin
+cd ..
+rm -rf pggb
+
+# Docker (for Nextflow)
+sudo apt-get remove docker docker-engine docker.io
+sudo apt-get update
+sudo apt install docker.io
+sudo snap install docker
+sudo groupadd docker # create the docker group
+sudo usermod -aG docker ${USER} # add yourself to the docker group
+#  log out and log back in so that your group membership is re-evaluated
+docker run hello-world # test it
+# reboot the instance
+
+# Java 17 (for Nextflow)
+sudo apt install openjdk-17-jre-headless
+
+# Nextflow
+wget -qO- https://get.nextflow.io | bash
+sudo cp nextflow /usr/local/bin/nextflow
+sudo chmod 777 /usr/local/bin/nextflow
+nextflow run nf-core/pangenome -r a_brave_new_world -profile test,docker --outdir a_brave_new_world.output # test it
+nextflow run nf-core/pangenome -r a_brave_new_world --input pggb/data/HLA/DRB1-3123.fa.gz --n_haplotypes 14 --outdir uffa -profile docker -c hla.config # to ask for less resources
+```
