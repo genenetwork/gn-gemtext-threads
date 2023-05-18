@@ -11,6 +11,6 @@
 * Upload GeneRIF data in Tux02.
 * Give example SPARQL queries.
 
-=> topics/RDF/sparql-queries Example GeneRIF sparql queries
+=> /topics/RDF/sparql-queries Example GeneRIF sparql queries
 
 * closed
