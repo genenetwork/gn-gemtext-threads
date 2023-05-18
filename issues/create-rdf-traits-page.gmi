@@ -1,0 +1,17 @@
+# Create Traits Endpoints in RDF
+
+## Tags
+
+* assigned: bonfacem
+* type: feature
+* status: in progress
+
+Create end-points that query RDF for the following:
+
+* [ ] Phenotypes: (prefix "phenotype:" "<http://genenetwork.org/phenotype/>")
+* [ ] Genotypes: (prefix "phenotype:" "<http://genenetwork.org/genotype/>")
+* [ ] Probesets: (prefix "phenotype:" "<http://genenetwork.org/probesets/>")
+
+In the process, also add examples here:
+
+=> topics/RDF/sparql-queries Querying SPARQL Examples
