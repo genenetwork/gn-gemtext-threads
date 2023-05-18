@@ -4,13 +4,13 @@
 
 In the browser:
 
-- Log in to Amazon Web Services as "Root user" (https://signin.aws.amazon.com/)
-- Click "Launch a virtual machine"
-- Select instance's O.S. and type
-- Create a key pair to securely connect to the instance
-- Download the created key pair (file `chosen_name.pem`)
-- Allow HTTPS/HTTP traffic from the internet
-- Click "Launch instance"
+* Log in to Amazon Web Services as "Root user" (https://signin.aws.amazon.com/)
+* Click "Launch a virtual machine"
+* Select instance's O.S. and type
+* Create a key pair to securely connect to the instance
+* Download the created key pair (file `chosen_name.pem`)
+* Allow HTTPS/HTTP traffic from the internet
+* Click "Launch instance"
 
 In the local machine:
 
@@ -35,11 +35,11 @@ sudo systemctl restart sshd # restart the SSH service to apply the changes
 
 ## Clone a virtual machine
 
-- Select the instance
-- Click "Actions", "Image and templates", and "Create image"
-- Set "Image name" and click "Create image"
-- Click Images->"Create AMI in the menu on the left side
-- Select the AMI and click the "Launch instances from AMI" button
+* Select the instance
+* Click "Actions", "Image and templates", and "Create image"
+* Set "Image name" and click "Create image"
+* Click Images->"Create AMI in the menu on the left side
+* Select the AMI and click the "Launch instances from AMI" button
 
 ## Set up a pangenomic virtual machine
 
