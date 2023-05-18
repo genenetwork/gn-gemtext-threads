@@ -14,4 +14,4 @@ Create end-points that query RDF for the following:
 
 In the process, also add examples here:
 
-=> /topics/RDF/sparql-queries Querying SPARQL Examples
+=> /topics/RDF/example-sparql-queries Querying SPARQL Examples
