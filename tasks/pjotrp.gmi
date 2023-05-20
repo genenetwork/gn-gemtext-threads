@@ -26,8 +26,8 @@ Now
 * [.] Tree of life
 
 * [ ] Check backups of etc etc.
+* [ ] Frontend for GN4MSK
 * [ ] GeneNetwork consortium
-* [+] Machine room HDDs
 
 Later
 
@@ -59,7 +59,6 @@ Later
 * [ ] research.gov submit Postdoc plan
 * [+] Complete vcflib work in Zig and release
 * [+] Reinstate backup drops on tux02, rabbit, &space and &epysode; reduce incoming IP
-* [+] Order drives and caddies tux01 & tux02 (with @haoc)
 * [+] Guix and Julia with Gregory
 * [ ] Check Adrian's compiler w. odgi
 * [ ] Update mars (fallback machine) also for development
@@ -75,6 +74,8 @@ Later
 
 ## Done
 
+* [X] Order drives and caddies tux01 & tux02 (with @haoc)
+* [X] Machine room HDDs
 * [X] NSF report with UTHSC
 * [X] Write test for R/qtl, GEMMA and other mapping
 * [X] Fix https on tux01
