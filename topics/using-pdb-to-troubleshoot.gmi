@@ -116,6 +116,12 @@ the process, leading to the error above. Generally speaking, you **SHOULD NOT**
 be running the debugger in production anyway, and therefore you should not need
 to deal with the gunicorn issues.
 
+That said, you can start the Flask application under pdb with something like:
+
+```
+python3 -m pdb flask run [OPTIONAL-ARGUMENTS-TO-FLASK]
+```
+
 
 ## Useful Tutorials
 
