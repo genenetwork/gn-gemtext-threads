@@ -1,6 +1,6 @@
 # Using PDB to Troubleshoot Python Code
 
-# Tags
+## Tags
 * type: documentation
 * keywords: debugging, python
 
@@ -97,8 +97,27 @@ With regards to testing, pdb is also integrated with test-runners. To use pdb wi
 | pytest --pdb
 `----
 
+## Running Flask Applications Under pdb
 
-### Useful Tutorials
+To troubleshoot a Flask application (and any other application running via an
+applicationsserver of sorts), you might need to start the application server under
+the debugger, otherwise, you will get an error like:
+
+```
+BdbQuit
+```
+
+Ideally, you shouldn't need to, as the terminal where you started the
+application server (Flask) should drop you into the debugger automatically.
+
+If you run the application under other application servers like gunicorn, then
+you might need to increase the timeout period to prevent gunicorn from killing
+the process, leading to the error above. Generally speaking, you **SHOULD NOT**
+be running the debugger in production anyway, and therefore you should not need
+to deal with the gunicorn issues.
+
+
+## Useful Tutorials
 
 To learn more about pdb, you can check out:
 
