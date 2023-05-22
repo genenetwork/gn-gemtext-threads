@@ -4,7 +4,7 @@
 
 * assigned: fredm
 * priority: critical
-* status: open
+* status: closed, completed
 * keywords: authentication, authorisation, oauth2, authorisation code flow
 * type: feature request, improvement
 

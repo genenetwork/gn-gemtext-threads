@@ -2,9 +2,9 @@
 
 ## Tags
 
-* assigned: zachs
+* assigned: zachs, fredm
 * priority: critical
-* status: open
+* status: closed, completed
 * keywords: authentication, authorisation, oauth2, user collections
 * type: bug
 

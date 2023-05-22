@@ -4,11 +4,17 @@
 
 * assigned: fredm, zsloan, zachs
 * priority: high
-* status: pending
+* status: closed, wontfix
 * keywords: authentication, authorisation, oauth2
 * type: feature request
 
 ## Description
+
+After some discussion, this issue was deemed unnecessary.
+
+Users will have to register anew and their access details reconfirmed.
+
+--------------------
 
 Currently, on GN2, user details are stored in Redis. We need to migrate these to the new auth database (SQLite3) in order to be able to use that system.
 

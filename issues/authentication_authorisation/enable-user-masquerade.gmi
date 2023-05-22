@@ -1,0 +1,13 @@
+# Enable User Masquerade
+
+## Tags
+
+* assigned: fredm, zsloan, zachs
+* priority: medium
+* status: open
+* keywords: authentication, authorisation, oauth2
+* type: feature request
+
+## Description
+
+To enable debug of issues, or to support some user request, we need to build in a masquerade feature to enable the system admin to masquerade as a particular user and perform actions as said user.
