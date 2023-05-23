@@ -4,7 +4,7 @@
 
 * assigned: fredm, zsloan, zachs
 * priority: medium
-* status: open
+* status: closed, completed
 * keywords: authentication, authorisation, oauth2
 * type: feature request
 
