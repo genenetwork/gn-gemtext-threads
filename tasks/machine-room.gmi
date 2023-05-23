@@ -1,0 +1,35 @@
+# Machine room tasks
+
+## Tags
+
+* assigned: pjotrp
+* priority: medium
+* type: system administration
+* keywords: system administration, octopus, gateway, tux02, tux01, tux03
+
+## Tasks
+
+* [ ] get data from summer211.uthsc.edu (access machine room)
+* [ ] decommission out-racked machines (whith @arthurc)
+* [ ] space server out-of-band
+* [ ] tux01 has unused 4TB spinning disk
+* [ ] tux02 has unused 2x4TB spinning disks and 2TB nvme /dev/nvme0n1 on adapter
+      https://www.cyberciti.biz/faq/upgrade-update-samsung-ssd-firmware/
+      apt-get install fwupd fwupdate
+      fwupdmgr get-devices
+      fwupdmgr update
+      The previously problematic Samsung 980 Pro was basically using the 3B2QGXA7, and now Samsung has introduced a new 5B2QGXA7 firmware to fix the problem. The problem mainly affects the 2TB version of the 980 Pro
+* [ ] Automate tux01 restart for GN2+GN3 services
+* [ ] Check backups of etc etc.
+* [ ] Install tux04 and tux05
+* [ ] Tux01 and Tux02 disk space issues
+* [ ] connect 10Gbs to tux01(?) - needs to be a new IP
+* [ ] VPN access and FoUT
+* [+] Reinstate backup drops on tux02, rabbit, &space and &epysode; reduce incoming IP
+* [ ] Update mars (fallback machine) also for development
+* [ ] Pluto tool with Zach & Efraim
+* [+] run sheepdog as root: redis password error; introduce SHEEPDOG_CONF
+* [ ] DMZ plan
+* [X] Order drives and caddies tux01 & tux02 (with @haoc)
+* [X] Introduce &disk space and mdstat monitor
+* [X] Machine room HDDs

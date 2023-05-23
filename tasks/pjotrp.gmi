@@ -21,6 +21,8 @@ Now
 * [+] Shelby's application
 * [.] Check Tony's list and improve search for SNPs and Hs
 * [.] GeneNetwork paper
+* [ ] GEMMA/bulklmm speedups
+* [ ] RISC-V
 
 Later
 
@@ -28,47 +30,20 @@ Later
 * [+] Machine room security and access for bonz, fred, shelby, others...
 * [ ] Hao's idea for counting cis-qtl
 * [ ] Batch run GEMMA and faster file handling
-* [ ] Run any2any alignments of pathogens
 * [ ] Improve search for significant and suggestive hits
-* [ ] GEMMA speedups
-* [ ] Aging studies
-* [ ] RISC-V
 * [+] DOI support GN (Paris)
-* [ ] Automate tux01 restart for GN2+GN3 services
-* [ ] tux01 has unused 4TB spinning disk
-* [ ] tux02 has unused 2x4TB spinning disks and 2TB nvme /dev/nvme0n1 on adapter
-      https://www.cyberciti.biz/faq/upgrade-update-samsung-ssd-firmware/
-      apt-get install fwupd fwupdate
-      fwupdmgr get-devices
-      fwupdmgr update
-      The previously problematic Samsung 980 Pro was basically using the 3B2QGXA7, and now Samsung has introduced a new 5B2QGXA7 firmware to fix the problem. The problem mainly affects the 2TB version of the 980 Pro
 
 ### Ongoing tasks
 
-=> ./dana.gmi See Dan's list for machine room
+=> ./machine-room.gmi machine room
 
-* [ ] get data from summer211.uthsc.edu (access machine room)
-* [ ] decommission out-racked machines (whith @arthurc)
-* [ ] space server out-of-band
 * [ ] Frontend for GN4MSK
-* [ ] Check backups of etc etc.
 * [ ] GeneNetwork consortium
-* [ ] Install tux04 and tux05
 * + [ ] Order storage and caddies
 * + [ ] See about network adapters and support
-* [ ] Tux01 and Tux02 disk space issues
-* [ ] connect 10Gbs to tux01(?) - needs to be a new IP
-* [ ] VPN access and FoUT
-* [ ] Setup VM on Tux02
 * [ ] Key 410H
 * [ ] research.gov submit Postdoc plan
 * [+] Complete vcflib work in Zig and release
-* [+] Reinstate backup drops on tux02, rabbit, &space and &epysode; reduce incoming IP
-* [+] Guix and Julia with Gregory
-* [ ] Check Adrian's compiler w. odgi
-* [ ] Update mars (fallback machine) also for development
-* [ ] Pluto tool with Zach & Efraim
-* [+] run sheepdog as root: redis password error; introduce SHEEPDOG_CONF
 * [ ] Fix issues:
 => https://genenetwork.org/show_trait?trait_id=10441&dataset=HSNIH-PalmerPublish slow mapping
 => http://gn1.genenetwork.org/webqtl/main.py?FormID=sharinginfo&GN_AccessionId=2
@@ -76,27 +51,4 @@ Later
 => ../issues/genenetwork1/gn1-production-system-issues.gmi
 * [ ] fix GN1 images linking to http://www.webqtl.org/array_images/S238-1F1-U74Av2.png
 
-### Maybe never
-
-* [ ] DMZ plan
-
 ### Done
-
-* [X] Order drives and caddies tux01 & tux02 (with @haoc)
-* [X] Introduce &disk space and mdstat monitor
-* [X] Machine room HDDs
-* [X] NSF report with UTHSC
-* [X] Write test for R/qtl, GEMMA and other mapping
-* [X] Fix https on tux01
-* [X] Fix Lily edit form
-=> http://gn1.genenetwork.org/infoshare/manager/member-studies-edit.html?DatasetId=101
-* [X] Opar.io move to dnsimple
-* [X] Run tux01 backups serially
-* [X] Add tux02 to rabbit's sheepdog
-* [X] Get status list from sheepdog on epysode, tux02 and rabbit on GN2
-* [X] Add accounts Erik, Andrea, Hao to P2
-* [X] Add accounts Bonz, Fred, Alex to tux02
-* [X] Restart luna
-* [X] Fix genecup errors (with @efraimf)
-* [X] Copy database to space (space3 dir) (@arthurc)
-* [X] Output sheepdog monitor
