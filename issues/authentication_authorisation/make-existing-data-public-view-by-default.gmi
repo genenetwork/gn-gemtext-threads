@@ -1,0 +1,25 @@
+# Make Existing Data Public View by Default
+
+## Tags
+
+* assigned: fredm, zsloan, zachs
+* priority: medium
+* status: open
+* keywords: authentication, authorisation, oauth2, data migration
+* type: migration
+
+## Description
+
+From the information coming to light, all the "current data" needs to be publicly visible. There is therefore need to implement a temporary script that will be manually run to organise the data into resources and user groups and assign the appropriate privileges.
+
+The script could:
+
+* use a sys-admin user-group (creating the sys-admin group if it doesn't already exist)
+* Create 3 different resources by type (mRNA, Phenotype, and Genotype resources)
+* Make each of the resources publicly viewable
+* Attach all the existing data to the resources in the sys-admin user-group
+* Assign the data to each resource according to the type
+
+### Gotcha
+
+There is no way of knowing if all the existing data should be publicly viewable by default, and could lead to data leaks if the script is run just after such data (not supposed to be publicly viewable) has been uploaded to the system.
