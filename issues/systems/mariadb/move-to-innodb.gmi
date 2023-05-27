@@ -399,6 +399,7 @@ DROP MYTABLE;
 RENAME TABLE tbl_name TO new_tbl_name, tbl_name2 TO MYTABLE;
 ```
 
+
 ### Check table structure
 
 ```

@@ -22,6 +22,8 @@
 * [ ] Automate tux01 restart for GN2+GN3 services
 * [ ] Check backups of etc etc.
 * [ ] Install tux04 and tux05
+* + [ ] Order storage and caddies
+* + [ ] See about network adapters and support
 * [ ] Tux01 and Tux02 disk space issues
 * [ ] connect 10Gbs to tux01(?) - needs to be a new IP
 * [ ] VPN access and FoUT

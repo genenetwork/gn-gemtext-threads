@@ -1,0 +1,84 @@
+# Slow query
+
+# Tags
+
+* assigned: pjotrp, aruni
+* priority: high
+* status: in progress
+* keywords: slow query
+
+# Description
+
+Since moving to innodb we have this very slow query:
+
+```
+SELECT ProbeSet.Name AS name, ProbeSet.Symbol AS symbol, ProbeSet.description AS description, ProbeSet.Chr AS chr, ProbeSet.Mb as mb, ProbeSet.alias AS alias, ProbeSet.GenbankId AS genbankid, ProbeSet.UniGeneId AS unigeneid, ProbeSet.Probe_Target_Description AS probe_target_description, ProbeSetFreeze.Name AS dataset, ProbeSetFreeze.FullName AS dataset_fullname, Species.Name AS species, InbredSet.Name AS "group", Tissue.Name AS tissue, ProbeSetXRef.Mean AS mean, ProbeSetXRef.LRS AS lrs, ProbeSetXRef.additive AS additive, Geno.Chr AS geno_chr, Geno.Mb as geno_mb FROM Species INNER JOIN InbredSet ON InbredSet.SpeciesId = Species.Id INNER JOIN ProbeFreeze ON ProbeFreeze.InbredSetId = InbredSet.Id INNER JOIN Tissue ON ProbeFreeze.TissueId = Tissue.Id INNER JOIN ProbeSetFreeze ON ProbeSetFreeze.ProbeFreezeId = ProbeFreeze.Id INNER JOIN ProbeSetXRef ON ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id INNER JOIN ProbeSet ON ProbeSet.Id = ProbeSetXRef.ProbeSetId LEFT JOIN Geno ON ProbeSetXRef.Locus = Geno.Name AND Geno.SpeciesId = Species.Id WHERE ProbeSetFreeze.confidentiality < 1 AND ProbeSetFreeze.public > 0
+```
+
+And this one is also slow - as used in old style global search
+
+```
+SELECT Species."Name" AS species_name,InbredSet."Name" AS inbredset_name, Tissue."Name" AS tissue_name,ProbeSetFreeze.Name AS probesetfreeze_name, ProbeSetFreeze.FullName AS probesetfreeze_fullname, ProbeSet.Name AS probeset_name, ProbeSet.Symbol AS probeset_symbol, CAST(ProbeSet."description" AS BINARY) AS probeset_description, ProbeSet.Chr AS chr, ProbeSet.Mb AS mb,ProbeSetXRef.Mean AS mean,ProbeSetXRef.LRS AS lrs, ProbeSetXRef."Locus" AS locus, ProbeSetXRef."pValue" AS pvalue,ProbeSetXRef."additive" AS additive,ProbeSetFreeze.Id AS probesetfreeze_id, Geno.Chr as geno_chr, Geno.Mb as geno_mbFROM Species INNER JOIN InbredSet ON InbredSet."SpeciesId"=Species."Id" INNER JOIN ProbeFreeze ON ProbeFreeze.InbredSetId=InbredSet."Id" INNER JOIN Tissue ON ProbeFreeze."TissueId"=Tissue."Id"INNER JOIN ProbeSetFreeze ON ProbeSetFreeze.ProbeFreezeId=ProbeFreeze.Id INNER JOIN ProbeSetXRef ON ProbeSetXRef.ProbeSetFreezeId=ProbeSetFreeze.Id INNER JOIN ProbeSet ON ProbeSet.Id = ProbeSetXRef.ProbeSetId LEFT JOIN Geno ON ProbeSetXRef.Locus = Geno.Name AND Geno.SpeciesId = Species.Id WHERE (MATCH (ProbeSet.Name,ProbeSet.description,ProbeSet.symbol,ProbeSet.alias,ProbeSet.GenbankId, ProbeSet.UniGeneId, ProbeSet.Probe_Target_Description) AGAINST ('brca2' IN BOOLEAN MODE) )AND ProbeSetFreeze.confidentiality < 1 AND ProbeSetFreeze.public > 0 ORDER BY species_name, inbredset_name, tissue_name, probesetfreeze_name, probeset_name LIMIT 600;
+```
+
+To find out what index is problematic we first look at sizes. Tables in use are
+
+```
+ProbeSet
+ProbeSetFreeze
+ProbeSetXRef
+ProbeFreeze
+InbredSet
+Tissue
+Species
+Geno
+```
+
+The big ones are:
+
+```
+ProbeSet     4G
+ProbeSetXRef 5G
+```
+
+Then I had a peek at the configuration. query_cache_size and query_cache_limit only cache results. Mariadb uses about 20G of RAM on tux02 - that all looks healthy.
+
+## Buffers and settings
+
+innodb_buffer_pool_size is set to 1Gb - and that may be a bit small, but it shoud not be critical here. Though I found
+
+BUFFER CACHING:
+
+The InnoDB Buffer Pool caches data and index pages. MyISAM only caches index pages.
+
+Just in this area alone, MyISAM does not waste time caching data. That's because it's not designed to cache data. InnoDB caches every data page and index page (and its grandmother) it touches. If your InnoDB Buffer Pool is too small, you could be caching pages, invalidating pages, and removing pages all in one query.
+
+I note that the mysql configuration on tux01 differs from tux02. But both these queries run slow on both machines, so not much point in trying to tweak that first.
+
+## Text formats
+
+Next step, as these are text searches, is to check the character type with something like
+
+```
+for t in 'cat tables.lst' ; do mysql -uwebqtlout -pwebqtlout db_webqtl -e "show create table $t" ; done
+```
+
+which shows that ProbeSet and Geno have utf8 and the others utf8mb4. That may be worth checking. Different text types add overheads to searches (it translates from one to the other).
+
+## Indices
+
+ProbeSet has a large number of columns, indices and full text indices(!)
+
+## Nailing it down
+
+The obvious thing to try is to reduce the query and see what speeds it up again. So, let's try removing the utf8 tables and indices first. E.g.
+
+```
+ALTER TABLE ProbeSet CONVERT TO CHARACTER SET utf8mb4 ;
+```
+
+
+## Further reading
+
+
+=> https://dba.stackexchange.com/questions/75091/why-are-simple-selects-on-innodb-100x-slower-than-on-myisam

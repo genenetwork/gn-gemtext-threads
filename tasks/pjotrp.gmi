@@ -18,29 +18,32 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 
 Now
 
-* [+] Shelby's application
-* [.] Check Tony's list and improve search for SNPs and Hs
-* [.] GeneNetwork paper
+* [ ] Set up stable server instance with new hardware
+* [ ] Drive for stability of GN tools (particularly GEMMA OOMP)
+* [ ] GEMMA precompute
 * [ ] GEMMA/bulklmm speedups
-* [ ] RISC-V
+* [ ] Aging grant application w. Rob (August)
+* [+] Shelby's application (fall)
+* [.] GeneNetwork paper
+* [ ] RISC-V trials
 
 Later
 
-* [.] Tree of life
+* [.] Tree of life w. Andrea
 * [+] Machine room security and access for bonz, fred, shelby, others...
 * [ ] Hao's idea for counting cis-qtl
 * [ ] Batch run GEMMA and faster file handling
 * [ ] Improve search for significant and suggestive hits
 * [+] DOI support GN (Paris)
+* [ ] Cito support
 
 ### Ongoing tasks
 
 => ./machine-room.gmi machine room
 
 * [ ] Frontend for GN4MSK
-* [ ] GeneNetwork consortium
-* + [ ] Order storage and caddies
-* + [ ] See about network adapters and support
+* [.] Check Tony's list and improve search for SNPs and Hs
+* [ ] GeneNetwork consortium (paper & CTC)
 * [ ] Key 410H
 * [ ] research.gov submit Postdoc plan
 * [+] Complete vcflib work in Zig and release

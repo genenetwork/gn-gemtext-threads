@@ -1,8 +1,10 @@
 # Deploy GeneNetwork
 
-This page attempts to document the very convoluted deployment process we have for GeneNetwork. Keeping this documentation up-to-date is going to be challenging, to say the least. So, the Guix configuration for the CI/CD container should be considered the authoritative reference.
+This page attempts to document the deployment process we have for GeneNetwork.
+We use Guix system containers for deployment of CI/CD and
+the Guix configuration for the CI/CD container should be considered the authoritative reference.
+
 => https://github.com/genenetwork/genenetwork-machines/blob/main/genenetwork-development.scm
-This document is for those looking for a succinct textual reference and would rather not dig through G-expressions.
 
 ## genenetwork2
 
