@@ -1,0 +1,56 @@
+# OpenSMTPD
+
+We have been using postfix and exim on different servers. Now it may be the time to switch to opensmtpd as it is modern, secure and easier to configure. Guix comes with a default opensmtp service, so let's try and get that running as a system container for reasons of deployment. See also
+
+=> ../deployment.gmi
+
+Setting up a mail service with Guix is described in
+
+=> https://guix.gnu.org/en/manual/devel/en/html_node/Mail-Services.html
+
+A service is defined as
+
+```scheme
+(service opensmtpd-service-type
+         (opensmtpd-configuration
+           (config-file (local-file "./my-smtpd.conf"))))
+```
+
+A first attempt at running a container is
+
+```
+(use-modules (gnu)
+             (gnu services mail))
+
+(operating-system
+  (host-name "mail")
+  (timezone "UTC")
+  (locale "en_US.utf8")
+  (bootloader (bootloader-configuration
+               (bootloader grub-bootloader)
+               (targets (list "/dev/sdX"))))
+  (file-systems %base-file-systems)
+  (users %base-user-accounts)
+  (packages %base-packages)
+
+  (services (cons
+             (service opensmtpd-service-type
+                      (opensmtpd-configuration
+                       (config-file %default-opensmtpd-config-file
+                       ; (config-file (local-file "./my-smtpd.conf")))
+                                    )))
+             %base-services)))
+```
+
+Running
+
+```
+guix system container opensmtpd.scm
+/gnu/store/n6ap881jp3lgms35z0dyw4mnkkqsnm89-run-container
+```
+
+creates a container file that can be started with the returned launcher, e.g. as root
+
+```
+/gnu/store/n6ap881jp3lgms35z0dyw4mnkkqsnm89-run-container
+```

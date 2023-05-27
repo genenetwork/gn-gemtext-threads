@@ -1,12 +1,24 @@
 # Guix system containers and how we use them
 
-Our preferred way to deploy long-running services is to use Guix system containers. Note that Guix system containers are different from guix shell containers (and the older guix environment containers). guix shell containers are meant for interactive use and are a poor fit for deployment. Other non-Guix ways such as running long-running processes in tmuxes, running long-running services from your development repository, etc. are unthinkably hacky and should not even be considered as a quick dirty way to get things done.
+Our preferred way to deploy long-running services is to use Guix system containers. Note that Guix system containers are different from guix shell containers (and the older guix environment containers). guix shell containers are meant for interactive use and are a poor fit for long running services. Other non-Guix ways such as running long-running processes in tmuxes, running long-running services from your development repository, etc. are a quick dirty way to get things done. Note that system containers are quite a bit heavier - they are full Linux boots.
 
-Guix system containers are fully described by a scheme configuration file that, among other things, specifies the services run in it. These scheme configuration files are built using `guix system container' and produce a script. This script, when run, starts the described container.
+Guix system containers are fully described by a configuration file that, among other things, specifies the services run in it. These scheme configuration files are built using `guix system container' and produce a script. This script, when run, starts the described container.
+
 ```
 $ guix system container foo.scm
 /gnu/store/9ld75cjg54xwqvsvvgdd38rv3d4x4wzz-run-container
 ```
+
+One cool aspect is that system containers can be easily tested on your own laptop.
+A great tutorial can be found at
+
+=> https://guix.gnu.org/cookbook/en/html_node/Guix-System-Containers.html
+
+A system container comes with a running shepherd process and running services are explicitly configured.
+
+Our most important containers are defined in
+
+=> https://github.com/genenetwork/genenetwork-machines/blob/main/genenetwork-development.scm
 
 ## Share network with the host
 
@@ -25,10 +37,13 @@ $ guix system container --network --share=/var/lib/foo foo.scm
 ## systemd services to manage the container processes
 
 Now, running these container scripts directly from the command-line, probably from within a tmux, makes for a very fragile deployment. So, we symlink the script into /usr/local/bin and set up a systemd service to manage the container process.
+
 ```
 # ln --force --symbolic $(guix system container --network --share=/var/lib/foo foo.scm) /usr/local/bin/foo-container
 ```
+
 A systemd service file foo-container.service for this container should be put at /etc/systemd/system/.
+
 ```
 [Unit]
 Description = Run foo container
@@ -39,17 +54,21 @@ ExecStart = /usr/local/bin/foo-container
 [Install]
 WantedBy = multi-user.target
 ```
+
 This allows us to start, stop and enable (for starting at boot time) the container easily.
+
 ```
 # guix system start foo-container
 # guix system stop foo-container
 # guix system enable foo-container
 ```
+
 With our service enabled to start at boot time, we need not worry about reboots. All our containers, and the services contained therein, start up smoothly on boot.
 
 ## Register as garbage collector root
 
 Finally, we must also tell Guix not to accidentally garbage collect our container or any of its dependencies. To this end, we symlink it into /var/guix/gcroots.
+
 ```
 # ln --force --symbolic /usr/local/bin/foo-container /var/guix/gcroots
 ```
