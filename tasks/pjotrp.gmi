@@ -41,6 +41,8 @@ Later
 
 => ./machine-room.gmi machine room
 
+* [ ] Fix mariadb index search - see
+=> slow-sq
 * [ ] Frontend for GN4MSK
 * [.] Check Tony's list and improve search for SNPs and Hs
 * [ ] GeneNetwork consortium (paper & CTC)

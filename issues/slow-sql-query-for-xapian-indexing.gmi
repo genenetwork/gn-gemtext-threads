@@ -65,6 +65,12 @@ for t in 'cat tables.lst' ; do mysql -uwebqtlout -pwebqtlout db_webqtl -e "show 
 
 which shows that ProbeSet and Geno have utf8 and the others utf8mb4. That may be worth checking. Different text types add overheads to searches (it translates from one to the other).
 
+In MySQL utf8 is an alias for utf8mb3 which is deprecated and will be removed in a future MySQL release. At that point utf8 will become a reference to utf8mb4. utf8mb4 is a UTF-8 encoding of the Unicode character set using one to four bytes per character.
+
+So we should be using utf8mb4.
+
+This also fixed the global search query.
+
 ## Indices
 
 ProbeSet has a large number of columns, indices and full text indices(!)
@@ -74,9 +80,41 @@ ProbeSet has a large number of columns, indices and full text indices(!)
 The obvious thing to try is to reduce the query and see what speeds it up again. So, let's try removing the utf8 tables and indices first. E.g.
 
 ```
-ALTER TABLE ProbeSet CONVERT TO CHARACTER SET utf8mb4 ;
+ALTER TABLE ProbeSet CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+ALTER TABLE Geno CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ```
 
+Unfortunately I was getting 'Specified key was too long; max key length is 3072 bytes' again as in
+
+=> ./move-to-innodb.gmi
+
+We use the full length of the text fields to create the index in
+
+```
+FULLTEXT KEY `ft_ProbeSet_full` (`Name`,`description`,`Symbol`,`alias`,`GenbankId`,`UniGeneId`,`Probe_Target_Description`),
+```
+
+BLOB and TEXT columns also can be indexed, but a prefix length must be given not to exceed the maximum length. In global search we used the match function - that has to scan the full text.
+
+```
+MATCH (ProbeSet.Name,ProbeSet.description,ProbeSet.symbol,ProbeSet.alias,Probe Set.GenbankId, ProbeSet.UniGeneId, ProbeSet.Probe_Target_Description) AGAINST ('brca2' IN BOOLEAN MODE)
+```
+
+With xapian search that is no longer done through SQL. We'll need to toy a bit with this index. We need to check what 'menu' search does, though we want to consolidate that with xapian (anyhow).
+
+```
+DROP INDEX ft_ProbeSet_full ON ProbeSet;
+```
+
+and recreate
+
+```
+CREATE FULLTEXT INDEX ft_ProbeSet_Alias ON ProbeSet (alias);
+CREATE FULLTEXT INDEX ft_ProbeSet_Alias ON ProbeSet (alias);
+CREATE FULLTEXT INDEX ft_ProbeSet_full ON ProbeSet (Name,description,Symbol,alias,GenbankId,UniGeneId,Probe_Target_Description);
+```
+
+This made the query fast again (100K results in 2s).
 
 ## Further reading
 

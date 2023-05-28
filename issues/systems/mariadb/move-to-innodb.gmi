@@ -583,19 +583,15 @@ Turned out simple utf8 worked:
 ALTER TABLE ProbeSet CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
 ```
 
-and utf8mb is not recommended. We'll need fix that FIXME. See
+and utf8mb3 is not recommended. We'll need fix that FIXME. See
 
 => https://stackoverflow.com/questions/766809/whats-the-difference-between-utf8-general-ci-and-utf8-unicode-ci
-
-pjotrp 16 Oct 2019 at 09:24 (edited)
 
 Full text search is the least straightforward, see
 
 and
 
 Now for ProbeSet - one of the critical locked tables we need this.
-
-pjotrp 15 Oct 2019 at 16:38 (edited)
 
 ```
 time mysqlcheck -c -u webqtlout -pwebqtlout db_webqtl
