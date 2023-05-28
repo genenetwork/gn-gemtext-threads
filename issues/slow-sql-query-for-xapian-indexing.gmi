@@ -7,6 +7,11 @@
 * status: in progress
 * keywords: slow query
 
+# Tasks
+
+* [ ] upgrade mariadb on production
+* [ ] switch character type on ProbeSet table from latin1/utf8mb3 to utf8mb4 (and any other tables) - depends on mariadb version
+
 # Description
 
 Since moving to innodb we have this very slow query:
