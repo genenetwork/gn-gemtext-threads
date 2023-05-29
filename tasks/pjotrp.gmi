@@ -41,8 +41,9 @@ Later
 
 => ./machine-room.gmi machine room
 
-* [ ] Fix mariadb index search - see
+* [+] Fix mariadb index search - need to upgrade mariadb, see
 => ../issues/slow-sql-query-for-xapian-indexing.gmi
+* [+] move backup dirs on tux01 to a larger partition (from export3 to export2)
 * [ ] Frontend for GN4MSK
 * [.] Check Tony's list and improve search for SNPs and Hs
 * [ ] GeneNetwork consortium (paper & CTC)

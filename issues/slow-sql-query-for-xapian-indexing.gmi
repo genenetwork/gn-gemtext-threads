@@ -1,9 +1,11 @@
 # Slow query
 
+Essentially two tables were utf8 (= utf8mb3). The others are utf8mb4. When comparing text fields mariadb can't optimize because it is translating utf8mb3 for every comparison. Changing the table and indices to utf8mb4 or latin1 (on production) fixed it.
+
 # Tags
 
 * assigned: pjotrp, aruni
-* priority: high
+* priority: medium
 * status: in progress
 * keywords: slow query
 
