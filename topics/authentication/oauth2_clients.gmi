@@ -1,0 +1,58 @@
+# OAuth2
+
+The new authorisation system is made up of two layers:
+
+* Client authorisation
+* User authentication/authorisation
+
+This document will concern itself mostly with "Client Authorisation".
+
+## Client Authorisation
+
+The authentication/authorisation system will (probably) find use in the entire
+suite of applications that are under the Genenetwork umbrella.
+
+The relevant applications (as of 27 May 2023) are:
+
+=> https://github.com/genenetwork/genenetwork3 Genenetwork3
+  Serves as both the authorisation server and the API server.
+=> https://github.com/genenetwork/genenetwork2 Genenetwork 2
+   Will eventually be the main user-facing UI making requests to GN3 for data and computational requests.
+=> https://gitlab.com/fredmanglis/gnqc_py QC and Data Upload
+   Provides a means to upload new data into the Genenetwork database. It does perform some quality-control on the data before upload. Currently, this application is not available to the general public due to the potential to mess up the data. Once the auth system has been running a while, and the major bugs quashed, this will be integrated into the other system and allow users to upload their own data.
+
+In this case, the GN2 and QC applications would be clients to GN3 (as the auth
+server), and will have specific scopes of access.
+
+As such, we need to register the clients that can access the authorisation
+server.
+
+If you try to access the authorisation server, or for that matter, the API
+server with a client that is not registered, you will receive an error message
+of the form:
+
+```json
+{
+    "error": "invalid_client",
+    "error_description": "No client found for the given CLIENT_ID and CLIENT_SECRET."
+}
+```
+
+### Registering a new OAuth2 Client
+
+* **TODO**: Implement client registration then provide docs here.
+
+**NOTES**:
+
+* Collect appropriate client data and register (provide means)
+* Get registered client's "CLIENT ID" and "CLIENT SECRET" values
+* Configure values on client
+
+## User Authentication/Authorisation
+
+A user will make use of (an) authorised client(s) (see 'Client Authorisation'
+section above) to access the authorisation and API servers.
+
+Once the user has authenticated (provided valid authentication credentials),
+they will be able to access the resources in the system according to the roles
+and privileges that they are authorised for.
