@@ -29,15 +29,32 @@ Commands:
 shell session and then just run the commands without prepending with the
 `FLASK_APP="main.py"` declaration.
 
-## Setting a User as System Administrator
+## Registering/Setting a User as System Administrator
 
-Once you have registered the user with the new (as of 2023-05-26)
-auth(entic|oris)ation system, you can then proceed to specify that the user is
-going to be a system administrator of the system.
+You can register an new user and set them as the system administrator with:
+```sh
+FLASK_APP="main.py" flask register-admin
+```
 
-You will need to retrieve the users identifier (UUID) from the system; say the
-UUID you get for the user is `5b15ef01-a9d7-4ee4-9a38-fe9dd1d871b8`, you can
-then set that user as a system administrator by running:
+A typical session might go something like:
+```sh
+$ FLASK_APP="main.py" flask register-admin
+Enter the user's name: CLI SysAdmin
+Enter the administrator's email: someadmin@gmail.com
+Enter password: 
+Confirm password: 
+$
+```
+
+You can also run the script directly (without flask) with:
+```sh
+$ python3 -m scripts.register_sys_admin /home/frederick/genenetwork/gn3_files/db/auth.db
+```
+changing "/home/frederick/genenetwork/gn3_files/db/auth.db" to the path to your database file.
+
+### Setting an Existing User to System Administrator
+
+If a user already exists in your system, and you want to make that user system admin, you could do it with:
 
 ```sh
 FLASK_APP="main.py" flask assign-system-admin 5b15ef01-a9d7-4ee4-9a38-fe9dd1d871b8
