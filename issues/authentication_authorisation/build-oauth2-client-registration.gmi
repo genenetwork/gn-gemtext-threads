@@ -4,13 +4,19 @@
 
 * assigned: fredm, zsloan, zachs
 * priority: high
-* status: pending
+* status: closed, completed
 * keywords: authentication, authorisation, oauth2
 * type: feature request
 
 ## Description
 
 There is a need to register the OAuth2 clients that users can use to access the GN3 service with the new auth system.
+
+Fixed with commits
+
+=> https://github.com/genenetwork/genenetwork3/commit/25c6da03e1639895f0051e8be6502762beefde0b
+=> https://github.com/genenetwork/genenetwork3/commit/2aa7abf383df814f24c88beea733c324cda682d0
+=> https://github.com/genenetwork/genenetwork3/commit/0b0da1783bc701e74a1972869bdb221a3c9a6b2a
 
 ## Related Topic(s)
 
