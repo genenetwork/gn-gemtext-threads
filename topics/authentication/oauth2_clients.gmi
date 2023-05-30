@@ -40,13 +40,13 @@ of the form:
 
 ### Registering a new OAuth2 Client
 
-* **TODO**: Implement client registration then provide docs here.
+To enable the clients (such as GN2 and QC mentioned above) to work with the authentication and/or API server (GN3), we need to register them. We do that on GN3, and only an administrative user has that ability.
 
-**NOTES**:
+The administrative user logs on to GN3 on the `/api/oauth2/admin/login` endpoint. Once logged on, they can visit the "Register OAuth2 Client" page on the `/api/oauth2/admin/register-client` endpoint. There they can provide the necessary information, and select from a set of options that apply to the client they are registering.
 
-* Collect appropriate client data and register (provide means)
-* Get registered client's "CLIENT ID" and "CLIENT SECRET" values
-* Configure values on client
+Once the admin submits the registration information, the system will generate CLIENT_ID and CLIENT_SECRET values and show them. The CLIENT_SECRET value is stored encrypted in the system and there is no way to retrieve it once the user navigates it away from the registration page.
+
+The CLIENT_ID and CLIENT_SECRET values are then added to the client's (e.g. GN2) configurations to enable the client access the servers.
 
 ## User Authentication/Authorisation
 
