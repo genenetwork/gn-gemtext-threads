@@ -1,0 +1,13 @@
+# Make xapian index rebuild conditional on database checksums
+
+* assigned: arun
+
+Currently, we unconditionally rebuild the xapian index once every day regardless of whether the database has actually changed over the last day. Not only is this computationally wasteful, but it also means that we cannot respond to database updates quickly enough.
+
+We need to be rebuilding the xapian index only when the database changes. Here's how:
+
+* [x] Lock the xapian index being built so that two build jobs do not run simultaneously.
+* [x] Register database table checksums in the xapian index.
+* [ ] Trigger an index rebuild only when the checksums have changed.
+
+Only task 3 remains. Most of the code for task 3 is done. But, it depends on guile-dbi, and unfortunately, the Guix guile-dbi package only builds with guile-2.2; it does not build with guile-3.0. Hopefully, the fix is simple. Fingers crossed.
