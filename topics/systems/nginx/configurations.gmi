@@ -1,0 +1,29 @@
+# NGINX Configuration Notes
+
+## Tags
+* type: info, documentation
+* keywords: nginx, configurations
+
+## Use of proxy_redirect (in this case for authentication, which runs on GN3 through a GN2 URI)
+
+In this case GN3 (which runs on port 8087) has a web endpoint of /api4 (this is arbitrarily named for testing, will probably change later).
+
+For example, https://genenetwork.org/api4/... will send requests to GN3
+
+A recent issue involves a web form being submitted to GN3, which then redirects back to another page. As a result, '/api4/' always needs to be prepended to the various URIs. By using the nginx configurations, this doesn't need to be passed as a setting to the actual GN3 code (I think this is why it's done this way).
+
+This was dealt with using the following configurations (full configurations are pasted below):
+- The sub_filter setting replaces instances of '/api/' in the HTML with '/api4/api/', which addresses the log-in form passing the next_uri (which is passed into flask's redirect() function) to GN3
+- The proxy_redirect setting handles the flask redirect. The flask redirect is to /api/oauth2/admin/dashboard, which ends up as https://genenetwork.org/api/oauth2/admin/dashboard. The proxy_redirect setting then redirects this to https://genenetwork.org/api4/api/oauth2/admin/dashboard
+
+```
+    location /api4 {
+            rewrite /api4/(.*) /$1  break;
+            rewrite /api/(.*) /api4/api/$1 redirect;
+            proxy_pass         http://127.0.0.1:8087;
+            proxy_redirect     /api/ /api4/api/;
+            sub_filter '/api/' '/api4/api/';
+            sub_filter_once off;
+            proxy_set_header Host $host;
+    }
+```
