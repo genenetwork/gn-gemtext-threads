@@ -39,10 +39,17 @@ Later
 
 ### Ongoing tasks
 
+### Set up stable server instance with new hardware
+
+* [ ] Set up opensmtpd as a service
+  + [ ] Add package dependency
+  + [ ] Test on open port 25
+* [ ] Test new caddy and drives
+
 => ./machine-room.gmi machine room
 
-* [+] Fix mariadb index search - need to upgrade mariadb, see
-=> ../issues/slow-sql-query-for-xapian-indexing.gmi
+* [X] Fix mariadb index search - need to upgrade mariadb to convert final utf8mb4, see
+  => ../issues/slow-sql-query-for-xapian-indexing.gmi
 * [+] move backup dirs on tux01 to a larger partition (from export3 to export2)
 * [ ] Frontend for GN4MSK
 * [.] Check Tony's list and improve search for SNPs and Hs
