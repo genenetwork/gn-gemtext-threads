@@ -18,9 +18,9 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 
 Now
 
-* [ ] Set up stable server instance with new hardware
+* [ ] Set up stable GeneNetwork server instance with new hardware (see below)
 * [ ] Drive for stability of GN tools (particularly GEMMA OOMP)
-* [ ] GEMMA precompute
+* [ ] GEMMA batch run and precompute
 * [ ] GEMMA/bulklmm speedups
 * [ ] Aging grant application w. Rob (August)
 * [+] Shelby's application (fall)
@@ -32,7 +32,6 @@ Later
 * [.] Tree of life w. Andrea
 * [+] Machine room security and access for bonz, fred, shelby, others...
 * [ ] Hao's idea for counting cis-qtl
-* [ ] Batch run GEMMA and faster file handling
 * [ ] Improve search for significant and suggestive hits
 * [+] DOI support GN (Paris)
 * [ ] Cito support
