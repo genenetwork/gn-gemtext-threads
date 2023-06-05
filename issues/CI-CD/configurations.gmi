@@ -1,0 +1,47 @@
+# Configurations
+
+## Tags
+
+* assigned: aruni, fredm
+* priority: normal
+* status: open
+* keywords: CI, CD, configuration, config
+* type: bug
+
+## Description
+
+There are configurations that change depending on the environment that one runs the CI/CD container. Some examples:
+
+* GN_SERVER_URL: on CI/CD it is set up as "http://cd.genenetwork.org/api3/" but this is not valid for, say, the development environments and eventually production.
+* SQL_URI: This can change from environment to environment
+* OAUTH2_CLIENT_ID: A identifier for an authorised client
+* OAUTH2_CLIENT_SECRET: A password the client uses to authenticate itself
+
+Some of these, e.g. `OAUTH2_CLIENT_SECRET` are sensitive data that should not be exposed to the public.
+
+I propose, therefore that we provide, say, a
+```
+... --share=/path/to/configs/directory/
+```
+from where the applications in the container can read their configurations from. The config file(s) in the directory can then contain relevant settings for the environment where the container is run.
+
+The applications (gn2, gn3, qc-app, etc) can then be pointed to the relevant config files in their g-exps: e.g.
+
+Instead of
+=> https://github.com/genenetwork/genenetwork-machines/blob/67d3f5dc46422c6b1812547109680c147fdde341/genenetwork-development.scm#L317-L318 using the defaults that are overridden
+we could have the code do something like:
+
+```
+...
+
+(define %configs-dir "/export/data/configs")
+
+...
+
+            (with-directory-excursion "genenetwork2"
+              (invoke #$(file-append bash "/bin/sh")
+                      "bin/genenetwork2"
+		      #$(file-append %configs-dir "/gn2_config.conf")
+		      "-gunicorn-prod"))
+```
+where file `/export/data/configs/gn2_config.conf` holds the configurations for the application in the environment where the guix system container is run.
