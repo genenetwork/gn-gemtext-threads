@@ -45,3 +45,9 @@ we could have the code do something like:
 		      "-gunicorn-prod"))
 ```
 where file `/export/data/configs/gn2_config.conf` holds the configurations for the application in the environment where the guix system container is run.
+
+Something similar can be done for GN3, where `GN3_CONF` can be set to something like:
+
+```
+#$(file-append %configs-dir "/gn3_config.conf")
+```
