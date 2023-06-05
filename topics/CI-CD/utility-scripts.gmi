@@ -1,0 +1,63 @@
+# Utility Scripts
+
+Sometimes we need to run some utility scripts manually to set up certain things that do not render themselves to automation very well.
+
+This is especially relevant for any script that might need to interact with the SQLite database.
+
+This document notes some gotchas that you might run into trying to run
+=> ./topics/authentication/cli_utility_scripts the utility scripts.
+
+## Register System Administrator
+
+Start by getting a shell into the CI/CD container:
+
+```
+sudo guix container exec <PID> /run/current-system/profile/bin/bash --login
+```
+
+replacing =<PID>= with the process ID of the container.
+
+Now stop GN3:
+
+```
+herd stop genenetwork3
+```
+
+In a separate terminal on the *host* system,  change the owner of the directory
+and file:
+```
+sudo chown -R fredm /export/data/genenetwork-sqlite
+```
+
+Now start a guix shell in the *genenetwork3* repository (on the host) and run
+the utility script(s) you need to run:
+
+```
+$ cd /home/fredm/genenetwork3
+$ guix shell --container --network --share=/export/data/genenetwork-sqlite \
+    --development --file=guix.scm
+[env] $ python3 -m scripts.register_sys_admin \
+    /export/data/genenetwork-sqlite/auth.db
+```
+
+Once you have run (all) the utility script(s) you needed to run, you can exit
+the shell and restore the file user:
+```
+sudo chown -R guixbuilder13 /export/data/genenetwork-sqlite
+```
+
+now go back to the CI/CD container shell and restart genenetwork3:
+```
+herd start genenetwork3
+```
+then exit the shell.
+
+### Failed Attempts
+
+Tried
+```
+mount --bind -o rw,umask=0002,gid=1000,uid=1000 \
+    /home/frederick/genenetwork/local-ci-cd/data/genenetwork-sqlite \
+    /home/frederick/genenetwork/ci-cd-container-dirs
+```
+but the file (and mount target) retain the original permissions.
