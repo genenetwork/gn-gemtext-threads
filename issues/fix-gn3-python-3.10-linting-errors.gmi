@@ -1,0 +1,73 @@
+# Fix possible python 3.10 linting errors after bump from 3.9
+
+* assigned: bonfacem
+
+After doing a guix upgrade, there were some failing python 3.10 linting and mypy errors:
+
+```
+➜  main [guix-dev]: pylint sheepdog/worker.py gn3/ tests
+************* Module gn3.db_utils
+gn3/db_utils.py:24:8: W2301: Unnecessary ellipsis constant (unnecessary-ellipsis)
+************* Module gn3.db.species
+gn3/db/species.py:6:0: E0611: No name 'escape_string' in module 'MySQLdb' (no-name-in-module)
+************* Module gn3.db.case_attributes
+gn3/db/case_attributes.py:93:0: W1404: Implicit string concatenation found in call (implicit-str-concat)
+************* Module gn3.api.search
+gn3/api/search.py:155:19: C3001: Lambda expression assigned to a variable. Define a function using the "def" keyword instead. (unnecessary-lambda-assignment)
+gn3/api/search.py:179:23: C3001: Lambda expression assigned to a variable. Define a function using the "def" keyword instead. (unnecessary-lambda-assignment)
+************* Module gn3.computations.partial_correlations
+gn3/computations/partial_correlations.py:424:11: C3002: Lambda expression called directly. Execute the expression inline instead. (unnecessary-direct-lambda-call)
+gn3/computations/partial_correlations.py:494:11: C3002: Lambda expression called directly. Execute the expression inline instead. (unnecessary-direct-lambda-call)
+************* Module gn3.auth.db
+gn3/auth/db.py:13:8: W2301: Unnecessary ellipsis constant (unnecessary-ellipsis)
+gn3/auth/db.py:17:8: W2301: Unnecessary ellipsis constant (unnecessary-ellipsis)
+gn3/auth/db.py:21:8: W2301: Unnecessary ellipsis constant (unnecessary-ellipsis)
+gn3/auth/db.py:27:8: W2301: Unnecessary ellipsis constant (unnecessary-ellipsis)
+gn3/auth/db.py:34:8: W2301: Unnecessary ellipsis constant (unnecessary-ellipsis)
+gn3/auth/db.py:38:8: W2301: Unnecessary ellipsis constant (unnecessary-ellipsis)
+gn3/auth/db.py:42:8: W2301: Unnecessary ellipsis constant (unnecessary-ellipsis)
+gn3/auth/db.py:46:8: W2301: Unnecessary ellipsis constant (unnecessary-ellipsis)
+************* Module gn3.auth.authentication.oauth2.models.oauth2token
+gn3/auth/authentication/oauth2/models/oauth2token.py:54:19: C3001: Lambda expression assigned to a variable. Define a function using the "def" keyword instead. (unnecessary-lambda-assignment)
+************* Module gn3.auth.authentication.oauth2.grants.authorisation_code_grant
+gn3/auth/authentication/oauth2/grants/authorisation_code_grant.py:44:0: R0022: Useless option value for 'disable', 'no-self-use' was moved to an optional extension, see https://pylint.pycqa.org/en/latest/whatsnew/2/2.14/summary.html#removed-checkers. (useless-option-value)
+************* Module gn3.auth.authentication.oauth2.endpoints.utilities
+gn3/auth/authentication/oauth2/endpoints/utilities.py:15:19: C3001: Lambda expression assigned to a variable. Define a function using the "def" keyword instead. (unnecessary-lambda-assignment)
+************* Module gn3.auth.authentication.oauth2.endpoints.introspection
+gn3/auth/authentication/oauth2/endpoints/introspection.py:27:0: R0022: Useless option value for 'disable', 'no-self-use' was moved to an optional extension, see https://pylint.pycqa.org/en/latest/whatsnew/2/2.14/summary.html#removed-checkers. (useless-option-value)
+gn3/auth/authentication/oauth2/endpoints/introspection.py:46:0: R0022: Useless option value for 'disable', 'no-self-use' was moved to an optional extension, see https://pylint.pycqa.org/en/latest/whatsnew/2/2.14/summary.html#removed-checkers. (useless-option-value)
+************* Module tests.integration.test_gemma
+tests/integration/test_gemma.py:385:0: W1404: Implicit string concatenation found in call (implicit-str-concat)
+************* Module tests.unit.test_heatmaps
+tests/unit/test_heatmaps.py:32:0: R0022: Useless option value for 'disable', 'R0201' was moved to an optional extension, see https://pylint.pycqa.org/en/latest/whatsnew/2/2.14/summary.html#removed-checkers. (useless-option-value)
+************* Module tests.unit.db.test_case_attributes
+tests/unit/db/test_case_attributes.py:143:0: W1404: Implicit string concatenation found in call (implicit-str-concat)
+tests/unit/db/test_case_attributes.py:186:0: W1404: Implicit string concatenation found in call (implicit-str-concat)
+tests/unit/db/test_case_attributes.py:193:0: W1404: Implicit string concatenation found in call (implicit-str-concat)
+************* Module tests.unit.db.test_db
+tests/unit/db/test_db.py:106:0: R0022: Useless option value for 'disable', 'R0201' was moved to an optional extension, see https://pylint.pycqa.org/en/latest/whatsnew/2/2.14/summary.html#removed-checkers. (useless-option-value)
+************* Module tests.unit.computations.test_partial_correlations
+tests/unit/computations/test_partial_correlations.py:237:0: R0022: Useless option value for 'disable', 'R0201' was moved to an optional extension, see https://pylint.pycqa.org/en/latest/whatsnew/2/2.14/summary.html#removed-checkers. (useless-option-value)
+************* Module tests.unit.auth.test_resources
+tests/unit/auth/test_resources.py:24:10: C3001: Lambda expression assigned to a variable. Define a function using the "def" keyword instead. (unnecessary-lambda-assignment)
+tests/unit/auth/test_resources.py:74:10: C3001: Lambda expression assigned to a variable. Define a function using the "def" keyword instead. (unnecessary-lambda-assignment)
+************* Module tests.unit.auth.test_roles
+tests/unit/auth/test_roles.py:19:10: C3001: Lambda expression assigned to a variable. Define a function using the "def" keyword instead. (unnecessary-lambda-assignment)
+************* Module tests.unit.auth.test_privileges
+tests/unit/auth/test_privileges.py:9:11: C3001: Lambda expression assigned to a variable. Define a function using the "def" keyword instead. (unnecessary-lambda-assignment)
+************* Module tests.unit.auth.test_groups
+tests/unit/auth/test_groups.py:22:10: C3001: Lambda expression assigned to a variable. Define a function using the "def" keyword instead. (unnecessary-lambda-assignment)
+
+------------------------------------------------------------------
+Your code has been rated at 9.95/10 (previous run: 9.95/10, +0.00)
+```
+
+Mypy errors:
+
+```
+➜  main [guix-dev]: mypy .
+/gnu/store/8lcc4714yf3nn0kxw0qrvqlm8pc431ib-profile/lib/python3.10/site-packages/numpy/__init__.pyi:636: error: Positional-only parameters are only supported in Python 3.8 and greater
+Found 1 error in 1 file (errors prevented further checking)
+```
+
+Also, building building genenetwork2 fails, so this also needs to be looked into.
