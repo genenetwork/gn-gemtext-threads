@@ -1,0 +1,39 @@
+# Genenetwork3 Effective UID
+
+## Tags
+
+* assigned: aruni, fredm
+* priority: critical
+* status: open
+* keywords: CI, CD, Effective UID, Genenetwork3, GN3
+* type: bug
+
+## Description
+
+The expectation is that the Genenetwork3 application is run under the "genenetwork" user in the guix container. As is, however, it seems like the application is run under the user with UID 1000 from the host system.
+
+This has been verified to be the case for Frederick's local development system and for `tux02.genenetwork.org`.
+
+To verify, you can look at the genenetwork logs at /export2/guix-containers/genenetwork-development/var/log/cd/genenetwork3.log where you will find something like:
+
+```
+2023-06-05 03:46:38 Traceback (most recent call last):
+2023-06-05 03:46:38   File "/genenetwork3/gn3/app.py", line 55, in create_app
+2023-06-05 03:46:38     logging.info("Effective User: '%s'.", getpass.getuser())
+2023-06-05 03:46:38   File "/gnu/store/bvnzi0z7i9qk31a03y64rs8sxrckkinr-python-3.9.9/lib/python3.9/getpass.py", line 169, in getuser
+2023-06-05 03:46:38     return pwd.getpwuid(os.getuid())[0]
+2023-06-05 03:46:38 KeyError: 'getpwuid(): uid not found: 1000'
+2023-06-05 03:46:38 
+2023-06-05 03:46:48 [2023-06-05 03:46:48,918] ERROR in errors: unable to open database file
+2023-06-05 03:46:48 unable to open database file
+```
+
+Where the user with UID 1000 is:
+
+* wrk (on tux02)
+* frederick (on Frederick's dev machine)
+
+This points to some sort of host contamination that needs to be resolved to ensure that the processes within the container are actually run under the expected users and groups.
+
+
+=> https://github.com/genenetwork/genenetwork3/blob/bfb6fdee924cc60dfdba8ede609a206ca6982454/gn3/app.py#L52-L58 Code logging out the debug information.
