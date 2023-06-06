@@ -27,6 +27,7 @@ Now
 * [ ] Aging grant application w. Rob (August)
 * [+] Shelby's application (fall)
 * [.] GeneNetwork paper
+*     + [ ] add FAIR statement
 * [ ] RISC-V trials
 
 Later
