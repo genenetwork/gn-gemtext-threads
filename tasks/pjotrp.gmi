@@ -22,6 +22,8 @@ Now
 * [ ] Drive for stability of GN tools (particularly GEMMA OOMP)
 * [ ] GEMMA batch run and precompute
 * [ ] GEMMA/bulklmm speedups
+* [ ] Add R/qtl2 and multi-parent support with Karl
+* [ ] Support pluto notebooks with Efraim
 * [ ] Aging grant application w. Rob (August)
 * [+] Shelby's application (fall)
 * [.] GeneNetwork paper
@@ -43,7 +45,10 @@ Later
 * [ ] Set up opensmtpd as a service
   + [ ] Add package dependency
   + [ ] Test on open port 25
+  + [ ] Add public-inbox
+* [ ] Create bootable Debian drive that uses ttyS0
 * [ ] Test new caddy and drives
+* [ ] Set up cgit as a service
 
 => ./machine-room.gmi machine room
 
