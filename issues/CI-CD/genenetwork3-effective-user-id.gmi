@@ -37,3 +37,68 @@ This points to some sort of host contamination that needs to be resolved to ensu
 
 
 => https://github.com/genenetwork/genenetwork3/blob/bfb6fdee924cc60dfdba8ede609a206ca6982454/gn3/app.py#L52-L58 Code logging out the debug information.
+
+### Troubleshooting report
+
+Start the container
+```
+sudo /usr/local/bin/genenetwork-development-container
+```
+and get a shell into the container
+```
+$ sudo guix container exec 10624 /run/current-system/profile/bin/bash --login
+[sudo] password for frederick:
+root@genenetwork-development /# . /etc/profile
+root@genenetwork-development /#
+```
+
+get the process ID from the logs
+```
+root@genenetwork-development /# tail -n 100 /var/log/cd/genenetwork3.log | grep 'Booting worker with pid:'
+2023-06-05 03:35:52 [2023-06-05 03:35:52 +0000] [22] [INFO] Booting worker with pid: 22
+2023-06-05 03:45:39 [2023-06-05 03:45:39 +0000] [22] [INFO] Booting worker with pid: 22
+2023-06-05 03:57:59 [2023-06-05 03:57:59 +0000] [22] [INFO] Booting worker with pid: 22
+2023-06-06 06:19:22 [2023-06-06 06:19:22 +0000] [22] [INFO] Booting worker with pid: 22
+```
+
+then dump the forest tree and extract the sections relating to genenetwork3
+```
+root@genenetwork-development /# ps -ef --forest | grep 9093
+root         500     254  0 06:35 ?        00:00:00  \_ grep --color=auto 9093
+genenet+      22       1  0 06:18 ?        00:00:00 /gnu/store/cnfsv9ywaacyafkqdqsv2ry8f01yr7a9-guile-3.0.7/bin/guile --no-auto-compile /gnu/store/88xmzazpl2gxj7136rkpig1khw5h0i75-genenetwork3-pola-wrapper 127.0.0.1 9093
+genenet+      45      22  0 06:18 ?        00:00:00  \_ /gnu/store/cnfsv9ywaacyafkqdqsv2ry8f01yr7a9-guile-3.0.7/bin/guile --no-auto-compile /gnu/store/88xmzazpl2gxj7136rkpig1khw5h0i75-genenetwork3-pola-wrapper 127.0.0.1 9093
+genenet+      77      45  0 06:19 ?        00:00:00      \_ /gnu/store/cnfsv9ywaacyafkqdqsv2ry8f01yr7a9-guile-3.0.7/bin/guile --no-auto-compile /gnu/store/ij4qingqwg2p5m1s7l0fag3nyxlx1vxv-genenetwork3 127.0.0.1 9093
+genenet+     109      77  0 06:19 ?        00:00:01          \_ /gnu/store/78chmlgs8jri6l9qz8bs4y5szqsz65rm-python-wrapper-3.9.9/bin/python /gnu/store/5qiz9d0v11rg9qrn7m8a4b058dgqx528-gunicorn-20.1.0/bin/.gunicorn-real -b localhost:9093 gn3.app:create_app()
+genenet+     110     109  0 06:19 ?        00:00:07              \_ /gnu/store/78chmlgs8jri6l9qz8bs4y5szqsz65rm-python-wrapper-3.9.9/bin/python /gnu/store/5qiz9d0v11rg9qrn7m8a4b058dgqx528-gunicorn-20.1.0/bin/.gunicorn-real -b localhost:9093 gn3.app:create_app()
+```
+
+From these, it shows that GN3 is indeed run under the "genenetwork" user.
+
+From the logs, however
+```
+root@genenetwork-development /# tail -n 25 /var/log/cd/genenetwork3.log | grep -B1 -A8 'Python Executable'
+2023-06-06 06:19:47 Guix Profile: 'None'.
+2023-06-06 06:19:47 Python Executable: '/gnu/store/78chmlgs8jri6l9qz8bs4y5szqsz65rm-python-wrapper-3.9.9/bin/python'.
+2023-06-06 06:19:47 User Error: getpwuid(): uid not found: 1000
+2023-06-06 06:19:47 Traceback (most recent call last):
+2023-06-06 06:19:47   File "/genenetwork3/gn3/app.py", line 55, in create_app
+2023-06-06 06:19:47     logging.info("Effective User: '%s'.", getpass.getuser())
+2023-06-06 06:19:47   File "/gnu/store/bvnzi0z7i9qk31a03y64rs8sxrckkinr-python-3.9.9/lib/python3.9/getpass.py", line 169, in getuser
+2023-06-06 06:19:47     return pwd.getpwuid(os.getuid())[0]
+2023-06-06 06:19:47 KeyError: 'getpwuid(): uid not found: 1000'
+2023-06-06 06:19:47
+```
+it shows that the system is running under the effective uid 1000 - which does not exist within the container and leads to the exception shown.
+
+The SQLite file was created under the "genenetwork3" user
+=> https://github.com/genenetwork/genenetwork-machines/blob/67d3f5dc46422c6b1812547109680c147fdde341/genenetwork-development.scm#L242-L244
+
+which means, when the application runs under the effective uid 1000, it ends up not having access to the file.
+
+I tried changing the code linked above to
+```
+            (invoke #$sudo
+                    #$(program-file "genenetwork3-auth-migrations"
+                                    (genenetwork3-auth-migrations-genenetwork config)))
+```
+but that now creates the file as root and the application (which for some reason has an effective uid of 1000), still fails, since the file is now owned by root (uid 0) and the effective user (uid 1000) cannot read the file.
