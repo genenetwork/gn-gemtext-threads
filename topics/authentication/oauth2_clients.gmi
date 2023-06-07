@@ -48,6 +48,54 @@ Once the admin submits the registration information, the system will generate CL
 
 The CLIENT_ID and CLIENT_SECRET values are then added to the client's (e.g. GN2) configurations to enable the client access the servers.
 
+The following sections will document the various options available when registering the clients.
+
+#### Client Scope
+
+The client's scope determines what the client is allowed to do and/or access on both the API and authorisation servers. Some of the scopes work in unison.
+
+* profile: This is the most basic scope. It allows the client to access basic user information for the authenticated user.
+* group: This allows the client to access the user-group information for the authenticated user.
+* role: This allows the client to access the roles assigned to the authenticated user.
+* resource: This allows the client to access the resources that the authenticated user has access to.
+* user: This allows the client to access user information, but also act on certain data that one with only the "profile" scope cannot.
+* masquerade: This allows a client to access the masquerade feature for users with the authorisation to masquerade as other users. This should be offered sparingly, even when requested by users registering new clients.
+
+The remaining scope choices can mostly be ignored for all publicly-facing OAuth2 clients. The choices have, however, been documented below for completeness.
+
+* introspect: DANGEROUS: Mostly for troubleshooting and SHOULD NEVER be granted to public-facing clients. It is however useful during development, and possibly for troubleshooting issues with tokens, and as such, is provided as one of the choices.
+* register-client: WONTIMPLEMENT: This is an artifact of development and will be removed. Client registration is handled on the authorisation server, and is a system-admin feature.
+* migrate-data: OBSOLETE: This existed during development flux, but has been superceded by a CLI client run on the backend, and the choice not to retain old user accounts in the first place.
+
+#### Basic Client Informations
+
+* Client Name: This is the name of the client. It can be anything you want, but it is highly recommended that you give a descriptive name, maybe with the name of the client (e.g. GN2) and the environment (e.g. staging).
+* Redirect URI: This is the URI where the authorisation will redirect to, to provide the authorisation code that the client will then use to acquire the authorisation token.
+* Other redirect URIs: Currently not in use, but these should mostly be fallback URIs in case the main redirect URI fails.
+
+#### Grant Types
+
+There are a number of
+=> https://oauth.net/2/grant-types/ OAuth2 grant types.
+
+We currently only support the
+=> https://oauth.net/2/grant-types/authorization-code/ Authorization Code Grant
+with work to enable the
+=> https://oauth.net/2/grant-types/refresh-token/ Refresh Token Grant
+ongoing.
+
+Down the road, we will also enable the
+=> https://oauth.net/2/pkce/ PKCE Extension for Authorisation Code flow
+for better security.
+
+#### Client Owner
+
+Each client has as user that "owns" it. For Genenetwork clients, any system admin can be set up as the owner.
+
+For clients registered by other users, then the owner of the client should be the user that requested to register the client.
+
+For now, we do not support external clients, but this is possible down the road.
+
 ## User Authentication/Authorisation
 
 A user will make use of (an) authorised client(s) (see 'Client Authorisation'
