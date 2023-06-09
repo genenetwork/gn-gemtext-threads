@@ -4,11 +4,21 @@
 
 * assigned: aruni, fredm
 * priority: critical
-* status: open
+* status: closed, completed
 * keywords: CI, CD, Effective UID, Genenetwork3, GN3
 * type: bug
 
 ## Description
+
+The issue was that the Genenetwork3 code is run under the Least Authority Wrapper (see `guix/least-authority.scm` in the GNU Guix repository), which is essentially a container within the main container. As such, it is necessary to expose any file paths (via the `#:mappings` keyword) to the wrapper, otherwise, it will have no way of accessing the files.
+
+This issue was fixed with
+
+=> https://github.com/genenetwork/genenetwork-machines/commit/ff4e69b4b2da29ab35627864b0e5d839fa758a96 this commit.
+
+Following is the older description of the issue and troubleshooting logs:
+
+----
 
 The expectation is that the Genenetwork3 application is run under the "genenetwork" user in the guix container. As is, however, it seems like the application is run under the user with UID 1000 from the host system.
 
