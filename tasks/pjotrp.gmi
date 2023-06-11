@@ -29,6 +29,7 @@ Now
 * [.] GeneNetwork paper
 *     + [ ] add FAIR statement
 * [ ] RISC-V trials
+* [ ] gBAM
 
 Later
 
@@ -43,11 +44,13 @@ Later
 
 ### Set up stable server instance with new hardware
 
+* [+] Create bootable Debian drive that uses ttyS0
+* [ ] Pluto with Efraim
+* [ ] R/qtl2 with Karl
 * [ ] Set up opensmtpd as a service
   + [ ] Add package dependency
   + [ ] Test on open port 25
   + [ ] Add public-inbox
-* [ ] Create bootable Debian drive that uses ttyS0
 * [ ] Test new caddy and drives
 * [ ] Set up cgit as a service
 
