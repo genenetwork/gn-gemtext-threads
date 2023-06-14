@@ -1,0 +1,68 @@
+# Genenetwork2 Configurations
+
+## Tags
+
+* assigned: fredm
+* priority: normal
+* status: open
+* keywords: configuration, config, gn2, genenetwork, genenetwork2
+* type: bug
+
+## Description
+
+The current way the configuration in Genenetwork2 works is as follows:
+
+* The configuration setup begins in `bin/genenetwork` script in the genenetwork2 repository. This script sets up the `GN2_PROFILE` environment variable, and all other environment variables depending on it: see the "`GN2_PROFILE`-Dependent Environment Variables" section below.
+* In `wqflask/wqflask/__init__.py` the settings in the file pointed to by `GN2_SETTINGS` environment variable are then loaded. If there is no such file, then it defaults to loading the settings in the `etc/default_settings.py` within the genenetwork2 repository.
+* In `wqflask/utility/tools.py` in the genenetwork2 repository, the settings loaded thus far, can then have their values overriden by values set in the environment variables. There is an "OVERRIDES" value that is currently not in use and can be ignored.
+* Some other minor configurations are updated/overriden in `wqflask/utility/startup_config.py`
+
+From these, `GN2_PROFILE` is the only environment variable that needs to be set up. All the other variables can be set in the settings file.
+
+The sub-sections that follow will contain more information on variables and what needs to be done
+
+### `GN2_PROFILE`-Dependent Environment Variables
+
+* `PATH`: Exposes the binaries within the profile
+* `PYTHONPATH`: Exposes the Python modules within the profile
+* `R_LIBS_SITE`: Exposes the R module within the profile
+* `JS_GUIX_PATH`: Exposes the Javascript modules within the profile
+* `GUIX_GTK3_PATH`: Exposes the GTK modules within the profile
+* `GI_TYPELIB_PATH="$GN2_PROFILE/lib/girepository-1.0"
+* `XDG_DATA_DIRS`: Exposes the "share" directories within the profile
+* `GIO_EXTRA_MODULES`: Expose the GIO modules
+* `GUIX_GENENETWORK_FILES`: Expose the Genenetwork shared files
+* `PLINK_COMMAND`: Point to the "PLINK" binary
+* `GEMMA_COMMAND`: Point to the "GEMMA" binary
+* `GEMMA_WRAPPER_COMMAND`: Point to the `GEMMA` wrapper binary
+
+### `wqflask/utility/tools.py`
+
+This is our biggest pain-point. The following are some actions that can be taken to reduce the pain in this module:
+
+* Refactor functions in to take the "application object" as one of their arguments, to decouple the module from the module where the application is declared
+* Remove all settings from this module, instead, override any of the variables that need it at the application creation step, possibly within the `wqflask/wqflask/__init__.py` module.
+* Replace all uses of variables from this module with configurations from `flask.current_app.config` as appropriate
+* Get rid of this module entirely if possible, moving the functions elsewhere.
+
+### Modules with Routes but no Blueprints
+
+These modules are:
+
+* `wqflask/run_gunicorn.py`
+* `wqflask/wqflask/user_session.py`
+* `wqflask/wqflask/collect.py`
+* `wqflask/wqflask/views.py`
+* `wqflask/wqflask/partial_correlations_views.py`
+* `wqflask/wqflask/user_login.py`
+* `wqflask/wqflask/api/router.py`
+* `wqflask/base/trait.py`
+
+Except for `wqflask/run_gunicorn.py`, each module will have its own Blueprint and then we'll have some top-level Blueprint that import all the others and sets them up. The top-level blueprint will then be registered with the app at the application-creation time.
+
+For `wqflask/run_gunicorn.py`, the route can remain as is, since this is an entry-point module.
+
+### `wqflask/wqflask/__init__.py`
+
+* Move application initialisation into an application factory function
+* Replace all uses of `wqflask.app` variable with `flask.current_app` or `create_app()` as necessary
