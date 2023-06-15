@@ -1,0 +1,28 @@
+# Branding and front-end-services
+
+The original GN2 is a monolithic flask server. In the next phase we will allow for rebranding and multiple servers of GN2 services. A community website can be created in this way with its own 'portal', dedicated search and interactive GN tooling.
+To make it even more fun we will also allow for using different platforms.
+I.e., a portal can be written in any language with dedicated GN services being injected as htmx, divx or similar. Does this make GN more complicated? I argue not. It will be fun to work in non-python languages even though core functionality will be python. The other way should work too - if we write further htmx it may be coming from other sources.
+
+The first step is to replace header and footers with something branded. This means some the current header and footer is specific to the main service and can be generalised with a 'src=default' or 'src=portal-gn4msk' flag - or similar.
+Based on this we can split the templates into reading specific headers/footers and feed those from other endpoints. Flask is already path-based, so we need another service to generate the necessary HTML. Note that these servers may be single threaded in principle. Flask kicks off backend work and needs to be multithreaded for that. But simple HTML services will be fine on single threads and easier to debug that way too. GN does not have thousands of users operating at the same time. Its main challenge is running long operations while still being able to serve others.
+
+The ultimate goal is increased flexibility in creating front-ends and portals. Typically these GN services will be running off a single machine.
+
+# Tasks
+
+* [ ] Create community server for GN4MSK
+* + [ ] Fire up parallel page server
+* + [ ] Handle headers and footers
+* + [ ] Create portal page
+* + [ ] Show specific datasets
+* + [ ] Show specific publications
+* + [ ] Show specific twitter feed
+
+# Tags
+
+* assigned: pjotrp
+* type: feature
+* priority: high
+* status: in progress
+* keywords: website, branding

@@ -15,12 +15,12 @@ GN relies on precomputed mapping scores for search and other functionality. Here
 * [ ] Start using GEMMA for precomputed values as a background pipeline on a different machine
 * [ ] Update the table values using GEMMA output (single highest score)
 
-Above is the quick win for plugging in GEMMA value. We will make sure not to recompute the values that are already up to date.
+Above is the quick win for plugging in GEMMA values. We will make sure not to recompute the values that are already up to date.
 
 Next:
 
-* [ ] Track metadata of computed datasets in RDF
 * [ ] Store all GEMMA values efficiently
+* [ ] Track metadata of computed datasets (in RDF?)
 * [ ] Compute significance with GEMMA or other LMM (bulkLMM?)
 * [ ] Store signficance and significant values for processing
 * [ ] Update search & correlations to use these

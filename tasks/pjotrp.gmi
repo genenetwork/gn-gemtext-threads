@@ -19,6 +19,7 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 Now
 
 * [ ] Set up stable GeneNetwork server instance with new hardware (see below)
+* [ ] GN4MSK rebranding - see issue
 * [ ] Drive for stability of GN tools (particularly GEMMA OOMP)
 * [ ] GEMMA batch run and precompute
 * [ ] GEMMA/bulklmm speedups
