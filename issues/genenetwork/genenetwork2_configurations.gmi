@@ -19,6 +19,8 @@ The current way the configuration in Genenetwork2 works is as follows:
 
 From these, `GN2_PROFILE` is the only environment variable that needs to be set up. All the other variables can be set in the settings file.
 
+The file `wqflask/base/webqtlConfig.py` also has some configurations that need to be handled.
+
 The sub-sections that follow will contain more information on variables and what needs to be done
 
 ### `GN2_PROFILE`-Dependent Environment Variables

@@ -1,0 +1,13 @@
+# Genenetwork2 Configurations
+
+## Tags
+
+* assigned: fredm
+* priority: normal
+* status: open
+* keywords: configuration, config, gn2, genenetwork, genenetwork2
+* type: bug
+
+## Description
+
+The configuration file should only ever contain settings, and no code. Remove all code from the default settings file.
