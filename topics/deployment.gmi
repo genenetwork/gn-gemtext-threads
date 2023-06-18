@@ -2,9 +2,7 @@
 
 # Description
 
-This page attempts to document the deployment process we have for GeneNetwork.
-We use Guix system containers for deployment of CI/CD and
-the Guix configuration for the CI/CD container should be considered the authoritative reference.
+This page attempts to document the deployment process we have for GeneNetwork. We use Guix system containers for deployment of CI/CD and the Guix configuration for the CI/CD container should be considered the authoritative reference.
 
 => https://github.com/genenetwork/genenetwork-machines/blob/main/genenetwork-development.scm
 
@@ -14,7 +12,10 @@ See also
 
 ## genenetwork2
 
+To install GN2 by hand for development we also track
 
+=> ./developing-against-gn.gmi
+=> ./installation.gmi
 
 ## genenetwork3
 
