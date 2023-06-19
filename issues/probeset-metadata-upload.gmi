@@ -1,0 +1,19 @@
+# Upload probeset metadata
+
+## Tags
+
+* assigned: bonfacem
+* type: bug
+* status: open
+
+Probeset metadata is the only significant metadata that remains to be uploaded.  Uploading using SPARQL'S endpoint (either using CURL or the load-rdf script) doesn't work.  As such, I'll have to work out a different way to upload this metadata.  Here's the current size of the datasets I'm trying to upload:
+
+```
+bonfacem@tux02:/export3/local/home/bonfacem/dump-genenetwork-database$ ls -lah data/
+total 3.2G
+drwxr-xr-x 2 bonfacem bonfacem  4.0K Jun 16 08:04 .
+drwxr-xr-x 9 bonfacem bonfacem  4.0K Jun 15 07:04 ..
+-rw-r--r-- 1 bonfacem bonfacem  1.2G Jun 16 07:48 dump-probeset-0.ttl
+-rw-r--r-- 1 bonfacem bonfacem 1014M Jun 16 08:04 dump-probeset-1.ttl
+-rw-r--r-- 1 bonfacem bonfacem 1009M Jun 16 08:18 dump-probeset-2.ttl
+```

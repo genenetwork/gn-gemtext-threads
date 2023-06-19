@@ -4,14 +4,18 @@
 
 * assigned: bonfacem
 * type: feature
-* status: in progress
+* status: closed
 
 Create end-points that query RDF for the following:
 
-* [ ] Phenotypes: (prefix "phenotype:" "<http://genenetwork.org/phenotype/>")
-* [ ] Genotypes: (prefix "phenotype:" "<http://genenetwork.org/genotype/>")
-* [ ] Probesets: (prefix "phenotype:" "<http://genenetwork.org/probesets/>")
+* [x] Phenotypes: (prefix "phenotype:" "<http://genenetwork.org/phenotype/>")
+* [x] Genotypes: (prefix "phenotype:" "<http://genenetwork.org/genotype/>")
+* [x] Probesets: (prefix "phenotype:" "<http://genenetwork.org/probesets/>")
 
 In the process, also add examples here:
 
 => /topics/RDF/example-sparql-queries Querying SPARQL Examples
+
+I ran into a problem where I can't upload probeset metadata, despite chunking and reducing the size of the dump.  This is issue is tracked here:
+
+=> /issues/probeset-metadata-upload Upload probeset metadata
