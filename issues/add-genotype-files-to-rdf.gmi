@@ -1,0 +1,14 @@
+# Add genotype file paths to RDF
+
+## Tags
+* assigned: bonfacem
+* type: bug
+* status: open, in progress
+
+In Penguin2, genotype files are located in: /export/data/genenetwork/genotype_files/genotype.  Each genotype files has an identifier to a dataset it refers to:
+
+```
+@name:B6D2
+```
+
+Dump the above metadata in RDF.  When we transition fully to an LMDB store, update the RDF node with a pointer to the LMDB store.
