@@ -61,5 +61,6 @@ git repo gn-docs & genenetwork3 & SPARQL
 
 => https://fosdem.org/2023/schedule/event/tissue/ Arun's talk on our issue tracker
 => https://github.com/genenetwork/gn-gemtext-threads Git repo on issues/tasks/topics
+=> https://issues.genenetwork.org/topics/biohackathon/GNGSoC2023 This page
 
 For more info contact pjotr.public912 at thebird.nl
