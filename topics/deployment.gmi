@@ -8,14 +8,14 @@ This page attempts to document the deployment process we have for GeneNetwork. W
 
 See also
 
-=> ./guix-system-containers-and-how-we-use-them.gmi
+=> ./guix-system-containers-and-how-we-use-them
 
 ## genenetwork2
 
 To install GN2 by hand for development we also track
 
-=> ./developing-against-gn.gmi
-=> ./installation.gmi
+=> ./developing-against-gn
+=> ./installation
 
 ## genenetwork3
 
