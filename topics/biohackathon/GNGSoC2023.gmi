@@ -1,0 +1,65 @@
+# GNGSoC 2023
+
+GN Summer of Code
+
+## Introduction
+
+We are running a GN Summer of Code in small teams.
+
+* Runs July + August 2023
+* Weekly plenary where projects present progress - Thursday 9am EU, 10 am EAT.
+* Projects should be (slightly) out of comfort zone
+* Use gemtext documentation
+* Option for publishing on progress by then end as a BLOG or BioHackrXiv
+
+## CI for guix-bioinformatics (guix pull)
+
+* lead: Arun
+* team: Efraim, Pjotr, Sarthak
+
+Making GN deployment rock solid
+
+git repo genenetwork-machines, guix-bioinformatics
+
+## Nextgen databases
+
+lmdb+RDF
+
+* lead: Bonface
+* team: Fred, Alex
+* contact: Pjotr
+
+git repo genenetwork3
+
+## LLMs & metadata (RDF)
+
+* lead: Shelby
+* team: Priscilla
+* contact: Bonface
+
+## API to access data from GN
+
+* lead: Rupert
+* team: Flavia
+* contacts: Bonface, Zach, Fred
+
+Documentation and adding endpoints
+
+git repo gn-docs & genenetwork3 & SPARQL
+
+=> https://github.com/genenetwork/gn-docs
+
+## Editing data
+
+* lead: Fred
+* team: Arthur, Rupert, Zach
+* contacts: Rob
+
+## Links
+
+* Matrix room is GNSoC2023
+
+=> https://fosdem.org/2023/schedule/event/tissue/ Arun's talk on our issue tracker
+=> https://github.com/genenetwork/gn-gemtext-threads Git repo on issues/tasks/topics
+
+For more info contact pjotr.public912 at thebird.nl
