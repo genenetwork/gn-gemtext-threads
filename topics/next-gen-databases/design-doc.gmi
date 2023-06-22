@@ -7,11 +7,13 @@
 Please go through:
 
 => https://github.com/BonfaceKilz/gn-dataset-dump
+=> https://github.com/genenetwork/dump-genenetwork-database
 
 ## Tasks
 * Go through the above repository.  We'll have a check in on Friday 23 to discuss this.
 * Write and package guile-lmdb.  Use cl-lmdb as inspiration
 * Find out a more efficient way to store utf-8 strings
 * Integrate LMDB in GN:
-   - Rewrite some statistical computations using LMDB+RDF
-   - Integrate editing LMDB entries using Fred's new auth system
+* Rewrite some statistical computations using LMDB+RDF
+* Integrate editing LMDB entries using Fred's new auth system
+
