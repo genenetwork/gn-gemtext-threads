@@ -1,0 +1,49 @@
+# CI rethink
+
+* assigned: aruni, efraimf, pjotrp, sarthak
+* keywords: gnsoc
+
+## Write Guix services to deploy genenetwork on production
+
+Zach currently deploys production by hand. Not only is this more work, it is also prone to errors. Instead, we want to deploy production genenetwork in a Guix system container. This will give us strong reproducibility and enable us to version control the configuration. If a machine fails, setting up production on a new machine will be effortless.
+
+While, due to our "organizational difficulties", this new system container may not immediately replace our current production, it is still worth having as a model for a robust production deployment.
+
+* [] Write a genenetwork2 Guix service
+* [] Write a genenetwork3 Guix service
+
+Volunteers welcome for this section!
+
+## Turn project repos into Guix channels
+
+Our CI system runs on complex G-expression hacks that pull in dependencies and sources from the "current Guix". We want to be more like cuirass, that is, we want to use an inferior Guix process running on a Guix profile specified by a list of channels. This will significantly reduce the complexity of our G-expressions and avoid duplication of some package building code.
+
+The first step of this process is to turn our project repos (genenetwork2 and genenetwork3) into Guix channels. This is described in the following Guix blog post, specifically under "Level 2: The repository as a channel".
+
+=> https://guix.gnu.org/en/blog/2023/from-development-environments-to-continuous-integrationthe-ultimate-guide-to-software-development-with-guix/
+
+* [] Make genenetwork2 repo a Guix channel
+* [] Make genenetwork3 repo a Guix channel
+
+Volunteers welcome for this section!
+
+## Set up CI jobs
+
+We need a CI job to run on every commit to guix-bioinformatics and check if guix pull still succeeds. It would be doubly nice to build every package defined in the guix-bioinformatics channel and offer substitutes. This would make our CI system more or less feature-compatible with cuirass.
+
+* [] Set up CI job to run guix pull on guix-bioinformatics
+* [] Set up CI job to build every package defined in guix-bioinformatics
+
+Since our repositories are now Guix channels too, we can rewrite our existing genenetwork2/genenetwork3 CI jobs to be built and tested just like guix-bioinformatics.
+
+* [] Rewrite existing genenetwork2/genenetwork3 CI jobs using Guix channels
+
+The code we develop in this section will eventually move to guix-forge. Arun can handle this section.
+
+## Rewrite CD
+
+Our programmers work with the CD to ensure that all their code works correctly. When this code is deployed to production, there should be no surprises; everything that worked on CD should work on production. So, it is preferable that CD and production share as much Guix configuration code as possible.
+
+* [] Rewrite CD to share code with the production genenetwork Guix services
+
+It is not yet clear how best to do this. But, things should clear up as we work out the earlier sections.
