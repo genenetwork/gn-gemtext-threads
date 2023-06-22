@@ -1,4 +1,4 @@
-# Introduction
+# LMDB Phenotype/Genotype Store
 
 * lead: bonfacem
 * team: fred, alex
