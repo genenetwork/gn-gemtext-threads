@@ -21,6 +21,9 @@ Making GN deployment rock solid
 
 git repo genenetwork-machines, guix-bioinformatics
 
+=> ../../issues/gnsoc-ci-rethink Tracking
+
+
 ## Nextgen databases
 
 lmdb+RDF
@@ -30,6 +33,8 @@ lmdb+RDF
 * contact: Pjotr
 
 git repo genenetwork3
+
+=> ../../topics/next-gen-databases/design-doc
 
 ## LLMs & metadata (RDF)
 
