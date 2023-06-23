@@ -36,7 +36,7 @@
              ("Rob Williams" "robw")
              ("Arthur Centeno" "acenteno")
              ("jgart")
-	     ("Solomon Shelby" "soloshelby")
+	     ("Solomon Shelby" "soloshelby" "SidiBlak")
 	     ("priscilla")
              ("Zachary Sloan" "zach" "zachs" "zsloan"))
  #:indexed-documents (append (map (lambda (filename)
