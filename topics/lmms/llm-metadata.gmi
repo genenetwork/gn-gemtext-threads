@@ -1,0 +1,40 @@
+# Large Language Models (LLMs) & Metadata
+
+* assigned: soloshelby (S. Solomon Darnell), priscilla
+* contact: bonfacekilz (Munyoki)
+* keywords: gnsoc, LLMs, metadata
+
+## Integrate an LLM Q&A system into gn.genenetwork.org
+This development will be done in stages:
+* [X] 1 - get API access to FahamuAI GeneNetwork Q&A system
+* [ ] 2 - create local python Flask sandbox
+* [ ] 3 - create UI for Q&A window that fits into current GN framework
+* [ ] 4 - create CI/CD tests for new module
+* [ ] 5 - integrate new functionality into GN1 & GN2
+
+## Add GN metadata
+* [ ] export GN RDF triples
+* [ ] convert data of triples into plain English sentences
+* [ ] submit triples-based sentences to Q&A LLM
+* [ ] submit RDF metadata to an Oracle to support Q&A system truthfulness
+
+## Set up system update protocol
+These are all living systems that must be kept up-to-date. 
+GN is consistently being used for research and we are improving its design and functionality to make this statement perpetually true.
+In order to keep the Q&A system up-to-date we must:
+* [ ] create protocol to get new publications
+* [ ] query web for new publications utilizing GN
+* [ ] pull links to the newly found documents
+* [ ] acquire the documents
+* [ ] process documents for LLM
+
+The National Library of Medicine's PubMed is a National Institute of Health system that is one of the most widely used resources for researchers found 
+PubMed is consistently updated by the NIH, so we must build a script to:
+* [ ] poll its API on a regular basis
+* [ ] download new citations,
+* [ ] parse citations and metadata for input into LLM
+* [ ] upload new data into LLM
+
+By ensuring up-to-date information about the main information sources for the GeneNetwork Q&A system, the system grows with the knowledgebase.
+
+Add functionality that allows someone to submit documentation to the system, which is added after being reviewed by a specialist.
