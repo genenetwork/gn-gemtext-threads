@@ -17,3 +17,17 @@ Please go through:
 * Rewrite some statistical computations using LMDB+RDF
 * Integrate editing LMDB entries using Fred's new auth system
 
+
+## Actionable items (Week 1):
+Bonface:
+* [A] Setup a directoryallowed for dumping rdf files
+* [A] Autogenerate documentation: trees, and labels.  How do you test for correctness and completeness in a data store?
+* [C] guile bindings for lmdb for important stuff
+* [B] Using hashes to track updates on database---proposal
+
+Alex:
+* Fetching all the phenotype data from the database using sql and genotype file
+* Using LMBD as input for correlations---make proposal for how we can export data in a way we can use
+
+Fred:
+* Fetch metadata in RDF and possibly document things
