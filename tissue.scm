@@ -36,6 +36,8 @@
              ("Rob Williams" "robw")
              ("Arthur Centeno" "acenteno")
              ("jgart")
+	     ("Solomon Shelby" "soloshelby")
+	     ("priscilla")
              ("Zachary Sloan" "zach" "zachs" "zsloan"))
  #:indexed-documents (append (map (lambda (filename)
                                     (slot-set (read-gemtext-issue filename)

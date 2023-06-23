@@ -1,7 +1,7 @@
 # Large Language Models (LLMs) & Metadata
 
-* assigned: soloshelby (S. Solomon Darnell), priscilla
-* contact: bonfacekilz (Munyoki)
+* assigned: soloshelby, priscilla
+* contact: bonfacem
 * keywords: gnsoc, LLMs, metadata
 
 ## Integrate an LLM Q&A system into gn.genenetwork.org
