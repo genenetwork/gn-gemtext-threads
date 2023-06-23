@@ -5,9 +5,9 @@
 
 ## Write Guix services to deploy genenetwork on production
 
-Zach currently deploys production by hand. Not only is this more work, it is also prone to errors. Instead, we want to deploy production genenetwork in a Guix system container. This will give us strong reproducibility and enable us to version control the configuration. If a machine fails, setting up production on a new machine will be effortless.
+We currently deploys production by hand. Not only is this more work, it is also prone to errors. Instead, we want to deploy production genenetwork in a Guix system container. This will give us strong reproducibility and enable us to version control the configuration. If a machine fails, setting up production on a new machine will be effortless.
 
-While, due to our "organizational difficulties", this new system container may not immediately replace our current production, it is still worth having as a model for a robust production deployment.
+This new system container may not immediately replace our current production, it is still worth having as a model for a robust production deployment.
 
 * [] Write a genenetwork2 Guix service
 * [] Write a genenetwork3 Guix service
