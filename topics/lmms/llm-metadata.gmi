@@ -7,8 +7,8 @@
 ## Integrate an LLM Q&A system into gn.genenetwork.org
 This development will be done in stages:
 * [X] 1 - get API access to FahamuAI GeneNetwork Q&A system
-* [ ] 2 - create local python Flask sandbox
-* [ ] 3 - create UI for Q&A window that fits into current GN framework
+* [X] 2 - create local python Flask sandbox
+* [-] 3 - create UI for Q&A window that fits into current GN framework
 * [ ] 4 - create CI/CD tests for new module
 * [ ] 5 - integrate new functionality into GN1 & GN2
 
