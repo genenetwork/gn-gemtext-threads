@@ -41,7 +41,7 @@ git repo genenetwork3
 * team: Priscilla
 * contact: Bonface
 
-==> ../../lmms/llm-metadata Tracking progress
+==> ../lmms/llm-metadata Tracking progress
 
 ## API to access data from GN
 
