@@ -4,7 +4,7 @@
 
 * assigned: bonfacem
 * type: bug
-* status: open
+* status: closed
 
 Probeset metadata is the only significant metadata that remains to be uploaded.  Uploading using SPARQL'S endpoint (either using CURL or the load-rdf script) doesn't work.  As such, I'll have to work out a different way to upload this metadata.  Here's the current size of the datasets I'm trying to upload:
 
@@ -17,3 +17,10 @@ drwxr-xr-x 9 bonfacem bonfacem  4.0K Jun 15 07:04 ..
 -rw-r--r-- 1 bonfacem bonfacem 1014M Jun 16 08:04 dump-probeset-1.ttl
 -rw-r--r-- 1 bonfacem bonfacem 1009M Jun 16 08:18 dump-probeset-2.ttl
 ```
+
+This has been resolved in:
+
+=> https://github.com/genenetwork/genenetwork-machines/pull/3 Add virtuoso allowed dirs
+=> https://gitlab.com/genenetwork/guix-bioinformatics/-/merge_requests/24 Add dirs-allowed to virtuoso configs
+
+The public-sparql and genenetwork-development containers were re-built to apply the above changes.
