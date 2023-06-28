@@ -68,3 +68,7 @@ For `wqflask/run_gunicorn.py`, the route can remain as is, since this is an entr
 
 * Move application initialisation into an application factory function
 * Replace all uses of `wqflask.app` variable with `flask.current_app` or `create_app()` as necessary
+
+### Non-Executable Configuration Files
+
+Eschew executable formats (*.py) for configuration files and prefer non-executable formats e.g. *.cfg, *.json, *.conf etc

@@ -11,3 +11,5 @@
 ## Description
 
 The configuration file should only ever contain settings, and no code. Remove all code from the default settings file.
+
+Eschew executable formats (*.py) for configuration files and prefer non-executable formats e.g. *.cfg, *.json, *.conf etc
