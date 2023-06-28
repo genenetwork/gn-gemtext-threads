@@ -120,6 +120,8 @@ These demand some bureaucracy to access due to security and privacy consideratio
 
 The roles will be collections of privileges that can be assigned to users. They are the system's main way of controlling access to the system and restricting user access.
 
+Roles can *ideally* be assigned to any user, whether they are a member of the group or otherwise. This means, that a resource can be private to the group, and the resource owner can give access to the resource to (a) specific user(s) outside the group by assigning them a role that has only the privileges they need for access.
+
 ### Groups
 
 The group is the main organisational scheme for the authorisation system.
