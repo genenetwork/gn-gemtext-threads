@@ -1,0 +1,14 @@
+## BulkLMM integration
+
+## Tags
+
+* assigned: pjotrp
+* type: feature
+* priority: high
+
+## Description
+
+Integrate BulkLMM in GeneNetwork. The first step is to test the command line interface to BulkLMM in GeneNetwork using the BulkLMMSysimage. 
+The BulkLMMSysimage files provides instructions for generating the BulkLMM.jl sysimage,along with the code for the command-line functions.
+
+=> https://github.com/senresearch/BulkLMMSysimage	BulkLMMSysimage files

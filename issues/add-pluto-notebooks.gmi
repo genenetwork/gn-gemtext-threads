@@ -1,0 +1,23 @@
+## Add Pluto Notebooks
+
+## Tags
+
+* assigned: pjotrp
+* type: feature
+* priority: high
+
+## Description
+
+Host Pluto Notebooks in GeneNetwork. As a proof of concept, we host:
+
+=> https://notebooks.one/	notebooks.one
+
+We used the package PlutoSliderServer.jl:
+
+=> https://github.com/JuliaPluto/PlutoSliderServer.jl	PlutoSliderServer.jl
+
+See also our deployment repo for notebooks.one:
+
+=> https://github.com/GregFa/visuals/tree/testing
+
+Considering its capabilities, PlutoSliderServer.jl could potentially serve as a viable solution for hosting Pluto Notebooks on GeneNetwork.

@@ -1,0 +1,30 @@
+## Fix genotype filename HSNIH-Palmer
+
+## Tags
+
+* assigned: pjotrp
+* type: bug fix
+* priority: high
+
+## Description
+
+
+When using the Rest API to get the groups for "rat", it mentions the group HSNIH-Palmer.
+But the REST API to obtain the geno file(http://gn2.genenetwork.org/api/v_pre1/gentotypes/HSNIH-Palmer.geno) failed.
+The file of HSNIF-Palmer has actually a different name from what is expected; we have to use "HSNIH-Palmer_true" instead.
+On GeneNetwork website, the following query does not return results from the search.
+
+Dataset try to access: HSNIH-Palmer
+
+Issues with genotyped data:
+Used this query:
+
+Species: Rat
+
+Group: NIH Heterogeneous Stock (Palmer)
+
+Type: DNA Markers and SNPs
+
+Dataset: HSNIH-Palmer Genotypes
+
+Get Any: *
