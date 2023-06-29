@@ -23,6 +23,16 @@ git repo genenetwork-machines, guix-bioinformatics
 
 => ../../issues/gnsoc-ci-rethink Tracking progress
 
+### Week 1
+
+* Proposal written
+  - guix pull on guix-bioinformatics
+  - updated guix is broken gemma (Pjotr)
+* Efraim guix GN2 - so we can have a channel
+* Next step build substitutes for guix-bioinformatics
+  - once built they are shared
+* And create a GN3 channel (Efraim?)
+
 ## Nextgen databases
 
 lmdb+RDF
@@ -35,13 +45,32 @@ git repo genenetwork3
 
 => ../../topics/next-gen-databases/design-doc Design doc
 
+### Week 1
+
+* RDF dumps
+* Parsing S-exp -> markdown
+* Hashing tables (Fred)
+  - automated updates
+* Some progress on sample data from SQL -> lmdb (Alex)
+* Next week: guile bindings for lmdb
+  - improving RDF
+
 ## LLMs & metadata (RDF)
 
 * lead: Shelby
 * team: Priscilla
-* contact: Bonface
+* contact: Bonface, Pjotr, Rupert
 
 => ../lmms/llm-metadata Tracking progress
+
+### Week 1
+
+* Created issue page
+* Downloading publications (Priscilla)
+* Flask server
+* Next: Connecting OpenAI
+* Create matrix room
+
 
 ## API to access data from GN
 
@@ -55,11 +84,29 @@ git repo gn-docs & genenetwork3 & SPARQL
 
 => https://github.com/genenetwork/gn-docs
 
+### Week 1
+
+* Mapping out the API
+
+=> https://github.com/genenetwork/gn-docs/blob/master/api/questions-to-ask-GN.md
+
+* Ideas on structuring
+* Questions on GN
+* Next: unify access to information
+  - collecting questions from users
+  - settle on form of API
+  - create example URLs for mouse
+
 ## Editing data
 
 * lead: Fred
 * team: Arthur, Rupert, Zach
 * contacts: Rob
+
+### Week 1
+
+* Edit phenotype metadata works
+* Next: phenotype values and testing on live
 
 ## Links
 
