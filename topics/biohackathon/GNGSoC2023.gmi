@@ -108,6 +108,18 @@ git repo gn-docs & genenetwork3 & SPARQL
 * Edit phenotype metadata works
 * Next: phenotype values and testing on live
 
+## Guix parametrization
+
+* lead: Sarthak
+* team: Pjotr, Gabor
+* contacts: Ludo
+
+### Week 1
+
+=> https://blog.lispy.tech/parameterized-packages-an-update.html
+
+* Next: focus on statically built packages optimized for arch.
+
 ## Links
 
 * Matrix room is GNSoC2023
