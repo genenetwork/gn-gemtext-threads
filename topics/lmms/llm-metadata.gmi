@@ -8,9 +8,11 @@
 This development will be done in stages:
 * [X] 1 - get API access to FahamuAI GeneNetwork Q&A system
 * [X] 2 - create local python Flask sandbox
-* [-] 3 - create UI for Q&A window that fits into current GN framework
-* [ ] 4 - create CI/CD tests for new module
-* [ ] 5 - integrate new functionality into GN1 & GN2
+* [X] 3 - build placeholder UI
+* [-] 3.5 - integrate FahamuAI API into placeholder
+* [-] 4 - create UI for Q&A window that fits into current GN framework
+* [ ] 5 - create CI/CD tests for new module
+* [ ] 6 - integrate new functionality into GN1 & GN2
 
 ## Add GN metadata
 * [ ] export GN RDF triples
