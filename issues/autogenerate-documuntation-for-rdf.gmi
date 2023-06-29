@@ -7,3 +7,7 @@
 * priority: high
 * status: in progress
 * keywords: RDF, GNSOC2023
+
+See this
+
+=> https://github.com/genenetwork/dump-genenetwork-database/pull/11
