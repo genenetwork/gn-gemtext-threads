@@ -29,5 +29,8 @@ Alex:
 * Fetching all the phenotype data from the database using sql and genotype file
 * Using LMBD as input for correlations---make proposal for how we can export data in a way we can use
 
+* example implementation for this:
+=> https://github.com/Alexanderlacuna/correlation_rust/pull/3/files#diff-87f0275ed65ae8ffe36df25091c9b975defbc920da7b5ec3c2dadb7d57ad4d67
+
 Fred:
 * Fetch metadata in RDF and possibly document things
