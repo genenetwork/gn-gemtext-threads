@@ -1,0 +1,52 @@
+# Modifying dump macros
+
+Look at the following guix snippet:
+
+```
+(modify-services %desktop-services
+  (guix-service-type config => (guix-configuration
+       			 (inherit config)
+       			 (substitute-urls
+       			  (append (list "https://substitutes.nonguix.org")
+       				  %default-substitute-urls))
+       			 (authorized-keys
+       			  (append (list (local-file "/etc/guix/nonguix/signing-key.pub")
+       					(local-file "/etc/guix/guix-past/signing-key.pub"))
+       				  %default-authorized-guix-keys)))))
+```
+
+The above snippet demonstrates how you can modify services on the fly.  In GN, consider a dump:
+
+```
+(define-dump dump-species
+  (tables (Species))
+  (schema-triples
+   (gn:name rdfs:range rdfs:Literal)
+   (gn:displayName rdfs:range rdfs:Literal)
+   (gn:binomialName rdfs:range rdfs:Literal)
+   (gn:family rdfs:range rdfs:Literal))
+  (triples (string->identifier "species" (field Species FullName))
+    (set rdf:type 'gn:species)
+    (set gn:name (field Species SpeciesName))
+    (set gn:displayName (field Species MenuName))
+    (set gn:binomialName (field Species FullName))
+    (set gn:family (field Species Family))
+    (set gn:organism (ontology 'ncbiTaxon: (field Species TaxonomyId)))))
+```
+
+We could have all the dumps in one file, say:
+
+```
+%genenetwork-tables-dump
+```
+
+which have the default dumps that were defined earlier.  Should someone want to change something, one possible interface would be:
+
+```
+(modify-dump %genenetwork-tables-dump
+	     (dump-species schema-triples =>
+			   (schema-triples
+			    (inherit schema-triples)
+			    (replace (gn:name rdfs:range rdfs:Literal)
+			      (gn:name rdfs:range gn:something-
+```
