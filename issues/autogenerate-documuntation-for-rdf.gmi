@@ -11,3 +11,52 @@
 See this
 
 => https://github.com/genenetwork/dump-genenetwork-database/pull/11
+
+Given an s-expression say:
+
+```
+(define-dump dump-species
+  (tables (Species))
+  (schema-triples
+   (gn:name rdfs:range rdfs:Literal)
+   (gn:displayName rdfs:range rdfs:Literal)
+   (gn:binomialName rdfs:range rdfs:Literal)
+   (gn:family rdfs:range rdfs:Literal))
+  (triples (string->identifier "species" (field Species FullName))
+    (set rdf:type 'gn:species)
+    (set gn:name (field Species SpeciesName))
+    (set gn:displayName (field Species MenuName))
+    (set gn:binomialName (field Species FullName))
+    (set gn:family (field Species Family))
+    (set gn:organism (ontology 'ncbiTaxon: (field Species TaxonomyId)))))
+```
+
+... parse the s-expression into markdown into a form that looks like this:
+
+```
+
+# dump-species
+## Metadata for predicates used in defining dump-species
+
+gn:name -> rdfs:range -> rdfs:Literal
+gn:display -> rdfs:range -> rdfs:Literal
+gn:binomialName -> rdf:range -> rdfs:Literal
+gn:family -> rdfs:range -> rdfs:Literal
+
+## Triples inside the dump-species
+An example of an identifer that would be used as a subject is: gn:species_mus_musculus
+
+
+gn:species_mus_musculus -> rdf:type -> gn:species
+gn:species_mus_musculus -> gn:name -> Species.SpeciesName
+gn:species_mus_musculus -> gn:displayName -> Species.MenuName
+gn:species_mus_musculus -> gn:binomialName -> Species.FullName
+gn:species_mus_musculus -> gn:family -> Species.Family
+gn:species_mus_musculus -> gn:organism -> Species.TaxonomyId
+
+Example query to fetch all metadata about a species:
+
+: SELECT ?p ?o WHERE { gn:species_mus_musculus ?p ?o } LIMIT 1
+```
+
+Some current challenges I'm facing: in the case of "blank-nodes", how do I autogenerate the docs?
