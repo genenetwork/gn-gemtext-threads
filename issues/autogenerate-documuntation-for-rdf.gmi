@@ -6,7 +6,7 @@
 * type: feature
 * priority: high
 * status: in progress
-* keywords: RDF, GNSOC2023
+* keywords: RDF, GNSOC2023, NextGenDatabases
 
 See this
 
