@@ -10,6 +10,7 @@
 ## Tasks
 
 * [ ] gn2-zach
+* [ ] gn2-test
 * [ ] production
 * [X] letsencrypt is failing on P2 and Tux01 (expiry Nov12)
   - letsencrypt was down
@@ -32,6 +33,11 @@ That needs to be updated in settings.
 See also
 
 => ../redirect-http-to-https.gmi
+
+### gn2-test
+
+I also added a path to tux02 with gn2-test.genenetwork.org at
+port 5010 for testing.
 
 ### Setup
 
