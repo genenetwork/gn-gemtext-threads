@@ -5,17 +5,35 @@
 * assigned: pjotr
 * type: bug
 * priority: critical
-* status: completed, done, closed
+* status: open
 
 ## Tasks
 
+* [ ] gn2-zach
+* [ ] production
 * [X] letsencrypt is failing on P2 and Tux01 (expiry Nov12)
   - letsencrypt was down
 * [X] ucscbrowser needs a certificate (now forwards http -> https)
 
 ## Notes
 
-Setup
+### Reopen
+
+I reopened the task to migrate production to https fully. Started with gn2-zach's testing
+instance and redirected http -> https with letsencrypt. Errors show in browser console that
+the menu loader is hard coded, for example.
+
+```
+Blocked loading mixed active content “http://gn2-zach.genenetwork.org/api4//menu/generate/json”
+```
+
+That needs to be updated in settings.
+
+See also
+
+=> ../redirect-http-to-https.gmi
+
+### Setup
 
 ```
 certbot --nginx -d host.genenetwork.org
