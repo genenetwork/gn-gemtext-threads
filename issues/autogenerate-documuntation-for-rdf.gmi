@@ -3,10 +3,10 @@
 
 # Tags
 * assigned: bonfacem
-* type: feature
+* type: feature, NextGenDatabases
 * priority: high
 * status: in progress
-* keywords: RDF, GNSOC2023, NextGenDatabases
+* keywords: RDF, GNSOC2023
 
 See this
 
