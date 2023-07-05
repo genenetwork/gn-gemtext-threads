@@ -1,0 +1,9 @@
+# Scheme Macros
+
+* If a pattern variable appears within an ellipsis prototype in the pattern, it cannot appear outside an ellipsis prototype in the template.
+* syntax-case macros are procedural syntax transformers.  The syntax-case expressions provide a way to destructure a syntax object, and to rebuild syntax objects as output.  Simply put, they are a way to take apart and put together program text, and to be a valid syntax-transformer, they need to be wrapped in a procedure.
+* syntax-case macros transform syntax objects, not raw Scheme forms.  Instead of representing syntax objects as symbols, the syntax expander represents identifiers as annotated syntax objects, attaching such information to those syntax objects as is needed to maintain referential transparency.
+* A syntax transformer procedure must return a syntax object.
+* Within a syntax expression, any appearance of a pattern variable is substituted into the resulting syntax object, carrying with it all relevant metadata from the source expression, such as lexical identity and source location.
+* A pattern variable may only be referenced from inside a syntax form.
+* syntax-case creates procedural macros, giving the full power of Scheme to the macro expander.
