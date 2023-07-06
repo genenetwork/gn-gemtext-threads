@@ -33,6 +33,14 @@ git repo genenetwork-machines, guix-bioinformatics
   - once built they are shared
 * And create a GN3 channel (Efraim?)
 
+### Week 2
+
+* RISC-V port progressing with node and zig 0.10
+* guix-bioinformatics now has CI!
+* ~700 packages, 300 are broken ;)
+* CI/CD is up and running again (and broken)
+* Rethink: channels and pull channels are used for CI/CD
+
 ## Nextgen databases
 
 lmdb+RDF
@@ -55,6 +63,12 @@ git repo genenetwork3
 * Next week: guile bindings for lmdb
   - improving RDF
 
+### Week 2
+
+* RDF structure to markdown dump
+* Fred running SPARQL queries
+* Alex lmdb phenotype API endpoints
+
 ## LLMs & metadata (RDF)
 
 * lead: Shelby
@@ -71,6 +85,11 @@ git repo genenetwork3
 * Next: Connecting OpenAI
 * Create matrix room
 
+### Week 2
+
+* API is working mostly
+* Shelby is integrating into a Flask interface for GeneNetwork
+* Pubmed UI style
 
 ## API to access data from GN
 
@@ -97,6 +116,13 @@ git repo gn-docs & genenetwork3 & SPARQL
   - settle on form of API
   - create example URLs for mouse
 
+### Week 2
+
+* GraphQL Arun gives a mumi demo - schema allows for (partial) queries and querying the schema itself
+* Pjotr convenience API demo - add endpoints in results
+* Flavia added questions in gn-doc - e.g. for synteny search
+=> https://issues.genenetwork.org/topics/xapian-search-queries Examples for synteny
+
 ## Editing data
 
 * lead: Fred
@@ -107,6 +133,11 @@ git repo gn-docs & genenetwork3 & SPARQL
 
 * Edit phenotype metadata works
 * Next: phenotype values and testing on live
+
+### Week 2
+
+* Fixing issues
+* Meeting on requirements from Arthur and Zach
 
 ## Guix parametrization
 
@@ -119,6 +150,11 @@ git repo gn-docs & genenetwork3 & SPARQL
 => https://blog.lispy.tech/parameterized-packages-an-update.html
 
 * Next: focus on statically built packages optimized for arch.
+
+### Week 2
+
+* Looking into GeneNetwork3 service
+* Enumerated types
 
 ## Links
 
