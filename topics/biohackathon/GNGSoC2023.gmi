@@ -1,4 +1,4 @@
-# GNGSoC 2023
+# GNSoC 2023
 
 GN Summer of Code
 
@@ -37,9 +37,13 @@ git repo genenetwork-machines, guix-bioinformatics
 
 * RISC-V port progressing with node and zig 0.10
 * guix-bioinformatics now has CI!
-* ~700 packages, 300 are broken ;)
+* ~700 packages, 240 are broken ;)
+
+=> https://ci.genenetwork.org/jobs/guix-bioinformatics
+
 * CI/CD is up and running again (and broken)
 * Rethink: channels and pull channels are used for CI/CD
+* Move unused packages elsewhere
 
 ## Nextgen databases
 
@@ -66,8 +70,8 @@ git repo genenetwork3
 ### Week 2
 
 * RDF structure to markdown dump
-* Fred running SPARQL queries
-* Alex lmdb phenotype API endpoints
+* Fred is running SPARQL queries
+* Alex is adding lmdb phenotype API endpoints
 
 ## LLMs & metadata (RDF)
 
@@ -87,9 +91,9 @@ git repo genenetwork3
 
 ### Week 2
 
-* API is working mostly
+* Open AI API is working
 * Shelby is integrating into a Flask interface for GeneNetwork
-* Pubmed UI style
+* Using a pubmed UI style
 
 ## API to access data from GN
 
@@ -112,9 +116,9 @@ git repo gn-docs & genenetwork3 & SPARQL
 * Ideas on structuring
 * Questions on GN
 * Next: unify access to information
-  - collecting questions from users
-  - settle on form of API
-  - create example URLs for mouse
+* collecting questions from users
+* settle on form of API
+* create example URLs for mouse
 
 ### Week 2
 
