@@ -1,0 +1,29 @@
+# Improve sparql results
+
+## Tags
+* assigned: bonfacem
+* type: improvement
+* priority: high
+* status: in progress
+* keywords: RDF, SPARQL
+
+For this query:
+
+=> https://sparql.genenetwork.org/sparql?default-graph-uri=&qtxt=prefix%20gn%3A%20%3Chttp%3A%2F%2Fgenenetwork.org%2F%3E%0A%0ASELECT%20*%20WHERE%20%7B%0Agn%3Aspecies_mus_musculus%20%3Fp%20%3Fo.%0A%7D&format=text%2Fhtml&timeout=0&signal_void=on
+
+* Investigate why we have duplicate results for
+
+=> http://genenetwork.org/binomialName?
+
+* Also, links with the "gn:" prefix should resolve.  Move the documents to a Markdown document that is hosted in gn-docs; and then create an end-point on GN2 for that.
+
+* How do we encode wikidata entries as part of a dump?  E.g.
+
+=> http://www.wikidata.org/entity/Q83310
+
+* How do we ascertain that the wikidata entries are retained in the future?
+
+* For 'taxon:' prefix use:
+
+=> http://purl.uniprot.org/core/scientificName
+
