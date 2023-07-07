@@ -5,7 +5,7 @@
 * assigned: alexm
 * type: debug
 * priority: high
-* status: in progrss
+* status: in progress
 
 ## Notes
 
@@ -14,4 +14,35 @@ A dataset can have multiple groups. In order to fetch all possible sample data f
 As an example example the dataset HC_M2_0606_P is of type Probeset and linked groups for this dataset include (bxd,others) that would translate to these genofiles BXD.geno etc
 
 
+## Species relationship to groups/
+A dataset has got species for example (mouse,human)
+Similary a species can have multiple groups/families
 
+Example-> Species(mouse) ->Families(BXD family, B6D2RI, B6D2F2) -> Genofiles related to this (BXD.geno, B6D2RI.geno, B6D2F2.geno)
+
+* How to fetch Families given a species
+
+```sql
+SELECT InbredSet.Name, InbredSet.FullName
+FROM InbredSet, Species WHERE Species.Name = 'mouse'
+AND InbredSet.SpeciesId = Species.Id GROUP by 
+InbredSet.Name ORDER BY IFNULL(InbredSet.FamilyOrder, 
+InbredSet.FullName) ASC, IFNULL(InbredSet.Family, 
+InbredSet.FullName) ASC, InbredSet.FullName ASC,
+InbredSet.MenuOrderId ASC
+
+```
+
+* Limit you fetch to specified type for Dataset
+Example of types Probeset,Publish
+
+
+```sql
+
+select InbredSet.Name, InbredSet.FullName from InbredSet,Species,
+ProbeFreeze where Species.Name = 'mouse'
+and InbredSet.SpeciesId = Species.Id and
+(ProbeFreeze.InbredSetId = InbredSet.Id)
+group by InbredSet.Name
+order by InbredSet.FullName 
+```
