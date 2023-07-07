@@ -1,0 +1,25 @@
+# Editing Phenotypes
+
+## Quick Note
+
+The code for editing phenotypes is currently present and has made its way to production. The only reason users cannot access the feature (as of 2023-07-07T10:00+03:00UTC) is that there is currently an issue with the production system that causes the sessions to disappear immediately after login.
+
+This note will be removed once the issue is resolved.
+
+## Process
+
+* Log in to GN2 by clicking the "Sign in" link
+* Provide the appropriate user credentials
+* Go to the traits page (/show_trait?...) for the trait you want to edit
+* Click on the "Edit" button. Note that this button only shows up for users with the appropriate privileges.
+* You are now on the traits edit page
+* Edit the metadata as necessary
+* Edit the sample data (only available for phenotype traits) as necessary.
+* Submit the changes by clicking the "Submit Change" button
+* View the diffs for the changes by clicking on the "View History" link near the top of the page
+
+## Notes
+
+* Sample data editing is only available for phenotype traits. You cannot edit sample data for genotype or probeset traits
+* Removing values for sample data is currently no possible
+

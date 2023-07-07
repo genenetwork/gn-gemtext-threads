@@ -1,0 +1,31 @@
+# Editing Case-Attributes
+
+## Introduction
+
+Case-Attributes are essentially the metadata for the samples. In the GN2 system, they are the extra columns in the table in the "Reviews and Edit Data" accordion tab besides the value and its error margin.
+
+## Status
+
+There is code that existed for the case-attributes editing, but it had a critical bug where the data for existing attributes would be deleted/replaced randomly when one made a change. This lead to a pause in this effort.
+
+This bug should probably be the first thing to look at and resolve to get the current code out to the users.
+
+We should probably also enable a rollback feature.
+
+## Notes
+
+* Liaise with @Munyoki to collect further information on the case-attributes
+* The relevant database tables are "CaseAttribute" and "CaseAttributeXRefNew"
+
+
+## Related issues
+
+=> /issues/case-attr-edit-error
+=> /issues/fix-case-attribute-work
+=> /issues/fix-case-attribute-editing
+=> /issues/consecutive-crud-applications-when-uploading-data
+=> /issues/edit-metadata-bugs
+
+## References
+
+=> /topics/data-uploads/datasets

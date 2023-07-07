@@ -1,0 +1,7 @@
+# Info-Files Editing
+
+## Notes
+
+This will be combined with the QC Application work.
+
+@Arthur requested we first focus on getting the Phenotypes and Case-Attributes editing done first before they provide more information on this.
