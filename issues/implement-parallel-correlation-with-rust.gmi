@@ -35,14 +35,19 @@ parralel computation
 
 * [ ] Figure out how to tell cargo to use the declared dependencies, rather than dowloading the dependencies
 
-* [ ] db queries migration to gn3 or use partial correlation queries
+* [*] db queries migration to gn3 or use partial correlation queries
 
-* [ ] add parralel computation
+* [x] add parralel computation
 
 * [x] code optimization and minor fixes
 
-* [ ] implement biweight mid correlation for rust
- 
+* [x] lmbd parser
+
+* [x] implement biweight mid correlation for rust
+
+* [] fix lmdb-rust packaging
+
+* [] production deployment
 
 
 
@@ -100,4 +105,22 @@ also something to be considered  is lmdb
 
 integrated  codebase to store db in text files for probeset types
 => https://github.com/genenetwork/genenetwork2/pull/736
+
+
+
+## 11 july 2022
+
+
+* Parallel computation implementation with rust
+
+* lmdb parser in rust
+
+rather than parsing the code in python gn-correlation-rust can now read and parse
+lmdb and csv  directly
+
+
+=> https://github.com/Alexanderlacuna/correlation_rust/pull/3/files#diff-87f0275ed65ae8ffe36df25091c9b975defbc920da7b5ec3c2dadb7d57ad4d67
+
+
+
 
