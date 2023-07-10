@@ -46,3 +46,103 @@ and InbredSet.SpeciesId = Species.Id and
 group by InbredSet.Name
 order by InbredSet.FullName 
 ```
+
+
+## Notes of linking dataset to genofile
+
+```sql
+SELECT PublishFreeze.Name, PublishFreeze.FullName 
+FROM PublishFreeze, InbredSet
+WHERE InbredSet.Name = 'BXD' AND
+PublishFreeze.InbredSetId = InbredSet.Id 
+ORDER BY PublishFreeze.CreateTime ASC
+```
+
+fetch all  publish 
+
+```sql
+SELECT PublishFreeze.Name, PublishFreeze.FullName 
+FROM PublishFreeze, InbredSet
+WHERE
+PublishFreeze.InbredSetId = InbredSet.Id 
+ORDER BY PublishFreeze.CreateTime ASC
+
+```
+
+#other phenotypes
+
+
+```sql
+SELECT InfoFiles.GN_AccesionId, PublishFreeze.Name, 
+PublishFreeze.FullName FROM InfoFiles, PublishFreeze, 
+InbredSet WHERE InbredSet.Name = 'BXD' AND
+PublishFreeze.InbredSetId = InbredSet.Id AND 
+InfoFiles.InfoPageName = PublishFreeze.Name
+ORDER BY PublishFreeze.CreateTime ASC
+```
+
+
+
+fetch all groups
+
+```sql
+SELECT InfoFiles.GN_AccesionId, PublishFreeze.Name, 
+InbredSet.Name FROM InfoFiles, PublishFreeze, 
+InbredSet WHERE 
+PublishFreeze.InbredSetId = InbredSet.Id AND 
+InfoFiles.InfoPageName = PublishFreeze.Name
+ORDER BY PublishFreeze.CreateTime ASC
+```
+```sql
++---------------+------------+------+
+| GN_AccesionId | Name       | Name |
++---------------+------------+------+
+|           602 | BXDPublish | BXD  |
+|           635 | HLCPublish | HLC  |
++---------------+------------+------+
+
+```
+
+
+**  genotypes
+
+Fetch specific group
+
+
+```sql
+SELECT InfoFiles.GN_AccesionId
+FROM InfoFiles, GenoFreeze, InbredSet
+WHERE InbredSet.Name = 'BXD' AND
+GenoFreeze.InbredSetId = InbredSet.Id AND
+InfoFiles.InfoPageName = GenoFreeze.ShortName
+ORDER BY GenoFreeze.CreateTime
+DESC
+
+```
+
+
+Fetch all groups
+
+
+SELECT InfoFiles.GN_AccesionId,InbredSet.Name
+FROM InfoFiles, GenoFreeze, InbredSet
+WHERE 
+GenoFreeze.InbredSetId = InbredSet.Id AND
+InfoFiles.InfoPageName = GenoFreeze.ShortName
+ORDER BY GenoFreeze.CreateTime
+DESC
+results   for example related files are 
+
+```sql
+results 
+
++---------------+------+
+| GN_AccesionId | Name |
++---------------+------+
+|           600 | BXD  |
++---------------+------+
+
+
+
+600Geno
+```
