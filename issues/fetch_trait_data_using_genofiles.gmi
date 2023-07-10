@@ -1,0 +1,33 @@
+# Fetch trait data using genofiles
+
+
+## Tags
+
+* assigned:alexm,
+* type:improvement
+* priority: high
+* status: in progress
+
+## Notes
+
+since Genenetwork database does not have all genotype files when fetching sample data use genotypes to fetch trat data given a dataset and the trait
+
+example of this   
+
+
+```
+DATASET_NAME:HC_M2_0606_P
+TRAIT: 1454998_at
+GROUP: BXD
+
+//expected results are[id,strain,Value, CaseAttributes data()] using the genofiles
+```
+[] indentify all required fields for this
+[] code implementation
+[]  handling null values
+
+
+
+
+
+
