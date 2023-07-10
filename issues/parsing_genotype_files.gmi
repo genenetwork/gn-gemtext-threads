@@ -1,0 +1,20 @@
+# Parsing genotyfiles
+
+## Tags
+
+* assigned: alexm
+* type: debug
+* priority: high
+* status: in progress
+
+## Once you identify the  genofile identify
+the file in the GENOTYPE_FILES and extract sample_listx
+
+
+for entire parsing code refer to:
+
+=> https://github.com/genenetwork/genenetwork3/blob/main/gn3/db/genotypes.py
+
+* Linked to issue
+
+=> https://issues.genenetwork.org/issues/linking_genotype-files-to-datasets
