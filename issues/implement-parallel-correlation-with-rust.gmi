@@ -108,16 +108,11 @@ integrated  codebase to store db in text files for probeset types
 
 
 
-## 11 july 2022
+## 11 july 2023
 
+* implemented Parallel computation implementation with rust completed
 
-* Parallel computation implementation with rust
-
-* lmdb parser in rust
-
-rather than parsing the code in python gn-correlation-rust can now read and parse
-lmdb and csv  directly
-
+* implemented both lmdb and csv parser  in rust
 
 => https://github.com/Alexanderlacuna/correlation_rust/pull/3/files#diff-87f0275ed65ae8ffe36df25091c9b975defbc920da7b5ec3c2dadb7d57ad4d67
 
