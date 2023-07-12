@@ -1,0 +1,18 @@
+# Sample Data not Appearing in Phenotype-Editing Page
+
+## Tags
+
+* assigned: fredm
+* priority: urgent
+* type: bug
+* keywords: editing, phenotype, phenotype editing
+* status: open
+
+## Description
+
+On clicking the "Edit" button in the traits' page (/show_trait?...), the sample data is supposed to appear at the bottom of the page for editing. This is not happening locally.
+
+## Troubleshooting
+
+=> https://github.com/genenetwork/genenetwork2/blob/f8263ccb64daa5cbeeb0b1d7da3605f825e8acb6/wqflask/wqflask/metadata_edits.py#L132 Line 132 of metadata_edits.py module
+gives back an empty `sample_list`
