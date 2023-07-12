@@ -1,0 +1,29 @@
+# Migrate to Python3.10
+
+## Tags
+
+* priority: medium
+* keywords: python3.10
+* status: open
+* assigned: bonz, fredm, alex
+
+## Description
+
+Migrate the application(s) over to Python3.10.
+
+The sections below will note the migration issues for the various apps.
+
+### GN2
+
+### GN3
+
+* Created branch `migrate-to-python3.10` with some minor changes to adapt code to Python3.10
+
+#### Migrate Libraries
+
+* [ ] yoyo-migrations
+* others ...
+
+### QC App
+
+### Others?
