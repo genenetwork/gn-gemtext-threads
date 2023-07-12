@@ -1,10 +1,12 @@
 # Editing Phenotypes
 
-## Quick Note
+## Tags
 
-The code for editing phenotypes is currently present and has made its way to production. The only reason users cannot access the feature (as of 2023-07-07T10:00+03:00UTC) is that there is currently an issue with the production system that causes the sessions to disappear immediately after login.
+* keyword: editing phenotypes
 
-This note will be removed once the issue is resolved.
+## Introduction
+
+There is old code for editing phenotypes in place, but it was not in use. The main aim at this point is to fix any bugs and adapt it to make use of the newly built authentication/authorisation system.
 
 ## Process
 
@@ -17,9 +19,15 @@ This note will be removed once the issue is resolved.
 * Edit the sample data (only available for phenotype traits) as necessary.
 * Submit the changes by clicking the "Submit Change" button
 * View the diffs for the changes by clicking on the "View History" link near the top of the page
+* Approve or reject the diffs
 
 ## Notes
 
 * Sample data editing is only available for phenotype traits. You cannot edit sample data for genotype or probeset traits
 * Removing values for sample data is currently no possible
 
+## Tasks
+
+- [X] Update to new auth system for listing diffs
+- [ ] Update to new auth system for approving diffs
+- [ ] Update to new auth system for approving diffs
