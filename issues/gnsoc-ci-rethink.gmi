@@ -31,8 +31,8 @@ Volunteers welcome for this section!
 
 We need a CI job to run on every commit to guix-bioinformatics and check if guix pull still succeeds. It would be doubly nice to build every package defined in the guix-bioinformatics channel and offer substitutes. This would make our CI system more or less feature-compatible with cuirass.
 
-* [] Set up CI job to run guix pull on guix-bioinformatics
-* [] Set up CI job to build every package defined in guix-bioinformatics
+* [x] Set up CI job to run guix pull on guix-bioinformatics
+* [x] Set up CI job to build every package defined in guix-bioinformatics
 
 Since our repositories are now Guix channels too, we can rewrite our existing genenetwork2/genenetwork3 CI jobs to be built and tested just like guix-bioinformatics.
 
