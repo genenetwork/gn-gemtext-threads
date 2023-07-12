@@ -29,5 +29,6 @@ There is old code for editing phenotypes in place, but it was not in use. The ma
 ## Tasks
 
 - [X] Update to new auth system for listing diffs
-- [ ] Update to new auth system for approving diffs
-- [ ] Update to new auth system for approving diffs
+- [X] Update to new auth system for approving diffs
+- [X] Update to new auth system for approving diffs
+- [ ] Figure out why sample data is not showing up on edit page
