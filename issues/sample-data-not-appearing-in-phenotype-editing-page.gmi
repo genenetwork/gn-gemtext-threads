@@ -6,7 +6,7 @@
 * priority: urgent
 * type: bug
 * keywords: editing, phenotype, phenotype editing
-* status: open
+* status: closed
 
 ## Description
 
@@ -16,3 +16,5 @@ On clicking the "Edit" button in the traits' page (/show_trait?...), the sample 
 
 => https://github.com/genenetwork/genenetwork2/blob/f8263ccb64daa5cbeeb0b1d7da3605f825e8acb6/wqflask/wqflask/metadata_edits.py#L132 Line 132 of metadata_edits.py module
 gives back an empty `sample_list`
+
+The code was fetching the configurations from the environment, which is not always set. Change the code to fetch configurations from the application object.
