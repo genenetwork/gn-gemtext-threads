@@ -47,3 +47,8 @@ Our programmers work with the CD to ensure that all their code works correctly. 
 * [] Rewrite CD to share code with the production genenetwork Guix services
 
 It is not yet clear how best to do this. But, things should clear up as we work out the earlier sections.
+
+## Slides
+
+Arun gave a short presentation about this CI rethink in a GNSoC meeting. The slides are at
+=> /topics/ci-rethink-slides
