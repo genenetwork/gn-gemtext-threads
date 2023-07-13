@@ -39,6 +39,16 @@ git repo genenetwork-machines, guix-bioinformatics
 * guix-bioinformatics now has CI!
 * ~700 packages, 240 are broken ;)
 
+### Week 3
+
+* Arun gives a presentation on laminar using guix-forge: slides:
+=> https://issues.genenetwork.org/topics/ci-rethink-slides
+* New system is simpler and has reproducibility issues
+* Efraim is doing channels for GN2 and GN3
+* Sarthak will try to run guix-forge
+
+### More
+
 => https://ci.genenetwork.org/jobs/guix-bioinformatics
 
 * CI/CD is up and running again (and broken)
@@ -73,6 +83,10 @@ git repo genenetwork3
 * Fred is running SPARQL queries
 * Alex is adding lmdb phenotype API endpoints
 
+### Week 3
+
+* Bonface demoes new documentation & code
+
 ## LLMs & metadata (RDF)
 
 * lead: Shelby
@@ -94,6 +108,13 @@ git repo genenetwork3
 * Open AI API is working
 * Shelby is integrating into a Flask interface for GeneNetwork
 * Using a pubmed UI style
+
+### Week 3
+
+* Shelby shows code
+* Plan to host
+* Priscilla is working on SLA and document acquisition
+* Hosting GN Q&A
 
 ## API to access data from GN
 
@@ -127,6 +148,12 @@ git repo gn-docs & genenetwork3 & SPARQL
 * Flavia added questions in gn-doc - e.g. for synteny search
 => https://issues.genenetwork.org/topics/xapian-search-queries Examples for synteny
 
+### Week 3
+
+* Rupert proposes endpoints and metadata traversing
+
+=> https://github.com/genenetwork/gn-docs/blob/master/api/alternative-API-structure.md
+
 ## Editing data
 
 * lead: Fred
@@ -159,6 +186,10 @@ git repo gn-docs & genenetwork3 & SPARQL
 
 * Looking into GeneNetwork3 service
 * Enumerated types
+
+### Week 3
+
+* Preparing for BLOG on S-exp
 
 ## Links
 

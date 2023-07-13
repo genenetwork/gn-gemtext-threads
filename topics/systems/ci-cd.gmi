@@ -26,7 +26,7 @@ periodically, say, once an hour/day):
 * CI: run unit tests
 * CD: rebuild and redeploy a container running GN3
 
-Arun has figured out the CI part. It runs a suitably configured laminar CI service in a Guix container created with `guix system container'. A cron job periodically triggers the laminar CI job.
+Arun has figured out the CI part. It runs a suitably configured laminar CI service in a Guix container created with `guix system container'. A cron job periodically triggers the laminar CI job (note: this is no longer true).
 
 => https://git.systemreboot.net/guix-forge/about/
 
