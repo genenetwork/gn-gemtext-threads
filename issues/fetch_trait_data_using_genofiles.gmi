@@ -26,12 +26,12 @@ GROUP: BXD
 
 ### TODOS
 
-[x] indentify all required fields for this
-[x] code implementation
-[ ]  handling null values
+* [x] indentify all required fields for this
+* [x] code implementation
+* [ ]  handling null values
 
 
-Documented for Probeset,Genoset and PublishData
+## Documentation  for Probeset,Genoset and Publish data types
 
 ### Publish Dataset
 
@@ -52,8 +52,9 @@ FROM CaseAttributeXRefNew cxref LEFT JOIN CaseAttribute ca
 ON ca.Id = cxref.CaseAttributeId 
 GROUP BY InbredSetId, cxref.StrainId) B ON A.StrainId = B.StrainId
 LIMIT 5;
-//results
+```
 
+```sql
 +--------+-----------+------+-------+----------------------------------------------------------------+
 | Sample | Value     | SE   | Count | CaseAttributes                                                 |
 +--------+-----------+------+-------+----------------------------------------------------------------+
@@ -62,11 +63,11 @@ LIMIT 5;
 | BXD12  | 16.000000 | 0.86 | x     | Status=Live,Strain=BXD12,RRID=JAX:000045,Epoch=1,SeqCvge=43    |
 +--------+-----------+------+-------+----------------------------------------------------------------+
 
+```
 
 fetching specific trait  sample data and case attributes for Publish using the parsed  genofiles
 
-``` sql
-
+```sql
 SELECT 
 Strain.Name, GenoData.value, GenoSE.error, GenoData.Id 
 FROM 
@@ -83,12 +84,13 @@ Order BY
 Strain.Name
 ```
 
-### Probeset Dataset
-Dataset:Exon,
+### Probeset
+Example for 
+Dataset_name:Exon,
 Dataset_id:206
 trait:4336695
-```sql
 
+```sql
 SELECT  Strain.Name, ProbeSetData.value, ProbeSetSE.error, NStrain.count, Strain.Name2,B.CaseAttributes
 FROM
 (ProbeSetData, ProbeSetFreeze,
@@ -111,6 +113,9 @@ ProbeSetXRef.DataId = ProbeSetData.Id AND
 ProbeSetData.StrainId = Strain.Id
 Order BY
 Strain.Name;
+```
+
+```sql
 //results
 
 +--------------+---------+----------+-------+--------------+-----------------------------------------------------------------+
@@ -121,9 +126,11 @@ Strain.Name;
 | AKR/J        |  6.2494 |  0.01774 | NULL  | AKR/J        | NULL                                                            |
 | B6D2F1       | 6.50013 | 0.175722 | NULL  | B6D2F1       | Status=Live,Strain=B6D2F1,RRID=JAX:100006,Epoch=0,SeqCvge=      |
 ```
-Fetch specific traits
-```sql
 
+
+Fetch specific traits
+
+```sql
 SELECT
 Strain.Name, ProbeSetData.value, ProbeSetSE.error, ProbeSetData.Id
 FROM
@@ -138,20 +145,17 @@ ProbeSetXRef.DataId = ProbeSetData.Id AND
 ProbeSetData.StrainId = Strain.Id
 Order BY
 Strain.Name
-
 ```
 
 
-```
 for count
 ```sql
 SELECT COUNT(*) QUERY_STATEMENT
 ```
-
 ### Genotype
-
 to fetch  trait and dataset samples + case attributes
-``` sql
+
+```sql
 SELECT 
   Strain.Name, GenoData.value, GenoSE.error, GenoData.Id 
 FROM (GenoData, GenoFreeze, Strain, GenoXRef)
@@ -170,7 +174,7 @@ LIMIT 5;
 ```
 
 individual trait
-```
+```sql
 
         SELECT 
           Strain.Name, GenoData.value, GenoSE.error, GenoData.Id 
@@ -186,7 +190,6 @@ individual trait
           GenoData.StrainId = Strain.Id
         Order BY
           Strain.Name
-
 ```
 
 
@@ -200,7 +203,6 @@ FROM CaseAttribute, CaseAttributeXRefNew
 WHERE CaseAttributeXRefNew.CaseAttributeId = CaseAttribute.Id
  AND CaseAttributeXRefNew.InbredSetId = %s
  ORDER BY CaseAttribute.Id'''
-
 %s -> requires id for the group for example BXD->1
 ```
 
@@ -215,9 +217,7 @@ AND CaseAttributeXRefNew.StrainId = Strain.Id
 AND InbredSet.Id = CaseAttributeXRefNew.InbredSetId
 AND CaseAttributeXRefNew.InbredSetId = 1
 ORDER BY SampleName
-
 fetch sample case attributes for bxd
-
 ```
 
 
