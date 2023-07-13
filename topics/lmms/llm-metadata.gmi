@@ -9,10 +9,23 @@ This development will be done in stages:
 * [X] 1 - get API access to FahamuAI GeneNetwork Q&A system
 * [X] 2 - create local python Flask sandbox
 * [X] 3 - build placeholder UI
-* [-] 3.5 - integrate FahamuAI API into placeholder
-* [-] 4 - create UI for Q&A window that fits into current GN framework
-* [ ] 5 - create CI/CD tests for new module
-* [ ] 6 - integrate new functionality into GN1 & GN2
+* [X] 3.5 - integrate FahamuAI API into placeholder @ github.com/ShelbySolomonDarnell/GN-LLMs
+* [-] 4 - create guix image from Docker
+* [ ] 5 - Serve GNQA on tux02 
+* [ ] # - Get feedback from testers of GNQA
+* [ ] # - Improve GNQA after evaluating feedback
+* [-] 6 - create UI for Q&A window that fits into current GN framework
+* [ ] 7 - create CI/CD tests for new module
+* [ ] 8 - integrate new functionality into GN{2-3}
+
+## Tasks for Priscilla
+* [-] 1 - Acquire 1000 research documents w.r.t. Genetics, genomics research on diabetes
+* [-] 2 - Acquire 1000 more research documents w.r.t GeneNetwork.org
+* [ ] 3 - Write Service level agreement for collaborator
+
+## Task for collaborator
+* [] Build feedback into api for qualifying/rating references and answers
+* [] Build better document referencing using a documents bibliography information
 
 ## Add GN metadata
 * [ ] export GN RDF triples
