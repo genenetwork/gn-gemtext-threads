@@ -1,0 +1,28 @@
+# CI Rethink slides
+
+## Background
+* guix-forge is an independent general purpose project that powers our CI
+* guix-forge is built on laminar
+* CI jobs are just simple scripts
+* scripts are written in G-expressions, but don't have to be
+
+## So far
+* purpose-written scripts that were executed in profiles with the necessary dependencies
+* dependencies are from current Guix
+* container had to be rebuilt to update dependencies
+* jobs did not have access to high-level Guix features (package definitions, build systems, manifests, etc.)
+* jobs only understood low-level features (profile paths, store paths, etc.)
+* One advantage: job runs were fast
+
+## What's new?
+* jobs have access to the full expressive power of Guix
+* project repositories are channels
+* jobs pull from the channels and build all packages defined therein
+* job script definitions now in package definitions from channels
+* container need not be rebuilt each time dependencies change
+* Perfect reproducibility: Make Fred's life easier
+* One disadvantage: job runs will take a while
+
+## Why now?
+* Ludo's blog post “From development environments to continuous integration”
+* realization that project repositories could be channels
