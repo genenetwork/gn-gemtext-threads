@@ -11,6 +11,8 @@
 ## Notes
 
 since Genenetwork database does not have all genotype files when fetching sample data use genotypes to fetch trat data given a dataset and the trait
+Having fetched the sample names of a given group from the genofiles use
+that to fetch the sample  values + CaseAttributes
 
 example of this   
 
@@ -19,15 +21,204 @@ example of this
 DATASET_NAME:HC_M2_0606_P
 TRAIT: 1454998_at
 GROUP: BXD
-
 //expected results are[id,strain,Value, CaseAttributes data()] using the genofiles
 ```
-[] indentify all required fields for this
-[] code implementation
-[]  handling null values
+
+### TODOS
+
+[x] indentify all required fields for this
+[x] code implementation
+[ ]  handling null values
 
 
+Documented for Probeset,Genoset and PublishData
 
+### Publish Dataset
+
+Example for phenotype fetching data for phenotype 35
+
+```sql
+SELECT A.Sample, A.Value, A.SE, A.Count, B.CaseAttributes FROM
+(SELECT DISTINCT st.Name as 'Sample', ifnull(pd.value, 'x') as 'Value',
+ifnull(ps.error, 'x') as 'SE', ifnull(ns.count, 'x') as 'Count', ps.StrainId as 'StrainId'
+FROM PublishFreeze pf JOIN PublishXRef px ON px.InbredSetId = pf.InbredSetId
+JOIN PublishData pd ON pd.Id = px.DataId JOIN Strain st ON pd.StrainId = st.Id
+LEFT JOIN PublishSE ps ON ps.DataId = pd.Id AND ps.StrainId = pd.StrainId
+LEFT JOIN NStrain ns ON ns.DataId = pd.Id AND ns.StrainId = pd.StrainId
+WHERE px.PhenotypeId = 35 ORDER BY st.Name) A
+JOIN
+(SELECT cxref.StrainId as StrainId, group_concat(ca.Name, '=', cxref.Value) as "CaseAttributes"
+FROM CaseAttributeXRefNew cxref LEFT JOIN CaseAttribute ca
+ON ca.Id = cxref.CaseAttributeId 
+GROUP BY InbredSetId, cxref.StrainId) B ON A.StrainId = B.StrainId
+LIMIT 5;
+//results
+
++--------+-----------+------+-------+----------------------------------------------------------------+
+| Sample | Value     | SE   | Count | CaseAttributes                                                 |
++--------+-----------+------+-------+----------------------------------------------------------------+
+| BXD1   | 18.700001 | 1.6  | x     | Status=Live,Strain=BXD1,RRID=JAX:000036,Epoch=1,SeqCvge=36+39L |
+| BXD11  | 18.900000 | 0.78 | x     | Status=UTHSC,Strain=BXD11,RRID=JAX:000012,Epoch=1,SeqCvge=42   |
+| BXD12  | 16.000000 | 0.86 | x     | Status=Live,Strain=BXD12,RRID=JAX:000045,Epoch=1,SeqCvge=43    |
++--------+-----------+------+-------+----------------------------------------------------------------+
+
+
+fetching specific trait  sample data and case attributes for Publish using the parsed  genofiles
+
+``` sql
+
+SELECT 
+Strain.Name, GenoData.value, GenoSE.error, GenoData.Id 
+FROM 
+(GenoData, GenoFreeze, Strain, Geno, GenoXRef)
+left join GenoSE on
+(GenoSE.DataId = GenoData.Id AND GenoSE.StrainId = GenoData.StrainId)
+WHERE 
+Geno.SpeciesId = %s AND Geno.Name = '%s' AND GenoXRef.GenoId = Geno.Id AND
+GenoXRef.GenoFreezeId = GenoFreeze.Id AND 
+GenoFreeze.Name = '%s' AND 
+GenoXRef.DataId = GenoData.Id AND 
+GenoData.StrainId = Strain.Id
+Order BY
+Strain.Name
+```
+
+### Probeset Dataset
+Dataset:Exon,
+Dataset_id:206
+trait:4336695
+```sql
+
+SELECT  Strain.Name, ProbeSetData.value, ProbeSetSE.error, NStrain.count, Strain.Name2,B.CaseAttributes
+FROM
+(ProbeSetData, ProbeSetFreeze,
+ Strain, ProbeSet, ProbeSetXRef)
+left join ProbeSetSE on
+(ProbeSetSE.DataId = ProbeSetData.Id AND ProbeSetSE.StrainId = ProbeSetData.StrainId)
+left join NStrain on
+(NStrain.DataId = ProbeSetData.Id AND
+NStrain.StrainId = ProbeSetData.StrainId)
+left join
+(SELECT cxref.StrainId as StrainId, group_concat(ca.Name, '=', cxref.Value) as "CaseAttributes"
+FROM CaseAttributeXRefNew cxref LEFT JOIN CaseAttribute ca
+ON ca.Id = cxref.CaseAttributeId 
+GROUP BY InbredSetId, cxref.StrainId) B ON ProbeSetData.StrainId= B.StrainId
+WHERE
+ProbeSet.Name = '4336695' AND ProbeSetXRef.ProbeSetId = ProbeSet.Id AND
+ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id AND
+ProbeSetFreeze.Name = 'UMUTAffyExon_0209_RMA' AND
+ProbeSetXRef.DataId = ProbeSetData.Id AND
+ProbeSetData.StrainId = Strain.Id
+Order BY
+Strain.Name;
+//results
+
++--------------+---------+----------+-------+--------------+-----------------------------------------------------------------+
+| Name         | value   | error    | count | Name2        | CaseAttributes                                                  |
++--------------+---------+----------+-------+--------------+-----------------------------------------------------------------+
+| 129S1/SvImJ  | 5.83203 |  0.26209 | NULL  | 129S1/SvImJ  | NULL                                                            |
+| A/J          | 6.15107 | 0.013283 | NULL  | A/J          | NULL                                                            |
+| AKR/J        |  6.2494 |  0.01774 | NULL  | AKR/J        | NULL                                                            |
+| B6D2F1       | 6.50013 | 0.175722 | NULL  | B6D2F1       | Status=Live,Strain=B6D2F1,RRID=JAX:100006,Epoch=0,SeqCvge=      |
+```
+Fetch specific traits
+```sql
+
+SELECT
+Strain.Name, ProbeSetData.value, ProbeSetSE.error, ProbeSetData.Id
+FROM
+(ProbeSetData, ProbeSetFreeze, Strain, ProbeSet, ProbeSetXRef)
+left join ProbeSetSE on
+(ProbeSetSE.DataId = ProbeSetData.Id AND ProbeSetSE.StrainId = ProbeSetData.StrainId)
+WHERE
+ProbeSet.Name = '%s' AND ProbeSetXRef.ProbeSetId = ProbeSet.Id AND
+ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id AND
+ProbeSetFreeze.Name = '%s' AND
+ProbeSetXRef.DataId = ProbeSetData.Id AND
+ProbeSetData.StrainId = Strain.Id
+Order BY
+Strain.Name
+
+```
+
+
+```
+for count
+```sql
+SELECT COUNT(*) QUERY_STATEMENT
+```
+
+### Genotype
+
+to fetch  trait and dataset samples + case attributes
+``` sql
+SELECT 
+  Strain.Name, GenoData.value, GenoSE.error, GenoData.Id 
+FROM (GenoData, GenoFreeze, Strain, GenoXRef)
+left join GenoSE on
+GenoSE.DataId = GenoData.Id AND GenoSE.StrainId = GenoData.StrainId
+WHERE 
+  GenoXRef.GenoFreezeId = GenoFreeze.Id AND
+  GenoXRef.DataId = GenoData.Id AND 
+  GenoData.StrainId = Strain.Id
+JOIN
+(SELECT cxref.StrainId as StrainId, group_concat(ca.Name, '=', cxref.Value) as "CaseAttributes"
+FROM CaseAttributeXRefNew cxref LEFT JOIN CaseAttribute ca
+ON ca.Id = cxref.CaseAttributeId 
+GROUP BY InbredSetId, cxref.StrainId) B ON GenoData.StrainId = B.StrainId
+LIMIT 5;  
+```
+
+individual trait
+```
+
+        SELECT 
+          Strain.Name, GenoData.value, GenoSE.error, GenoData.Id 
+        FROM 
+          (GenoData, GenoFreeze, Strain, Geno, GenoXRef)
+        left join GenoSE on
+          (GenoSE.DataId = GenoData.Id AND GenoSE.StrainId = GenoData.StrainId)
+        WHERE 
+          Geno.SpeciesId = %s AND Geno.Name = '%s' AND GenoXRef.GenoId = Geno.Id AND
+          GenoXRef.GenoFreezeId = GenoFreeze.Id AND 
+          GenoFreeze.Name = '%s' AND 
+          GenoXRef.DataId = GenoData.Id AND 
+          GenoData.StrainId = Strain.Id
+        Order BY
+          Strain.Name
+
+```
+
+
+###  general fetching case attributes
+
+sql  code for  fetching case attributes
+
+```sql
+SELECT DISTINCT CaseAttribute.Id, CaseAttribute.Name, CaseAttribute.Description, CaseAttributeXRefNew.Value
+FROM CaseAttribute, CaseAttributeXRefNew
+WHERE CaseAttributeXRefNew.CaseAttributeId = CaseAttribute.Id
+ AND CaseAttributeXRefNew.InbredSetId = %s
+ ORDER BY CaseAttribute.Id'''
+
+%s -> requires id for the group for example BXD->1
+```
+
+### fetch extra attributes with sample names
+
+```sql
+SELECT Strain.Name AS SampleName, CaseAttributeId AS Id, CaseAttributeXRefNew.Value
+FROM Strain, StrainXRef, InbredSet, CaseAttributeXRefNew
+WHERE StrainXRef.StrainId = Strain.Id
+AND InbredSet.Id = StrainXRef.InbredSetId
+AND CaseAttributeXRefNew.StrainId = Strain.Id
+AND InbredSet.Id = CaseAttributeXRefNew.InbredSetId
+AND CaseAttributeXRefNew.InbredSetId = 1
+ORDER BY SampleName
+
+fetch sample case attributes for bxd
+
+```
 
 
 
