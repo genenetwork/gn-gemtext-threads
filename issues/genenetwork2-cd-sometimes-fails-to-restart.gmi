@@ -10,5 +10,4 @@ A reminder that CD logs are publicly accessible on tux02.
 => /topics/cd-logs
 
 ## Resolution
-
-I am closing this issue since I believe these restart failures are due to occasional breakage in genenetwork code, and are not a problem with the CI/CD system itself. Please reopen if there is reason to think otherwise.
+This issue has been re-opened.  Originally, we believed that the restart failures were due to occasional breakage in GN code, and were not a problem with the CI/CD system itself.  This will need further investigation to figure out what the root cause is.
