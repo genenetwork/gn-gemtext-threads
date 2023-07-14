@@ -1,6 +1,6 @@
 # genenetwork2 CD sometimes fails to restart
 
-* assigned: arun, fred
+* assigned: arun, fred, bonfacem
 
 When the genenetwork2 CI job passes, the genenetwork2 CD is restarted. Sometimes, this restart fails even though the CI job ran successfully. This manifests as a https://cd.genenetwork.org page with all green badges, but with a message that says "GeneNetwork CD is down!". Restarting the entire CI/CD container or rerunning the genenetwork2 CI job and thus restarting the genenetwork2 shepherd service fixes this issue.
 
@@ -12,5 +12,3 @@ A reminder that CD logs are publicly accessible on tux02.
 ## Resolution
 
 I am closing this issue since I believe these restart failures are due to occasional breakage in genenetwork code, and are not a problem with the CI/CD system itself. Please reopen if there is reason to think otherwise.
-
-* closed
