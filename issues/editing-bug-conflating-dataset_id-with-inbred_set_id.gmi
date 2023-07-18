@@ -1,0 +1,32 @@
+# Conflating `dataset_id` with `inbred_set_id`
+
+## Tags
+
+* type: bug
+* status: open
+* assigned: fredm, bonz
+* keywords: editing
+* priority: critical
+
+## Description
+
+The existing code that handles editing of phenotypes conflates the `dataset_id` with the `inbred_set_id` in a number of places. This is a subtle, but insidious bug that might lead to the end user editing the wrong data, if the values for both these values ever differs.
+
+We need to do the appropriate indirections to fetch the group (InbredSet) details from the `dataset_id`.
+
+As an example, see:
+
+=> https://github.com/genenetwork/genenetwork2/blob/1bbb0430732b7fa5102d7dcbda80ebda252f5424/wqflask/wqflask/metadata_edits.py#L136
+=> https://github.com/genenetwork/genenetwork2/blob/1bbb0430732b7fa5102d7dcbda80ebda252f5424/wqflask/wqflask/metadata_edits.py#L199
+=> https://github.com/genenetwork/genenetwork2/blob/1bbb0430732b7fa5102d7dcbda80ebda252f5424/wqflask/wqflask/metadata_edits.py#L502-L503
+=> https://github.com/genenetwork/genenetwork2/blob/1bbb0430732b7fa5102d7dcbda80ebda252f5424/wqflask/wqflask/metadata_edits.py#L98
+=> https://github.com/genenetwork/genenetwork2/blob/1bbb0430732b7fa5102d7dcbda80ebda252f5424/wqflask/wqflask/metadata_edits.py#L342
+=> https://github.com/genenetwork/genenetwork2/blob/1bbb0430732b7fa5102d7dcbda80ebda252f5424/wqflask/wqflask/metadata_edits.py#L500 Here the `dataset_id` is conflated with `trait_name`
+=> https://github.com/genenetwork/genenetwork2/blob/1bbb0430732b7fa5102d7dcbda80ebda252f5424/wqflask/wqflask/metadata_edits.py#611
+
+## Fixes
+
+The following commits fixes the issue for the first 3 lines:
+
+=> https://github.com/genenetwork/genenetwork3/commit/088b6181457ef4e528b7dcbf04b7aca29b274d1f
+=> https://github.com/genenetwork/genenetwork2/commit/82f401cc4dbc65352a368fca76d100e9e773088e
