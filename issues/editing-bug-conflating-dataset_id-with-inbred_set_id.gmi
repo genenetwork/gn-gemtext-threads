@@ -26,7 +26,7 @@ As an example, see:
 
 ## Fixes
 
-The following commits fixes the issue for the first 3 lines:
+The following commits fixes the issue for the first 3 examples above
 
 => https://github.com/genenetwork/genenetwork3/commit/088b6181457ef4e528b7dcbf04b7aca29b274d1f
 => https://github.com/genenetwork/genenetwork2/commit/82f401cc4dbc65352a368fca76d100e9e773088e
