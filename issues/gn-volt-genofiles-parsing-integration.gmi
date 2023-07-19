@@ -1,0 +1,31 @@
+# rewrite  sampledata fetching with  genofiles using scheme
+
+## Tags
+
+* assigned: alexm,
+* type: improvement
+* priority: high
+* status: in progress
+
+## Notes
+
+having identified ways to link genofiles to Dataset
+and fetching sample data and case attributes using them
+we need to integrate the components intoa fully working module
+This is in turn be used to dump data to lmdb 
+We chose scheme to accomplish the task
+See code:
+
+=> https://github.com/BonfaceKilz/gn-data-vault.git
+
+### TODOS
+
+* [x] reading the genofile
+
+* []  parsing the genofile to obtain the sample names
+
+* []  query statements fetch sampledata and caseattributes
+
+* []  add tests
+
+* [] lmdb dump
