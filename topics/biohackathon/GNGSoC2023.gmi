@@ -47,6 +47,13 @@ git repo genenetwork-machines, guix-bioinformatics
 * Efraim is doing channels for GN2 and GN3
 * Sarthak will try to run guix-forge
 
+### Week 4
+
+* Arun added channels to CI
+* localhost
+* cgit
+* Efraim: gn2 -> channel; Arun tested
+
 ### More
 
 => https://ci.genenetwork.org/jobs/guix-bioinformatics
@@ -87,6 +94,14 @@ git repo genenetwork3
 
 * Bonface demoes new documentation & code
 
+### Week 4
+
+* Settled on prefixes terms and id
+* Updated man pages
+=> https://github.com/genenetwork/gn-docs/tree/master/rdf-documentation
+* Started work on lmdb+guile:
+=> https://github.com/BonfaceKilz/gn-data-vault
+
 ## LLMs & metadata (RDF)
 
 * lead: Shelby
@@ -115,6 +130,13 @@ git repo genenetwork3
 * Plan to host
 * Priscilla is working on SLA and document acquisition
 * Hosting GN Q&A
+
+### Week 4
+
+* working on container
+* fetched 1000 publication
+* JSON documentation on references
+
 
 ## API to access data from GN
 
@@ -154,6 +176,12 @@ git repo gn-docs & genenetwork3 & SPARQL
 
 => https://github.com/genenetwork/gn-docs/blob/master/api/alternative-API-structure.md
 
+### Week 4
+
+* Start working on endpoints
+* R api - reference GN/API
+* synteny
+
 ## Editing data
 
 * lead: Fred
@@ -169,6 +197,11 @@ git repo gn-docs & genenetwork3 & SPARQL
 
 * Fixing issues
 * Meeting on requirements from Arthur and Zach
+
+### Week 4
+
+* Editing works!
+* Discussed the approval procedure and edit button for everyone
 
 ## Guix parametrization
 
@@ -190,6 +223,10 @@ git repo gn-docs & genenetwork3 & SPARQL
 ### Week 3
 
 * Preparing for BLOG on S-exp
+
+### Week 4
+
+* BLOG in a stage that we discuss naming conventions
 
 ## Links
 
