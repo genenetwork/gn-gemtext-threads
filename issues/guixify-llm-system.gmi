@@ -1,0 +1,8 @@
+# Guixify LLM container
+
+* assigned: bonfacem, soloshelby
+* keywords: gnsoc
+
+Read:
+
+=> topics/lmms/llm-metadata.gmi LLM Metadata
