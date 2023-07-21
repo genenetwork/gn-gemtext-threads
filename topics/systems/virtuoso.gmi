@@ -170,6 +170,74 @@ guix shell -N virtuoso-ose -m manifest.scm -- ./pre-inst-env ./load-rdf.scm conn
 
 => https://github.com/genenetwork/dump-genenetwork-database/blob/master/conn.scm Example conn.scm
 
+### Bulk Loading Data
+
+Virtuoso has access to the folder: /export/data/genenetwork-virtuoso/.  As such, place all the turtle files for bulk uploads here.  To bulk load data:
+
+First make sure that all the data is deleted:
+
+```
+$ isql
+SQL> DELETE FROM rdf_quad WHERE g = iri_to_id('http://genenetwork.org');
+```
+
+Use isql to register all the title files:
+
+```
+SQL> ld_dir('/var/lib/data', '*.ttl', 'http://genenetwork.org');
+```
+
+
+You can check the table DB.DBA.load_list to check the list of datasets registered for loading.:
+
+```
+SQL> SELECT * FROM DB.DBA.load_list;
+```
+
+In case you want to empty the list:
+
+```
+DELETE FROM DB.DBA.load_list WHERE ll_file='*.ttl';
+```
+
+Perform the bulk load of all data by running:
+
+```
+SQL> rdf_loader_run();
+```
+
+Commit the bulk loaded data to the Virtuoso database file by running:
+
+```
+checkpoint;
+```
+
+Run a query to make sure that indeed you have loaded data E.g.
+
+```
+SPARQL
+PREFIX gn: <http://genenetwork.org/id/>
+
+SELECT * FROM <http://genenetwork.org> WHERE {
+gn:Mus_musculus ?p ?o.
+};
+```
+
+In case you want to get a list of all queries:
+
+```
+SPARQL
+SELECT  DISTINCT ?g 
+   WHERE  { GRAPH ?g {?s ?p ?o} } 
+ORDER BY ?g;
+```
+
+Other resources:
+
+=> https://vos.openlinksw.com/owiki/wiki/VOS/VirtBulkRDFLoader Bulk Loading RDF Source Files into one or more Graph IRIs
+
+=> https://vos.openlinksw.com/owiki/wiki/VOS/VirtBulkRDFLoaderExampleSingle VOS.VirtBulkRDFLoaderExampleSingle
+
 ## Dumping to RDF from the GeneNetwork MySQL database
 
 See also
