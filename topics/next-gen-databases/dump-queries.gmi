@@ -1,0 +1,34 @@
+# Queries for fetching/editing metadata
+
+
+Consider the following query:
+
+```
+        "SELECT "
+        "pxr.Id AS _id, pxr.Id as trait_name, pxr.PhenotypeId AS phenotype_id, "
+        "pxr.PublicationId AS publication_id, pxr.DataId AS data_id, "
+        "pxr.mean, pxr.locus, pxr.LRS as lrs, pxr.additive, "
+        "pxr.Sequence as sequence, pxr.comments "
+        "FROM PublishFreeze AS pf INNER JOIN InbredSet AS iset "
+        "ON pf.InbredSetId=iset.Id "
+        "INNER JOIN PublishXRef AS pxr ON iset.Id=pxr.InbredSetId "
+        "WHERE pf.Id=%(dataset_id)s AND pxr.Id=%(trait_name)s")
+```
+
+from:
+
+=> https://github.com/genenetwork/genenetwork3/commit/bf90bc3f8cd09df8170c220d607f510869e3d323#commitcomment-122334103 Fetch single phenotype trait by dataset_id and trait_name.
+
+The corresponding query used for dumping is:
+
+```
+  (tables (Phenotype
+           (left-join PublishXRef "ON Phenotype.Id = PublishXRef.PhenotypeId")
+           (left-join Publication "ON Publication.Id = PublishXRef.PublicationId")
+           (left-join PublishFreeze "ON PublishFreeze.InbredSetId = PublishXRef.InbredSetId")
+           (left-join InfoFiles "ON InfoFiles.InfoPageName = PublishFreeze.Name")))
+```
+
+The dump query fetches ALL phenotypes, even those that don't have an entry in PublishXRef.  From the above GH discussion, it's safe to sync the dump with what the editing queries.  A point of uncertainty is whether to use LEFT JOIN or an INNER JOIN.
+
+While the editing work is going on, make---bonfacem---that the queries match those that fred/zach is using.
