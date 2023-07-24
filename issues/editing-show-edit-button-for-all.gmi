@@ -1,0 +1,13 @@
+# Show "Edit" Button for All Users
+
+## Tags
+
+* type: feature request
+* assigned: fredm
+* priority: high
+* keywords: editing
+* status: open
+
+## Description
+
+Show the "Edit" button for all users, but only allow users with the appropriate permissions only to edit the traits.
