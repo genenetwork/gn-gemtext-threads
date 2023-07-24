@@ -6,8 +6,15 @@
 * assigned: fredm
 * priority: high
 * keywords: editing
-* status: open
+* status: closed
 
 ## Description
 
 Show the "Edit" button for all users, but only allow users with the appropriate permissions only to edit the traits.
+
+## Commits
+
+=> https://github.com/genenetwork/genenetwork2/commit/8f9a857a911209f882dec4b50b8ee148a6267f64
+=> https://github.com/genenetwork/genenetwork2/commit/5930087ff8ed1dc857d145e155d327528866a11e
+=> https://github.com/genenetwork/genenetwork2/commit/8390c1c71f24ede0f1ad291157cb9335e80f92f8
+=> https://github.com/genenetwork/genenetwork2/commit/562413ba51fa64b3cdb340d54c888ca555004e06
