@@ -1,0 +1,17 @@
+# Show Last Edited
+
+## Tags
+
+* type: feature request
+* priority: medium
+* assigned: fredm
+* keywords: editing
+* status: open
+
+## Description
+
+Following the GNSoC Plenary meeting of Thursday, 20 July 2023, a request was made to add a "Edited by ... On ..." UI element that will have the following information:
+
+* Date (and possibly time) when the trait was last edited
+* User who did the edit
+* Link to diffs
