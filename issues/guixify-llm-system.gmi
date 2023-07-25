@@ -6,3 +6,5 @@
 Read:
 
 => topics/lmms/llm-metadata.gmi LLM Metadata
+
+* closed
