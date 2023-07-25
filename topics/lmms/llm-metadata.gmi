@@ -10,7 +10,7 @@ This development will be done in stages:
 * [X] 2 - create local python Flask sandbox
 * [X] 3 - build placeholder UI
 * [X] 3.5 - integrate FahamuAI API into placeholder @ github.com/ShelbySolomonDarnell/GN-LLMs
-* [-] 4 - create guix image from Docker
+* [X] 4 - create guix package for flask site
 * [ ] 5 - Serve GNQA on tux02 
 * [ ] # - Get feedback from testers of GNQA
 * [ ] # - Improve GNQA after evaluating feedback
@@ -20,8 +20,8 @@ This development will be done in stages:
 
 ## Tasks for Priscilla
 * [-] 1 - Acquire 1000 research documents w.r.t. Genetics, genomics research on diabetes
-* [-] 2 - Acquire 1000 more research documents w.r.t GeneNetwork.org
-* [ ] 3 - Write Service level agreement for collaborator
+* [X] 2 - Acquire 1000 more research documents w.r.t GeneNetwork.org
+* [-] 3 - Get bib data for documents and put in json format
 
 ## Task for collaborator
 * [] Build feedback into api for qualifying/rating references and answers
