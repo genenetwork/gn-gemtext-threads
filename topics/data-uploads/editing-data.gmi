@@ -1,3 +1,5 @@
+# Editing Data
+
 ## Tags
 
 * assigned: bonfacem
@@ -28,7 +30,7 @@ Note how we use one table to store different diffs from different data types. Th
 
 First, run this sql script to add the "metadata<sub>audit</sub>" table:
 
-=> https://github.com/genenetwork/genenetwork3/blob/main/sql/metadata_audit.sql Sql script to run
+=> https://github.com/genenetwork/genenetwork3/blob/main/sql/update/metadata_audit.sql Sql script to run
 
 Example
 
