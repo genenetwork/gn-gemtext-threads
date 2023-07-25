@@ -20,3 +20,17 @@ The existing system is missing a few things:
 * ...
 
 This document proposes that we do improvements to the existing system to mitigate the list of shortcomings above. Once that is done, it will open up the system for some interesting opportunities, e.g. showing when a trait was last edited and by whom.
+
+## Notes
+
+Identifying trait diffs:
+
+* Phenotype diffs can be identified with the `trait_name` and `phenotype_id` keys in the `json_diff_data` field
+* Probesets diffs can be identified with the `probeset_name` key in the `json_diff_data` field
+* Currently there are no genotype diffs, but following the theme, we should get a `genotype*` key in the `json_diff_data` field
+
+This still means that we cannot simply query data from the table for a specific trait - instead, we will have to query for the dataset_id, and then filter by `(trait/probeset/genotype)_name` as is appropriate for phenotypes, probesets and genotypes respectively.
+
+---
+
+For auth purposes, we will need to fetch the name(s) of the datasets. The authorisation privileges are necessary for filtering out the diffs that a user can act on.
