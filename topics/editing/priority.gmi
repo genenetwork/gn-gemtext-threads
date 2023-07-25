@@ -1,5 +1,18 @@
-# Priority Ordering for Editing Work
+# Editing Trait Metadata and Sample Data
+
+## Priority Ordering for Editing Work
 
 => /topics/editing/phenotypes Phenotype Editing
 => /topics/editing/case_attributes Case Attributes Editing
 => /topics/editing/info_files Info-Files Editing
+
+## Issues
+
+=> /issues/editing-show-last-edited
+=> topics/editing/improving-metadata-audit
+=> /issues/editing-show-edit-button-for-all
+=> /issues/editing-bug-conflating-dataset_id-with-inbred_set_id
+
+## Older Resources
+
+=> /topics/data-uploads/editing-data.gmi
