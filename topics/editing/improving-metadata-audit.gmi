@@ -1,0 +1,22 @@
+# Improving Metadata Audit
+
+## Tags
+
+* assigned: fredm
+* priority: high
+* keywords: editing, metadata, metadata audit
+* type: documentation
+* status: open
+
+## Introduction
+
+There is an existing metadata audit system that tracks the diffs that are added to the system.
+
+The existing system is missing a few things:
+
+* No way to tell the status of the diffs
+* Inconsistent way of tracking the user that did the changes
+* No way to tell what the dataset type is (Phenotype, Genotype, ProbeSet, ...)
+* ...
+
+This document proposes that we do improvements to the existing system to mitigate the list of shortcomings above. Once that is done, it will open up the system for some interesting opportunities, e.g. showing when a trait was last edited and by whom.
