@@ -11,6 +11,7 @@
 => /issues/editing-show-last-edited
 => topics/editing/improving-metadata-audit
 => /issues/editing-show-edit-button-for-all
+=> /issues/editing-delete-rejected-diffs-from-db
 => /issues/editing-bug-conflating-dataset_id-with-inbred_set_id
 
 ## Older Resources

@@ -1,0 +1,13 @@
+# Delete Rejected Diffs from Database
+
+## Tags
+
+* type: feature request
+* status: open
+* assigned: fredm
+* keywords: editing, metadata audit
+* priority: high
+
+## Description
+
+There is no point in retaining diffs that have been rejected. When that happens, delete them from the database.
