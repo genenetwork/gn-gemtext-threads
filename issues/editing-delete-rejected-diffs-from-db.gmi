@@ -3,11 +3,11 @@
 ## Tags
 
 * type: feature request
-* status: open
+* status: closed
 * assigned: fredm
 * keywords: editing, metadata audit
 * priority: high
 
 ## Description
 
-There is no point in retaining diffs that have been rejected. When that happens, delete them from the database.
+The rejected diffs will be maintained, but will simply not be shown.
