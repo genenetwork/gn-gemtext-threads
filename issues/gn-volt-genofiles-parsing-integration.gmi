@@ -17,12 +17,15 @@ We chose scheme to accomplish the task
 See code:
 
 => https://github.com/BonfaceKilz/gn-data-vault.git
+=> https://github.com/Alexanderlacuna/data-vault-2
 
 ### TODOS
 
 * [x] reading the genofile
 
-* []  parsing the genofile to obtain the sample names
+* [x]  parsing the genofile to obtain the sample names,metadata
+
+* [] adding unit tests for the module
 
 * []  query statements fetch sampledata and caseattributes
 
