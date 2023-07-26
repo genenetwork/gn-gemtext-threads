@@ -1,0 +1,56 @@
+# Reasons There is HTML and CSS in GN3
+
+There are 2 main reasons
+
+* Use of OAuth2 [Authorization Code][fn:auth-code] flow
+* Registering OAuth2 Clients
+
+## How OAuth2 Works
+
+For an OAuth2 client to access "protected" services, it needs a token that it can use to authenticate the user that drives it. This means that the user needs to provide their authentication credentials to the system somehow. There are [multiple ways][fn:grant-types] for the authentication/authorisation server to grant the client (e.g. GN2) the token it needs in order to access the "protected" resources.
+
+For a client-facing client, the only available grants are:
+
+* [Authorization Code][fn:auth-code]
+* [PKCE][fn:pkce] which is merely an extension on [Authorization Code][fn:auth-code] to make it more secure.
+* [Refresh Token](https://oauth.net/2/grant-types/refresh-token/) which needs at least one of any of the other grants. It's main purpose is to get a new access token once the old one has expired.
+* [Implicit Flow](https://oauth.net/2/grant-types/implicit/) - Deprecated and not recommended due to security risks associated with it.
+* [Password Grant][fn:passwd-grant] - This allows the client to collect the user credentials and pass them on to the server. It is considered a legacy grant, and is not recommended.
+
+### What We Have
+
+I have implemented both the [Authorization Code][fn:auth-code] and the [Password Grant][fn:passwd-grant] in GN2.
+
+I intend, once we have verified the basic operation of the auth system in a user-facing context, to actually upgrade to the [PKCE][fn:pkce] grant for better security.
+
+### Quick Recap of [Authorization Code][fn:auth-code]
+
+The Authorization code works as follows:
+
+* User makes a request of the client to sign in/login (in GN2, clicking "Sign in" link at the top)
+* The client redirects the user to the authorisation server (GN3 in our case)
+* The user provides their credentials to the authorisation server (not the client).
+* If the user provides valid credentials, then the authorisation server (GN3) redirects to an endpoint on the client (GN2) with an authorisation code.
+* The client (GN2) then uses the authorisation code it received from the authorisation server (GN3) to request a token on behalf of the user
+* The client stores the token and uses it for subsequent requests for "protected" resources.
+  
+The third step necessitates that the authorisation server (GN3) provide a UI for the user to provide their authentication credentials.
+
+## Registering OAuth2 Clients
+
+For a client (e.g. GN2) to access the authorisation server and/or the "protected" resources, it needs to be registered with the authorisation server in the first place.
+
+This implies we need a UI to allow the admin to register new clients as they are needed. In this context, we will soon need the QC App to become a client to the authorisation server (GN3) and API server (also GN3) to limit who is allowed to add data to the system.
+
+At this point, I do have to note that it is possible to provide a CLI client to do this, and get rid of the HTML UI. I had to make a decision on which UI will be easiest to understand for the admin (Zachary and possibly Dr. Williams) for registering the clients. I went with HTML.
+
+The CLI client will need to authenticate, and get a token, then use that token in the client-registration process - which means there is state (storing the token) - which means implementing some sort of session-handling to store and use the token for the client-registration step.
+
+The other option is to give the CLI client direct access to the database, but you would still need the user to authenticate themselves (to prevent randos from registering clients willy-nilly).
+
+## Footnotes
+
+=> https://oauth.net/2/grant-types/ fn:grant-types
+=> https://oauth.net/2/grant-types/authorization-code/ fn:auth-code
+=> https://oauth.net/2/pkce/ fn:pkce
+=> https://oauth.net/2/grant-types/password/ fn:passwd-grant
