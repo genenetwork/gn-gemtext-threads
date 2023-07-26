@@ -1,0 +1,5 @@
+# Search is case sensitive
+
+* assigned: arun
+
+The xapian search is case sensitive. "group:BXD" produces no results but "group:bxd" does. The search should not be case sensitive.
