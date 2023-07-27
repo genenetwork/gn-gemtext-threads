@@ -1,0 +1,21 @@
+# Paginate Resources Page
+
+## Tags
+
+* priority: medium
+* status: open
+* assigned: fredm, zachs
+* keywords: resources, data linking, auth
+* type: feature request
+
+## Description
+
+Some of the Resources have too many data items linked, which leads to the page freezing when loaded.
+
+Pagination will help aleviate the issue in those situations.
+
+We also need to add a search of sorts for the data within the resource, to avoid having to scroll through the pages to find a specific data item.
+
+### Possible implementation notes
+
+* Have pages of 250 results or so
