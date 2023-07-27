@@ -1,0 +1,17 @@
+How to run the Xapian indexing script
+
+Change to Arun's user:
+su aruni
+
+Remove old xapian directory + contents:
+sudo -u aruni rm -r /export/data/genenetwork/xapian
+
+Run guix shell:
+/home/zas1024/opt/guix/bin/guix shell --container --network --share=/export/data/genenetwork/ --development --file=guix.scm
+
+Run the indexer script:
+env PYTHONPATH=. python3 scripts/index-genenetwork /export/data/genenetwork/xapian mysql://webqtlout:webqtlout@127.0.0.1:3306/db_webqtl
+
+OR Put the following in a shell script and run as Arun
+
+rm -r /export/data/genenetwork/xapian && /home/zas1024/opt/guix/bin/guix shell --container --network --share=/export/data/genenetwork/ --development --file=guix.scm -- env PYTHONPATH=. python3 scripts/index-genenetwork /export/data/genenetwork/xapian mysql://webqtlout:webqtlout@127.0.0.1:3306/db_webqtl
