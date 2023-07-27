@@ -1,0 +1,15 @@
+# UI issues/improvements
+
+## Tags
+
+* assigned: fredm, zsloan
+* priority: medium
+* status: open
+* keywords: authentication, authorisation, oauth2, resources, ui
+* type: feature-request
+
+## Description
+
+Linking data from the Resource page should make it clearer that the data in question is being linked to the resource (and has already been linked to the group)
+
+The Edit function for resources needs to be implemented and the name for the "default" resources (the ones that new data is linked to to make it public) should be changed to something that will make more sense to the user
