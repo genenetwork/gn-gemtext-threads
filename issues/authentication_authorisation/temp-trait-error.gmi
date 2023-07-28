@@ -13,3 +13,7 @@
 Trying to view the trait page for a temp trait (such as the PCA traits generated from the correlation matrix page) throws an error. I think this is because the authorization endpoint doesn't account for temp traits.
 
 Not sure how to handle this, since the trait page code currently expects privileges information. The authorization code in question probably needs to be changed (it should probably just assume all temp traits are public).
+
+## How to reproduce
+
+Add some traits to a collection (or just select some from search results), run "Correlations," and click one of the traits in the PCA Traits table.
