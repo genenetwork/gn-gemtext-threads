@@ -35,3 +35,7 @@ means that gnc:inbredSet has the predicate gn:code.   To represent the above usi
 ```
 gnc:inbredSet rdfs:range gn:code
 ```
+
+Read more here:
+
+=> https://www.ida.liu.se/research/semanticweb/events/SemWebCourse2018/OWL_basics.pdf Ontology Engineering - The basics of OWL (PDF)
