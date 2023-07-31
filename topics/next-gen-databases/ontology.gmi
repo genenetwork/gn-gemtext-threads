@@ -4,6 +4,9 @@ Sticking to GN tables is a bad idea because it doesn't capture what "how" we wan
 
 Here, we note down all lessons learnt while we continuously improve our ontologies.
 
+### Resources
+
+=> https://www.w3.org/wiki/VocabularyMarket Vocabulary Market
 
 ### rdfs:label
 
