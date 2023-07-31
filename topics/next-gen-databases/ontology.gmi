@@ -1,0 +1,37 @@
+# Ontologies
+
+Sticking to GN tables is a bad idea because it doesn't capture what "how" we want to define our data.  Second we are not using the freedom of RDF.
+
+Here, we note down all lessons learnt while we continuously improve our ontologies.
+
+
+### rdfs:label
+
+Consider this pattern when dumping data in rdf:
+
+```
+(set gnt:displayName (field Species MenuName))
+```
+
+Notice that we use a new term: "gnt:displayName".  This is unnecessary.   Since what we want is to use a human readable way of capturing that.  A better way would be:
+
+```
+(set rdfs:label (field Species MenuName))
+```
+
+This prevents us from having to "invent" our own terms all the time.
+
+
+### rdfs:domain and rdfs:range
+
+We use "rdfs:domain" and "rdfs:range" to "connect" a property to a class.  So:
+
+```
+gn:code rdfs:domain gnc:inbredSet
+```
+
+means that gnc:inbredSet has the predicate gn:code.   To represent the above using rdfs:range:
+
+```
+gnc:inbredSet rdfs:range gn:code
+```
