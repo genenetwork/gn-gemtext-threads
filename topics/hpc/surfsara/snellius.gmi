@@ -8,7 +8,16 @@ After adding your ssh key to
 
 Use `ssh user@doornode.surfsara.nl`
 
+with password twice(!)
+
 => https://servicedesk.surf.nl/wiki/pages/viewpage.action?pageId=30660265#FAQSnellius/Lisa-systemfromabroad login from abroad
+
+## Account info
+
+See
+
+=> https://servicedesk.surf.nl/wiki/display/WIKI/Snellius+usage+and+accounting
+=> https://servicedesk.surf.nl/wiki/display/WIKI/Snellius+hardware+and+file+systems
 
 ## Stats
 
