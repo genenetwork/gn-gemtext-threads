@@ -191,23 +191,28 @@ $ isql
 SQL> DELETE FROM rdf_quad WHERE g = iri_to_id('http://genenetwork.org');
 ```
 
-Use isql to register all the title files:
+Also, make sure that the load list is empty before registering your turtle files.
+
+```
+DELETE FROM DB.DBA.load_list;
+```
+
+Use isql to register all the turtle files:
 
 ```
 SQL> ld_dir('/var/lib/data', '*.ttl', 'http://genenetwork.org');
 ```
 
+Note, for the prior step, you can specify a specific file instead of adding all the files using the wildcard "*".  Here's an example of doing this:
 
-You can check the table DB.DBA.load_list to check the list of datasets registered for loading.:
+```
+SQL> ld_dir('/var/lib/data', 'species.ttl', 'http://genenetwork.org');
+```
+
+Check the table DB.DBA.load_list to see the list of registered files that will be loaded:
 
 ```
 SQL> SELECT * FROM DB.DBA.load_list;
-```
-
-In case you want to empty the list:
-
-```
-DELETE FROM DB.DBA.load_list WHERE ll_file='*.ttl';
 ```
 
 Perform the bulk load of all data by running:
