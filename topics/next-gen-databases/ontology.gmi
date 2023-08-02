@@ -7,6 +7,7 @@ Here, we note down all lessons learnt while we continuously improve our ontologi
 ### Resources
 
 => https://www.w3.org/wiki/VocabularyMarket Vocabulary Market
+=> https://www.w3.org/TR/prov-o/ PROV-O: The PROV Ontology
 
 ### rdfs:label
 
