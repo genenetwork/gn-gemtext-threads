@@ -88,7 +88,7 @@ is using the web-interface:
 To use a CLI tool, you can utilise isql by running:
 
 ```
-guix shell virtuoso-ose -- isql <server-port>
+guix shell virtuoso-ose -- isql -U dba -P password <server-port>
 ```
 
 Queries within isql look like:
@@ -139,15 +139,25 @@ rapper: Parsing returned 652395 triples
 ```
 Then, upload it to a virtuoso SPARQL endpoint running at port 8892
 ```
-curl -v -X PUT --digest -u 'dba:password' -T data.ttl -G http://localhost:8892/sparql-graph-crud-auth --data-urlencode graph=http://example.org
+curl -v -X PUT --digest -u 'dba:password' -T data.ttl -G http://localhost:8892/sparql-graph-crud-auth --data-urlencode graph=http://genenetwork.org
 ```
-where http://example.org is the name of the graph. Note that single quoting the password is good to do especially when you have special characters in the password.
+where http://genenetwork.org is the name of the graph. Note that single quoting the password is good to do especially when you have special characters in the password.
 
 The PUT method deletes the existing data in the graph before loading the new one. So, there is no need to manually delete old data before loading new data. However, virtuoso is slow at deleting millions of triples, resulting in an apparent freeze-up. So, it is preferable to handle such deletes manually using a lower-level SQL statement issued via the isql client.
+
+To delete a graph:
+
 ```
 $ isql
-SQL> DELETE FROM rdf_quad WHERE g = iri_to_id('http://example.org');
+SQL> DELETE FROM rdf_quad WHERE g = iri_to_id('http://genenetwork.org');
 ```
+
+To add ttl files:
+
+```
+ld_dir('/dir', '*.ttl', 'http://genenetwork.org'); rdf_loader_run();
+```
+
 => http://vos.openlinksw.com/owiki/wiki/VOS/VirtTipsAndTricksGuideDeleteLargeGraphs How can I delete graphs containing large numbers of triples from the Virtuoso Quad Store?
 
 When virtuoso has just been started up with a clean state (that is, the virtuoso state directory was empty before virtuoso started), uploading large amounts of data using the SPARQL 1.1 Graph Store HTTP Protocol fails the first time. It succeeds only the second time. It is not clear why. I can only recommend retrying as in this commit:
@@ -227,8 +237,8 @@ In case you want to get a list of all queries:
 
 ```
 SPARQL
-SELECT  DISTINCT ?g 
-   WHERE  { GRAPH ?g {?s ?p ?o} } 
+SELECT  DISTINCT ?g
+   WHERE  { GRAPH ?g {?s ?p ?o} }
 ORDER BY ?g;
 ```
 
