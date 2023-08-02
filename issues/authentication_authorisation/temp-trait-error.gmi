@@ -17,3 +17,9 @@ Not sure how to handle this, since the trait page code currently expects privile
 ## How to reproduce
 
 Add some traits to a collection (or just select some from search results), run "Correlations," and click one of the traits in the PCA Traits table.
+
+
+## Fixes
+
+=> https://github.com/genenetwork/genenetwork3/commit/1bd01c7396daf9413e9524d7e627e9e36b281213
+This commit adds a patch to make **ALL** "Temp" traits publicly readable. This is necessary since the "Temp" traits are not attached to any resources. It is also because unlike all the other traits, "Temp" traits are not saved in the database, rather, they are saved in redis which might make them ephemeral.
