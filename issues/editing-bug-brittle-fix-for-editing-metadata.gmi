@@ -1,0 +1,45 @@
+# Brittle Fix for Editing Metadata
+
+## Tags
+
+* type: bug
+* priority: high
+* assigned: fredm, zachs, bonz
+* keywords: metadata, editing
+* status: open
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork2/commit/47c74f8ad6e76c4227ba1ff980d3a49f9ef79a81 The initial fix
+for the bug where values that were not changed were being deleted/removed works, but feels a tad brittle.
+
+### Current Process
+
+There is some javascript code that
+=> https://github.com/genenetwork/genenetwork2/blob/47c74f8ad6e76c4227ba1ff980d3a49f9ef79a81/wqflask/wqflask/templates/edit_phenotype.html#L264-L267 marks fields as changed
+when they are focussed and then blurred, whether or not there was an actual change.
+
+On submitting, there is more javascript code that
+=> https://github.com/genenetwork/genenetwork2/blob/47c74f8ad6e76c4227ba1ff980d3a49f9ef79a81/wqflask/wqflask/templates/edit_phenotype.html#L269-L271 disables all fields not marked as changed
+before submitting the values.
+
+There is still more javascript code that, in the paraphrased words of the original author,
+=> https://github.com/genenetwork/genenetwork2/blob/47c74f8ad6e76c4227ba1ff980d3a49f9ef79a81/wqflask/wqflask/templates/edit_phenotype.html#L273-L276 awkwardly detects changes to sample data
+
+----
+
+The problem with the javascript code above is that it is hacky and the solutions are brittle. For example
+
+* marking the field as changed on blur rather than actually comparing the values
+* not submitting original values making it impossible to compare values on backend
+* detecting changes by setting a flag: the user can very easily restore the value to original before submitting, making the set flag indicate the wrong thing
+
+### Possible Fix
+
+I think, in general, we need to instead set the values based on comparisons:
+
+* Submit both the old values and new values
+* Compare old value and new value
+* If different, add field/key to "update list"
+* If not, don't add the field/key at all
+* Use final "update list" to build the dictionary or data object to use for the update
