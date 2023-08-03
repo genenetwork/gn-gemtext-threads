@@ -1,0 +1,24 @@
+# Temporary Traits Access Concerns
+
+## Tags
+
+* type: feature request
+* priority: medium
+* status: open
+* assigned: fredm, zachs
+* keywords: temp traits, temporary traits, access control
+
+## Description
+
+The temporary traits feature allows users to quickly upload and use data for their analyses. They are also created as computational artifacts of the correlation matrix feature.
+
+The issue here is that the uploadeh data or the data used in the correlation matrix could be, in some cases, sensitive data. Making the temporary traits always publicly visible could lead to leaking the data, especially if the names are easily guessable.
+
+We need therefore, to control the access to the temporary traits, and not have them as public by default.
+
+Two possible pathways to achive this are:
+
+* Change the names to make them hard to guess - maybe use hashes
+* Use the auth system to control access to the traits in a robust way
+
+These pathways are not mutually exclusive, which means we can do both eventually, starting with whichever is easier and ending up with the most robust way of controlling access to the temp traits.
