@@ -1,0 +1,11 @@
+# How to Submit a Temp trait (for testing purposes or otherwise)
+
+1. Click Submit Trait under the Intro dropdown in the header bar
+
+2. Copy select the species and group you want to submit for from the dropdowns under Step 1 (I just use Mouse/BXD for testing)
+
+3. Navigate to the following GN1 link to get a sample list of trait values (so in this case navigate down to BXD) - https://gn1.genenetwork.org/RIsample.html
+
+4. Copy and paste those values into the Step 2 text area
+
+5. Click Submit Trait (which should then take you to a trait page with the submitted sample values)
