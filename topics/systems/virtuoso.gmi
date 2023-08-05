@@ -143,7 +143,13 @@ curl -v -X PUT --digest -u 'dba:password' -T data.ttl -G http://localhost:8892/s
 ```
 where http://genenetwork.org is the name of the graph. Note that single quoting the password is good to do especially when you have special characters in the password.
 
-The PUT method deletes the existing data in the graph before loading the new one. So, there is no need to manually delete old data before loading new data. However, virtuoso is slow at deleting millions of triples, resulting in an apparent freeze-up. So, it is preferable to handle such deletes manually using a lower-level SQL statement issued via the isql client.
+The PUT method deletes the existing data in the graph before loading the new one. A POST method can be used instead. There is usually no need to manually delete old data before loading new data. virtuoso is slow at deleting millions of triples, resulting in an apparent freeze-up. So, it is preferable to handle such deletes manually using a lower-level SQL statement issued via the isql client.
+
+Start isql with something like
+
+```
+guix shell --expose=verified-data=/var/lib/data virtuoso-ose -- isql -U dba -P password 8981
+```
 
 To delete a graph:
 
@@ -152,10 +158,12 @@ $ isql
 SQL> DELETE FROM rdf_quad WHERE g = iri_to_id('http://genenetwork.org');
 ```
 
-To add ttl files:
+To add ttl files through isql:
 
 ```
-ld_dir('/dir', '*.ttl', 'http://genenetwork.org'); rdf_loader_run();
+ld_dir('/dir', '*.ttl', 'http://genenetwork.org');
+rdf_loader_run();
+checkpoint;
 ```
 
 => http://vos.openlinksw.com/owiki/wiki/VOS/VirtTipsAndTricksGuideDeleteLargeGraphs How can I delete graphs containing large numbers of triples from the Virtuoso Quad Store?
@@ -197,6 +205,8 @@ Also, make sure that the load list is empty before registering your turtle files
 DELETE FROM DB.DBA.load_list;
 ```
 
+Note that the directory may be mapped to a different location by the service. On tux02 it is `/export/data/genenetwork-virtuoso/`.
+
 Use isql to register all the turtle files:
 
 ```
@@ -215,7 +225,7 @@ Check the table DB.DBA.load_list to see the list of registered files that will b
 SQL> SELECT * FROM DB.DBA.load_list;
 ```
 
-Perform the bulk load of all data by running:
+Complete the actual bulk load of all data by running:
 
 ```
 SQL> rdf_loader_run();

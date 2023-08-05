@@ -59,6 +59,10 @@ git repo genenetwork-machines, guix-bioinformatics
 * Added Klaus server for git
 * Fixed channels to work wit Python 3.9 instead of 3.10
 
+### Week 6
+
+* Towards a new workbench with cgit support
+
 ### More
 
 => https://ci.genenetwork.org/jobs/guix-bioinformatics
@@ -112,7 +116,11 @@ git repo genenetwork3
 * Metadata - renamed prefixes
 * Short names gn: gnt:
 * Updated virtuoso
-* parsing geno files - lmdb support 
+* parsing geno files - lmdb support
+
+### Week 6
+
+* Improvements on RDF
 
 ## LLMs & metadata (RDF)
 
@@ -154,6 +162,10 @@ git repo genenetwork3
 * Guix container for LLM
 * Expose container to Rupert
 * Add a password
+
+### Week 6
+
+* Very close to a working flask app Rupert can try next week
 
 ## API to access data from GN
 
@@ -203,6 +215,11 @@ git repo gn-docs & genenetwork3 & SPARQL
 
 * Added back-end support for wikidata - finding inconsistencies
 
+### Week 6
+
+* API ready for running in a production environment
+* Using latest RDF
+
 ## Editing data
 
 * lead: Fred
@@ -229,6 +246,9 @@ git repo gn-docs & genenetwork3 & SPARQL
 * Editing has gone on production - fixing issues
 * Discussion on REST API
 
+### Week 6
+
+* Progress on authorization and editing
 
 ## Guix parametrization
 
@@ -258,6 +278,10 @@ git repo gn-docs & genenetwork3 & SPARQL
 ### Week 5
 
 * Proposed DSL for parameters
+
+### Week 6
+
+* Posted BLOG and started implementation
 
 ## Links
 
