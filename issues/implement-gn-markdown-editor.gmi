@@ -2,19 +2,20 @@
 
 ### Notes
 
-gn renders some markdown contents ,
-idea is to allow users to edit and live preview their pages
-Example for  similar implementation
-=> https://markdownlivepreview.com/
+gn renders some markdown contents ,idea is to allow users to edit and live eview their pages
+Example of similar implementation
 
+=> https://markdownlivepreview.com/
 ## Tags
 
 * assigned: alexm
 * type: enhancement
+* status: IN PROGRESS
+
 * keywords: markdown,editor
 
 ## Tasks
 
-[ ] implement markdown page editor
+* [ ] implement markdown page editor
 
-[ ]  add live preview for page on edit
+* [ ]  add live preview for page on edit
