@@ -9,13 +9,11 @@
 Consider the following columns from our phenotype
 table:
 
-    Pre_publication_description
-    Post_publication_description
-    Original_description
-
-    Pre_publication_abbreviation
-    Post_publication_abbreviation
-
+* Pre_publication_description
+* Post_publication_description
+* Original_description
+* Pre_publication_abbreviation
+* Post_publication_abbreviation
 
 Ideally, all traits in GeneNetwork have pre- and post- descriptions and abbreviations upon initial data entry.  This however is not the case.
 
