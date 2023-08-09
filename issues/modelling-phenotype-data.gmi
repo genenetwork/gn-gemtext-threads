@@ -80,7 +80,7 @@ PubMed_ID: NULL Abstract: Entered by RWW, Dec 1, 2004. Males have lower counts t
 
 * As evidenced in the example above, we have publications that are the same, the only different thing being the abstract.  Are these duplicates essentially the same thing?  Or is it important to retain this information?
 
-* We have traits that are marked as "public".  We have a "confidential" and "public" flags that identify a trait either public or private.  However, we have cases where a trait is marked as public, but the abstract indicates otherwise.  Right there are 4 entries that I'm aware of.  Here's an example:
+* We have traits that are marked as "public".  We have a "confidential" and "public" flag that identify a trait as either public or private.  However, we have cases where a trait is marked as public, but the abstract indicates otherwise.  Currently there are 4 entries that I'm aware of.  Here's an example:
 
 ```
 SELECT PublishFreeze.Public AS Public, PublishFreeze.confidentiality AS Confidentiality,  Publication.* FROM Phenotype LEFT JOIN PublishXRef ON Phenotype.Id = PublishXRef.PhenotypeId LEFT JOIN Publication ON Publication.Id = PublishXRef.PublicationId LEFT JOIN PublishFreeze ON PublishFreeze.InbredSetId = PublishXRef.InbredSetId LEFT JOIN InfoFiles ON InfoFiles.InfoPageName = PublishFreeze.Name WHERE PublishFreeze.public > 0 AND PublishFreeze.confidentiality < 1 AND PubMed_ID IS NULL AND Publication.Abstract LIKE "%confidential%" LIMIT 1 \G
