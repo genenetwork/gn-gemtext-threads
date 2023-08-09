@@ -33,10 +33,81 @@ Pre- descriptions/abbreviations are shown until a PMID is attached.  However, fo
 
 We should explore pre-linking pre-prints with canonical publications---to avoid duplication---after the RDF work.
 
+## Edge Cases With How We Store Traits
+
+There is an on-going discussion on how to store private/public traits.  How we store traits is consistent.  This section explains why this is the case.
+
+* There are "hanging" traits.  In this case, we have cases where we have given metadata about a given trait, but we have no associated vectors.  In such a case, we have no clear way of knowing whether that trait is public or private.  Here's a query that displays all these cases:
+
+```
+MariaDB [db_webqtl]> SELECT COUNT(*) FROM Phenotype LEFT JOIN PublishXRef ON Phenotype.Id = PublishXRef.PhenotypeId WHERE PublishXRef.Id IS NULL;
++----------+
+| COUNT(*) |
++----------+
+|      210 |
++----------+
+1 row in set (0.06 sec)
+```
+
+* Some traits do not have an associated pmid.  This is expeceted since some of these traits are unpublished.  However, we have cases where a trait doesn't have a pmid in the relevant column, but has a pmid embedded as part of the abstract.  Here's an example (Notice that PubMed_ID is NULL and the pmid is embeeded in the Abstract):
+
+```
+       Id: 284
+PubMed_ID: NULL
+ Abstract: Entered by RWW, Dec 1, 2004. Minimum SE of 0.5. Range of N from 2 to 8 with mean of 4.1. Dr. Jucker comments that data are very solid with possible exception of BXD33 and BXD35. BXD33 (31.7) and BXD35 (196.7) removed by MJ and RW, Sept 2006.  Authors: Jucker M, Williams RW, and colleagues (<mathias.jucker@uni-tuebingen.de> see PMID 11113616)
+    Title: Structural brain aging in inbred mice: potential for genetic linkage
+  Journal: Exp Gerontol
+   Volume: 35
+    Pages: 1383-1389
+    Month: Unknown
+     Year: 2000
+*************************** 2. row ***************************
+       Id: 285
+PubMed_ID: NULL
+ Abstract: Entered by RWW, Dec 1, 2004. (<mathias.jucker@uni-tuebingen.de> unpublished data, see PMID 11113616)  Authors: Jucker M and colleagues (<mathias.jucker@uni-tuebingen.de>unpublished data, see PMID 11113616)    Title: Structural brain aging in inbred mice: potential for genetic linkage
+  Journal: Exp Gerontol
+   Volume: 35
+    Pages: 1383-1389
+    Month: Unknown
+     Year: 2000
+*************************** 3. row ***************************
+       Id: 286
+PubMed_ID: NULL Abstract: Entered by RWW, Dec 1, 2004. Males have lower counts than females.
+
+(<mjucker@uhbs.ch> unpublished data, see PMID 11113616)
+  Authors: Jucker M
+```
+
+* As evidenced in the example above, we have publications that are the same, the only different thing being the abstract.  Are these duplicates essentially the same thing?  Or is it important to retain this information?
+
+* We have traits that are marked as "public".  We have a "confidential" and "public" flags that identify a trait either public or private.  However, we have cases where a trait is marked as public, but the abstract indicates otherwise.  Right there are 4 entries that I'm aware of.  Here's an example:
+
+```
+SELECT PublishFreeze.Public AS Public, PublishFreeze.confidentiality AS Confidentiality,  Publication.* FROM Phenotype LEFT JOIN PublishXRef ON Phenotype.Id = PublishXRef.PhenotypeId LEFT JOIN Publication ON Publication.Id = PublishXRef.PublicationId LEFT JOIN PublishFreeze ON PublishFreeze.InbredSetId = PublishXRef.InbredSetId LEFT JOIN InfoFiles ON InfoFiles.InfoPageName = PublishFreeze.Name WHERE PublishFreeze.public > 0 AND PublishFreeze.confidentiality < 1 AND PubMed_ID IS NULL AND Publication.Abstract LIKE "%confidential%" LIMIT 1 \G
+
+
+         Public: 2
+Confidentiality: 0
+             Id: 621
+      PubMed_ID: NULL
+       Abstract: Made confidential March 31, 2011.
+Lipoteichoic acid (LTA) IL6 response of peritoneal macrophages in vitro (overnight), ELISA assay [pg/ml]Entered Aug 24, 2006 by DL Hasty and RW Williams. LTA response of macrophages. The third experiment is the one that David showed you the data for.  "There is only one value per animal due to the low number of macrophages we were getting."
+        Authors: Hasty DL, Cox KH
+          Title: LTA stimulation of  macrophages
+        Journal: Unknown
+         Volume: Unknown
+          Pages: Unknown
+          Month: Unknown
+           Year: 2006
+```
+
+
 ## Meeting Agenda
 
 Date: TBA
 
-* How do we handle private/public data and metadata?  Data is the vectors of numbers; metadata include pre/post publication/abbreviation.
+* How do we handle private/public data and metadata?  Data is the vectors of numbers; metadata include pre/post publication/abbreviation.  Is there a difference between the terms confidential public when it comes to storing data?
 
 * Given the above problem, what's the FAIR way to go about it?  How do we allow sharing data that even encourages the paranoid?
+
+* We have inconsistent data as pointed above.  What are peoples comments about it?
