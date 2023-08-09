@@ -35,7 +35,7 @@ We should explore pre-linking pre-prints with canonical publications---to avoid 
 
 ## Edge Cases With How We Store Traits
 
-There is an on-going discussion on how to store private/public traits.  How we store traits is consistent.  This section explains why this is the case.
+There is an on-going discussion on how to store private/public traits.  How we store traits is inconsistent.  This section explains why this is the case.
 
 * There are "hanging" traits.  In this case, we have cases where we have given metadata about a given trait, but we have no associated vectors.  In such a case, we have no clear way of knowing whether that trait is public or private.  Here's a query that displays all these cases:
 
