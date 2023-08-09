@@ -106,8 +106,8 @@ Lipoteichoic acid (LTA) IL6 response of peritoneal macrophages in vitro (overnig
 
 Date: TBA
 
+* We have inconsistent data as pointed above.  What are peoples comments about it?
+
 * How do we handle private/public data and metadata?  Data is the vectors of numbers; metadata include pre/post publication/abbreviation.  Is there a difference between the terms confidential public when it comes to storing data?
 
 * Given the above problem, what's the FAIR way to go about it?  How do we allow sharing data that even encourages the paranoid?
-
-* We have inconsistent data as pointed above.  What are peoples comments about it?
