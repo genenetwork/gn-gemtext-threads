@@ -22,8 +22,8 @@ The first step of this process is to turn our project repos (genenetwork2 and ge
 
 => https://guix.gnu.org/en/blog/2023/from-development-environments-to-continuous-integrationthe-ultimate-guide-to-software-development-with-guix/
 
-* [] Make genenetwork2 repo a Guix channel
-* [] Make genenetwork3 repo a Guix channel
+* [x] Make genenetwork2 repo a Guix channel
+* [x] Make genenetwork3 repo a Guix channel
 
 Volunteers welcome for this section!
 
