@@ -63,6 +63,10 @@ git repo genenetwork-machines, guix-bioinformatics
 
 * Towards a new workbench with cgit support
 
+### Week 7
+
+* Arun has cgit running on his own server - soon bringing up tux02 after resolving https
+
 ### More
 
 => https://ci.genenetwork.org/jobs/guix-bioinformatics
@@ -121,6 +125,10 @@ git repo genenetwork3
 ### Week 6
 
 * Improvements on RDF
+### Week 7
+
+* RDF improvements with ontology
+* Inconsistencies and privacy discussion today
 
 ## LLMs & metadata (RDF)
 
@@ -166,6 +174,9 @@ git repo genenetwork3
 ### Week 6
 
 * Very close to a working flask app Rupert can try next week
+### Week 7
+
+* Working FLASK app ready for testing - Rupert will have a go
 
 ## API to access data from GN
 
@@ -220,6 +231,11 @@ git repo gn-docs & genenetwork3 & SPARQL
 * API ready for running in a production environment
 * Using latest RDF
 
+### Week 7
+
+* Test version of API is running at https://luna.genenetwork.org/api/v2.0/
+* We'll continue building up facilities
+
 ## Editing data
 
 * lead: Fred
@@ -249,6 +265,10 @@ git repo gn-docs & genenetwork3 & SPARQL
 ### Week 6
 
 * Progress on authorization and editing
+
+### Week 7
+
+* Fred has moved code into a new repo for https://github.com/genenetwork/gn-auth
 
 ## Guix parametrization
 
@@ -282,6 +302,10 @@ git repo gn-docs & genenetwork3 & SPARQL
 ### Week 6
 
 * Posted BLOG and started implementation
+
+### Week 7
+
+* Agreed on final deliverables for GSoC
 
 ## Links
 
