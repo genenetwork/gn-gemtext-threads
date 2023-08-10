@@ -108,6 +108,30 @@ Date: TBA
 
 * We have inconsistent data as pointed above.  What are peoples comments about it?
 
+- Provide Rob list of traits that are hanging.
+- PMIDs embedded in abstract - rare occurence.
+- Data may appear to be the same; but vary slightly e.g. different units
+- Quality of curation is poor.  People generally don't worry about their old data.
+Good curation: good description.
+
 * How do we handle private/public data and metadata?  Data is the vectors of numbers; metadata include pre/post publication/abbreviation.  Is there a difference between the terms confidential public when it comes to storing data?
 
+- Mouse data more than 4 y/o.
+- Scientists -> story tellers.
+- Competitors - people hoard data.  GN storing private data, and access goes through channels.  People care about metadata to hide what they are working on.
+
 * Given the above problem, what's the FAIR way to go about it?  How do we allow sharing data that even encourages the paranoid?
+
+- Good authentication/authorization.
+- People upload temp data.  Give the paranoid the ability to hide data within GN.  After they publish, they can make it public.
+- When there's a pubmed-id, the data is public.
+- Communicating with authors is a hassle.
+- Provide a DOI for people before publishing.
+- Temp traits upload page could add "encourage" people?  Discourage people from temp traits I.e. Limit temp traits.
+- Expire temp traits.
+- Make assumptions GN makes about data (E.g. all pmid data is public) explicit.
+- Eventually, all data will be public in the context of GN.
+- Getting higher quality data in GN (priority).  Make contributors feel secure.
+- For private data, expose the pre-publication data.
+- Pre, post, published data with a tag of whether private or public and share with Rob/Arthur (in ms word).
+- Full time expert curator.  Automating this.
