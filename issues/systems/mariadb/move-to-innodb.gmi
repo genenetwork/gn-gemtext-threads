@@ -691,8 +691,8 @@ MariaDB [db_webqtl]> SHOW CHARACTER SET LIKE 'utf8mb4';
 To properly convert a table with broken characters, first convet the table to BINARY format and thereafter convert to utf8mb1.  Here's an example of doing that with the Investigators table:
 
 ```
-ALTER TABLE InvestigatorsBackUp CONVERT TO CHARACTER SET BINARY;
-ALTER TABLE InvestigatorsBackUp CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+ALTER TABLE Investigators CONVERT TO CHARACTER SET BINARY;
+ALTER TABLE Investigators CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ```
 
 You can read more here:
