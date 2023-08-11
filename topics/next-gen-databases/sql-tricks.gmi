@@ -9,3 +9,14 @@ WHERE CCSA.collation_name = T.table_collation
   AND T.table_schema = "db_webqtl"
   AND T.table_name = "Investigators";
 ```
+
+* Fixing broken character-sets:
+
+```
+ALTER TABLE Investigators CONVERT TO CHARACTER SET BINARY;
+ALTER TABLE Investigators CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+```
+
+Read the following for more details:
+
+=> https://dev.mysql.com/blog-archive/debugging-character-set-issues-by-example/ Debugging character-set issues by example
