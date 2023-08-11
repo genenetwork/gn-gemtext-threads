@@ -34,7 +34,7 @@ For every table
 * [ ] Check for primary key
 * [ ] Check fulltext fields (see below)
 * [ ] Convert to innodb
-* [ ] Convert to utf8 and utf_general_ci (don't use utf8mb, see below)
+* [ ] Convert to utf8mb4 and utf8mb4_general_ci
 
 ## Tags
 
@@ -75,7 +75,7 @@ tables.
 
 I also took the opportunity to add a primary key because InnoDB
 requires it and I changed the *table* language from latin1-sweden to
-utf8. These are major upgrades.
+utf8mb4. These are major upgrades.
 
 In the coming week I'll have to reboot the server to add a disk, move
 stuff across to free up space on the NVME, and convert a few more
@@ -687,6 +687,19 @@ MariaDB [db_webqtl]> SHOW CHARACTER SET LIKE 'utf8mb4';
 +---------+---------------+--------------------+--------+
 1 row in set (0.000 sec)
 ```
+
+To properly convert a table with broken characters, first convet the table to BINARY format and thereafter convert to utf8mb1.  Here's an example of doing that with the Investigators table:
+
+```
+ALTER TABLE InvestigatorsBackUp CONVERT TO CHARACTER SET BINARY;
+ALTER TABLE InvestigatorsBackUp CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+```
+
+You can read more here:
+
+=> https://dev.mysql.com/blog-archive/debugging-character-set-issues-by-example/ Debugging character-set issues by example
+
+With the ProbeSetSE table:
 
 ```
 MariaDB [db_webqtl]> ALTER TABLE ProbeSetSE CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
