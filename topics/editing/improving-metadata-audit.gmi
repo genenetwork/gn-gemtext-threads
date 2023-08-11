@@ -23,7 +23,13 @@ This document proposes that we do improvements to the existing system to mitigat
 
 ## Notes
 
-Identifying trait diffs:
+### Saving Diffs in Database
+
+It turns out, we only store diffs in the database that have been approved. The diffs awaiting processing, or those that have been rejected are not stored.
+
+This makes it a little easier to handle some of the newer features requested.
+
+### Identifying Trait Diffs
 
 * Phenotype diffs can be identified with the `trait_name` and `phenotype_id` keys in the `json_diff_data` field
 * Probesets diffs can be identified with the `probeset_name` key in the `json_diff_data` field
