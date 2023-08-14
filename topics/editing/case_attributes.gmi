@@ -1,5 +1,12 @@
 # Editing Case-Attributes
 
+## Tags
+
+* type: document
+* keywords: case-attribute, editing
+* assigned: fredm, zachs, acenteno
+* status: requirements gathering
+
 ## Introduction
 
 Case-Attributes are essentially the metadata for the samples. In the GN2 system, they are the extra columns in the table in the "Reviews and Edit Data" accordion tab besides the value and its error margin.
@@ -17,6 +24,20 @@ We should probably also enable a rollback feature.
 * Liaise with @Munyoki to collect further information on the case-attributes
 * The relevant database tables are "CaseAttribute" and "CaseAttributeXRefNew"
 
+## What are "Case-Attributes"
+
+* **TODO**: Request clarification of what case-attributes are and how they are used
+* From email: "Every strain has a unique attribute and it's fixed, not variable."
+
+## Authorisation
+
+* From email: "it's probably not okay to let anyone who can edit sample data for a trait also edit case attributes, since they're group level"
+
+## Features
+
+* Editing existing case-attributes: YES
+* Adding new case attributes: ???
+* Deleting existing case attributes: ???
 
 ## Related issues
 
