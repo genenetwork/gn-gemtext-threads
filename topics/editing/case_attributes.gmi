@@ -11,27 +11,68 @@
 
 Case-Attributes are essentially the metadata for the samples. In the GN2 system, they are the extra columns in the table in the "Reviews and Edit Data" accordion tab besides the value and its error margin.
 
+To quote @zachs
+
+> "Case Attributes" are basically just sample metadata. So stuff like the sex, age, etc of the various individuals (and exist separately from "normal" traits mainly because they're non-numeric)
+
+They are the metadata for the various sample in a trait. The case attributes are determined at the group-level:
+
+> Since they're metadata (or "attributes" in this case) for samples, they're group-level so for BXD, case attributes would apply at the level of each sample, across all BXD data
+
+Also From email:
+> Every strain has a unique attribute and it's fixed, not variable.
+
 ## Status
 
 There is code that existed for the case-attributes editing, but it had a critical bug where the data for existing attributes would be deleted/replaced randomly when one made a change. This lead to a pause in this effort.
 
-This bug should probably be the first thing to look at and resolve to get the current code out to the users.
+The chosen course of action will, however, not make use of this existing code. Instead, we will reimplement the feature with code in GN3, exposing the data and its editing via API endpoints.
 
-We should probably also enable a rollback feature.
+The database tables of concern to us are:
 
-## Notes
+* CaseAttribute
+* CaseAttributeXRefNew
 
-* Liaise with @Munyoki to collect further information on the case-attributes
-* The relevant database tables are "CaseAttribute" and "CaseAttributeXRefNew"
+## Data Types
 
-## What are "Case-Attributes"
+> ... (and exist separately from "normal" traits mainly because they're non-numeric)
 
-* **TODO**: Request clarification of what case-attributes are and how they are used
-* From email: "Every strain has a unique attribute and it's fixed, not variable."
+The values for Case-Attributes are non-numeric data. This will probably be mostly textual data.
+
+As an example:
+=> https://genenetwork.org/show_trait?trait_id=10010&dataset=BXDPublish Trait Data and Analysis for BXD_10010
+we see Case-Attributes as:
+
+* Free-form text (no constraints) - see the `Status` column
+* Enumerations - textual data, but where the user can only pick from specific values
+* Links - The value displayed also acts as a link - e.g. the 'JAX:*' values in the `RRID` column
+
+
+=> https://genenetwork.org/show_trait?trait_id=10002&dataset=CCPublish For this trait
+
+We see:
+* Numeric data - see the `N` and `SE` columns
+though that might be a misunderstanding of the quote
+
+> In the following link for example, every column after Value is a case attribute - https://genenetwork.org/show_trait?trait_id=10010&dataset=BXDPublish
+
+**TODO**: Verify whether `N` and `SE` are Case-Attributes
 
 ## Authorisation
 
-* From email: "it's probably not okay to let anyone who can edit sample data for a trait also edit case attributes, since they're group level"
+From email:
+> it's probably not okay to let anyone who can edit sample data for a trait also edit case attributes, since they're group level
+
+and from matrix:
+> The weird bug aside, Bonface had (mostly) successfully implemented editing these through the CSV files in the same way as any other sample data, but for authorization reasons this probably doesn't make sense (since a user having access to editing sample data for specific traits doesn't imply that they'd have access for editing case attributes across the entire group)
+
+From this, it implies we might need a new set of privileges for dealing with case-attributes, e.g.
+* group:resource:add-case-attributes - Allows user to add a completely new case attribute
+* group:resource:edit-case-attributes - Allows user to edit an existing case attribute
+* group:resource:delete-case-attributes - Allows user to delete an existing case attribute
+* group:resource:view-case-attributes - Allows user to view case attributes and their value
+
+Considering, however, that groups (InbredSets) are not directly linked to any auth resource, this might mean some indirection of sorts, or maybe add a new resource type that handles groups.
 
 ## Features
 
