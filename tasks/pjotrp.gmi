@@ -18,14 +18,16 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 
 Now
 
-* [ ] Set up stable GeneNetwork server instance with new hardware (see below)
-* [ ] Work on REST API
-* [ ] GN4MSK rebranding - see issue
-* [ ] Fix slow search on Mariadb
+* [+] Set up stable GeneNetwork server instance with new hardware (see below)
+* [+] Work on REST API
+* [+] GN4MSK rebranding - see issue
+* [+] Build leadership team
+* [ ] Build GN consortium
+* [ ] Add R/qtl2 and multi-parent support with Karl (DO and Magic populations)
+* [ ] Fix slow search on Mariadb?
 * [ ] Drive for stability of GN tools (particularly GEMMA OOMP)
 * [ ] GEMMA batch run and precompute
 * [ ] GEMMA/bulklmm speedups
-* [ ] Add R/qtl2 and multi-parent support with Karl
 * [ ] Support pluto notebooks with Efraim
 * [ ] Aging grant application w. Rob (August)
 * [+] Shelby's application (fall)
@@ -36,7 +38,7 @@ Now
 
 Later
 
-* [.] Tree of life w. Andrea
+* [+] Tree of life w. Andrea
 * [+] Machine room security and access for bonz, fred, shelby, others...
 * [ ] Hao's idea for counting cis-qtl
 * [ ] Improve search for significant and suggestive hits
@@ -48,24 +50,19 @@ Later
 ### Set up stable server instance with new hardware
 
 * [+] Create bootable Debian drive that uses ttyS0
-* [ ] Pluto with Efraim
+* [+] Pluto with Efraim
 * [ ] R/qtl2 with Karl
 * [ ] Set up opensmtpd as a service
   + [ ] Add package dependency
   + [ ] Test on open port 25
   + [ ] Add public-inbox
-* [ ] Test new caddy and drives
-* [ ] Set up cgit as a service
 
 => ./machine-room.gmi machine room
 
-* [X] Fix mariadb index search - need to upgrade mariadb to convert final utf8mb4, see
-  => ../issues/slow-sql-query-for-xapian-indexing.gmi
 * [+] move backup dirs on tux01 to a larger partition (from export3 to export2)
 * [ ] Frontend for GN4MSK
 * [.] Check Tony's list and improve search for SNPs and Hs
 * [ ] GeneNetwork consortium (paper & CTC)
-* [ ] Key 410H
 * [ ] research.gov submit Postdoc plan
 * [+] Complete vcflib work in Zig and release
 * [ ] Fix issues:
@@ -76,3 +73,8 @@ Later
 * [ ] fix GN1 images linking to http://www.webqtl.org/array_images/S238-1F1-U74Av2.png
 
 ### Done
+
+* [X] Test new caddy and drives
+* [X] Set up cgit as a service
+* [X] Fix mariadb index search - need to upgrade mariadb to convert final utf8mb4, see
+  => ../issues/slow-sql-query-for-xapian-indexing.gmi
