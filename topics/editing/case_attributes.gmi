@@ -30,7 +30,10 @@ The chosen course of action will, however, not make use of this existing code. I
 
 The database tables of concern to us are:
 
+* InbredSet
 * CaseAttribute
+* StrainXRef
+* Strain
 * CaseAttributeXRefNew
 
 ## Data Types
