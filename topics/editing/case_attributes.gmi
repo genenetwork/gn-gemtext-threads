@@ -28,13 +28,58 @@ There is code that existed for the case-attributes editing, but it had a critica
 
 The chosen course of action will, however, not make use of this existing code. Instead, we will reimplement the feature with code in GN3, exposing the data and its editing via API endpoints.
 
-The database tables of concern to us are:
+## Database
+
+The existing database tables of concern to us are:
 
 * InbredSet
 * CaseAttribute
 * StrainXRef
 * Strain
 * CaseAttributeXRefNew
+
+We can fetch case-attribute data from the database with:
+
+```
+SELECT
+	caxrn.*, ca.Name AS CaseAttributeName,
+	ca.Description AS CaseAttributeDescription,
+	iset.InbredSetId AS OrigInbredSetId
+FROM
+	CaseAttribute AS ca INNER JOIN CaseAttributeXRefNew AS caxrn
+	ON ca.Id=caxrn.CaseAttributeId
+INNER JOIN
+      StrainXRef AS sxr
+      ON caxrn.StrainId=sxr.StrainId
+INNER JOIN
+      InbredSet AS iset
+      ON sxr.InbredSetId=iset.InbredSetId
+WHERE
+	caxrn.value != 'x'
+	AND caxrn.value IS NOT NULL;
+```
+
+which gives us all the information we need to rework the database schema.
+
+Since the Case-Attributes are group-level, we need to move the `InbredSetId` to the `CaseAttribute` table from the `CaseAttributeXRefNew` table.
+
+For more concrete relationship declaration, we can have the `CaseAttributeXRefNew` table have it primary key be composed of the `InbredSetId`, `StrainId` and `CaseAttributeId`. That has the added advantage that we can index the table on `InbredSetId` and `StrainId`.
+
+That leaves the `CaseAttribute` table with the following columns:
+
+* InbredSetId: Foreign Key from `InbredSet` table
+* Id: The CaseAttribute identifier
+* Name: Textual name for the Case-Attribute
+* Description: Textual description fro the case-attribute
+
+while the `CaseAttributeXRefNew` table ends up with the following columns:
+
+* InbredSetId: Foreign Key from `InbredSet` table
+* StrainId: The strain
+* CaseAttributeId: The case-attribute identifier
+* Value: The value for the case-attribute for this specific strain
+
+There will not be any `NULL` values allowed for any of the columns in both tables. If a strain has no value, we simply delete the corresponding record from the `CaseAttributeXRefNew` table.
 
 ## Data Types
 
