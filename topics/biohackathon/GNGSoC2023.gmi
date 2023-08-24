@@ -72,6 +72,11 @@ git repo genenetwork-machines, guix-bioinformatics
 * cgit deployment at https://git.genenetwork.org/
 * guix forge
 
+### Week 9
+
+* Discussion on importers for guix forge
+* Talked about propagator networks - part of Seattle presentation
+
 ### More
 
 => https://ci.genenetwork.org/jobs/guix-bioinformatics
@@ -140,6 +145,13 @@ git repo genenetwork3
 * Transformed most tables now
 * guile-lmdb started by Alex
 
+### Week 9
+
+* New renaming and modelling
+* GeneRif
+* Working on unique IDs
+* SKOS
+
 ## LLMs & metadata (RDF)
 
 * lead: Shelby
@@ -192,6 +204,11 @@ git repo genenetwork3
 
 * Working prototype!
 * references as JSON
+
+### Week 9
+
+* Shelby showed working references and challenges
+* System is ready for viewing by Rob
 
 ## API to access data from GN
 
@@ -253,8 +270,12 @@ git repo gn-docs & genenetwork3 & SPARQL
 
 ### Week 8
 
-- R script to parse API by Rupert
-- Move forward with populations/strains and datasets
+* R script to parse API by Rupert
+* Move forward with populations/strains and datasets
+
+### Week 9
+
+* Progressed API software to include groups
 
 ## Editing data
 
@@ -294,6 +315,10 @@ git repo gn-docs & genenetwork3 & SPARQL
 
 * gn-auth is building locally and needs to go on the forge
 * case attributes
+### Week 9
+
+* gn-auth continuation
+* case-attribute editing progress and challenges
 
 ## Guix parametrization
 
@@ -335,6 +360,10 @@ git repo gn-docs & genenetwork3 & SPARQL
 ### Week 8
 
 * Milestone on dependencies!
+
+### Week 9
+
+* Sarthak showed us the working prototype
 
 ## Links
 
