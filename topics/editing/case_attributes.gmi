@@ -128,10 +128,7 @@ Considering, however, that groups (InbredSets) are not directly linked to any au
 * Adding new case attributes: ???
 * Deleting existing case attributes: ???
 
-## Unresolved Questions
-
-* Can strains/samples be shared across traits in the same/different datasets?
-* If the same strain/sample can appear in different traits, is the value the same across all traits it appears in, or can it vary from trait to trait?
+Strains/samples are shared across traits. The values for the case attributes are the same for a particular strain/sample for all traits within a particular InbredSet (group).
 
 ## Related issues
 
