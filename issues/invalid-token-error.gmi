@@ -1,0 +1,63 @@
+# Invalid Token Error
+
+## Tags
+
+* assigned: fredm, zsloan
+* type: bug
+* priority: high
+* status: unresolved
+* keywords: authentication
+
+## Description
+
+A while after logging in, users (who are logged in) were getting the following error (full trace at the bottom*):
+```
+authlib.integrations.base_client.errors.InvalidTokenError: token_invalid:
+```
+
+After fully updating the code the error might be manifesting differently. I now get the following when attempting to view a trait (and collections show up as 0 in the header):
+```
+UNAUTHORIZED: The access token provided is expired, revoked, malformed, or invalid for other reasons.
+```
+
+This can be tested by adding the following after line 48 in gn3/auth/authentication/oauth2/server.py (which makes the token quickly expire):
+```
+"expires_in": (60)
+```
+
+* Full trace:
+```
+GeneNetwork tux01:gene:2.11-rc2  http://genenetwork.org/show_trait?trait_id=10001&dataset=HET3-ITPPublish (10:00PM UTC Aug 22, 2023) 
+Traceback (most recent call last):
+  File "/home/zas1024/opt/gn-latest-20230421/lib/python3.9/site-packages/flask/app.py", line 1523, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/zas1024/opt/gn-latest-20230421/lib/python3.9/site-packages/flask/app.py", line 1509, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/gn2/production/gene/wqflask/wqflask/views.py", line 528, in show_trait_page
+    return client.post(
+  File "/home/gn2/production/gene/wqflask/wqflask/oauth2/client.py", line 118, in post
+    return oauth2_post(uri_path, **kwargs)
+  File "/home/gn2/production/gene/wqflask/wqflask/oauth2/client.py", line 79, in oauth2_post
+    return session.user_token().either(__no_token__, __post__)
+  File "/home/zas1024/opt/gn-latest-20230421/lib/python3.9/site-packages/pymonad/either.py", line 89, in either
+    return right_function(self.value)
+  File "/home/gn2/production/gene/wqflask/wqflask/oauth2/client.py", line 71, in __post__
+    resp = client.post(
+  File "/home/zas1024/opt/gn-latest-20230421/lib/python3.9/site-packages/requests/sessions.py", line 635, in post
+    return self.request("POST", url, data=data, json=json, **kwargs)
+  File "/home/zas1024/opt/gn-latest-20230421/lib/python3.9/site-packages/authlib/integrations/requests_client/oauth2_session.py", line 109, in request
+    return super(OAuth2Session, self).request(
+  File "/home/zas1024/opt/gn-latest-20230421/lib/python3.9/site-packages/requests/sessions.py", line 573, in request
+    prep = self.prepare_request(req)
+  File "/home/zas1024/opt/gn-latest-20230421/lib/python3.9/site-packages/requests/sessions.py", line 484, in prepare_request
+    p.prepare(
+  File "/home/zas1024/opt/gn-latest-20230421/lib/python3.9/site-packages/requests/models.py", line 372, in prepare
+    self.prepare_auth(auth, url)
+  File "/home/zas1024/opt/gn-latest-20230421/lib/python3.9/site-packages/requests/models.py", line 603, in prepare_auth
+    r = auth(self)
+  File "/home/zas1024/opt/gn-latest-20230421/lib/python3.9/site-packages/authlib/integrations/requests_client/oauth2_session.py", line 24, in __call__
+    self.ensure_active_token()
+  File "/home/zas1024/opt/gn-latest-20230421/lib/python3.9/site-packages/authlib/integrations/requests_client/oauth2_session.py", line 21, in ensure_active_token
+    raise InvalidTokenError()
+authlib.integrations.base_client.errors.InvalidTokenError: token_invalid:
+```
