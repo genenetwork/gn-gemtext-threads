@@ -23,6 +23,7 @@ Now
 * [+] GN4MSK rebranding - see issue
 * [+] Build leadership team
 * [ ] Build GN consortium
+* [ ] AraQTL and WormQTL2 embedding
 * [ ] Add R/qtl2 and multi-parent support with Karl (DO and Magic populations)
 * [ ] Fix slow search on Mariadb?
 * [ ] Drive for stability of GN tools (particularly GEMMA OOMP)
