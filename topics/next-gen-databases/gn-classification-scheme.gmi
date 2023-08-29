@@ -1,0 +1,45 @@
+# Understanding GN's Classification Scheme
+
+In GeneNetwork (GN), data is grouped into specific discrete categories.  Let's dive into the currently implemented scheme:
+
+* Species: This category groups data based on different species, like humans, mice, or plants.
+* Set/Group (InbredSet): This groups data according to a group of genetically similar organisms.
+* DatasetType: This classified data according to it's type.  There are three main types: Genotypes (genetic makeup), Molecular Traits (molecular characteristics), and Phenotypes (observable traits).
+
+The aforementioned classification scheme is inspired by GN's menu structure which forms the skeleton of the proposed classification.  You can query metadata about this classification: "gn:ResourceClassificationScheme".  This classification scheme has 3 levels:
+
+* gnc:DatasetType
+* gnc:Set
+* gn:Species.
+
+Here's a depper look at each level:
+
+* gnc:DatasetType: This level encompasses subcategories like "gnc:Probeset," "gnc:Genotype," and "gnc:Phenotype."
+* gnc:Set: This level includes all the members listed in the InbredSet table.
+* gn:Species: This level consists of all the members from the Species table.
+
+The beauty of this system is that most of the resources in GN can be accurately categorized using it.  Instead of using specific properties like "gnt:belongsToSpecies" or "gnt:belongsToSet," we can utilize the xkos⁰ approach.  For instance, to classify a resource, we can use the concept of xkos and apply the relationship "xkos:classifiedUnder." Here's an example of a resource that has been classified:
+
+```
+gn:Gtexv8_sto_0220 xkos:classifiedUnder gnc:Probeset .
+gn:Gtexv8_sto_0220 xkos:classifiedUnder gn:setGtex_v8
+```
+
+This means that the resource "gn:Gtexv8_sto_0220" is classified under the category "gnc:Probeset" and also under the set "gn:setGtex_v8."
+
+To query this classification using SPARQL, we can use the following code snippet:
+
+```
+PREFIX xkos: <http://rdf-vocabulary.ddialliance.org/xkos#>
+PREFIX gnc: <http://genenetwork.org/category/>
+PREFIX gn: <http://genenetwork.org/id/>
+
+SELECT * WHERE {
+  gn:Gtexv8_sto_0220 xkos:classifiedUnder ?datasetType .
+  gn:Gtexv8_sto_0220 xkos:classifiedUnder ?set .
+  gnc:DatasetType skos:member ?datasetType .
+  gnc:Set skos:member ?set .
+}
+```
+
+=> https://rdf-vocabulary.ddialliance.org/xkos.html ⁰ XKOS: An SKOS extension for representing statistical classifications.
