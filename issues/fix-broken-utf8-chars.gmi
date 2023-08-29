@@ -18,4 +18,9 @@ An example of a broken unicode character is: "ï¼ž".  The character "ï¼ž" a
 
 To find the correct replacement for the character "ï¼ž", or any other character for the matter, you can look up its Unicode code point. In this case, the code point for "ï¼ž" is "U+2273", which corresponds to the character "≥". You can then use this code point to search for and replace the broken character with the correct character in the text.
 
+Tables I've had to convert:
+
+* Investigators
+* InfoFiles
+
 * closed
