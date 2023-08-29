@@ -4,13 +4,13 @@ In GeneNetwork (GN), data is grouped into specific discrete categories.  Let's d
 
 * Species: This category groups data based on different species, like humans, mice, or plants.
 * Set/Group (InbredSet): This groups data according to a group of genetically similar organisms.
-* DatasetType: This classified data according to it's type.  There are three main types: Genotypes (genetic makeup), Molecular Traits (molecular characteristics), and Phenotypes (observable traits).
+* DatasetType: This classifies data according to it's type.  There are three main types: Genotypes, Molecular Traits, and Phenotypes.
 
 The aforementioned classification scheme is inspired by GN's menu structure which forms the skeleton of the proposed classification.  You can query metadata about this classification: "gn:ResourceClassificationScheme".  This classification scheme has 3 levels:
 
 * gnc:DatasetType
 * gnc:Set
-* gn:Species.
+* gn:Species
 
 Here's a depper look at each level:
 
@@ -18,7 +18,7 @@ Here's a depper look at each level:
 * gnc:Set: This level includes all the members listed in the InbredSet table.
 * gn:Species: This level consists of all the members from the Species table.
 
-The beauty of this system is that most of the resources in GN can be accurately categorized using it.  Instead of using specific properties like "gnt:belongsToSpecies" or "gnt:belongsToSet," we can utilize the xkos⁰ approach.  For instance, to classify a resource, we can use the concept of xkos and apply the relationship "xkos:classifiedUnder." Here's an example of a resource that has been classified:
+The beauty of this system is that most of the resources in GN can be accurately categorized using it.  Instead of using specific properties like "gnt:belongsToSpecies" or "gnt:belongsToSet," we can utilize the xkos[0] approach.  For instance, to classify a resource, we can use the concept of xkos and apply the relationship "xkos:classifiedUnder." Here's an example of a resource that has been classified:
 
 ```
 gn:Gtexv8_sto_0220 xkos:classifiedUnder gnc:Probeset .
@@ -42,4 +42,4 @@ SELECT * WHERE {
 }
 ```
 
-=> https://rdf-vocabulary.ddialliance.org/xkos.html ⁰ XKOS: An SKOS extension for representing statistical classifications.
+=> https://rdf-vocabulary.ddialliance.org/xkos.html [0] XKOS: An SKOS extension for representing statistical classifications.
