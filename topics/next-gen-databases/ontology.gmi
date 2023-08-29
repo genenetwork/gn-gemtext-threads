@@ -5,10 +5,15 @@ Sticking to GN tables is a bad idea because it doesn't capture what "how" we wan
 Here, we note down all lessons learnt while we continuously improve our ontologies.
 
 ### Resources
-
+=> https://wrdrd.readthedocs.io/en/latest/consulting/knowledge-engineering.html Knowledge Engineering
 => https://www.w3.org/wiki/VocabularyMarket Vocabulary Market
 => https://www.w3.org/TR/prov-o/ PROV-O: The PROV Ontology
 => https://bioportal.bioontology.org/ontologies Browse Ontologies related to biology
+=> https://www.dublincore.org/specifications/dublin-core/dcmi-terms/ DublinCore DCMI Metadata Terms
+=> https://www.w3.org/TR/skos-primer/ skos primer
+=> https://www.w3.org/TR/vocab-dcat-2/ Data Catalog Vocabulary (DCAT) Version 2
+=> https://www.w3.org/TR/vocab-data-cube/ Data Cube Vocabulary
+=> https://www.w3.org/TR/shacl/ Shapes Constraint Language (SHACL)
 
 ### rdfs:label
 
