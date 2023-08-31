@@ -5,7 +5,7 @@
 * assigned: fredm, zsloan
 * type: bug
 * priority: high
-* status: unresolved
+* status: closed, completed, resolved
 * keywords: authentication
 
 ## Description
@@ -20,10 +20,13 @@ After fully updating the code the error might be manifesting differently. I now 
 UNAUTHORIZED: The access token provided is expired, revoked, malformed, or invalid for other reasons.
 ```
 
-This can be tested by adding the following after line 48 in gn3/auth/authentication/oauth2/server.py (which makes the token quickly expire):
+This can be tested by adding the following configuration in the auth(entic|oris)ation server:
 ```
-"expires_in": (60)
+OAUTH2_TOKEN_EXPIRES_IN = {
+    "authorization_code": 60
+}
 ```
+which sets up the tokens generated henceforth to expire in 60 seconds.
 
 * Full trace:
 ```
@@ -61,3 +64,9 @@ Traceback (most recent call last):
     raise InvalidTokenError()
 authlib.integrations.base_client.errors.InvalidTokenError: token_invalid:
 ```
+
+## FIXES
+
+Should be fixed with the following commit(s)
+
+=> https://github.com/genenetwork/genenetwork2/commit/d818eaf1957c06405faf712a2be8526a7f63581b
