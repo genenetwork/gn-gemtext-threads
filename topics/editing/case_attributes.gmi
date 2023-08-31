@@ -22,6 +22,20 @@ They are the metadata for the various sample in a trait. The case attributes are
 Also From email:
 > Every strain has a unique attribute and it's fixed, not variable.
 
+## Direction
+
+We need to differentiate two things:
+* Case-Attribute labels/names/categories (e.g. Sex, Height, Cage-handler, etc)
+* Case-Attribute values (e.g. Male/Female, 20cm, Frederick, etc.)
+
+As is currently implemented (as of before 2023-08-31), both the labels and values are set at group level.
+
+Having the labels at the group level is (arguably) acceptable; the value on the other hand, vary from experiment to experiment (dataset), and could be different for the same strain/sample.
+
+For posterity, I (Frederick) do not think the labels should go much beyond the group level, e.g Sex as an attribute applies for Human, and mice, but not so much for yeast and E. Coli.
+
+The focus now is to modify the database schema to allow the case-attribute values to vary by dataset (experiment).
+
 ## Status
 
 There is code that existed for the case-attributes editing, but it had a critical bug where the data for existing attributes would be deleted/replaced randomly when one made a change. This lead to a pause in this effort.
