@@ -43,3 +43,11 @@ SELECT * WHERE {
 ```
 
 => https://rdf-vocabulary.ddialliance.org/xkos.html [0] XKOS: An SKOS extension for representing statistical classifications.
+
+=> https://sparql.genenetwork.org/sparql?default-graph-uri=&qtxt=PREFIX%20xkos%3A%20%3Chttp%3A%2F%2Frdf-vocabulary.ddialliance.org%2Fxkos%23%3E%0APREFIX%20gnc%3A%20%3Chttp%3A%2F%2Fgenenetwork.org%2Fcategory%2F%3E%0APREFIX%20gn%3A%20%3Chttp%3A%2F%2Fgenenetwork.org%2Fid%2F%3E%0A%0ASELECT%20*%20WHERE%20%7B%0Agnc%3AResourceClassificationScheme%20%3Fp%20%3Fo%20.%0A%7D&format=text%2Fhtml&timeout=0&signal_void=on Classification Scheme
+
+=> https://sparql.genenetwork.org/sparql?default-graph-uri=&qtxt=PREFIX%20xkos%3A%20%3Chttp%3A%2F%2Frdf-vocabulary.ddialliance.org%2Fxkos%23%3E%0APREFIX%20gnc%3A%20%3Chttp%3A%2F%2Fgenenetwork.org%2Fcategory%2F%3E%0APREFIX%20gn%3A%20%3Chttp%3A%2F%2Fgenenetwork.org%2Fid%2F%3E%0A%0ASELECT%20*%20WHERE%20%7B%0Agnc%3ADatasetType%20%3Fp%20%3Fo%20.%0A%7D&format=text%2Fhtml&timeout=0&signal_void=on DataSet Types
+
+=> https://sparql.genenetwork.org/sparql?default-graph-uri=&qtxt=PREFIX%20xkos%3A%20%3Chttp%3A%2F%2Frdf-vocabulary.ddialliance.org%2Fxkos%23%3E%0APREFIX%20gnc%3A%20%3Chttp%3A%2F%2Fgenenetwork.org%2Fcategory%2F%3E%0APREFIX%20gn%3A%20%3Chttp%3A%2F%2Fgenenetwork.org%2Fid%2F%3E%0A%0ASELECT%20*%20WHERE%20%7B%0Agnc%3ASpecies%20%3Fp%20%3Fo%20.%0A%7D&format=text%2Fhtml&timeout=0&signal_void=on Species
+
+=> https://sparql.genenetwork.org/sparql?default-graph-uri=&qtxt=PREFIX%20xkos%3A%20%3Chttp%3A%2F%2Frdf-vocabulary.ddialliance.org%2Fxkos%23%3E%0APREFIX%20gnc%3A%20%3Chttp%3A%2F%2Fgenenetwork.org%2Fcategory%2F%3E%0APREFIX%20gn%3A%20%3Chttp%3A%2F%2Fgenenetwork.org%2Fid%2F%3E%0A%0ASELECT%20*%20WHERE%20%7B%0Agnc%3ASet%20%3Fp%20%3Fo%20.%0A%7D&format=text%2Fhtml&timeout=0&signal_void=on Set
