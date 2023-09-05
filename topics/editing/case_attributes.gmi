@@ -30,11 +30,9 @@ We need to differentiate two things:
 
 As is currently implemented (as of before 2023-08-31), both the labels and values are set at group level.
 
-Having the labels at the group level is (arguably) acceptable; the value on the other hand, vary from experiment to experiment (dataset), and could be different for the same strain/sample.
-
-For posterity, I (Frederick) do not think the labels should go much beyond the group level, e.g Sex as an attribute applies for Human, and mice, but not so much for yeast and E. Coli.
-
-The focus now is to modify the database schema to allow the case-attribute values to vary by dataset (experiment).
+A look at
+=> https://github.com/genenetwork/genenetwork1/blob/0f170f0b748a4e10eaf8538f6bcbf88b573ce8e7/web/webqtl/showTrait/DataEditingPage.py Case-Attributes on GeneNetwork1
+is a good starting point to help with understanding how case-attributes were implemented and how they worked.
 
 ## Status
 
