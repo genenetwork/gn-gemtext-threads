@@ -5,7 +5,7 @@
 * priority: medium
 * keywords: python3.10
 * status: open
-* assigned: bonz, fredm, alex
+* assigned: bonfacem, fredm, alex, zachs
 
 ## Description
 
@@ -24,6 +24,28 @@ The sections below will note the migration issues for the various apps.
 * [ ] yoyo-migrations
 * others ...
 
-### QC App
+### Migration Notes
 
-### Others?
+This error in guix-forge:
+
+```
+bonfacem@tux02 ~ $ zcat /var/log/guix/drvs/d6/48xcspiykyhcink41968zhfr15w2d5-guix-forge.drv.gz 
+(repl-version 0 1 1)
+(exception unbound-variable (value #f) (value "Unbound variable: ~S") (value (match-record-lambda)) (value #f))
+```
+
+... is because match-record-lambda is from a relatively new version of guix---probably one in which python is on 3.10.
+
+This failing mypy test:
+
+```
+Bugfix: fix error when loading Python module based migrations, caused by changes to importlib in Python 3.8.10 and Python 3.9.5.
+```
+
+Has been discussed and resolved in:
+
+=> https://ollycope.com/software/yoyo/latest/#released-2020-07-17
+
+## Fixes
+=> https://github.com/genenetwork/genenetwork3/pull/128 Migrate from 3.9 to 3.10
+=> https://github.com/genenetwork/genenetwork2/pull/802 Remove PYTHONPATH injection
