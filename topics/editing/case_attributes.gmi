@@ -142,6 +142,27 @@ Considering, however, that groups (InbredSets) are not directly linked to any au
 
 Strains/samples are shared across traits. The values for the case attributes are the same for a particular strain/sample for all traits within a particular InbredSet (group).
 
+## Related and Unsynthesised Chats
+
+=> https://matrix.to/#/!EhYjlMbZHbGPjmAFbh:matrix.org/$myIoafLp_dIONnyNvEI0k2xf3Y8-LyiI_mkP2vBN08o?via=matrix.org
+```
+Zachary SloanZ
+I'm pretty sure multiple phenotypes and mRNA datasets can belong to the same experiment (and definitely for the purposes of case attributes
+since the mRNA datasets are split by tissue
+genotype traits should all be considered part of the same "experiment" (at least as long as we're still only databasing a single genotype file for each group)
+
+pjotrp
+: Case attribute editing will still need to be group level, at least until the whole feature is completely changed. Since they're basically just phenotypes we choose to show in the trait page table, and phenotypes are at the group level
+```
+
+=> https://matrix.to/#/!EhYjlMbZHbGPjmAFbh:matrix.org/$P6SNnpY-nAZsDr3VZlRi05m6MT32lXBsCl-BYLh-YLM?via=matrix.org
+```
+Zachary SloanZ
+21:14
+Groups are defined by their list of samples/strains, and the "case attributes" are just "the characteristics of those samples/strains we choose to show on the trait page" (if we move away from the "group" concept entirely that could change, but if we did that we probably would also replace "case attributes" with something else because the way that's implemented is kind of weird to begin with)
+ZB
+```
+
 ## Related issues
 
 => /issues/case-attr-edit-error
