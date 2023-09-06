@@ -1,0 +1,25 @@
+# Rework Resources
+
+## Tags
+
+* assigned: fredm
+* status: open
+* priority: medium
+* type: refactor, feature request, design change
+* keywords: auth, authorisation, resources, design change
+
+## Description
+
+The authorisation system uses the idea of "Resources" as its most basic model: users have privileges to act on resources.
+
+The problem is that this concept is not currently (as of 06 Sept 2023) implemented for the entire system: The only supported resources currently are:
+
+* Phenotype resources
+* Genotype resources
+* mRNA resources
+
+For the "system" itself, and "user groups" we have special cases to handle the user privileges.
+
+With the addition of case-attribute editing stuff, we also run into the issue where the current existing system is not generic enough, and the code thus needs yet another edge case.
+
+This means that there is a need to refactor the code to make the concept of a "resource" global, and any/all privileges a user has should act on a particular resource. We can then add the resource types/categories as we encounter them, without having to change most of the core code dealing with the authorisations.
