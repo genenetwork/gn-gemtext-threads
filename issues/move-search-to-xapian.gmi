@@ -1,0 +1,20 @@
+# Move Search to Xapian
+
+## Tags
+
+* priority: high
+* keywords: xapian, search
+* status: open
+* assigned: bonfacem, zachs
+
+## Description
+
+Currently, one of our most challenging issues stems from the Python 3.10 update, specifically related to our search functionality.  The problem lies in the complex and convoluted inheritance structures that are difficult to understand and navigate.  You can see an example of this complexity in the code snippet here:
+
+=> https://github.com/genenetwork/genenetwork2/blob/093b0fc7a386d3e8388babe131bdf9d45fbe3c79/wqflask/wqflask/do_search.py#L115 do_search.py
+
+As a work around---to make search work with Python3.10, an inefficient hack was introduced:
+
+=> https://github.com/genenetwork/genenetwork2/pull/805/commits/9a6ddf9f1560b3bc1611f50bf2b94f0dc44652a2 Replace escape with conn.escape_string
+
+To get rid of this inheritance, I propose rewriting the search functionality in a more straightforward and functional manner.  In doing so, we can also transition to Xapian search, a faster and more efficient search system.
