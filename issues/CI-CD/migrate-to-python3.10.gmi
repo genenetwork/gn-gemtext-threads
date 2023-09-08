@@ -2,7 +2,7 @@
 
 ## Tags
 
-* priority: medium
+* priority: high
 * keywords: python3.10
 * status: open
 * assigned: bonfacem, fredm, alex, zachs
