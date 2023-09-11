@@ -1,11 +1,14 @@
-# implement gn markdown editor
+# Gn Markdown Editor implementation
 
 ### Notes
 
-gn renders some markdown contents ,idea is to allow users to edit and live eview their pages
-Example of similar implementation
+Gn renders multiple markdown pages as html,the idea of this project is to allow users to edit and live preview the results
+also added to this is the ability to commit the changes directly to github repo:
 
+Example of similar implementation
 => https://markdownlivepreview.com/
+
+
 ## Tags
 
 * assigned: alexm
@@ -16,6 +19,18 @@ Example of similar implementation
 
 ## Tasks
 
-* [ ] implement markdown page editor
+* [x] implement markdown page editor
 
-* [ ]  add live preview for page on edit
+* [x]  add live preview for page markdown on edit
+
+* [] authentication(WIP)
+
+* [x] commit changes to github repo
+
+* [x] UI improvement 
+
+## Notes
+
+for quick server setup refer to the documentation below:
+
+=> https://github.com/Alexanderlacuna/gn-markdown-editor
