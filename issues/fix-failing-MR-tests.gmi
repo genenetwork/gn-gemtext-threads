@@ -10,7 +10,7 @@
 MR fails because of a python-flask/requests issue.  Everytime you issue a GET request to the server you get an empty response.  Here's an example using curl:
 
 ```
-curl "http://0.0.0.0:5007/search?species=mouse&group=BXD&type=Hippocampus+mRNA&dataset=HC_M2_0606_P&search_terms_or=MEAN%3D%2815+16%29+LRS%3D%2823+46%29&search_terms_and=&FormID=searchResult"
+curl "http://localhost:5007/search?species=mouse&group=BXD&type=Hippocampus+mRNA&dataset=HC_M2_0606_P&search_terms_or=MEAN%3D%2815+16%29+LRS%3D%2823+46%29&search_terms_and=&FormID=searchResult"
 ```
 
 And an example response:
