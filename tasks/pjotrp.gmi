@@ -16,7 +16,7 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 
 ### Meta-tasks
 
-Now (X=done +=WIP)
+Now (X=done +=WIP _=kickoff ?=?)
 
 * [+] Build leadership team
 * [+] Build GN consortium
