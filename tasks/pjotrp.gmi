@@ -16,25 +16,26 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 
 ### Meta-tasks
 
-Now
+Now (X=done +=WIP)
+
+* [+] Build leadership team
+* [+] Build GN consortium
+* [+] gBAM
 
 * [+] Set up stable GeneNetwork server instance with new hardware (see below)
 * [+] Work on REST API
-* [+] Build leadership team
-* [+] Build GN consortium
 * [+] AraQTL and WormQTL2 embedding
+
 * [ ] Add R/qtl2 and multi-parent support with Karl (DO and Magic populations)
 * [ ] Fix slow search on Mariadb?
 * [ ] Drive for stability of GN tools (particularly GEMMA OOMP)
 * [ ] GEMMA batch run and precompute
 * [ ] GEMMA/bulklmm speedups
-* [+] Support pluto notebooks with Efraim
 * [+] Aging grant application w. Rob (fall)
 * [+] Shelby's application (fall)
 * [.] GeneNetwork paper
 *     + [ ] add FAIR statement
 * [ ] RISC-V trials
-* [ ] gBAM
 
 Later
 
@@ -43,13 +44,12 @@ Later
 * [ ] Hao's idea for counting cis-qtl
 * [ ] Improve search for significant and suggestive hits
 * [+] DOI support GN (Barcelona)
-* [ ] Cito support
+* [ ] Cito support (Barcelona)
 
 ### Ongoing tasks
 
 ### Set up stable server instance with new hardware
 
-* [+] Create bootable Debian drive that uses ttyS0
 * [ ] R/qtl2 with Karl
 * [ ] Set up opensmtpd as a service
   + [ ] Add package dependency
@@ -72,6 +72,7 @@ Later
 
 ### Done
 
+* [X] Support pluto notebooks with Efraim
 * [X] Frontend for GN4MSK
 * [X] Test new caddy and drives
 * [X] Set up cgit as a service
