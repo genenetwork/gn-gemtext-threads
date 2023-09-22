@@ -14,6 +14,18 @@
 * [ ] get data from summer211.uthsc.edu (access machine room)
 * [ ] decommission/surplus out-racked machines (whith @arthurc)
       + see also ../issues/systems/decommission-machines.gmi
+* [ ] Install tux04-tux09
+* [ ] VPN access and FoUT
+
+Network:
+
+* [ ] use fiber optics for subnet Octopus and Tuxes
+
+Backups & storage:
+
+* [+] Order storage and caddies (w. Tamara)
+* [_] data warehousing
+* [+] run sheepdog as root: redis password error; introduce SHEEPDOG_CONF
 * [ ] tux01 has unused 4TB spinning disk
 * [ ] tux02 has unused 2x4TB spinning disks and 2TB nvme /dev/nvme0n1 on adapter
       https://www.cyberciti.biz/faq/upgrade-update-samsung-ssd-firmware/
@@ -22,11 +34,6 @@
       fwupdmgr update
       The previously problematic Samsung 980 Pro was basically using the 3B2QGXA7, and now Samsung has introduced a new 5B2QGXA7 firmware to fix the problem. The problem mainly affects the 2TB version of the 980 Pro
 * [ ] Check backups of etc etc.
-* [ ] Install tux04-tux09
-* + [+] Order storage and caddies
-* + [ ] See about network adapters and support
-* [ ] VPN access and FoUT
-* [+] run sheepdog as root: redis password error; introduce SHEEPDOG_CONF
 
 Security:
 

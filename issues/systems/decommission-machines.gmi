@@ -58,7 +58,7 @@
 * [X] spring211 (Poweredge R610 2010 model - no access)
 * [X] autumn211 (R610)
 
-## File for junking
+## File for junking/surplus
 
 * [ ] summer211 - ran UTHSC browser (R610) - needs backup to fetch annotations, but no access
       - need to access when in machine room
