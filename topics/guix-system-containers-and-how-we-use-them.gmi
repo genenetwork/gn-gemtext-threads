@@ -1,6 +1,6 @@
 # Guix system containers and how we use them
 
-Our preferred way to deploy long-running services is to use Guix system containers. Note that Guix system containers are different from guix shell containers (and the older guix environment containers). guix shell containers are meant for interactive use and are a poor fit for long running services. Other non-Guix ways such as running long-running processes in tmuxes, running long-running services from your development repository, etc. are a quick dirty way to get things done. Note that system containers are quite a bit heavier - they are full Linux boots.
+Our preferred way to deploy long-running services is to use Guix system containers. Note that Guix system containers are different from guix shell containers (and the older guix environment containers). guix shell containers are meant for interactive use and are a poor fit for long running services. Other non-Guix ways such as running long-running processes in tmuxes, running long-running services from your development repository, etc. are a quick dirty way to get things done.
 
 Guix system containers are fully described by a configuration file that, among other things, specifies the services run in it. These scheme configuration files are built using `guix system container' and produce a script. This script, when run, starts the described container.
 

@@ -16,10 +16,30 @@
       + see also ../issues/systems/decommission-machines.gmi
 * [ ] Install tux04-tux09
 * [ ] VPN access and FoUT
+* [ ] penguin2 has 32TB of space we can use on NFS/backups
+* [ ] tux04 and tux05 give errors
 
 Network:
 
 * [ ] use fiber optics for subnet Octopus and Tuxes
+* [ ] Octopus11 has no fiber
+* [ ] tux06 has temp fiber
+* [ ] tux07 has no fiber
+* [ ] tux08 has no fiber
+* [ ] tux09 has no fiber
+
+Lambda:
+
+* [X] racked up and runs
+* [+] add network (Roger)
+    link/ether 7c:c2:55:11:9c:ac brd ff:ff:ff:ff:ff:ff
+    inet 172.23.18.212/21 brd 172.23.23.255 scope global dynamic eno1
+* [ ] get service tag Tamara
+* [X] install ubuntu (with Erik)
+* [ ] remote access? (with Erik)
+  * [ ] get BMC password
+* [ ] get fiber working
+* [ ] add to Octopus HPC
 
 Backups & storage:
 
