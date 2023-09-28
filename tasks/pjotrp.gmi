@@ -19,28 +19,29 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 Now (X=done +=WIP _=kickoff ?=?)
 
 * [+] Build leadership team
+* [+] Build junior team
 * [+] Build GN consortium
 * [+] gBAM
+* [ ] GEMMA batch run and precompute
+* [ ] GEMMA/bulklmm speedups
 
 * [+] Set up stable GeneNetwork server instance with new hardware (see below)
+* [ ] Drive for stability of GN tools (particularly GEMMA OOMP)
 * [+] Work on REST API
 * [+] AraQTL and WormQTL2 embedding
 
 * [ ] Add R/qtl2 and multi-parent support with Karl (DO and Magic populations)
 * [ ] Fix slow search on Mariadb?
-* [ ] Drive for stability of GN tools (particularly GEMMA OOMP)
-* [ ] GEMMA batch run and precompute
-* [ ] GEMMA/bulklmm speedups
 * [+] Aging grant application w. Rob (fall)
 * [+] Shelby's application (fall)
 * [.] GeneNetwork paper
 *     + [ ] add FAIR statement
 * [ ] RISC-V trials
+* [ ] Guix project server
 
 Later
 
 * [+] Tree of life w. Andrea
-* [+] Machine room security and access for bonz, fred, shelby, others...
 * [ ] Hao's idea for counting cis-qtl
 * [ ] Improve search for significant and suggestive hits
 * [+] DOI support GN (Barcelona)
@@ -72,6 +73,7 @@ Later
 
 ### Done
 
+* [X] Machine room security and access for bonz, fred, shelby, others...
 * [X] Support pluto notebooks with Efraim
 * [X] Frontend for GN4MSK
 * [X] Test new caddy and drives
