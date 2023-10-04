@@ -12,21 +12,12 @@
 ### UTHSC
 
 * [ ] get data from summer211.uthsc.edu (access machine room)
-* [ ] decommission/surplus out-racked machines (whith @arthurc)
-      + see also ../issues/systems/decommission-machines.gmi
-* [ ] Install tux04-tux09
 * [ ] VPN access and FoUT
 * [ ] penguin2 has 32TB of space we can use on NFS/backups
-* [ ] tux04 and tux05 give errors
 
 Network:
 
-* [ ] use fiber optics for subnet Octopus and Tuxes
-* [ ] Octopus11 has no fiber
-* [ ] tux06 has temp fiber
-* [ ] tux07 has no fiber
-* [ ] tux08 has no fiber
-* [ ] tux09 has no fiber
+* [ ] wire up machines so they talk with each other over fiber
 
 Lambda:
 
@@ -34,11 +25,11 @@ Lambda:
 * [+] add network (Roger)
     link/ether 7c:c2:55:11:9c:ac brd ff:ff:ff:ff:ff:ff
     inet 172.23.18.212/21 brd 172.23.23.255 scope global dynamic eno1
-* [ ] get service tag Tamara
+* [ ] get service tag Tamara (with Erik?)
 * [X] install ubuntu (with Erik)
 * [ ] remote access? (with Erik)
-  * [ ] get BMC password
-* [ ] get fiber working
+  * [X] get BMC password
+* [X] get fiber working
 * [ ] add to Octopus HPC
 
 Backups & storage:
@@ -57,15 +48,14 @@ Backups & storage:
 
 Security:
 
-* [?] DMZ plan
 * [ ] Limit idrac access
-* [ ] space server out-of-band access
+* [?] space server out-of-band access
 
 ### Spice
 
 * [ ] Run GN off balg01
-* [ ] Firewall out of band
-* [ ] Add storage
+* [X] Firewall out of band
+* [X] Add storage
 * [ ] Convert balg02 to Guix server
 
 ### Done
@@ -76,3 +66,13 @@ Security:
 * [X] Order drives and caddies tux01 & tux02 (with @haoc)
 * [X] Introduce &disk space and mdstat monitor
 * [X] Machine room HDDs
+* [X] decommission/surplus out-racked machines (whith @arthurc)
+      + see also ../issues/systems/decommission-machines.gmi
+* [X] Install tux04-tux09
+* [X] tux04 and tux05 give errors
+* [X] use fiber optics for subnet Octopus and Tuxes
+* [X] Octopus11 has no fiber
+* [X] tux06 has temp fiber
+* [X] tux07 has no fiber
+* [X] tux08 has no fiber
+* [X] tux09 has no fiber
