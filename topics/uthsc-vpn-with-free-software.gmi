@@ -21,15 +21,6 @@ $ openconnect-sso --server uthscvpn1.uthsc.edu --authgroup UTHSC -- --script 'vp
 ```
 The vpn-slice script looks up the hostnames tux01 and tux02e on the VPN DNS and adds /etc/hosts entries and routes to your system. vpn-slice can also set up more complicated routes. To learn more, read the vpn-slice documentation.
 
-## qtwebengine text rendering bug
-
-There is currently a bug in Guix with qtwebengine text rendering.
-=> https://issues.guix.gnu.org/52672
-This causes text to not render in the Duo authentication browser window. Until this bug is fixed, work around it by setting the following environment variable.
-```
-export QTWEBENGINE_CHROMIUM_FLAGS=--disable-seccomp-filter-sandbox
-```
-
 ## Acknowledgement
 
 Many thanks to Pjotr Prins and Erik Garrison without whose earlier work this guide would not be possible.
