@@ -62,7 +62,8 @@
                                                             #:engine %engine)))
                                    ((or (string-suffix? ".jpg" filename)
                                         (string-suffix? ".png" filename)
-                                        (string-suffix? ".svg" filename))
+                                        (string-suffix? ".svg" filename)
+                                        (string-suffix? ".scm" filename))
                                     (file filename
                                           (copier filename)))
                                    (else #f)))
