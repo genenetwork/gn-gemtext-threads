@@ -21,6 +21,29 @@ $ openconnect-sso --server uthscvpn1.uthsc.edu --authgroup UTHSC -- --script 'vp
 ```
 The vpn-slice script looks up the hostnames tux01 and tux02e on the VPN DNS and adds /etc/hosts entries and routes to your system. vpn-slice can also set up more complicated routes. To learn more, read the vpn-slice documentation.
 
+## Unsafe legacy TLS renegotiation
+
+The UTHSC VPN still requires unsafe legacy TLS renegotiation. This is disabled by default on the latest Guix. We need to re-enable it by configuring openssl.cnf as described on the following stackoverflow page.
+=> https://stackoverflow.com/questions/71603314/ssl-error-unsafe-legacy-renegotiation-disabled
+Here's a quick summary. Put the following in some file, say /tmp/openssl.cnf
+```
+openssl_conf = openssl_init
+
+[openssl_init]
+ssl_conf = ssl_sect
+
+[ssl_sect]
+system_default = system_default_sect
+
+[system_default_sect]
+Options = UnsafeLegacyRenegotiation
+```
+Set the environment variable OPENSSL_CONF to point to this file.
+```
+export OPENSSL_CONF=/tmp/openssl.cnf
+```
+Then, run the openconnect-sso client as usual.
+
 ## Acknowledgement
 
 Many thanks to Pjotr Prins and Erik Garrison without whose earlier work this guide would not be possible.
