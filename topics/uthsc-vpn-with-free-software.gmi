@@ -46,7 +46,7 @@ Then, run the openconnect-sso client as usual.
 
 ## Putting it all together using Guix G-expressions
 
-Remembering to do all these steps is a hassle. Writing a shell script to automate this is a good idea, but why write shell scripts when we have G-expressions! Here's a G-expression that I prepared earlier.
+Remembering to do all these steps is a hassle. Writing a shell script to automate this is a good idea, but why write shell scripts when we have G-expressions! Here's a G-expression script that I prepared earlier.
 => uthsc-vpn.scm
 Download it, tweak the %hosts variable to specify the hosts you are interested in, and run it like so:
 ```
