@@ -1,0 +1,28 @@
+# GeneNetwork/AI workshop
+
+Workshop at CTC-RG Memphis TN, Oct. 8, 2023 by Pjotr Prins, Shelby Solomon Darnell and Rob W. Williams. The idea is to have an topic intro followed by discussion
+
+
+# Introduction(s)
+
+# GN Overview
+
+# GN AI
+
+# REST API
+
+=> https://github.com/genenetwork/gn-docs/blob/master/api/GN2-REST-API.md
+
+# Issue tracker and CI/CD
+
+=> https://issues.genenetwork.org/
+=> https://ci.genenetwork.org/
+=> https://cd.genenetwork.org/
+
+# Communities
+
+=> https://msk.genenetwork.org/
+
+# Encryption and privacy
+
+# Discussion
