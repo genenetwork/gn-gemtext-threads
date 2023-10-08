@@ -54,3 +54,8 @@ PubMed is consistently updated by the NIH, so we must build a script to:
 By ensuring up-to-date information about the main information sources for the GeneNetwork Q&A system, the system grows with the knowledgebase.
 
 Add functionality that allows someone to submit documentation to the system, which is added after being reviewed by a specialist.
+
+improvement suggestions from CTC
+* [ ] Ontology annotations in GN
+* [ ] Gene prioritization
+* [ ] Improving pdf to text algorithm
