@@ -37,3 +37,21 @@ There is a chance the link above might eventually expire. If that happens, you c
 * Set "Location Type" = "Gene"
 * Click "Compute"
 * Continue with the steps in the section above
+
+
+## Troubleshooting Notes
+
+The request uses the "GET" method: see
+=> https://github.com/genenetwork/genenetwork2/blob/3ebf796f82797139b68f29e1e6a2323d60886539/wqflask/wqflask/collect.py#L118-L119
+
+Some files that are concerned with the issue:
+
+=> https://github.com/genenetwork/genenetwork2/blob/3ebf796f82797139b68f29e1e6a2323d60886539/wqflask/wqflask/collect.py#L101-L108
+
+=> https://github.com/genenetwork/genenetwork2/blob/3ebf796f82797139b68f29e1e6a2323d60886539/wqflask/wqflask/templates/collections/add.html#L8
+
+=> https://github.com/genenetwork/genenetwork2/blob/3ebf796f82797139b68f29e1e6a2323d60886539/wqflask/wqflask/static/new/javascript/search_results.js#L192-L198
+
+Probable solution: add `method="POST"` to the "<form ...>" line in the "add.html" file, but there is a chance that might break other features that depend on the same form. This will need to be done carefully.
+
+In retrospect, this feature should not use "GET" at all, since it is not indempotent. Every run has the potential to change the state of the underlying collection(s). All features depending on the "add.html" template should use the "POST" method, never "GET".
