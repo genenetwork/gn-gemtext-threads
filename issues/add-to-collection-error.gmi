@@ -1,0 +1,39 @@
+# Add to Collection Error
+
+## Tags
+
+* assigned: fredm, zachs
+* priority: urgent
+* type: bug
+* status: open
+* keywords: collections
+
+## Description
+
+Go to the following correlation results:
+
+=> https://genenetwork.org/corr_compute?job_id=9922450b-3d68-40e3-bfa2-33e0056e8cca
+
+* Click the "More Options" button
+* Filter the 500 entries by r>0, r<1, mean>3 and mean<100.
+* Click the "Select Traits" button to activate your filter. This leaves only 73 entries.
+* Select all of traits except the two in chromosome 16 which means 71 entries were selected.
+* Click "+ Add" button to create new collection
+* A new window opens and the error message "414 Request-URI Too Large" shows up
+
+This issue is also reproducible on https://cd.genenetwork.org
+
+### Generating Somewhat Similar Correlation Results
+
+There is a chance the link above might eventually expire. If that happens, you can regenerate the same correlation results with the following results:
+
+* Go to https://genenetwork.org/show_trait?trait_id=ENSG00000169344&dataset=GTEXv8_Kidn_tpm_0220
+* Open the "Calculate Correlations" accordion
+* Set Method = "sample r"
+* Set Database = "GTEXv8 Human Kidney-Cortex RNA-Seq (Feb20) TPM log2"
+* Set "Limit to" = 500
+* Set Samples = GTEx_v8
+* Set Type = Pearson
+* Set "Location Type" = "Gene"
+* Click "Compute"
+* Continue with the steps in the section above
