@@ -55,3 +55,9 @@ Some files that are concerned with the issue:
 Probable solution: add `method="POST"` to the "<form ...>" line in the "add.html" file, but there is a chance that might break other features that depend on the same form. This will need to be done carefully.
 
 In retrospect, this feature should not use "GET" at all, since it is not indempotent. Every run has the potential to change the state of the underlying collection(s). All features depending on the "add.html" template should use the "POST" method, never "GET".
+
+## Fixes
+
+=> https://github.com/genenetwork/genenetwork2/commit/1915fcdf7f67cd76348b06070e86aedfb4076f01
+
+This converts the requests to use the POST method which does not have any data size limits according to the HTTP protocol (in practice, there is probably a limit, but that is a configuration value, and we are unlikely to hit it).
