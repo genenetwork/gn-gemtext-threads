@@ -13,9 +13,8 @@ We have GN Metadata in RDF already.  Right now, it's only accessible through a S
 
 We've finished modeling GeneNetwork Metadata in RDF. It's sitting in a public SPARQL endpoint, but no one can use it. To alleviate this, we're building REST endpoints, which helps our technical strategy and ties into our goal of making data more accessible. We're also using HTMX to make the system more efficient and user-friendly.
 
-### Goals and Non-Goals
 
-#### Goals
+### Goals
 
 * Implement REST endpoints for querying/searching metadata about Publications, Datasets, Phenotypes, Generif and Genotype.
 
@@ -33,7 +32,7 @@ Metric: 100% Test Coverage for the new pages.
 
 Metric: A decent accessibily and web performance score that should be better than the rest of GN.
 
-#### Non-Goals
+### Non-Goals
 
 * Editing/Adding metadata.  This will be tackled in another document.
 * Orchestrating a running production virtuoso instance to ensure this work is exposed to the end-user.  This needs some co-ordination with Zach/Arun to get done.  Changes will be visible in CI/CD but no strong guarantees of a roll-out in production.
@@ -41,8 +40,11 @@ Metric: A decent accessibily and web performance score that should be better tha
 ### Milestones
 
 START DATE: October 11, 2020
+
 Milestone 1 - New GN3 Endpoints (json-ld) for Publications, Genotype, Datasets, Phenotype, Probesets; Delete old endpoints: October 16, 2023
+
 Milestone 2 - UI Endpoints in GN2: October 25, 2023
+
 END DATE: E2E test-cases for GN2: October 31, 2023
 
 ### Design
