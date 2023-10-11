@@ -1,0 +1,82 @@
+# UI Frontend for RDF
+
+## Tags
+
+* assigned: bonfacem
+* type: issue
+
+### Motivation
+
+We have GN Metadata in RDF already.  Right now, it's only accessible through a SPARQL endpoint, and it's not benefiting anyone.  We want to create REST endpoints to let both users and machines easily acess the data.  We'll also demonstrate how HTMX reduces the need for heavy javascript in a way that can be adopted in other parts of the GN website.
+
+### Context
+
+We've finished modeling GeneNetwork Metadata in RDF. It's sitting in a public SPARQL endpoint, but no one can use it. To alleviate this, we're building REST endpoints, which helps our technical strategy and ties into our goal of making data more accessible. We're also using HTMX to make the system more efficient and user-friendly.
+
+### Goals and Non-Goals
+
+#### Goals
+
+* Implement REST endpoints for querying/searching metadata about Publications, Datasets, Phenotypes, Generif and Genotype.
+
+Metric: UPTIME as per indicated by SheepDog; A low Request Per Minute (RPM) of not more than 60s(for large queries).
+
+* Create UI pages that utilize HTMX to access and display the metadata endpoints effectively.
+
+Metric: A decent accessibily and web performance score that should be better than the rest of GN.
+
+* Implement Test Cases for the proposed endpoints to ensure system stability
+
+Metric: 100% Test Coverage for the new pages.
+
+* Create UI pages that utilize HTMX to access and display the metadata endpoints effectively.
+
+Metric: A decent accessibily and web performance score that should be better than the rest of GN.
+
+#### Non-Goals
+
+* Editing/Adding metadata.  This will be tackled in another document.
+* Orchestrating a running production virtuoso instance to ensure this work is exposed to the end-user.  This needs some co-ordination with Zach/Arun to get done.  Changes will be visible in CI/CD but no strong guarantees of a roll-out in production.
+
+### Milestones
+
+START DATE: October 11, 2020
+Milestone 1 - New GN3 Endpoints (json-ld) for Publications, Genotype, Datasets, Phenotype, Probesets; Delete old endpoints: October 16, 2023
+Milestone 2 - UI Endpoints in GN2: October 25, 2023
+END DATE: E2E test-cases for GN2: October 31, 2023
+
+### Design
+
+Data output should be in json-ld where feasible.
+
+### GN3 APIs
+
+Support for search and pagination
+
+* GET /metadata/datasets/<name>
+* GET /metadata/datasets?search=""&page=1&per_page=20
+* GET /metadata/publications/<name>
+* GET /metadata/publications?search=""&page=1&per_page=20
+* GET /metadata/genotypes/<name>
+* GET /metadata/genotypes?search=""&page=1&per_page=20
+* GET /metadata/phenotypes/<name>
+* GET /metadata/phenotypes?search=""&page=1&per_page=20
+* GET /metadata/probesets/<name>
+* GET /metadata/probesets?search=""&page=1&per_page=20
+* GET /metadata/genewikis/<symbol>
+
+### UI Pages
+
+Whenever a resource is unavailable, show a search bar.
+
+* /datasets/<name>
+* /datasets?search=""&page=1&per_page=20
+* /publications/<name>
+* /publications?search=""&page=1&per_page=20
+* /genotypes/<name>
+* /genotypes?search=""&page=1&per_page=20
+* /phenotypes/<name>
+* /phenotypes?search=""&page=1&per_page=20
+* /probesets/<name>
+* /probesets?search=""&page=1&per_page=20
+* /genewikis/<symbol>
