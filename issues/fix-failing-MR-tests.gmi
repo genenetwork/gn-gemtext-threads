@@ -3,7 +3,7 @@
 ## Tags
 
 * priority: high
-* status: open
+* status: closed
 * assigned: bonfacem
 
 ## Description
