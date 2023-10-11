@@ -4,7 +4,7 @@
 
 * priority: high
 * keywords: python3.10
-* status: open
+* status: closed
 * assigned: bonfacem, fredm, alex, zachs
 
 ## Description

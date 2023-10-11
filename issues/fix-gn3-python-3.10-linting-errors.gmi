@@ -71,3 +71,5 @@ Found 1 error in 1 file (errors prevented further checking)
 ```
 
 Also, building building genenetwork2 fails, so this also needs to be looked into.
+
+* closed
