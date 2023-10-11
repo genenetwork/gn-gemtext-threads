@@ -2,7 +2,7 @@
 
 * assigned: arthur, bonfacem, pjotrp
 * priority: high
-* status: stalled
+* status: closed
 * keywords: rdf, sql
 
 Consider the query:

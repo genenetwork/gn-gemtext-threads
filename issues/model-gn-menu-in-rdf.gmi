@@ -4,7 +4,7 @@
 
 * assigned: bonfacem
 * type: modelling
-* status: in progress
+* status: closed
 * priority: high
 * keywords: rdf, modelling
 

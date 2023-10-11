@@ -4,7 +4,7 @@
 
 * assigned: bonfacem
 * type: feature-request
-* status: stalled
+* status: closed
 * priority: medium
 * keywords: twitter, feed analyser
 
