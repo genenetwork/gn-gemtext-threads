@@ -19,3 +19,5 @@ It's only used once in "wqflask/base/data_set/datasetgroup.py".  ATM, now we hav
 
 Getting rid of how we currently fetch settings will make things less complex, and we get rid of many "asserts".  This will force us to deal with missing values more gracefully; and as an example with how we handle missing values in global search using the Maybe Monad.
 
+
+* closed

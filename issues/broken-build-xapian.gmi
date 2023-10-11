@@ -12,3 +12,9 @@
 Broken Search from:
 
 => https://ci.genenetwork.org/jobs/genenetwork3-build-xapian-index/143 genenetwork3-build-xapian-index #143
+
+## Resolution
+
+Fixed---things currently work.
+
+* closed

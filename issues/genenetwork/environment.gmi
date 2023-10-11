@@ -13,3 +13,9 @@ It somehow got reverted and is out of date. Please see if we can get a list agai
 * status: unclear
 * priority: medium
 * keywords: guix, packages, environments
+
+## Resolution
+
+Stale issue.
+
+* closed

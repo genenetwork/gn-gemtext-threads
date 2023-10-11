@@ -9,5 +9,7 @@
 
 Have a look at Fred's Auth code and in particular:
 
-* [ ] Set it up in a local development environment.
-* [ ] Improve documentation if it needs improvement
+* [X] Set it up in a local development environment.
+* [X] Improve documentation if it needs improvement
+
+* closed

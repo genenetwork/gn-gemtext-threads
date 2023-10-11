@@ -27,3 +27,8 @@ For this query:
 
 => http://purl.uniprot.org/core/scientificName
 
+## Resolution
+
+GN Data transformation has been re-modelled from the ground up, so marking this as closed.
+
+* closed

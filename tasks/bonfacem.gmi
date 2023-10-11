@@ -6,16 +6,10 @@
 * assigned: bonfacem
 * status: in progress
 
+## October
+* [ ] Create a UI frontend for Pubi
+
 ## Tasks
-
-### Meta tasks
-
-This is @pjotr's list, do not remove!
-
-* [ ] get RDF example on testing and CD
-* [ ] get RDF example to production as a turtle dump and query code (virtuoso server is running)
-* [ ] final stages (meta)data editing GN2
-
 ### On going tasks
 
 => https://issues.genenetwork.org/search?query=assigned%3Abonfacem+AND+tag%3Ain-progress+AND+is%3Aopen&type=open-issue All in-progress tasks

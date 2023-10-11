@@ -15,3 +15,6 @@ New UI keeps spring up in the genenetwork eco-system. To make gn2 consistent, we
 ## Tasks
 
 - [ ] (bonfacem) Consult on how to do this
+
+
+* closed

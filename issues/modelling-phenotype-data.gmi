@@ -135,3 +135,5 @@ Good curation: good description.
 * For private data, expose the pre-publication data.
 * Pre, post, published data with a tag of whether private or public and share with Rob/Arthur (in ms word).
 * Full time expert curator.  Automating this.
+
+* closed

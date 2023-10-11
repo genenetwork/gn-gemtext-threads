@@ -9,3 +9,9 @@
 ## Description
 
 At the moment, you can only edit phenotype and probeset metadata.  We also need to put in place a way of editing genotype metadata and also displaying it in GN2.
+
+
+## Resolution
+This issue is being tackled by Fred as part of GN Editing.
+
+* closed

@@ -14,3 +14,8 @@
 Read the following for more details:
 
 => https://github.com/genenetwork/gn-docs/blob/master/features/data-structures.md Data Structures
+
+## Resolution
+This issue will be tackled as port of a wider issue.
+
+* closed
