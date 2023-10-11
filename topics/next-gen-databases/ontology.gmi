@@ -15,6 +15,8 @@ Here, we note down all lessons learnt while we continuously improve our ontologi
 => https://www.w3.org/TR/vocab-data-cube/ Data Cube Vocabulary
 => https://www.w3.org/TR/shacl/ Shapes Constraint Language (SHACL)
 
+####  Learning
+=> https://sparql.dev/ Learn Sparql
 ### rdfs:label
 
 Consider this pattern when dumping data in rdf:
