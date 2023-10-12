@@ -54,18 +54,20 @@ Data output should be in json-ld where feasible.
 ### GN3 APIs
 
 Support for search and pagination
-
 * GET /metadata/datasets/<name>
-* GET /metadata/datasets?search=""&page=1&per_page=20
+* POST /metadata/datasets?search=""&page=1&per_page=20
 * GET /metadata/publications/<name>
-* GET /metadata/publications?search=""&page=1&per_page=20
+* POST /metadata/publications?search=""&page=1&per_page=20
 * GET /metadata/genotypes/<name>
-* GET /metadata/genotypes?search=""&page=1&per_page=20
+* POST /metadata/genotypes?search=""&page=1&per_page=20
 * GET /metadata/phenotypes/<name>
-* GET /metadata/phenotypes?search=""&page=1&per_page=20
+* POST /metadata/phenotypes?search=""&page=1&per_page=20
 * GET /metadata/probesets/<name>
-* GET /metadata/probesets?search=""&page=1&per_page=20
+* POST /metadata/probesets?search=""&page=1&per_page=20
 * GET /metadata/genewikis/<symbol>
+* GET /metadata/species
+* GET /metadata/species/<name>
+* GET /metadata/group/<species-name>
 
 ### UI Pages
 
