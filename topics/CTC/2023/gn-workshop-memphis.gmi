@@ -2,8 +2,8 @@
 
 Workshop at CTC-RG Memphis TN, Oct. 8, 2023 by Pjotr Prins, Shelby Solomon Darnell and Rob W. Williams. The idea is to have an topic intro followed by discussion
 
-
 # Introduction(s)
+
 
 # GN Overview
 
@@ -24,5 +24,11 @@ Workshop at CTC-RG Memphis TN, Oct. 8, 2023 by Pjotr Prins, Shelby Solomon Darne
 => https://msk.genenetwork.org/
 
 # Encryption and privacy
+
+# Pangenomes
+
+
+
+# Leadership team
 
 # Discussion

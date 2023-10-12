@@ -47,7 +47,9 @@ Later
 * [ ] Improve search for significant and suggestive hits
 * [+] DOI support GN (Barcelona)
 * [ ] Cito support (Barcelona)
+* [ ] Include dominance matrix results in gemma (gene expression and transcript isophorms)
 * [ ] UCSC browser and big wig files
+* [ ] Jbrowse2 browser
 
 ### Ongoing tasks
 
