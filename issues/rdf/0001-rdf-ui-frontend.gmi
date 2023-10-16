@@ -41,7 +41,7 @@ Metric: A decent accessibily and web performance score that should be better tha
 
 START DATE: October 11, 2020
 
-Milestone 1 - New GN3 Endpoints (json-ld) for Publications, Genotype, Datasets, Phenotype, Probesets; Delete old endpoints: October 16, 2023
+Milestone 1 - New GN3 Endpoints (json-ld) for Publications, Genotype, Datasets, Phenotype, Probesets; Delete old endpoints: October 19, 2023
 
 Milestone 2 - UI Endpoints in GN2: October 25, 2023
 
@@ -55,15 +55,15 @@ Data output should be in json-ld where feasible.
 
 Support for search and pagination
 * GET /metadata/datasets/<name>
-* POST /metadata/datasets?search=""&page=1&per_page=20
+* GET /metadata/datasets/search/<term>
 * GET /metadata/publications/<name>
-* POST /metadata/publications?search=""&page=1&per_page=20
+* GET /metadata/publications/search/<term>
 * GET /metadata/genotypes/<name>
-* POST /metadata/genotypes?search=""&page=1&per_page=20
+* GET /metadata/genotypes/search/<term>
 * GET /metadata/phenotypes/<name>
-* POST /metadata/phenotypes?search=""&page=1&per_page=20
+* GET /metadata/phenotypes/search/<term>
 * GET /metadata/probesets/<name>
-* POST /metadata/probesets?search=""&page=1&per_page=20
+* GET /metadata/probesets/search/<term>
 * GET /metadata/genewikis/<symbol>
 * GET /metadata/species
 * GET /metadata/species/<name>
