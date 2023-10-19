@@ -15,3 +15,8 @@ While trying to link some newly-added data to the "pheno-xboecp" resource in the
 - After selecting traits to link and clicking "Link Selected" the page notifies me that the data was successfully linked, but it still continues to appear in the table
 - After the above, I still can't view the traits in question, which seems to imply that they weren't actually linked
 - Due to the number of phenotype traits in the AutoAdminGroup phenotype resource, it's not reasonably possible to search through its contents (so I can't verify that they were/weren't linked in that way)
+
+
+## Demo edit: Will remove
+
+Demonstrating the edit feature in the Programming genetics meeting.
