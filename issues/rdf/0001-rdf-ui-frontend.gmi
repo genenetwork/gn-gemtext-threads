@@ -59,12 +59,10 @@ Support for search and pagination
 * GET /metadata/publications/<name>
 * GET /metadata/publications/search/<term>
 * GET /metadata/genotypes/<name>
-* GET /metadata/genotypes/search/<term>
 * GET /metadata/phenotypes/<name>
-* GET /metadata/phenotypes/search/<term>
 * GET /metadata/probesets/<name>
-* GET /metadata/probesets/search/<term>
-* GET /metadata/genewikis/<symbol>
+* GET /metadata/genewikis/ncbi/<symbol>
+* GET /metadata/genewikis/gn/<symbol>
 * GET /metadata/species
 * GET /metadata/species/<name>
 * GET /metadata/group/<species-name>
