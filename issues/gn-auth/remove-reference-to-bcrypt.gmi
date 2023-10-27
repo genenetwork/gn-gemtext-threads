@@ -1,0 +1,13 @@
+# Remove bcrypt as a Dependency
+
+## Tags
+
+* assigned: fred, fredm
+* status: open
+* priority: low
+* keywords: gn-auth, dependencies
+* type: improvement
+
+## Description
+
+BCrypt has been superceded by better systems, and we need to move away from that.
