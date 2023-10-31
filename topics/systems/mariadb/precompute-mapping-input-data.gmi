@@ -16,6 +16,7 @@ GN relies on precomputed mapping scores for search and other functionality. Here
 * [ ] Update the table values using GEMMA output (single highest score)
 
 Above is the quick win for plugging in GEMMA values. We will make sure not to recompute the values that are already up to date.
+This is achieved by naming the input and output files as a hash on their DB inputs.
 
 Next:
 
@@ -81,7 +82,7 @@ MariaDB [db_webqtl]> select Strain.Name, ProbeSetData.value from Strain, ProbeSe
 +----------+-------+
 ```
 
-with genotypes and these phenotypes qtlreaper is started and next we update the values for
+with genotypes (from files) and these phenotypes (from MySQL) qtlreaper is started and next we update the values for
 
 ```
 select * from ProbeSetXRef where ProbeSetId=1 and ProbeSetFreezeId=1 limit 5;
@@ -101,6 +102,29 @@ update ProbeSetXRef set Locus=%s, LRS=%s, additive=%s where ProbeSetId=%s and Pr
 ```
 
 so Locus, LRS and additive fields are updated.
+
+The old reaper scores are in
+
+```
+MariaDB [db_webqtl]> select ProbeSetId,ProbeSetFreezeId,Locus,LRS,additive from ProbeSetXRef limit 10;
++------------+------------------+----------------+------------------+--------------------+
+| ProbeSetId | ProbeSetFreezeId | Locus          | LRS              | additive           |
++------------+------------------+----------------+------------------+--------------------+
+|          1 |                1 | rs13480619     |  12.590069931048 |        -0.28515625 |
+|          2 |                1 | rs29535974     | 10.5970737900941 | -0.116783333333333 |
+|          3 |                1 | rs49742109     |  6.0970532702754 |  0.112957489878542 |
+|          4 |                1 | rsm10000002321 | 11.7748675511731 | -0.157113725490196 |
+|          5 |                1 | rsm10000019445 | 10.9232633740162 |  0.114764705882353 |
+|          6 |                1 | rsm10000017255 | 8.45741703245224 | -0.200034412955466 |
+|          7 |                1 | rs4178505      | 7.46477918183565 |  0.104331983805668 |
+|          8 |                1 | rsm10000144086 | 12.1201771258006 | -0.134278431372548 |
+|          9 |                1 | rsm10000014965 | 11.8837168740735 |  0.341458333333334 |
+|         10 |                1 | rsm10000020208 | 10.2809848009836 | -0.173866666666667 |
++------------+------------------+----------------+------------------+--------------------+
+10 rows in set (0.000 sec)
+```
+
+This means for every dataset one single maximum score gets stored(!)
 
 From this exercise we can conclude:
 
@@ -151,6 +175,185 @@ MariaDB [db_webqtl]> select count(*) from ProbeSetXRef where LRS=0 and Locus="rs
 ```
 
 There is obviously more.  I think this table can use some cleaning up?
+
+Looking at the GN1 code base ProbeSetXRef is used in a great number of files. In GN2 it is:
+
+```
+wqflask/maintenance/quantile_normalize.py
+wqflask/maintenance/generate_probesetfreeze_file.py
+wqflask/base/mrna_assay_tissue_data.py
+wqflask/wqflask/update_search_results.py
+wqflask/wqflask/correlation/rust_correlation.py
+wqflask/base/trait.py
+wqflask/wqflask/do_search.py
+wqflask/base/data_set/mrnaassaydataset.py
+wqflask/base/data_set/dataset.py
+wqflask/wqflask/correlation/pre_computes.py
+wqflask/wqflask/api/router.py
+wqflask/wqflask/show_trait/show_trait.py
+scripts/insert_expression_data.py
+scripts/maintenance/Update_Case_Attributes_MySQL_tab.py
+scripts/maintenance/readProbeSetSE_v7.py
+scripts/maintenance/QTL_Reaper_v6.py
+scripts/maintenance/readProbeSetMean_v7.py
+wqflask/tests/unit/base/test_mrna_assay_tissue_data.py
+```
+
+Let's visit these one by one to make sure there is no side-effect.
+
+### wqflask/maintenance/quantile_normalize.py
+
+Appears to be a one-off to normalize a certain dataset in `/home/zas1024/cfw_data/`.
+Last time it was used is probably 2018.
+
+### wqflask/maintenance/generate_probesetfreeze_file.py
+
+This one is even older and probably from 2013.
+
+### wqflask/base/mrna_assay_tissue_data.py
+
+Another dinosaur, actually uses TissueProbeSetXRef, so not relevant.
+
+### wqflask/wqflask/update_search_results.py
+
+This is for global 'gene' search making sure ProbeSet.Id = ProbeSetXRef.ProbeSetId AND ProbeSetXRef.ProbeSetFreezeId=ProbeSetFreeze.Id. LRS is passed on.
+
+### wqflask/wqflask/correlation/rust_correlation.py
+
+Again making sure IDs match. LRS is passed on. This requires scrutiny FIXME
+
+### wqflask/base/trait.py
+
+Trait class defines a trait in webqtl, can be either Microarray, Published phenotype, genotype, or user input trait. Fetches LRS.
+
+### wqflask/wqflask/do_search.py
+
+Searches for genes with a QTL within the given LRS values
+
+    LRS searches can take 3 different forms:
+    - LRS > (or <) min/max_LRS
+    - LRS=(min_LRS max_LRS)
+    - LRS=(min_LRS max_LRS chromosome start_Mb end_Mb)
+    where min/max_LRS represent the range of LRS scores and start/end_Mb represent
+    the range in megabases on the given chromosome
+
+### wqflask/base/data_set/mrnaassaydataset.py
+
+Also search results.
+
+### wqflask/base/data_set/dataset.py
+
+ID sync
+
+### wqflask/wqflask/correlation/pre_computes.py
+
+ID sync
+
+### wqflask/wqflask/api/router.py
+
+Fetch traits and sample data API (we may use this!)
+
+### wqflask/wqflask/show_trait/show_trait.py
+
+Same.
+
+### The following are a punch of scripts:
+
+* scripts/insert_expression_data.py
+* scripts/maintenance/Update_Case_Attributes_MySQL_tab.py
+* scripts/maintenance/readProbeSetSE_v7.py
+* scripts/maintenance/QTL_Reaper_v6.py
+* scripts/maintenance/readProbeSetMean_v7.py
+* wqflask/tests/unit/base/test_mrna_assay_tissue_data.py
+
+## Using LRS
+
+* wqflask/wqflask/static/new/javascript/lod_chart.js
+
+LRS is used to display a LOD chart
+
+and in a bunch of python files that match above list for ProbeSetXRef:
+
+* scripts/maintenance/QTL_Reaper_v6.py
+* wqflask/base/webqtlConfig.py
+* wqflask/base/trait.py
+* wqflask/tests/unit/wqflask/marker_regression/test_display_mapping_results.py
+* wqflask/tests/unit/base/test_trait.py
+* wqflask/wqflask/parser.py
+* wqflask/tests/unit/wqflask/correlation/test_show_corr_results.py
+* wqflask/wqflask/update_search_results.py
+* wqflask/wqflask/correlation/show_corr_results.py
+* wqflask/wqflask/marker_regression/run_mapping.py
+* wqflask/wqflask/export_traits.py
+* wqflask/wqflask/gsearch.py
+* wqflask/base/data_set/phenotypedataset.py
+* wqflask/base/data_set/markers.py
+* wqflask/wqflask/api/router.py
+* wqflask/base/data_set/mrnaassaydataset.py
+* wqflask/wqflask/correlation/rust_correlation.py
+* wqflask/wqflask/marker_regression/display_mapping_results.py
+* wqflask/wqflask/collect.py
+* wqflask/wqflask/do_search.py
+* wqflask/wqflask/views.py
+* wqflask/utility/Plot.py
+* test/requests/main_web_functionality.py
+* test/requests/correlation_tests.py
+
+From above it can be concluded these precomputed values are used for display and for getting search results (filtering on datasets that have a QTL).
+It looks safe to start replacing qtlreaper results with GEMMA results.
+Only thing I am not sure about is correlations.
+A cursory inspection suggests LRS is only used for final output and that makes sense if correlations are done on (expression) phenotypes.
+Anyway, if things go haywire we'll find out soon (enough).
+
+At the next stage we ignore all this and start precompute with GEMMA on the BXD.
+
+## Precompute DB
+
+We will use a database to track precompute updates.
+
+We should track the following:
+
+* time: MySQL time ProbeSetData table was last updated
+* Dataset (phenotypes)
+* Hash on DB inputs (for DB table updates)
+* Genotypes
+* Algorithm
+* Hash on run inputs (phenotypes, genotypes, algorithm, invocation)
+* time: initiate run
+* time: completion
+* Hash on output data (for validation)
+* flag: Updated DB table
+* Hostname of run
+* File path
+
+The logic is that if the DB table was changed we should recompute the hash on inputs.
+Note the ProbeSetData table is the largest at 200G including indices.
+If that hash changed the mapping algorithm should rerun.
+A new record will be created on the new inputs.
+A flag is set for the updated DB for precomputed values.
+We can garbage collect when multiple entries for `Dataset' exist.
+
+What database should we use? Ultimately precompute is part of the main GN setup. So, one could argue MariaDB is a good choice.
+We would like to share precompute with other setups, however.
+That means we should be able to rebuild the database from a precompute output directory and feed the update to the running server.
+We want to track compute so we can distribute running the algorithms across servers and/or PBS.
+This implies the compute machines have to be able to query the DB in some way.
+Basically a machine has a 'runner' that checks the DB for updates and fetches phenotypes and genotypes. A run is started and on completion the DB is notified and updated.
+
+We can have different runners, one for local machine, one for PBS and one for remotes.
+
+This also implies that 'state' is handled with the output dir (on a machine).
+We will create a JSON record for every compute.
+This state can be pushed into 'any' GN instance at any point.
+For running jobs the DB can be queried through a (same) REST API.
+The REST API has to handle the DB, so it has to be able to access DB and files, i.e. it should be on the same (production) machine.
+
+On the DB we'll create a Hash table on inputs of ProbeSetData. This way we don't have to walk the giant table for every query. This can be handled through a CRON job. So there will be a table:
+
+* Dataset
+* Hash on relevant phenotypes (ProbeSetData)
+
+This brings us to CRON jobs. There are several things that ought to be updated when the DB changes. Xapian being one example and now this table. These should run on a regular basis and only update what really changed.
 
 ## Preparing for GEMMA
 
