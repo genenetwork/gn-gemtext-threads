@@ -309,9 +309,9 @@ At the next stage we ignore all this and start precompute with GEMMA on the BXD.
 
 ## Precompute DB
 
-We will use a database to track precompute updates.
+We will use a database to track precompute updates (see below).
 
-We should track the following:
+On the computing host (or client) we should track the following:
 
 * time: MySQL time ProbeSetData table was last updated
 * Dataset (phenotypes)
@@ -319,12 +319,12 @@ We should track the following:
 * Genotypes
 * Algorithm
 * Hash on run inputs (phenotypes, genotypes, algorithm, invocation)
-* time: initiate run
-* time: completion
+* time: of initiate run
+* time: of completion
+* Hostname of run (this)
+* File path (this)
 * Hash on output data (for validation)
-* flag: Updated DB table
-* Hostname of run
-* File path
+* DB hostnames: Successfully updated DB table for these servers
 
 The logic is that if the DB table was changed we should recompute the hash on inputs.
 Note the ProbeSetData table is the largest at 200G including indices.
@@ -335,10 +335,12 @@ We can garbage collect when multiple entries for `Dataset' exist.
 
 What database should we use? Ultimately precompute is part of the main GN setup. So, one could argue MariaDB is a good choice.
 We would like to share precompute with other setups, however.
-That means we should be able to rebuild the database from a precompute output directory and feed the update to the running server.
+Also we typically do not want to run the precompute on the production host.
+That means we should be able to rebuild the database from a precompute output directory and feed the update to the running (production) server.
 We want to track compute so we can distribute running the algorithms across servers and/or PBS.
 This implies the compute machines have to be able to query the DB in some way.
-Basically a machine has a 'runner' that checks the DB for updates and fetches phenotypes and genotypes. A run is started and on completion the DB is notified and updated.
+Basically a machine has a 'runner' that checks the DB for updates and fetches phenotypes and genotypes.
+A run is started and on completion the DB is notified and updated.
 
 We can have different runners, one for local machine, one for PBS and one for remotes.
 
@@ -352,8 +354,15 @@ On the DB we'll create a Hash table on inputs of ProbeSetData. This way we don't
 
 * Dataset
 * Hash on relevant phenotypes (ProbeSetData)
+* time: Job started
+* host: host running job
+* status: (final) job status
+* time: DB updated
 
-This brings us to CRON jobs. There are several things that ought to be updated when the DB changes. Xapian being one example and now this table. These should run on a regular basis and only update what really changed.
+This brings us to CRON jobs.
+There are several things that ought to be updated when the DB changes. Xapian being one example and now this table.
+These should run on a regular basis and only update what really changed.
+We need to support that type of work out of the box with an hourly runner (for precompute) and a daily runner (for xapian).
 
 ## Preparing for GEMMA
 
