@@ -1,20 +1,27 @@
 # Octopus sysmaintenance
 
+Reopened tasks because of new sheepdog layout and add new machines to Octopus and get fiber optic network going with @andreag. See also
+
+=> ../../topics/systemtopics/systems/hpcs/hpc/octopus-maintenance
+
 # Tags
 
-* assigned: pjotrp, efraimf, erikg
+* assigned: pjotrp, efraimf, erikg, andreag
 * priority: high
-* status: completed, closed
+* status: open
 * type: system administration
 * keywords: systems, octopus
 
 # Tasks
 
-* [X] install sheepdog
-* [X] run borg backup
-* [X] propagate backup to rabbit
-* [X] fix redis updates - use rev tunnel
-* [X] check other dirs
+* [ ] add lizardfs to nodes
+* [ ] add PBS to nodes
+* [ ] use fiber optic network
+* [ ] install sheepdog
+* [ ] run borg backup
+* [ ] propagate backup to rabbit
+* [ ] fix redis updates - use rev tunnel
+* [ ] check other dirs
 
 # Info
 

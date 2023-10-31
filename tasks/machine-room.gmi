@@ -11,6 +11,8 @@
 
 ### UTHSC
 
+* [ ] fix www.genenetwork.org and gn2.genenetwork.org https
+* [ ] tux02 certbot failing
 * [ ] get data from summer211.uthsc.edu (access machine room)
 * [ ] VPN access and FoUT
 * [ ] penguin2 has 32TB of space we can use on NFS/backups
@@ -55,8 +57,10 @@ Security:
 
 * [ ] Run GN off balg01
 * [X] Firewall out of band
+* [ ] Add firewall test to sheepdog
 * [X] Add storage
 * [ ] Convert balg02 to Guix server
+* [ ] VM for student team
 
 ### Done
 

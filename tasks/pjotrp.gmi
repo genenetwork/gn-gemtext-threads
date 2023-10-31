@@ -19,34 +19,42 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 Now (X=done +=WIP _=kickoff ?=?)
 
 * [+] Build leadership team
-* [+] Build junior team
+* [X] Build junior team
 * [+] Build GN consortium
 * [+] gBAM
-* [ ] Complete Octopus setup with Erik, Andrea and Efraim - adding all machines
-* [ ] GEMMA batch run and precompute
-* [ ] GEMMA/bulklmm speedups
-
 * [+] Set up stable GeneNetwork server instance with new hardware (see below)
-* [ ] Drive for stability of GN tools (particularly GEMMA OOMP)
-* [+] Work on REST API
-* [+] AraQTL and WormQTL2 embedding
+* [ ] Complete Octopus setup with Erik, Andrea and Efraim - adding all machines
+* [ ] p-value global search
+
+=> ../issues/systems/octopus
+
+* [ ] GEMMA batch run and precompute
+
+=> ../issues/gemma/lmm-precomputed-scores
+
+* [ ] GEMMA/bulklmm speedups
 
 * [ ] Add R/qtl2 and multi-parent support with Karl (DO and Magic populations)
 * [ ] Fix slow search on Mariadb?
-* [+] Aging grant application w. Rob (fall)
 * [+] Shelby's application (fall)
 * [.] GeneNetwork paper
 *     + [ ] add FAIR statement
 * [ ] RISC-V trials
 * [ ] Guix project server
 
+Longer term
+
+* [+] Aging grant application w. Rob (fall)
+* [ ] Drive for stability of GN tools (particularly GEMMA OOMP)
+* [+] AraQTL and WormQTL2 embedding
+* [+] Work on REST API
+
 Later
 
+* [+] DOI support GN
 * [+] Tree of life w. Andrea
 * [ ] Hao's idea for counting cis-qtl
 * [ ] Improve search for significant and suggestive hits
-* [+] DOI support GN (Barcelona)
-* [ ] Cito support (Barcelona)
 * [ ] Include dominance matrix results in gemma (gene expression and transcript isophorms)
 * [ ] UCSC browser and big wig files
 * [ ] Jbrowse2 browser
