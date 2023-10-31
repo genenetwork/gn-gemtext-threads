@@ -324,7 +324,7 @@ On the computing host (or client) we should track the following:
 * Hostname of run (this)
 * File path (this)
 * Hash on output data (for validation)
-* DB hostnames: Successfully updated DB table for these servers
+* array of rec: DB hostnames + time stamps: Successfully updated DB table for these servers
 
 The logic is that if the DB table was changed we should recompute the hash on inputs.
 Note the ProbeSetData table is the largest at 200G including indices.
@@ -341,6 +341,7 @@ We want to track compute so we can distribute running the algorithms across serv
 This implies the compute machines have to be able to query the DB in some way.
 Basically a machine has a 'runner' that checks the DB for updates and fetches phenotypes and genotypes.
 A run is started and on completion the DB is notified and updated.
+Note that a runner can not be parallel on a single results directory, so one runner per target output directory.
 
 We can have different runners, one for local machine, one for PBS and one for remotes.
 
