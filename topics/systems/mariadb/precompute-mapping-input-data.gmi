@@ -52,6 +52,13 @@ MariaDB [db_webqtl]> select Id, Name from InbredSet limit 5;
 
 and expands them to a .geno file, e.g. BXD.geno. Note that the script does not compute with the many variations of .geno files we have today. Next it sets the Id for ProbeSetFreeze which is the same as the InbredSet Id. So, ProbeSetFreeze.Id == IndbredSet.Id.
 
+There are groups/collections, such as "Hippocampus_M430_V2_BXD_PDNN_Jun06"
+
+```
+select max(distinct(ProbeSetFreezeId)) from ProbeSetXRef limit 5;
+|                            1054 |
+```
+
 Next for this Id we fetch, known as `ProbeSetXRefInfos`:
 
 ```
@@ -70,6 +77,21 @@ MariaDB [db_webqtl]> select ProbeSetId, Locus, DataId from ProbeSetXRef where Pr
 Then we fetch the trait values:
 
 ```
+MariaDB [db_webqtl]> select * from ProbeSetData where ProbeSetData.Id = 1 limit 5;
++----+----------+-------+
+| Id | StrainId | value |
++----+----------+-------+
+|  1 |        1 | 5.742 |
+|  1 |        2 | 5.006 |
+|  1 |        3 | 6.079 |
+|  1 |        4 | 6.414 |
+|  1 |        5 | 4.885 |
++----+----------+-------+
+```
+
+with names:
+
+```
 MariaDB [db_webqtl]> select Strain.Name, ProbeSetData.value from Strain, ProbeSetData where Strain.Id = ProbeSetData.StrainId and ProbeSetData.Id = 1 limit 5;
 +----------+-------+
 | Name     | value |
@@ -80,6 +102,17 @@ MariaDB [db_webqtl]> select Strain.Name, ProbeSetData.value from Strain, ProbeSe
 | BXD1     | 6.414 |
 | BXD2     | 4.885 |
 +----------+-------+
+```
+
+35 strains were used for this dataset:
+
+```
+select count(ProbeSetData.value) from ProbeSetData where ProbeSetData.Id = 1;
++---------------------------+
+| count(ProbeSetData.value) |
++---------------------------+
+|                        35 |
++---------------------------+
 ```
 
 with genotypes (from files) and these phenotypes (from MySQL) qtlreaper is started and next we update the values for
@@ -360,10 +393,41 @@ On the DB we'll create a Hash table on inputs of ProbeSetData. This way we don't
 * status: (final) job status
 * time: DB updated
 
+## Tracking updates to DB
+
 This brings us to CRON jobs.
 There are several things that ought to be updated when the DB changes. Xapian being one example and now this table.
 These should run on a regular basis and only update what really changed.
 We need to support that type of work out of the box with an hourly runner (for precompute) and a daily runner (for xapian).
+
+One possibility is to use MySQL triggers to track changes to the database table.
+Even a hash can be computed as suggested here:
+
+=> https://stackoverflow.com/questions/38732185/hash-of-two-columns-in-mysql
+
+The problem is that this relative expensive computation done on every row update. I don't think it is feasible for updating phenotypes. Arthur may find the updates go very slow. It is possible, however, to just update a boolean value, or even a time stamp, that is cheap. That will probably increase the update time by 50-100% and that may be acceptable. We can only find out by trying.
+
+But first I am going to simply generate the hashes from the running DB by scanning the full table. If that runs in minutes we should be good with a CRON job for now. Also, in the medium term, we may replace these tables with lmdb files and it is no good to depend on MysQL/MariaDB for this type of service.
+
+Note that ProbeSetXRef is indexed on DataId, ProbeSetFreezeId, ProbeSetId and Locus.
+The following should be unique and ProbeSetFreezeId+ProbeSetId, indexed by unique DataId, is the actual dataset, so that should be reasonable fast.
+
+`ProbeSetFreezeID` is a unique identifier to a dataset, such as "Hippocampus_M430_V2_BXD_PDNN_Jun06".
+`ProbeSetId` is the trait in the collection, e.g. '100001_at'.
+`DataId` is the counter in ProbeSetXRef table.
+
+So now this should be clear on update:
+
+```
+update ProbeSetXRef set Locus=%s, LRS=%s, additive=%s where ProbeSetId=%s and ProbeSetFreezeId=%s
+```
+
+Every trait gets an LRS and effect size this way.
+
+
+## Writing script to Hash ProbeSetData
+
+tux02 has a running database, so it is good for trials. The first step is to update
 
 ## Preparing for GEMMA
 
