@@ -1,0 +1,46 @@
+# Gn Markdown Editor implementation
+
+### Notes
+
+This is a  reimplementation of the gn-markdown-editor in guile
+See issue:
+ =>  issues/implement-gn-markdown-editor.gmi
+ 
+ => https://github.com/Alexanderlacuna/gn-markdown-editor.git
+ 
+## Tags
+
+* assigned: alexm
+
+* type: feature
+
+* priority: high
+
+## Tasks
+
+* [x] implement initial apis;fetch page,edit and commit
+
+* [x] UI: implement markdown page:editor
+
+* [x] UI: add live preview for page markdown editor
+
+* [x] adding documentation
+
+* [] authentication
+
+
+## Notes
+
+the UI and the api implementation are on different repos for separation
+of concerns
+
+To run the api server refer to the documentaion see:
+
+=> https://github.com/Alexanderlacuna/geditor/blob/master/README.md
+
+
+to test the UI on its own see documentation:
+
+=> https://github.com/Alexanderlacuna/geditor-UI
+
+
