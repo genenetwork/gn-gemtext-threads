@@ -1,0 +1,35 @@
+# Move Data Endpoints from GN2 to GN3
+
+## Tags
+
+* assigned: fredm
+* priority: medium
+* type: feature-request
+* status: open
+* keywords: API
+
+## Description
+
+GN3 is the API server, but currently (as of Friday 03 November 2023 at 11:11AM +03:00UTC), it does not have endpoints where one can fetch data with, save for the menu. The endpoint that it does have are mostly compute endpoints.
+
+GN2, on the other hand, is mostly the UI. It is here that we find some data endpoints.
+
+We need to move the data endpoints from GN2 to GN3.
+
+When we speak of data endpoints, we are speaking of endpoints where we can fetch data from, such as:
+
+=> https://genenetwork.org/api/v_pre1/species
+=> https://genenetwork.org/api/v_pre1/species/mouse
+=> https://genenetwork.org/api/v_pre1/groups
+=> https://genenetwork.org/api/v_pre1/groups/BXD
+=> https://genenetwork.org/api/v_pre1/datasets/bxd
+
+etc.
+
+
+### Extra Documentation to Consider
+
+The *Alternative API Structure* seems to be particularly important.
+
+=> https://github.com/genenetwork/gn-docs/blob/master/api/alternative-API-structure.md Alternative API Structure
+=> https://github.com/genenetwork/gn-docs/blob/master/api/questions-to-ask-GN.md Questions to Ask GN
