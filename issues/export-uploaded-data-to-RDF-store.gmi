@@ -1,0 +1,13 @@
+# Export Uploaded Data to RDF Store
+
+## Tags
+
+* assigned: fredm, bonz
+* priority: medium
+* type: feature-request
+* status: open
+* keywords: API, data upload
+
+## Description
+
+With the QC/Data Upload project nearing completion, and being placed in front of the initial user-testing cohort, we need a way for exporting all data that is uploaded into the RDF store, either at upload time, or a short time after.
