@@ -346,8 +346,8 @@ We will use a database to track precompute updates (see below).
 
 On the computing host (or client) we should track the following:
 
-* time: MySQL time ProbeSetData table was last updated
 * Dataset (phenotypes)
+* time: MySQL time ProbeSetData table was last updated (if identical we can skip)
 * Hash on DB inputs (for DB table updates)
 * Genotypes
 * Algorithm
@@ -357,7 +357,7 @@ On the computing host (or client) we should track the following:
 * Hostname of run (this)
 * File path (this)
 * Hash on output data (for validation)
-* array of rec: DB hostnames + time stamps: Successfully updated DB table for these servers
+* array of rec: DB hostnames + time stamps: successfully updated DB table for these servers
 
 The logic is that if the DB table was changed we should recompute the hash on inputs.
 Note the ProbeSetData table is the largest at 200G including indices.
@@ -427,7 +427,36 @@ Every trait gets an LRS and effect size this way.
 
 ## Writing script to Hash ProbeSetData
 
-tux02 has a running database, so it is good for trials. The first step is to update
+tux02 has a running database, so it is good for trials. The first step is to add hashes to ProbeSetData and compute them. Two questions we can ask: (1) should be host that data in the same table and (2) should we use another DB?
+
+For (1) we should *not* use the same table. The current table is reasonably small and if we expand 28,335,955 rows on ProbeSetXRef it is going to be huge. This table is used a lot, so we should create a new table for this specific purpose. Now that means, even though this table is obviously linked to the running DB, we can actually use a different storage. And for this particular purpose I think sqlite will do great. Our preferred 'transient' databases, these days, are lmdb for disk b-trees, redis for in-RAM b-trees, sqlite for tables and virtuoso for RDF. This may change again, but for now these are great default choices. 'transient' means that the DB can be regenerated from some source of truth. This is not necessarily the case today - particularly authorization and session management are now using sqlite and redis as primary data sources. That is fine, as long as we are fully aware of the choices and what that implies.
+
+We already use SQLite for authorization. Fred has been adding that to GN3 and now to its own authorization service:
+
+=> https://github.com/genenetwork/gn-auth
+
+In the README you can see the DB is located with a parameter 'AUTH_DB'. There is no example, so I check our production setup. Zach has it setup with
+
+```
+LOGLEVEL = "DEBUG"
+SECRET_KEY = '9a4a2a...'
+SQL_URI = "mysql://user:pwd@127.0.0.1:3306/db_webqtl"
+AUTH_DB = "/home/gn2/auth_copy.db"
+AUTH_MIGRATIONS = "/home/zas1024/gn-auth/migrations"
+```
+
+The DB file is world writeable - and we should probably change that. Also it needs a better storage location. Essentially GN should have a limited number of directories that handle state:
+
+* SQL server (mysql) - read-write
+* Other databases - read-write
+* Upload files - read-write
+* Reference files - read-only
+* Secret files - read-only
+
+Within these directories there should be clear subdirectories for each use case. So, for authorization we could have `/data/gn2/databases/auth/production/auth.db'. Likewise, the precompute hash table will be in `/data/gn2/databases/precompute/production/hashes.db'.
+We'll take care of that later.
+
+For our hashing purposes we'll first create a DB named 'hashes.db'. This table can also be used for correlations etc. down the line by using the 'algorithm' field and its combined input hash. It is generic, in other words.
 
 ## Preparing for GEMMA
 

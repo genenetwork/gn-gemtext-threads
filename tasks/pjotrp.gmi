@@ -74,7 +74,6 @@ Later
 * [+] move backup dirs on tux01 to a larger partition (from export3 to export2)
 * [.] Check Tony's list and improve search for SNPs and Hs
 * [ ] GeneNetwork consortium (paper & CTC)
-* [ ] research.gov submit Postdoc plan
 * [+] Complete vcflib work in Zig and release
 * [ ] Fix issues:
 => https://genenetwork.org/show_trait?trait_id=10441&dataset=HSNIH-PalmerPublish slow mapping
