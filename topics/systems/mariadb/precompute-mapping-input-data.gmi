@@ -452,11 +452,56 @@ The DB file is world writeable - and we should probably change that. Also it nee
 * Upload files - read-write
 * Reference files - read-only
 * Secret files - read-only
+* Cache files - read-write
 
-Within these directories there should be clear subdirectories for each use case. So, for authorization we could have `/data/gn2/databases/auth/production/auth.db'. Likewise, the precompute hash table will be in `/data/gn2/databases/precompute/production/hashes.db'.
+Within these directories there should be clear subdirectories for each use case. So, for authorization we could have `/data/gn/databases/auth/production/auth.db'. Likewise, the precompute hash table will be in `/data/gn/databases/precompute/production/hashes.db' and we'll introduce an environment variable "GN_HASH_DB".
 We'll take care of that later.
 
 For our hashing purposes we'll first create a DB named 'hashes.db'. This table can also be used for correlations etc. down the line by using the 'algorithm' field and its combined input hash. It is generic, in other words.
+
+## Getting precompute running
+
+Now we have pretty much figured out what to do it is time to set up precompute. We can start with one single server that has access to mariadb. The new genoa Tux04 will be our replacement of Tux01. It has some larger Crucial P3 NVME SSDs rated at 3.5Gb/s. The Dell drive is 1.4 TB and is rated to be twice as fast. So we'll use that for the MariaDB now.
+
+The first step is to make space for all the GN2+GN3 stuff. Next we test if we can query tux01 ports. tux04 can see tux01 because they are both inside the UTHSC firewall. I just need to allow the mysql port on tux01 and we keep using that DB for now.
+
+The first phase is to simply start running gemma on tux05 and tux04 using the BXD. I mean, before computing 28,335,955 phenotypes we'll have to have a more serious compute setup!
+
+```
+MariaDB [db_webqtl]> select * from Strain where SpeciesId=1 limit 200;
++-----+------------+------------+-----------+--------+------------+
+| Id  | Name       | Name2      | SpeciesId | Symbol | Alias      |
++-----+------------+------------+-----------+--------+------------+
+|   1 | B6D2F1     | B6D2F1     |         1 | NULL   | NULL       |
+|   2 | C57BL/6J   | C57BL/6J   |         1 | B6J    | P          |
+|   3 | DBA/2J     | DBA/2J     |         1 | D2J    | P          |
+|   4 | BXD1       | BXD1       |         1 | NULL   | NULL       |
+|   5 | BXD2       | BXD2       |         1 | NULL   | NULL       |
+|   6 | BXD5       | BXD5       |         1 | NULL   | NULL       |
+|   7 | BXD6       | BXD6       |         1 | NULL   | NULL       |
+
+select * from Strain where SpeciesId=1 and Name like '%BXD%';
+returns 1371 rows
+```
+
+The originally named StrainXRef table links StrainID with SpeciesID:
+
+```
+MariaDB [db_webqtl]> select * from StrainXRef limit 3;
++-------------+----------+---------+------------------+----------------+
+| InbredSetId | StrainId | OrderId | Used_for_mapping | PedigreeStatus |
++-------------+----------+---------+------------------+----------------+
+|           1 |        1 |      10 | N                | MP_F1          |
+|           1 |        2 |      20 | N                | Mat            |
+|           1 |        3 |      30 | N                | Pat            |
++-------------+----------+---------+------------------+----------------+
+```
+
+Together with the InbredSet table we have the information we need to fetch BXD datasets.
+
+The fields `Locus_old | LRS_old | pValue_old' are not used that I can tell from the source code. So let's use these to track updates. I am going to set these _old fields in ProbeSetXRef.
+
+Meanwhile I have prepared tux04 and tux05 for the new runs. Next step is to query the DB and run GEMMA.
 
 ## Preparing for GEMMA
 
