@@ -24,6 +24,7 @@ Now (X=done +=WIP _=kickoff ?=?)
 * [+] gBAM
 * [+] Set up stable GeneNetwork server instance with new hardware (see below)
 * [ ] Complete Octopus setup with Erik, Andrea and Efraim - adding all machines
+* [ ] Audit DB security
 * [ ] p-value global search
 
 => ../issues/systems/octopus
