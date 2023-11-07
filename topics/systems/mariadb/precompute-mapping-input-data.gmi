@@ -497,13 +497,65 @@ MariaDB [db_webqtl]> select * from StrainXRef limit 3;
 +-------------+----------+---------+------------------+----------------+
 ```
 
+## Getting all BXD datasets
+
 Together with the InbredSet table we have the information we need to fetch BXD datasets.
 
-The fields `Locus_old | LRS_old | pValue_old' are not used that I can tell from the source code. So let's use these to track updates. I am going to set these _old fields in ProbeSetXRef.
+```
+select Id,InbredSetId,InbredSetName,Name,SpeciesId,FullName,public,MappingMethodId,GeneticType | Family,FamilyOrder,MenuOrderId,InbredSetCode from InbredSet limit 3;
++----+-------------+-------------------+--------+-----------+-------------------+--------+-----------------+----------------------+-------------+-------------+---------------+
+| Id | InbredSetId | InbredSetName     | Name   | SpeciesId | FullName          | public | MappingMethodId | GeneticType | Family | FamilyOrder | MenuOrderId | InbredSetCode |
++----+-------------+-------------------+--------+-----------+-------------------+--------+-----------------+----------------------+-------------+-------------+---------------+
+|  1 |           1 | BXD               | BXD    |         1 | BXD Family        |      2 | 1               |                    0 |           1 |           0 | BXD           |
+|  2 |           2 | B6D2F2 OHSU Brain | B6D2F2 |         1 | B6D2F2 OHSU Brain |      2 | 1               |                    0 |           3 |           0 | NULL          |
+|  4 |           4 | AXB/BXA           | AXBXA  |         1 | AXB/BXA Family    |      2 | 1               |                 NULL |           1 |           0 | AXB           |
++----+-------------+-------------------+--------+-----------+-------------------+--------+-----------------+----------------------+-------------+-------------+---------------+
+```
+
+So
+
+```
+MariaDB [db_webqtl]> select * from StrainXRef where InbredSetID=1 limit 5;
++-------------+----------+---------+------------------+----------------+
+| InbredSetId | StrainId | OrderId | Used_for_mapping | PedigreeStatus |
++-------------+----------+---------+------------------+----------------+
+|           1 |        1 |      10 | N                | MP_F1          |
+|           1 |        2 |      20 | N                | Mat            |
+|           1 |        3 |      30 | N                | Pat            |
+|           1 |        4 |      40 | Y                | RI_progeny     |
+|           1 |        5 |      50 | Y                | RI_progeny     |
++-------------+----------+---------+------------------+----------------+
+```
+
+```
+select * from ProbeSetData where StrainId = 4 limit 5;
+```
+
+Fetches all data where strain `BXD1' was used. That is 14,829,435 of data points!
+Now it should be clear the database is designed to go from dataset -> strain and not the other way round. We can, however, walk ProbeSetXRef and get the ProbeSetId. Use that to query ProbeSetData and use the StrainID to make sure it belongs to the BXD for compute.
+
+Next, the fields `Locus_old | LRS_old | pValue_old' are not used that I can tell from the source code. So let's use these to track updates. I am going to set these _old fields in ProbeSetXRef. After checking the backups we will first set all Locus_old to NULL. If a value
+is NULL we can precompute. Afther precompute the current Locus_old value is taken from the reaper compute, as well as LRS_old and p_Value_old. We will add a column for additive_old.
+
+As a first check it will be interesting to see how these values differ between qtlreaper and GEMMA.
+
+## Preparing for GEMMA
 
 Meanwhile I have prepared tux04 and tux05 for the new runs. Next step is to query the DB and run GEMMA.
 
-## Preparing for GEMMA
+A first script on tux02 runs:
+
+```scheme
+(use-modules (dbi dbi))
+
+(define db_webqtl (dbi-open "mysql" "webqtlout:webqtlout:db_webqtl:tcp:127.0.0.1:3306"))
+(dbi-query db_webqtl "SELECT * FROM ProbeSetXRef LIMIT 1")
+(display (dbi-get_row db_webqtl))
+
+((ProbeSetFreezeId . 1) (ProbeSetId . 1) (DataId . 1) (Locus_old . 10.095.400) (LRS_old . 13.3971627898894) (pValue_old . 0.163) (mean . 5.48794285714286) (se . 0.08525787814808819) (Locus . rs13480619) (LRS . 12.590069931048) (pValue . 0.269) (additive . -0.28515625) (h2 . 0.0))
+```
+
+## More complicated datasets
 
 A good dataset to take apart is
 
