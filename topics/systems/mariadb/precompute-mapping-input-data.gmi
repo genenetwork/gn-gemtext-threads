@@ -534,10 +534,61 @@ select * from ProbeSetData where StrainId = 4 limit 5;
 Fetches all data where strain `BXD1' was used. That is 14,829,435 of data points!
 Now it should be clear the database is designed to go from dataset -> strain and not the other way round. We can, however, walk ProbeSetXRef and get the ProbeSetId. Use that to query ProbeSetData and use the StrainID to make sure it belongs to the BXD for compute.
 
-Next, the fields `Locus_old | LRS_old | pValue_old' are not used that I can tell from the source code. So let's use these to track updates. I am going to set these _old fields in ProbeSetXRef. After checking the backups we will first set all Locus_old to NULL. If a value
+Next, the fields `Locus_old | LRS_old | pValue_old' are not used that I can tell from the source code. So, we could use these to track updates. I am going to set these _old fields in ProbeSetXRef. After checking the backups we will first set all Locus_old to NULL. If a value
 is NULL we can precompute. Afther precompute the current Locus_old value is taken from the reaper compute, as well as LRS_old and p_Value_old. We will add a column for additive_old.
 
-As a first check it will be interesting to see how these values differ between qtlreaper and GEMMA.
+After some thought I decided to create a new table that mirrors what we'll do with sqlite down the line. The new table will also allow for referring to time stamps and multiple hits. So, in addition to time stamps and hash values, we'll add to the above update record:
+
+* top hit info (locus, LRS, p-value, effect)
+* number of other hits
+* file with other hits
+
+And down the line we can point to a different DB table that records significant hits.
+
+As a first check it will be interesting to see how these values differ between qtlreaper and GEMMA!
+
+## Create Hash table
+
+ProbeSetXRef is defined as
+
+```
+CREATE TABLE ProbeSetXRef (
+  ProbeSetFreezeId smallint(5) unsigned NOT NULL DEFAULT 0,
+  ProbeSetId int(10) unsigned NOT NULL DEFAULT 0,
+  DataId int(10) unsigned NOT NULL DEFAULT 0,
+  Locus_old char(20) DEFAULT NULL,
+  LRS_old double DEFAULT NULL,
+  pValue_old double DEFAULT NULL,
+  mean double DEFAULT NULL,
+  se double DEFAULT NULL,
+  Locus varchar(50) DEFAULT NULL,
+  LRS double DEFAULT NULL,
+  pValue double DEFAULT NULL,
+  additive double DEFAULT NULL,
+  h2 float DEFAULT NULL,
+  PRIMARY KEY (DataId),
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+```
+
+Not all choices are that sane, but we'll leave it like it is for now (it is a small table).
+The new table will look like (LRS=Log wise ratios)
+
+```
+CREATE TABLE PrecomputeLRS (
+  id int unsigned NOT NULL DEFAULT 0,
+  ProbeSetFreezeId smallint(5) unsigned NOT NULL DEFAULT 0,
+  ProbeSetId int(10) unsigned NOT NULL DEFAULT 0,
+  DataId int(10) unsigned NOT NULL DEFAULT 0, ??
+  mean double DEFAULT NULL,
+  se double DEFAULT NULL,
+  Locus varchar(50) DEFAULT NULL,
+  LRS double DEFAULT NULL,
+  pValue double DEFAULT NULL,
+  additive double DEFAULT NULL,
+  h2 float DEFAULT NULL,
+  PRIMARY KEY (id),
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+```
 
 ## Preparing for GEMMA
 
@@ -554,6 +605,9 @@ A first script on tux02 runs:
 
 ((ProbeSetFreezeId . 1) (ProbeSetId . 1) (DataId . 1) (Locus_old . 10.095.400) (LRS_old . 13.3971627898894) (pValue_old . 0.163) (mean . 5.48794285714286) (se . 0.08525787814808819) (Locus . rs13480619) (LRS . 12.590069931048) (pValue . 0.269) (additive . -0.28515625) (h2 . 0.0))
 ```
+
+Note that you can run this over guile-geiser remote.
+
 
 ## More complicated datasets
 
