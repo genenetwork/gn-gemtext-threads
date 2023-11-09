@@ -2,6 +2,32 @@
 
 You need to set up a quick local database for development without polluting your environment.
 
+## Method 0 (tunnel)
+
+You can use ssh tunneling to access mysql from your machine. Try something like:
+
+```
+ssh -L 3306:127.0.0.1:3306 -f -N tux02.genenetwork.org
+mysql -uwebqtlout -pwebqtlout -h 127.0.0.1 db_webqtl -A -e "show tables;"
+```
+
+To keep the connection alive add something like this to your `~/.ssh/config`
+
+```
+ServerAliveInterval 60
+ServerAliveCountMax 10
+```
+
+For specific hosts you can set it up as
+
+```
+Host tux02
+  HostName tux02.genenetwork.org
+  TCPKeepAlive yes
+  ServerAliveInterval 60
+  user myname
+```
+
 ## Method 1 (Using Guix system containers)
 
 Setting up mariadb in a Guix container is the preferred and easier method. But, you need root access to run the container. The genenetwork2 repo comes with a guix system container definition to run MariaDB and Redis. From the genenetwork2 repo, you can build and run the container using:
