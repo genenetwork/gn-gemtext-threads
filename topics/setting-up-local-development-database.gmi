@@ -11,6 +11,13 @@ ssh -L 3306:127.0.0.1:3306 -f -N tux02.genenetwork.org
 mysql -uwebqtlout -pwebqtlout -h 127.0.0.1 db_webqtl -A -e "show tables;"
 ```
 
+If you already have that port in use on your machine try
+
+```
+ssh -L 3307:127.0.0.1:3306 -f -N tux02.genenetwork.org
+mysql -uwebqtlout -pwebqtlout -h 127.0.0.1 -P 3307 db_webqtl -A -e "show tables;"
+```
+
 To keep the connection alive add something like this to your `~/.ssh/config`
 
 ```
