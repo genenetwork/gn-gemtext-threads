@@ -51,7 +51,7 @@ Backups & storage:
 Security:
 
 * [ ] Limit idrac access
-* [?] space server out-of-band access
+* [X] space server out-of-band access
 
 ### Spice
 
