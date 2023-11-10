@@ -537,6 +537,63 @@ Now it should be clear the database is designed to go from dataset -> strain and
 Next, the fields `Locus_old | LRS_old | pValue_old' are not used that I can tell from the source code. So, we could use these to track updates. I am going to set these _old fields in ProbeSetXRef. After checking the backups we will first set all Locus_old to NULL. If a value
 is NULL we can precompute. Afther precompute the current Locus_old value is taken from the reaper compute, as well as LRS_old and p_Value_old. We will add a column for additive_old.
 
+Let's fetch one where Locus_old is now NULL:
+
+```
+select ProbeSetFreezeId,ProbeSetId,DataId,Locus_old,Locus from ProbeSetXRef where Locus_old is NULL limit 1;
++------------------+------------+--------+-----------+-----------+
+| ProbeSetFreezeId | ProbeSetId | DataId | Locus_old | Locus     |
++------------------+------------+--------+-----------+-----------+
+|               31 |      48552 | 458384 | NULL      | D10Mit194 |
++------------------+------------+--------+-----------+-----------+
+1 row in set (0.00 sec)
+```
+
+DataId is really ProbeSetDataId, so:
+
+```
+MariaDB [db_webqtl]> select * from ProbeSetData where ProbeSetData.id = 458384 limit 1;
++--------+----------+--------+
+| Id     | StrainId | value  |
++--------+----------+--------+
+| 458384 |       42 | 10.306 |
++--------+----------+--------+
+1 row in set (0.00 sec)
+```
+
+And StrainId can be found in StrainXRef with
+
+```
+MariaDB [db_webqtl]> select * from Strain where Strain.id=42;
++----+---------+---------+-----------+--------+-------+
+| Id | Name    | Name2   | SpeciesId | Symbol | Alias |
++----+---------+---------+-----------+--------+-------+
+| 42 | CASE001 | CASE001 |         1 | NULL   | NULL  |
++----+---------+---------+-----------+--------+-------+
+```
+
+and
+
+```
+MariaDB [db_webqtl]> select * from StrainXRef where StrainId=42;
++-------------+----------+---------+------------------+----------------+
+| InbredSetId | StrainId | OrderId | Used_for_mapping | PedigreeStatus |
++-------------+----------+---------+------------------+----------------+
+|           2 |       42 |       1 | N                | NULL           |
++-------------+----------+---------+------------------+----------------+
+```
+
+```
+MariaDB [db_webqtl]> select * from InbredSet where Id=2;;
++----+-------------+-------------------+--------+-----------+-------------------+--------+-----------------+-------------+------------------+-------------+-------------+---------------+-------------+
+| Id | InbredSetId | InbredSetName     | Name   | SpeciesId | FullName          | public | MappingMethodId | GeneticType | Family           | FamilyOrder | MenuOrderId | InbredSetCode | Description |
++----+-------------+-------------------+--------+-----------+-------------------+--------+-----------------+-------------+------------------+-------------+-------------+---------------+-------------+
+|  2 |           2 | B6D2F2 OHSU Brain | B6D2F2 |         1 | B6D2F2 OHSU Brain |      2 | 1               | intercross  | Crosses, AIL, HS |           3 |           0 | NULL          | NULL        |
++----+-------------+-------------------+--------+-----------+-------------------+--------+-----------------+-------------+------------------+-------------+-------------+---------------+-------------+
+```
+
+which is not part of the BXD (InbredSetId=1).
+
 After some thought I decided to create a new table that mirrors what we'll do with sqlite down the line. The new table will also allow for referring to time stamps and multiple hits. So, in addition to time stamps and hash values, we'll add to the above update record:
 
 * top hit info (locus, LRS, p-value, effect)
@@ -574,25 +631,44 @@ Not all choices are that sane, but we'll leave it like it is for now (it is a sm
 The new table will look like (LRS=Log wise ratios)
 
 ```
-CREATE TABLE PrecomputeLRS (
-  id int unsigned NOT NULL DEFAULT 0,
-  ProbeSetFreezeId smallint(5) unsigned NOT NULL DEFAULT 0,
-  ProbeSetId int(10) unsigned NOT NULL DEFAULT 0,
-  DataId int(10) unsigned NOT NULL DEFAULT 0, ??
+CREATE TABLE SignificantHits (
+  Id INT UNSIGNED NOT NULL DEFAULT 0,
+  ProbeSetFreezeId INT UNSIGNED NOT NULL DEFAULT 0, <- points to dataset info
+  ProbeSetId INT UNSIGNED NOT NULL DEFAULT 0,       <- points to trait info
+  ProbeSetDataId INT UNSIGNED NOT NULL DEFAULT 0,   <- id, strain value OR ID of the table?
   mean double DEFAULT NULL,
   se double DEFAULT NULL,
   Locus varchar(50) DEFAULT NULL,
   LRS double DEFAULT NULL,
   pValue double DEFAULT NULL,
+  significant double DEFAULT NULL,
   additive double DEFAULT NULL,
   h2 float DEFAULT NULL,
-  PRIMARY KEY (id),
+  PRIMARY KEY (Id),
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 ```
+
+Note prepending Id and a rename from DataId to ProbeSetDataId because they refer to the same:
+
+```
+MariaDB [db_webqtl]> select max(DataId) from ProbeSetXRef limit 10;
+| max(DataId) |
+|    92213693 |
+
+select max(Id) from ProbeSetData limit 3;
+| max(Id)  |
+| 92213693 |
+```
+
+This table will be the replacement for the badly named ProbeSetXRef
+
+TODO: table alias, column alias?
 
 ## Preparing for GEMMA
 
 Meanwhile I have prepared tux04 and tux05 for the new runs. Next step is to query the DB and run GEMMA.
+
+### Testing a script to access the database
 
 A first script on tux02 runs:
 
@@ -607,6 +683,35 @@ A first script on tux02 runs:
 ```
 
 Note that you can run this over guile-geiser remote.
+
+### Install and run gemma
+
+Now we have a working DB query method on a compute node we can start running GEMMA.
+GEMMA is packaged as part of GNU Guix, so that part is straightforward. After above guix pull
+
+```
+. ~/opt/guix-pull/etc/profile <- don't do this, it does not work on Debian Guix images!
+git clone https://git.genenetwork.org/guix-bioinformatics/
+git clone https://gitlab.inria.fr/guix-hpc/guix-past
+~/opt/guix-pull/bin/guix package -L ~/guix-bioinformatics/ -L ~/guix-past/modules -A gemma
+  gemma-gn2       0.98.5-8cd4cdb  out   /home/wrk/guix-bioinformatics/gn/packages/gemma.scm:31:2
+```
+
+and install gemma with
+
+```
+wrk@tux05:~$ ~/opt/guix-pull/bin/guix package -L ~/guix-bioinformatics/ -L ~/guix-past/modules -i gemma -p ~/opt/gemma
+```
+
+### Creating the precompute-runner
+
+The precompute-runner can be part of `gn-guile/scripts/precompute`, i.e., the new GN guile repo's maintenance script dir:
+
+=> https://git.genenetwork.org/gn-guile/tree/scripts/precompute
+
+See the README.md for more information on running the script etc.
+
+As we are doing the BXD's first we first fetch a record from ProbeSetXRef that has Locus_old set to NULL AND matches a BXD trait.
 
 
 ## More complicated datasets
