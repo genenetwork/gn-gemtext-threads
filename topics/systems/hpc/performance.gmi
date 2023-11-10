@@ -11,3 +11,11 @@ For disk speeds make sure there is no load and run
 ```
 hdparm -Ttv /dev/sdc1
 ```
+
+## Networking
+
+To check the network devices installed use
+
+```
+lshw -class network
+```
