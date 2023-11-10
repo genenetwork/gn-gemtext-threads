@@ -20,6 +20,7 @@
 c for console or control
 
 ```
+- [ ] DNS entries no longer visible
 - [X] lambda01-c        172.23.17.173   (3c:ec:ef:aa:e5:50)
 - [X] tux01-c           172.23.31.85    (58:8A:5A:F9:3A:22)
 - [X] tux02-c           172.23.30.40    (58:8A:5A:F0:E6:E4)
