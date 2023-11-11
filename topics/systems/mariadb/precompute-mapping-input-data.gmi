@@ -594,7 +594,15 @@ MariaDB [db_webqtl]> select * from InbredSet where Id=2;;
 
 which is not part of the BXD (InbredSetId=1).
 
-After some thought I decided to create a new table that mirrors what we'll do with sqlite down the line. The new table will also allow for referring to time stamps and multiple hits. So, in addition to time stamps and hash values, we'll add to the above update record:
+So, StrainXRef is crucial to get to the actual BXD. Let's look how it is used in existing code. In GN2 it is used in 2 places only: router and sample list:
+
+```
+SELECT Strain.Name FROM Strain, StrainXRef WHERE StrainXRef.StrainId = Strain.Id AND StrainXRef.InbredSetId = 1;
+```
+
+lists all strain *names* based on Strain.id. The nomenclature is bogglingly bad. Anyway, it confirms that we can use this to see if something is part of the BXD.
+
+After some thought I decided we will create a new table that mirrors what we'll do with sqlite down the line. The new table will also allow for referring to time stamps and multiple hits. So, in addition to time stamps and hash values, we'll add to the above update record:
 
 * top hit info (locus, LRS, p-value, effect)
 * number of other hits
@@ -605,6 +613,8 @@ And down the line we can point to a different DB table that records significant 
 As a first check it will be interesting to see how these values differ between qtlreaper and GEMMA!
 
 ## Create Hash table
+
+This new Hash table can be called 'SignificantHits' or something.
 
 ProbeSetXRef is defined as
 
@@ -660,9 +670,30 @@ select max(Id) from ProbeSetData limit 3;
 | 92213693 |
 ```
 
-This table will be the replacement for the badly named ProbeSetXRef
+In the future this table will be the replacement for the badly named ProbeSetXRef
 
-TODO: table alias, column alias?
+## Creating a list of work on tux04
+
+We'll use a test table first on tux02. It should not matter for precompute because we'll regenerate hashes from the DB input and GEMMA output. I.e., we only need to recompute if something has changed in phenotypes or genotypes and that is quite rare.
+
+We will work on tux04 and I'll first install the database there. In the process we'll need to get the basic environment going that we need for work. First I thought I'd copy the backup from space - as I thought it has 10Gbs, but actually it uses 1Gbs and the backup is a month old (need to fix that too!).
+
+Alright, let's use tux02 for the DB. On the new machine tux04 we disable /etc/profile and /etc/bash.bashrc - people can add that themselves and it messes up guix profiles.
+After creating my environment it looks like any other machine I use and I have the same keyboard short cuts.
+
+Note that my UID may be wrong for Octopus, but that requires a more heavy surgery anyway.
+
+Next we create a drop for the backups from another machine following:
+
+=> ../backup_drops.gmi
+
+Now we are copying the backup which takes a while over the slow network.
+
+
+
+
+
+
 
 ## Preparing for GEMMA
 

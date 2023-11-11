@@ -79,7 +79,7 @@ it should give a Permission denied (publickey).
 On the drop server you can track messages by
 
 ```
-n0tail -40 /var/log/auth.log
+tail -40 /var/log/auth.log
 ```
 
 Next
