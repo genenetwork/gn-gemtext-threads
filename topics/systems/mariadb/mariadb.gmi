@@ -2,12 +2,16 @@
 
 Here we capture some common actions
 
-## Tags
+To install Mariadb (as a container) see
+
+=> setting-up-local-development-database.gmi
+
+# Tags
 
 * type: info, documentation
 * keywords: mariadb, systems
 
-## Check the transaction logs
+# Check the transaction logs
 
 Start the client and:
 
@@ -35,7 +39,7 @@ To get a log with some stuff filtered out try
 mysql -p -u webqtlout db_webqtl -e "SHOW BINLOG EVENTS IN 'gn0-binary-log.000014';" -r -s |grep -v -e "Access\|GTID\|INSERT_ID\|COMMIT\|Temp\|lastlogin\|LITERA\|flush\|ROLLBACK"
 ```
 
-## Update MariaDB on penguin2 to the latest production database
+# Update MariaDB on penguin2 to the latest production database
 
 The MariaDB instance running on penguin2 needs to be periodically updated to the latest version of the database running on production. We do this by restoring backups of the production database stored on penguin2 into the penguin2 MariaDB database directory. Here's how.
 
@@ -55,3 +59,5 @@ Stop the running mariadb-guix.service. Restore the latest backup archive and ove
 
 => https://www.borgbackup.org/ Borg
 => https://borgbackup.readthedocs.io/en/stable/ Borg documentation
+
+#

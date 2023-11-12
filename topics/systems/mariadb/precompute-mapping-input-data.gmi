@@ -687,10 +687,33 @@ Next we create a drop for the backups from another machine following:
 
 => ../backup_drops.gmi
 
-Now we are copying the backup which takes a while over the slow network.
+Copy the backup which takes a while over the slow network and unpack with the great tool borg
 
+```
+time borg extract --progress /export/backup/bacchus/drop/tux01/borg-tux01::borg-backup-mariadb-20231111-06:39-Sat
+```
 
+Next install a recent Mariadb from guix as a container using the instructions in
 
+=> mariadb.gmi
+=> setting-up-local-development-database.gmi
+
+move the database files into, for example, /export/mysql/var/lib/mysql. chown files to your user account. Next
+
+```
+cd /export/mysql
+mkdir tmp
+mkdir run
+tux04:/export/mysql$ ~/opt/guix-pull/bin/guix shell -C -N coreutils sed mariadb --share=/export/mysql/var=/var --share=/export/mysql/tmp=/tmp
+    export TMPDIR=/tmp
+    mysqld_safe --datadir='/var/lib/mysql/' --port=3307 --user=$USER --group=users --nowatch --socket=/var/run/mysqld/mysqld.sock
+```
+
+and a client with:
+
+```
+/export/mysql$ ~/opt/guix-pull/bin/guix shell mysql -- mysql --socket=var/run/mysqld/mysqld.sock -uwebqtlout -pwebqtlout db_webqtl
+```
 
 
 

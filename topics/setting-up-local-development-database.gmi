@@ -61,6 +61,9 @@ SQL_URI="mysql://root@127.0.0.1:3306/db_webqtl_s"
 ## Method 2 (running a local container)
 
 A local container runs as a normal user. It requires some juggling of dirs to load an existing database. Make sure to not run on the same dirs as another mariadb instance(!)
+Here we run a new database, but you can use an existing DB as was done in
+
+=> precompute-mapping-input-data.gmi
 
 ```
 cd ~/tmp/mariadb
@@ -82,17 +85,17 @@ Initialize with
 mysql_install_db
 ```
 
-and run
+and run, for example
 
 ```
 export TMPDIR=/tmp
-mysqld_safe --datadir='./database' --port=3307 --user=$USER --nowatch --socket=/var/run/mysqld/mysqld.sock
+mysqld_safe --datadir='/var/lib/mysql/' --port=3307 --user=$USER --group=users --nowatch --socket=/var/run/mysqld/mysqld.sock
 ```
 
 Now from outside the container you should be able to connect with
 
 ```
-stromboli:~/tmp/mariadb$ mysql --socket=var/run/mysqld/mysqld.sock
+/export/mysql$ ~/opt/guix-pull/bin/guix shell mysql -- mysql --socket=var/run/mysqld/mysqld.sock -uwebqtlout -pwebqtlout db_webqtl
 ```
 
 and
@@ -119,9 +122,6 @@ MariaDB [(none)]> show databases;
 ```
 
 If you need to tweak the server configuration you can load the my.cnf file with the `--defaults-file=var/my.cnf` inside and outside the container.
-
-
-
 
 ## Method 3 (Manual method without Guix)
 
