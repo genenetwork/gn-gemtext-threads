@@ -706,7 +706,7 @@ mkdir tmp
 mkdir run
 tux04:/export/mysql$ ~/opt/guix-pull/bin/guix shell -C -N coreutils sed mariadb --share=/export/mysql/var=/var --share=/export/mysql/tmp=/tmp
     export TMPDIR=/tmp
-    mysqld_safe --datadir='/var/lib/mysql/' --port=3307 --user=$USER --group=users --nowatch --socket=/var/run/mysqld/mysqld.sock
+    mysqld_safe --datadir='/var/lib/mysql/' --protocol tcp  --port=3307 --user=$USER --group=users --nowatch
 ```
 
 and a client with:

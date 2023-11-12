@@ -92,7 +92,7 @@ export TMPDIR=/tmp
 mysqld_safe --datadir='/var/lib/mysql/' --port=3307 --user=$USER --group=users --nowatch --socket=/var/run/mysqld/mysqld.sock
 ```
 
-Now from outside the container you should be able to connect with
+Now from the container you should be able to connect with the socket
 
 ```
 /export/mysql$ ~/opt/guix-pull/bin/guix shell mysql -- mysql --socket=var/run/mysqld/mysqld.sock -uwebqtlout -pwebqtlout db_webqtl
@@ -119,6 +119,20 @@ MariaDB [(none)]> show databases;
 | test               |
 +--------------------+
 4 rows in set (0.001 sec)
+```
+
+To run/bind on a network interface we can open up completely (dangerous) with:
+
+```
+export TMPDIR=/tmp
+mysqld_safe --datadir='/var/lib/mysql/' --port=3307 --user=$USER --group=users --nowatch --bind-address 0.0.0.0 --socket=/var/run/mysqld/mysqld.sock
+```
+
+Test
+
+
+```
+ ~/opt/guix-pull/bin/guix shell mysql -- mysql -uwebqtlout -pwebqtlout db_webqtl -h 127.0.0.1 --port=3307
 ```
 
 If you need to tweak the server configuration you can load the my.cnf file with the `--defaults-file=var/my.cnf` inside and outside the container.
