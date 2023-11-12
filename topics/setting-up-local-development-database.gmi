@@ -121,19 +121,21 @@ MariaDB [(none)]> show databases;
 4 rows in set (0.001 sec)
 ```
 
-To run/bind on a network interface we can open up completely (dangerous) with:
+To run/bind on a network interface we can open up with:
 
 ```
 export TMPDIR=/tmp
-mysqld_safe --datadir='/var/lib/mysql/' --port=3307 --user=$USER --group=users --nowatch --bind-address 0.0.0.0 --socket=/var/run/mysqld/mysqld.sock
+mysqld_safe --datadir='/var/lib/mysql/' --port=3307 --user=$USER --group=users --nowatch --bind-address 127.0.0.1 --socket=/var/run/mysqld/mysqld.sock
 ```
 
-Test
+Test with
 
 
 ```
  ~/opt/guix-pull/bin/guix shell mysql -- mysql -uwebqtlout -pwebqtlout db_webqtl -h 127.0.0.1 --port=3307
 ```
+
+Please don't use world writeable bind-address 0.0.0.0. If you run it for your own purposes use ssh tunneling instead (see above).
 
 If you need to tweak the server configuration you can load the my.cnf file with the `--defaults-file=var/my.cnf` inside and outside the container.
 

@@ -715,9 +715,6 @@ and a client with:
 /export/mysql$ ~/opt/guix-pull/bin/guix shell mysql -- mysql --socket=var/run/mysqld/mysqld.sock -uwebqtlout -pwebqtlout db_webqtl
 ```
 
-
-
-
 ## Preparing for GEMMA
 
 Meanwhile I have prepared tux04 and tux05 for the new runs. Next step is to query the DB and run GEMMA.
