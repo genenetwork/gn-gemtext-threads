@@ -1,0 +1,46 @@
+# Adding Quantitative Tracks Using BigWig Files
+## Setting up JBrowse2
+### Install and Serve JBrowse2
+> npm install -g @jbrowse/cli
+> jbrowse create jbrowse2
+> cd jbrowse2
+> npx serve -s .
+This command first installs jbrowse's cli, which is essential for creating and managing jbrowse2 instances, and then creates a jbrowse2 project. After that, we cd into it and serve it using npx. Our instance of jbrowse2 can now be accessed at
+=> https://localhost:3000 
+
+## Creating and Loading a BigWig track
+### Cleaning wig files
+Remove any existing track or browser lines from the wig files
+
+### Create chrom.sizes files for the database
+Use the fetchChromSizes binary to create chrom.sizes files for the existing wig files
+=> http://hgdownload.soe.ucsc.edu/admin/exe/ fetchChromeSizes binary location
+
+### Converting wig files into a bigWig file
+> wigToBigWig input.wig chrom.sizes bigWig.bw
+The wigToBigWig binary can be used to convert wig files into the bigWig format.
+The bigWig format provides a more efficient way to view larger wig files, as only the sections being displayed are rendered to the screen.
+=> http://hgdownload.soe.ucsc.edu/admin/exe/ wigToBigWig binary location
+
+### Adding the bigWig track
+> jbrowse add-track bigWig.bw --load copy --out /var/www/html/jbrowse
+Where /var/www/html/ is the static HTML folder of the web server
+
+### Adding it to the custom track management page
+You can then open it from Add Track and passing the URL
+
+### Alternative way to add it
+You can open the "Add Track" menu, choose the bigwig file and load it
+
+### Customizing the track
+Clicking on the "⋮" next to the file name and clicking on settings opens a settings menu, where multiple traits such as the track name, description et cetera can be modified.
+
+## Setting up the Quantitative View
+### Getting whole-genome CNV coverage
+* Click on the ≡ symbol on the top left corner of the view
+* Click on "Show" and click on "Show all assembly lines"
+* Now, click on the ⋮ next to the bw file name in the view
+* Click on Fill mode -> no fill
+* Click on Score -> Autoscale type -> Local + 3α
+* Click on Score -> Resolution -> Finer resolution
+* Repeat the finer resolution step a couple of times
