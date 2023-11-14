@@ -21,13 +21,13 @@ Following @Munyoki's work[2] on getting the data endpoints on GN3, it should, hy
 
 This document explores what is needed to get that to work.
 
-### Exporting Sample Data
+## Exporting Sample Data
 
 We can export the sample (numeric) data to LMDB with the "dataset->lmdb" project[3].
 
 The project (as of 2023-11-14T10:12+03:00UTC) does not define an installable binary/script, and therefore cannot be simply added to the data upload project[1] as a dependency and invoked in the background.
 
-#### Data Differences
+### Data Differences
 
 The first line of the .tsv file uploaded is a header line indicating what each field is.
 The first field of the .tsv is a trait's name/identifier. All other fields are numerical strain/sample values for each line/record in the file.
@@ -50,7 +50,7 @@ where
 
 **NB**: Verify this with @Munyoki
 
-#### TODOs
+### TODOs
 
 * [ ] build an entrypoint binary/script to invoke from other projects
 * [ ] verify initial inference/assumptions regarding data with @Munyoki
@@ -58,7 +58,7 @@ where
 * [ ] figure out and document new GN3 data endpoints for users
 * [ ]
 
-### Exporting Metadata
+## Exporting Metadata
 
 Immediately after upload of the data from the .tsv files, the data will most likely have very little metadata attached. Some of the metadata that is assured to be present is:
 
@@ -68,7 +68,7 @@ Immediately after upload of the data from the .tsv files, the data will most lik
 
 The metadata is useful for searching for the data. The "metadata->rdf" project[4] is used for exporting the metadata to RDF and will need to be used to initialise the metadata for newly uploaded data.
 
-#### TODOs
+### TODOs
 
 * [ ] How do we handle this?
 
