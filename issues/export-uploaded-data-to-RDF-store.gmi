@@ -1,4 +1,4 @@
-# Export Uploaded Data to RDF Store
+# Export Uploaded Data to LMDB and RDF Stores
 
 ## Tags
 
@@ -11,3 +11,72 @@
 ## Description
 
 With the QC/Data Upload project nearing completion, and being placed in front of the initial user-testing cohort, we need a way for exporting all data that is uploaded into the RDF store, either at upload time, or a short time after.
+
+
+Users will use the QC/Data upload project[1] to upload their data to GeneNetwork. This will mostly be numerical data in Tab-Separated-Values (.tsv) files.
+
+Once this is done, we do want to have this data available to the user on GeneNetwork as soon as possible so that they can start doing their analyses with the data.
+
+Following @Munyoki's work[2] on getting the data endpoints on GN3, it should, hypothetically, be possible for the user to simply upload the data, and using the GN3 API, immediately begin their analyses on the data. In practice, however, it will need that we export the uploaded data into LMDB, and possibly any related metadata into virtuoso to enable this to work.
+
+This document explores what is needed to get that to work.
+
+### Exporting Sample Data
+
+We can export the sample (numeric) data to LMDB with the "dataset->lmdb" project[3].
+
+The project (as of 2023-11-14T10:12+03:00UTC) does not define an installable binary/script, and therefore cannot be simply added to the data upload project[1] as a dependency and invoked in the background.
+
+#### Data Differences
+
+The first line of the .tsv file uploaded is a header line indicating what each field is.
+The first field of the .tsv is a trait's name/identifier. All other fields are numerical strain/sample values for each line/record in the file.
+
+A sample of a .tsv for upload
+=> https://gitlab.com/fredmanglis/gnqc_py/-/blob/main/tests/test_data/average.tsv?ref_type=heads can be found here
+
+From
+=> https://github.com/BonfaceKilz/gn-dataset-dump/blob/main/README.org the readme
+it looks like the each record/line/trait from the .tsv file will correspond to a "db-path" in the LMDB data store. This path could be of the form:
+
+```
+/path/to/lmdb/storage/directory/<group-or-inbredset>/<trait-name-or-identifier>/
+```
+
+where
+
+* `<group-or-inbredset>` is a population/group of sorts, e.g. BXD, BayXSha, etc
+* `<trait-name-or-identifier>` is the value in the first field for each and every line
+
+**NB**: Verify this with @Munyoki
+
+#### TODOs
+
+* [ ] build an entrypoint binary/script to invoke from other projects
+* [ ] verify initial inference/assumptions regarding data with @Munyoki
+* [ ] translate the uploaded data into a form ingestable by the export program. This could be done in either one of the projects -- I propose the QC/Data Upload project
+* [ ] figure out and document new GN3 data endpoints for users
+* [ ]
+
+### Exporting Metadata
+
+Immediately after upload of the data from the .tsv files, the data will most likely have very little metadata attached. Some of the metadata that is assured to be present is:
+
+* Species: The species that the data regards
+* Group/InbredSet
+* Dataset: The dataset that the data is attached to
+
+The metadata is useful for searching for the data. The "metadata->rdf" project[4] is used for exporting the metadata to RDF and will need to be used to initialise the metadata for newly uploaded data.
+
+#### TODOs
+
+* [ ] How do we handle this?
+
+
+
+## Footnotes
+
+=> https://gitlab.com/fredmanglis/gnqc_py 1: QC/Data upload project repository
+=> https://github.com/genenetwork/genenetwork3/pull/130 2: Munyoki's Pull request
+=> https://github.com/BonfaceKilz/gn-dataset-dump 3: Dataset -> LMDB export repository
+=> https://github.com/genenetwork/dump-genenetwork-database 4: Metadata -> RDF export repository
