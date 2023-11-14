@@ -602,6 +602,12 @@ SELECT Strain.Name FROM Strain, StrainXRef WHERE StrainXRef.StrainId = Strain.Id
 
 lists all strain *names* based on Strain.id. The nomenclature is bogglingly bad. Anyway, it confirms that we can use this to see if something is part of the BXD.
 
+Get all the BXD used for mapping
+
+```
+SELECT StrainId,Strain.Name FROM Strain, StrainXRef WHERE StrainXRef.StrainId = Strain.Id AND StrainXRef.InbredSetId = 1 AND Used_for_mapping="Y" ORDER BY StrainId;
+```
+
 After some thought I decided we will create a new table that mirrors what we'll do with sqlite down the line. The new table will also allow for referring to time stamps and multiple hits. So, in addition to time stamps and hash values, we'll add to the above update record:
 
 * top hit info (locus, LRS, p-value, effect)
@@ -715,6 +721,20 @@ and a client with:
 /export/mysql$ ~/opt/guix-pull/bin/guix shell mysql -- mysql --socket=var/run/mysqld/mysqld.sock -uwebqtlout -pwebqtlout db_webqtl
 ```
 
+### Modifying the tables
+
+Set unused 'Locus_old' to NULL because we use that to update the existing table with the new values for production (note this is a quick hack discussed earlier):
+
+```
+update ProbeSetXRef set Locus_old=NULL;
+```
+
+SELECT DISTINCT DataId from ProbeSetXRef INNER JOIN ProbeSetData ON ProbeSetXRef.DataId = ProbeSetData.Id where StrainId>45 AND Locus_old is NULL limit 10;
+
+
+
+
+
 ## Preparing for GEMMA
 
 Meanwhile I have prepared tux04 and tux05 for the new runs. Next step is to query the DB and run GEMMA.
@@ -761,6 +781,8 @@ The precompute-runner can be part of `gn-guile/scripts/precompute`, i.e., the ne
 => https://git.genenetwork.org/gn-guile/tree/scripts/precompute
 
 See the README.md for more information on running the script etc.
+
+For development I'll tunnel to the Tux02 database.
 
 As we are doing the BXD's first we first fetch a record from ProbeSetXRef that has Locus_old set to NULL AND matches a BXD trait.
 
