@@ -38,6 +38,19 @@ The original reaper precompute lives in
 This script first fetches inbredsets
 
 ```
+ select Id,InbredSetId,InbredSetName,Name,SpeciesId,FullName,public,MappingMethodId,GeneticType,Family,FamilyOrder,MenuOrderId,InbredSetCode from InbredSet LIMIT 5;
++----+-------------+-------------------+----------+-----------+-------------------+--------+-----------------+-------------+--------------------------------------------------+-------------+-------------+---------------+
+| Id | InbredSetId | InbredSetName     | Name     | SpeciesId | FullName          | public | MappingMethodId | GeneticType | Family                                           | FamilyOrder | MenuOrderId | InbredSetCode |
++----+-------------+-------------------+----------+-----------+-------------------+--------+-----------------+-------------+--------------------------------------------------+-------------+-------------+---------------+
+|  1 |           1 | BXD               | BXD      |         1 | BXD Family        |      2 | 1               | riset       | Reference Populations (replicate average, SE, N) |           1 |           0 | BXD           |
+|  2 |           2 | B6D2F2 OHSU Brain | B6D2F2   |         1 | B6D2F2 OHSU Brain |      2 | 1               | intercross  | Crosses, AIL, HS                                 |           3 |           0 | NULL          |
+|  4 |           4 | AXB/BXA           | AXBXA    |         1 | AXB/BXA Family    |      2 | 1               | NULL        | Reference Populations (replicate average, SE, N) |           1 |           0 | AXB           |
+|  5 |           5 | AKXD              | AKXD     |         1 | AKXD Family       |      2 | 1               | NULL        | Reference Populations (replicate average, SE, N) |           1 |           0 | AKD           |
+|  6 |           6 | B6BTBRF2          | B6BTBRF2 |         1 | B6BTBRF2          |      2 | 1               | intercross  | Crosses, AIL, HS                                 |           3 |           0 | BBT           |
++----+-------------+-------------------+----------+-----------+-------------------+--------+-----------------+-------------+--------------------------------------------------+-------------+-------------+---------------+
+```
+
+```
 MariaDB [db_webqtl]> select Id, Name from InbredSet limit 5;
 +----+----------+
 | Id | Name     |
@@ -732,9 +745,6 @@ update ProbeSetXRef set Locus_old=NULL;
 SELECT DISTINCT DataId from ProbeSetXRef INNER JOIN ProbeSetData ON ProbeSetXRef.DataId = ProbeSetData.Id where StrainId>45 AND Locus_old is NULL limit 10;
 
 
-
-
-
 ## Preparing for GEMMA
 
 Meanwhile I have prepared tux04 and tux05 for the new runs. Next step is to query the DB and run GEMMA.
@@ -786,6 +796,20 @@ For development I'll tunnel to the Tux02 database.
 
 As we are doing the BXD's first we first fetch a record from ProbeSetXRef that has Locus_old set to NULL AND matches a BXD trait.
 
+First we fetch all BXD strainids. I wrote a function `bxd-strain-id-names` for that.
+
+Next, using
+
+=> https://git.genenetwork.org/gn-guile/commit/?id=b1db013cc01c94e27edf982be9b027a2b0bb9712
+
+we fetch the first BXD dataset where all strains are members of BXD:
+
+```
+((Locus . rs13480619) (DataId . 1) (ProbeSetId . 1))1
+WE HAVE OUR FIRST BXD DATASET for precompute!((1 . 5.742) (2 . 5.006) (3 . 6.079) (4 . 6.414) (5 . 4.885) (6 . 4.719) (7 . 5.761) (8 . 5.604) (9 . 5.661) (10 . 5.708) (11 . 5.628) (12 . 6.325) (13 . 5.37) (14 . 6.544) (15 . 5.476) (16 . 5.248) (17 . 5.528) (19 . 5.51) (20 . 5.886) (21 . 5.177) (22 . 5.655) (23 . 5.522) (24 . 5.549) (25 . 4.588) (26 . 5.618) (28 . 6.335) (29 . 5.569) (30 . 4.422) (31 . 5.194) (35 . 4.784) (36 . 5.056) (37 . 5.869) (39 . 5.175) (40 . 5.207) (41 . 5.264))
+```
+
+If it is not a match we'll need to iterate to the next one.
 
 ## More complicated datasets
 
