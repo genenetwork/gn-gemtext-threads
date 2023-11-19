@@ -809,7 +809,9 @@ we fetch the first BXD dataset where all strains are members of BXD:
 WE HAVE OUR FIRST BXD DATASET for precompute!((1 . 5.742) (2 . 5.006) (3 . 6.079) (4 . 6.414) (5 . 4.885) (6 . 4.719) (7 . 5.761) (8 . 5.604) (9 . 5.661) (10 . 5.708) (11 . 5.628) (12 . 6.325) (13 . 5.37) (14 . 6.544) (15 . 5.476) (16 . 5.248) (17 . 5.528) (19 . 5.51) (20 . 5.886) (21 . 5.177) (22 . 5.655) (23 . 5.522) (24 . 5.549) (25 . 4.588) (26 . 5.618) (28 . 6.335) (29 . 5.569) (30 . 4.422) (31 . 5.194) (35 . 4.784) (36 . 5.056) (37 . 5.869) (39 . 5.175) (40 . 5.207) (41 . 5.264))
 ```
 
-If it is not a match we'll need to iterate to the next one.
+If it is not a match we'll need to iterate to the next one. The current version of precompute can fetch all the BXD datasets by name and trait name.
+
+=> https://git.genenetwork.org/gn-guile/tree/scripts/precompute/precompute-hits.scm
 
 ## More complicated datasets
 
