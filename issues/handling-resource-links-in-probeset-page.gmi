@@ -1,0 +1,30 @@
+# Handling Resource Links in ProbeSet Page
+
+## Tags
+
+* assigned: bonfacem
+* priority: high
+* type: ops
+* keywords: virtuoso
+
+## Description:
+
+During the finalization of the UI for endpoints, specifically the probeset page, modifications were made to streamline the ProbeSet RDF transform.  Unnecessary metadata was removed to reduce the transformed data.  Most of the metadata on the probeset page is utilized for constructing resources.  An example of a probeset page is:
+
+=> https://genenetwork.org/show_trait?trait_id=1435395_s_at&dataset=HC_M2_0606_P 
+Trait Data and Analysis for 1435395_s_at
+
+Under the "Resource Links" section on this page, there's a specific URL:
+
+=> https://genemania.org/search/mus-musculus/Atp5j2
+
+Attempting to prefix this resource link as "genemania:mus-musculus/Atp5j2" is not valid in Turtle format.
+
+To circumvent this issue, a workaround will be implemented:
+
+```turtle
+gn:probeset1435395_s_at gnt:hasGeneManiaResource <https://genemania.org/search/mus-musculus/Atp5j2> .
+<https://genemania.org/search/mus-musculus/Atp5j2> rdf:type gnc:ResourceLink .
+```
+
+The straightforward approach would be to construct this structure in the front-end.  However, the problem lies in the fact that these resource links are inferred, making it challenging to discern their connection within GN without visiting the website.  Therefore, it's preferable to store this information in RDF despite the ease of constructing it in the front-end.
