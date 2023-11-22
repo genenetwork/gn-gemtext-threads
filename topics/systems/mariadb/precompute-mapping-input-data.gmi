@@ -813,6 +813,113 @@ If it is not a match we'll need to iterate to the next one. The current version 
 
 => https://git.genenetwork.org/gn-guile/tree/scripts/precompute/precompute-hits.scm
 
+For GEMMA we need to write a phenotype file which is simply a vector of values. Meanwhile, the genotype file and SNP files for the BXD are fixed (currently version 8 with 21.056 markers).
+
+To run GEMMA we can take an example from `gemma-wrapper`, a tool I wrote to cache results:
+
+=> https://github.com/genetics-statistics/gemma-wrapper
+
+gemma-wrapper does a bit more work than we really need and is a bit too generic for this precompute exercise. The following things matter:
+
+* handling of hashes to prevent recompute
+* handling of the kinship matrix (K)
+* handling of leave one chromosome out (LOCO)
+
+all of which are handled by gemma-wrapper really well. We'll use gemma-wrapper for the time being to do the actual computations.
+
+BTW the cache for GN production is currently at 190G with 40K files. That is 3 months worth of caching GEMMA as we clean up older files! For precompute we may need to be smarter because that only represents 970 association results and 400 kinship matrices. We should improve GEMMA by:
+
+* by default only keep the required results
+* provide a more compact storage of results
+
+We should be using something like lmdb as that will speed up lookups and GEMMA itself. Simple compression will reduce output 5x for one 7Mb output. Some K matrices are huge too. The largest one runs at 0.5 Gb. GEMMA does crash once in a while, unsurprisingly.
+
+For the BXD we need to compute at least 100K traits - I have not done a proper count yet - and we can delete output files when the database gets updated. We should, however, hang on to hits that are potentially significant, so I want to retain output, or create a new mysql table.
+
+## Run gemma-wrapper
+
+We can run a local version of gemma-wrapper with
+
+```
+.guix-shell --expose=/home/wrk/iwrk/opensource/code/genetics/gemma-wrapper/=/gemma-wrapper ruby -- ruby /gemma-wrapper/bin/gemma-wrapper
+```
+
+this is useful because we want to change gemma-wrapper itself. Mostly to produce less bulky output and add some metadata for downstream processing (i.e. to update the database itself).
+Note how versatile `guix shell` is for development!
+
+gemma-wrapper shows the following output:
+
+```
+NOTE: gemma-wrapper is soon to be replaced
+Using GEMMA 0.98.3 (2020-11-28) by Xiang Zhou and team (C) 2012-2020
+
+Found 0.98.3, comparing against expected v0.98.4
+GEMMA 0.98.3 (2020-11-28) by Xiang Zhou and team (C) 2012-2020
+WARNING: GEMMA version is out of date. Update GEMMA to 0.98.4!
+```
+
+Some irony there. We are going to replace gemma-wrapper at some point. And the gemma that is packaged in guix by default it older that what we want to use. Though the release notes point out mostly maintenance updates:
+
+=> https://github.com/genetics-statistics/GEMMA/releases
+
+We can pull in a local gemma too using the same `--expose` trick above. So, let's use that for now:
+
+```
+.guix-shell --expose=/home/wrk/iwrk/opensource/code/genetics/gemma-wrapper/=/gemma-wrapper --expose=/home/wrk/iwrk/opensource/code/genetics/gemma/=/gemma ruby -- /gemma/bin/gemma
+```
+
+This does not work out of the box because I typically build gemma on a different Guix profile, so it won't find the libraries (RPATH is fixed). There are two options, build a static version of gemma or override the LD_LIBRARY_PATH. The first used to work, but Guix no longer carries static libs for openblas, so I would need to provide those myself. Overriding LD_LIBRARY_PATH is a bit inconvenient, but in this case doable. We have to run from inside the container and set:
+
+```
+env LD_LIBRARY_PATH=$GUIX_ENVIRONMENT/lib/ /gemma/bin/gemma
+
+GEMMA 0.98.6 (2022-08-05) by Xiang Zhou, Pjotr Prins and team (C) 2012-2022
+
+ type ./gemma -h [num] for detailed help
+ options:
+  1: quick guide
+  2: file I/O related
+  3: SNP QC
+  ...
+```
+
+and success. With gemma wrapper we can pick up the latest gemma by setting the GEMMA_COMMAND
+
+```
+(system "env GEMMA_COMMAND=/gemma/bin/gemma /gemma-wrapper/bin/gemma-wrapper")
+gemma-wrapper 0.99.6 (Ruby 3.2.2) by Pjotr Prins 2017-2022
+
+NOTE: gemma-wrapper is soon to be replaced
+Using GEMMA 0.98.6 (2022-08-05) by Xiang Zhou, Pjotr Prins and team (C) 2012-2022
+```
+
+All set for actual compute!
+
+## Running gemma
+
+The following command fails because we don't have a pheno file yet:
+
+```
+gemma-wrapper --debug -- -gk -g BXD.8_geno.txt.gz -p pheno.txt -a BXD.8_snps.txt
+```
+
+Now the pheno file needs to match the number of genotypes in the geno file which, presumably, is generated from the file `BXD.8.gene`. It has the header:
+
+```
+BXD1	BXD2	BXD5	BXD6	BXD8	BXD9	BXD11	BXD12	BXD13	BXD14	BXD15	BXD16	BXD18	BXD19	BXD20	BXD21	BXD22	BXD23	BXD24	BXD24a	BXD25	BXD27	BXD28	BXD29	BXD30	BXD31	BXD32	BXD33	BXD34	BXD35	BXD36	BXD37	BXD38	BXD39	BXD40	BXD41	BXD42	BXD43	BXD44	BXD45	BXD48	BXD48a	BXD49	BXD50	BXD51	BXD52	BXD53	BXD54	BXD55	BXD56	BXD59	BXD60	BXD61	BXD62	BXD63	BXD64	BXD65	BXD65a	BXD65b	BXD66	BXD67	BXD68	BXD69	BXD70	BXD71	BXD72	BXD73	BXD73a	BXD73b	BXD74	BXD75	BXD76	BXD77	BXD78	BXD79	BXD81	BXD83	BXD84	BXD85	BXD86	BXD87	BXD88	BXD89	BXD90	BXD91	BXD93	BXD94	BXD95	BXD98	BXD99	BXD100	BXD101	BXD102	BXD104	BXD105	BXD106	BXD107	BXD108	BXD109	BXD110	BXD111	BXD112	BXD113	BXD114	BXD115	BXD116	BXD117	BXD119	BXD120	BXD121	BXD122	BXD123	BXD124	BXD125	BXD126	BXD127	BXD128	BXD128a	BXD130	BXD131	BXD132	BXD133	BXD134	BXD135	BXD136	BXD137	BXD138	BXD139	BXD141	BXD142	BXD144	BXD145	BXD146	BXD147	BXD148	BXD149	BXD150	BXD151	BXD152	BXD153	BXD154	BXD155	BXD156	BXD157	BXD160	BXD161	BXD162	BXD165	BXD168	BXD169	BXD170	BXD171	BXD172	BXD173	BXD174	BXD175	BXD176	BXD177	BXD178	BXD180	BXD181	BXD183	BXD184	BXD186	BXD187	BXD188	BXD189	BXD190	BXD191	BXD192	BXD193	BXD194	BXD195	BXD196	BXD197	BXD198	BXD199	BXD200	BXD201	BXD202	BXD203	BXD204	BXD205	BXD206	BXD207	BXD208	BXD209	BXD210	BXD211	BXD212	BXD213	BXD214	BXD215	BXD216	BXD217	BXD218	BXD219	BXD220	C57BL/6JxBXD037F1	BXD001xBXD065aF1	BXD009xBXD170F1	BXD009xBXD172F1	BXD012xBXD002F1	BXD012xBXD021F1	BXD020xBXD012F1	BXD021xBXD002F1	BXD024xBXD034F1	BXD032xBXD005F1	BXD032xBXD028F1	BXD032xBXD65bF1	BXD034xBXD024F1	BXD034xBXD073F1	BXD055xBXD074F1	BXD055xBXD65bF1	BXD061xBXD071F1	BXD062xBXD077F1	BXD065xBXD077F1	BXD069xBXD090F1	BXD071xBXD061F1	BXD073bxBXD065F1	BXD073bxBXD077F1	BXD073xBXD034F1	BXD073xBXD065F1	BXD073xBXD077F1	BXD074xBXD055F1	BXD077xBXD062F1	BXD083xBXD045F1	BXD087xBXD100F1	BXD065bxBXD055F1	BXD102xBXD077F1	BXD102xBXD73bF1	BXD170xBXD172F1	BXD172xBXD197F1	BXD197xBXD009F1	BXD197xBXD170F1
+```
+
+with 235 named BXD mice. Now when we check the DB we get
+
+```
+select * from StrainXRef WHERE InbredSetId=1 AND Used_for_mapping="Y"
+276 rows
+```
+
+so it looks like we need some extra logic.
+
+
+
 ## More complicated datasets
 
 A good dataset to take apart is
