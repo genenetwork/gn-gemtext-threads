@@ -1,0 +1,15 @@
+# Set-up Virtuoso on Production
+
+## Tags
+
+* assigned: bonfacem
+* priority: high
+* type: ops
+* keywords: virtuoso
+
+## Description
+
+We already have virtuoso set-up in tux02.  Right now, to be able to interact with RDF, we need to have virtuoso set-up.  This issue will unblock:
+
+=> https://github.com/genenetwork/genenetwork3/pull/137 Update RDF endpoints
+=> https://github.com/genenetwork/genenetwork2/pull/808 UI/RDF frontend
