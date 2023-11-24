@@ -916,9 +916,62 @@ select * from StrainXRef WHERE InbredSetId=1 AND Used_for_mapping="Y"
 276 rows
 ```
 
-so it looks like we need some extra logic.
+so it looks like we need some extra logic to fetch the used individuals from the actual genotype file(s).
 
+## Writing the phenotype file
 
+For gemma we need to feed a phenotype file that has only the individuals that are in the genotype file (the other 'missing' phenotype values should be NAs).
+
+The genotype header in GN2 is read from a `BXD.json` file. Code is at
+wqflask/wqflask/marker_regression/run_mapping.py:get_genofile_samplelist(dataset)
+
+Zach writes:
+
+> The JSON files were basically just a "stopgap" solution to allow for
+> multiple genotype files for any given group (which previously wasn't
+> possible), and they don't even exist for most groups - the code uses
+> them only if they exist for a given group. They contain the
+> title/label, filename, and sample lists for situations where the other
+> genotype files only contain a subset of the samples from the full
+> sample list, but otherwise (and usually) the samplelist is just fetched
+> from the .geno file. It's also possible to fetch that subset of samples
+> from the other/alternate .geno files, but it's easier to just fetch the
+> samples as a list from that .json file than it is to parse it out of
+> the other .geno files (and the JSON file would still be used to to get
+> the "title" and filenames, so it's already being read in the code).
+> Basically the JSON files are just a sort of "genotype file metadata"
+> thing to deal with the existence of multiple genotype files for a
+> single group and provide the "attributes" of the files in question
+> (namely the title and filename - the sample lists were only added later
+> once we started to get genotype files that didn't contain the full
+> samplelist for the group in question). The "titles" appear in the
+> drop-down on the trait page* - in their absence it will just use
+> "{group_name}.geno" (for example BXD.geno). So if you deleted BXD.json,
+> mapping would still work for BXD, but it would just default to BXD.geno
+> and wouldn't give the option of other files. This information could
+> probably also be stored somehow in the .geno file, but I'm not sure how
+> to easily do so since that's a weird proprietary format and would
+> seemingly require some sort of direct parsing in the GN code (while
+> JSON is more simple to deal with).
+
+=> https://genenetwork.org/show_trait?trait_id=1427571_at&dataset=HC_M2_0606_P
+
+> If you scroll down to mapping and Inspect Element on the
+> Genotypes drop-down you'll see how the values are the actual filenames
+> while the text is the title from the JSON file
+
+So this is genotype metadata which could go into virtuoso (where all metadata belongs).
+Anyway, we'll get there when the time comes, but for now I can use it to see what genotypes we have in the genotype file and write the phenotype file accordingly.
+
+I note we also have a GenoData table in mariadb which has allele info. The script
+
+=> https://github.com/genenetwork/genenetwork2/blob/testing/scripts/maintenance/load_genotypes.py
+
+loads these from the BXD.geno-type files. As far as I can tell GenoData is not used in GN2+GN3. Other Geno files are basically used to fetch metadata on genotypes.
+
+Genotype state lives in 4 places. Time to create a 5th one with lmdb ;). At least the BXD.json file lines up with BXD.8.geno and the BIMBAM version with 235 inds.
+
+Using this information we created our first phenotype file and GEMMA run!
 
 ## More complicated datasets
 
