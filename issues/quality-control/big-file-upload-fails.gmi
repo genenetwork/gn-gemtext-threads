@@ -5,7 +5,7 @@
 * assigned: fredm
 * priority: high
 * type: bug
-* status: open, started
+* status: closed, completed
 * keywords: qc, quality control
 
 ## Description
@@ -34,3 +34,10 @@ LimitRequestBody 53687091200
 ```
 
 but it does not seem to change matters.
+
+
+Adding
+```
+timeout=900
+```
+to the gunicorn configuration file fixed the issue.
