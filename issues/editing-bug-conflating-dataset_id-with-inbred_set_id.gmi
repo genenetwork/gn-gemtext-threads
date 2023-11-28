@@ -3,12 +3,16 @@
 ## Tags
 
 * type: bug
-* status: open
+* status: closed
 * assigned: fredm, bonz
 * keywords: editing
 * priority: critical
 
 ## Description
+
+The issue described here should no longer exist after all the changes done for the editing work.
+
+----
 
 The existing code that handles editing of phenotypes conflates the `dataset_id` with the `inbred_set_id` in a number of places. This is a subtle, but insidious bug that might lead to the end user editing the wrong data, if the values for both these values ever differs.
 
