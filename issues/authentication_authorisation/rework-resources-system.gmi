@@ -23,3 +23,9 @@ For the "system" itself, and "user groups" we have special cases to handle the u
 With the addition of case-attribute editing stuff, we also run into the issue where the current existing system is not generic enough, and the code thus needs yet another edge case.
 
 This means that there is a need to refactor the code to make the concept of a "resource" global, and any/all privileges a user has should act on a particular resource. We can then add the resource types/categories as we encounter them, without having to change most of the core code dealing with the authorisations.
+
+### Tasks
+
+* [x] Make resource to represent the system itself
+* [x] Make resources, each representing one of the "user groups"
+* [ ] Make resources, each representing the users of the system -- maybe?
