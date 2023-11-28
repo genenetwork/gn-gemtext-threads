@@ -5,7 +5,7 @@
 * type: rewrite
 * priority: high
 * assigned: fredm
-* status: in progress
+* status: closed, completed
 * keywords: quality control
 
 
