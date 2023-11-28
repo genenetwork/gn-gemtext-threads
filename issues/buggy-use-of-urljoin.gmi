@@ -5,10 +5,14 @@
 * type: bug
 * priority: low
 * assigned: fredm
-* status: pending
+* status: closed, completed
 * keywords: url
 
 ## Description
+
+This issue was circumvented by ensuring all the configuration settings that are URIs end with a trailing slash. This ensures that the function can continue working as documented and expected.
+
+----
 
 The
 => https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urljoin `urllib.parse.urljoin` function
