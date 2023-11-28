@@ -3,7 +3,7 @@
 ## Tags
 
 * assigned: fred, fredm
-* status: open
+* status: closed, completed
 * priority: low
 * keywords: gn-auth, dependencies
 * type: improvement
@@ -11,3 +11,6 @@
 ## Description
 
 BCrypt has been superceded by better systems, and we need to move away from that.
+
+Bcrypt has been removed as a dependency with
+=> https://github.com/genenetwork/gn-auth/commit/d2ad3b1abffdeeb52e1b5f5a303a381aa3dd477c this commit
