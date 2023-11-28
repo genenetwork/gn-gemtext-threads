@@ -1,5 +1,13 @@
 # Phenotype Correlation Error
 
+## Tags
+
+* type: bug
+* priority: high
+* status: closed
+* assigned: fredm, zachs
+* keywords: correlation
+
 ## Fixed: Correlation against phenotypes fails (for at least some datasets)
 
 Example: Run a correlation against BXD Published Phenotypes (at the top of the drop-down menu) from here -
