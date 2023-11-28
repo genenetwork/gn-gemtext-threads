@@ -5,7 +5,7 @@
 * assigned: fredm, zachs
 * priority: urgent
 * type: bug
-* status: open
+* status: closed, completed
 * keywords: collections
 
 ## Description
