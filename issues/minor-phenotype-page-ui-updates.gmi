@@ -1,0 +1,20 @@
+# Minor Phenotype Page UI updates
+
+## Tags
+
+* assigned: bonfacem, robw, rupert
+* priority: high
+* type: ui
+* keywords: phenotypes
+* status: in progress
+
+## Description
+
+These are minor updates depending on feedback from Rob and Rupert.
+
+* [ ] Use standard format for publications.
+* [ ] Add a subscript for PubMed and add that somewhere.
+* [ ] Duplicate author list.
+* [x] Remove Underline at the very top.
+* [x] Fix Additive display
+* [ ] Add extra metadata from Phenotypes: "Peak -logP"(LOD-Score), peak-location, effect-size
