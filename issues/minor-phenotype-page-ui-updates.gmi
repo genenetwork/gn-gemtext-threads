@@ -12,9 +12,20 @@
 
 These are minor updates depending on feedback from Rob and Rupert.
 
-* [ ] Use standard format for publications.
-* [ ] Add a subscript for PubMed and add that somewhere.
-* [ ] Duplicate author list.
+* [x] Use standard format for publications.
+* [x] Add a subscript for PubMed and add that somewhere.
+* [x] Duplicate author list.
 * [x] Remove Underline at the very top.
 * [x] Fix Additive display
-* [ ] Add extra metadata from Phenotypes: "Peak -logP"(LOD-Score), peak-location, effect-size
+* [x] Add extra metadata from Phenotypes: "Peak -logP"(LOD-Score), peak-location, effect-size
+
+
+Resolved in: 77f9036298e8, abe23c624c66, a850acb21152 in:
+
+=> https://git.genenetwork.org/gn-transform-databases/tree/ gn-transform-databases
+
+Also, work in GN2 and GN3:
+
+=> https://github.com/genenetwork/genenetwork3/pull/138 Minor phenotype rdf query updates
+
+=> https://github.com/genenetwork/genenetwork2/pull/818 Phenotypes page minor updates
