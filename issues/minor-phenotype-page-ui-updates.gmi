@@ -6,7 +6,6 @@
 * priority: high
 * type: ui
 * keywords: phenotypes
-* status: in progress
 
 ## Description
 
