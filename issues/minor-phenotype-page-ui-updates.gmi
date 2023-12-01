@@ -33,3 +33,5 @@ Also, work in GN2 and GN3:
 => https://github.com/genenetwork/genenetwork2/pull/819 Handle the display of unpublished phenotypes
 
 => https://github.com/BonfaceKilz/genenetwork2/pull/new/fix-dataset-links-in-phenotype-page Fix dataset page links in Phenotypes UI Page
+
+* closed
