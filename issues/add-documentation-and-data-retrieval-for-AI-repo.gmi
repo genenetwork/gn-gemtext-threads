@@ -1,0 +1,17 @@
+# Add Documentation For Set Up and Data Retrieval For AI Repo
+
+## Tags
+
+* assigned: bonfacem, robw, rupert
+* priority: high
+* type: ui
+* keywords: phenotypes
+* status: in progress
+
+## Description
+
+* Improve the guix documentation for the AI repo.
+* Sharing TTL Information and Processing How-To
+* Share alternate way of getting sparql json-ld data from public endpoint outside isql.
+* Share json-ld gotchas.
+
