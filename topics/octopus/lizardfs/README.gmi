@@ -115,3 +115,16 @@ lizardfs-admin reload-config octopus01 9421
 ```
 
 It has not yet been tested to see how much this affects reading and writing to the HDDs or SSDs while this change is in effect.
+
+# Adding a node to the pool
+
+```
+addgroup -gid 600 lizardfs
+adduser -uid 600 -gid 600 lizardfs
+```
+
+In password
+
+```
+lizardfs:x:600:600:Lizard,,,:/var/lib/lizardfs:/bin/sbin/nologin
+```

@@ -1,29 +1,52 @@
 # Shepherd
 
-## Tags
+Here we record information on running shepherd (on Debian).
+
+# Tags
 
 * assigned: pjotrp, efraimf
 * type: documentation
 * keywords: system, shepherd
 * status: wip
-* priority: unclear
+* priority: normal
 
-## Quick overview
+# Issues
 
-Shepherd runs in systemd as a shepherd user
+* [ ] Currently guix system is started up using sudo as a shepherd user. This may be resolved in time when we start to use full Guix solutions
+
+# Quick overview
+
+On Debian the GNU shepherd can run in systemd as a 'shepherd' user because we typically run (system) containers that have root inside them.
 
 ```
 systemctl status user-shepherd.service
 ```
 
-## Description
+the systemd file can therefore look like:
 
-On Debian based systems we run shepherd as a shepherd user. The service gets started up through systemd.
+```
+[Unit]
+Description=Launch user shepherd daemon
+Wants=guix-daemon.service
+
+[Service]
+Type=simple
+ExecStart=/var/guix/profiles/per-user/shepherd/guix-profile/bin/shepherd
+User=shepherd
+Group=shepherd
+LimitNOFILE=8000
+
+[Install]
+WantedBy=multi-user.target
+```
+
+One advantage of using a normal user is that it is easy to test configurations as a different user on the same machine!
+
 There is currently a systemd service to automatically start shepherd
 on system boot-up. A copy of the service lives in the shepherd-service
 repository.
 
-The process for deploying the services:
+The process for deploying the services after creating the shepherd user is
 
 ```
 symlink shepherd-services/shepherd to $HOME/.config/shepherd
@@ -43,33 +66,4 @@ su shepherd
 /home/shepherd/.guix-profile/bin/herd status
 ```
 
-Adding a bash alias, such as "alias herd-herd='sudo -u shepherd
-/home/shepherd/.guix-profile/bin/herd'", will make it easier to
-interact with shepherd without needing to switch to the shepherd
-user. The logs for the various shepherd services are located in
-/home/shepherd/logs/ but are not yet timestamped. The log for shepherd
-itself is in /home/shepherd/.config/shepherd/shepherd.log. There is
-not yet a way to change this from a config file.
-
-
-```
-[Unit]
-Description=Launch user shepherd daemon
-Wants=guix-daemon.service
-
-[Service]
-Type=oneshot
-ExecStart=/var/guix/profiles/per-user/shepherd/guix-profile/bin/shepherd --socket=/home/shepherd/.config/shepherd/shepherd.sock
-User=shepherd
-Group=shepherd
-
-[Install]
-WantedBy=multi-user.target
-```
-
-=> https://git.genenetwork.org/efraim/shepherd-services Running shepherd services
-
-## Notes
-
-This seems to be documentation, and not necessarily a task, issue or enhancement to be worked on.
-It is a topic.
+Adding a bash alias, such as "alias herd-herd='sudo -u shepherd /home/shepherd/.guix-profile/bin/herd'", will make it easier to interact with shepherd without needing to switch to the shepherd user. The logs for the various shepherd services are located in /home/shepherd/logs/ but are not yet timestamped. The log for shepherd itself is in /home/shepherd/.config/shepherd/shepherd.log. There is not yet a way to change this from a config file.
