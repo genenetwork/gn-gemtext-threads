@@ -13,10 +13,16 @@ Here we record information on running shepherd (on Debian).
 # Issues
 
 * [ ] Currently guix system is started up using sudo as a shepherd user. This may be resolved in time when we start to use full Guix solutions
+* [ ] Monitor services inside system containers
 
 # Quick overview
 
 On Debian the GNU shepherd can run in systemd as a 'shepherd' user because we typically run (system) containers that have root inside them.
+To run the system containers and other services as different users we can use sudo.
+This is not ideal, but the idea is to be able to transition to a full Guix system in the future.
+Another issue is that services that run inside system containers are hard to monitor because shepherd only sees the outside of the container - at this point.
+
+We use systemd to handle shepherd:
 
 ```
 systemctl status user-shepherd.service
@@ -42,10 +48,6 @@ WantedBy=multi-user.target
 
 One advantage of using a normal user is that it is easy to test configurations as a different user on the same machine!
 
-There is currently a systemd service to automatically start shepherd
-on system boot-up. A copy of the service lives in the shepherd-service
-repository.
-
 The process for deploying the services after creating the shepherd user is
 
 ```
@@ -54,9 +56,7 @@ symlink shepherd-services/cron to $home/.config/cron
 symlink shepherd-services/*sh to $HOME
 ```
 
-When shepherd starts up it should start all the services. So currently
-that's bnw, gitea, ipfs, power, rn6app, singlecell and the mcron
-services, gitea-dump and pubmed.
+When shepherd starts up it should start all the services. So currently on tux02 that is bnw, gitea, ipfs, power, rn6app, singlecell and the mcron services, gitea-dump and pubmed.
 
 To use shepherd's herd command the command is 'sudo -u shepherd
 /home/shepherd/.guix-profile/bin/herd status'.
