@@ -918,6 +918,12 @@ select * from StrainXRef WHERE InbredSetId=1 AND Used_for_mapping="Y"
 
 so it looks like we need some extra logic to fetch the used individuals from the actual genotype file(s).
 
+For development I am running:
+
+```
+.guix-shell ruby --expose=/home/wrk/iwrk/opensource/code/genetics/gemma-wrapper/=/gemma-wrapper --expose=/home/wrk/iwrk/opensource/code/genetics/gemma/=/gemma -- guile -L . -s ./scripts/precompute/precompute-hits.scm
+```
+
 ## Writing the phenotype file
 
 For gemma we need to feed a phenotype file that has only the individuals that are in the genotype file (the other 'missing' phenotype values should be NAs).

@@ -118,13 +118,64 @@ It has not yet been tested to see how much this affects reading and writing to t
 
 # Adding a node to the pool
 
+We can add a mount point using mfsmount using systemd
+
+```
+[Unit]
+Description=LizardFS mounts
+After=syslog.target network.target
+
+[Service]
+Type=forking
+TimeoutSec=600
+ExecStart=/usr/local/guix-profiles/octo/bin/mfsmount -c /etc/lizardfs/mfsmount.cfg
+ExecStop=/usr/bin/umount /lizardfs
+
+[Install]
+WantedBy=multi-user.target
+```
+
+note it runs as the root user.
+
+It is a good idea to also run a chunk server on the node, so it effectively can cache information locally. For this we create a lizard account:
+
 ```
 addgroup -gid 600 lizardfs
 adduser -uid 600 -gid 600 lizardfs
 ```
 
-In password
+In password file
 
 ```
 lizardfs:x:600:600:Lizard,,,:/var/lib/lizardfs:/bin/sbin/nologin
+```
+
+Now we can run
+
+```
+/usr/local/guix-profiles/octo/sbin/mfschunkserver -c /etc/lizardfs/mfschunkserver_hdd.cfg -d start
+```
+
+and set up systemd with something like
+
+```
+[Unit]
+Description=LizardFS chunkserver daemon
+Documentation=man:mfschunkserver
+After=local-fs.target network.target lizardfs-master.service
+Wants=local-fs.target network-online.target
+
+[Service]
+Type=notify
+ExecStart=/usr/local/guix-profiles/octo/sbin/mfschunkserver -c /etc/lizardfs/mfschunkserver_hdd.cfg -d start
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-abort
+OOMScoreAdjust=-999
+IOAccounting=true
+IOWeight=250
+StartupIOWeight=100
+KeyringMode=inherit
+
+[Install]
+WantedBy=multi-user.target
 ```
