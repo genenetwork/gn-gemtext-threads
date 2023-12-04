@@ -1,0 +1,27 @@
+# My Software Development Journey so far,
+
+* The following includes a brief story reflecting my progress so far in learning software development as part of the GeneNetwork team.
+* I am currently a bioinformatics expert by profession. My sole responsibility is to use computational tools and knowledge in statistics and mathematics to answer biological questions and problems.
+  This is done by analyzing a bunch of biological data generated from a set of experiments.
+* I developed a keen interest in software development after understanding the enormous power software tools can provide to scientists regarding data analysis. Many scientists and bioinformaticists have the
+  ability to do data analysis. But very few appreciate learning or becoming competent in being able to write their own software tools to facilitate bioinformatics data analysis. And with this, my interest in 
+  developing softwares for bioinformatics purposes started to grow.
+* Being part of the GeneNetwork team, I have had, so far, the best experience growing as a software developer as well as a data engineer. I would love to share my progress so far, the current ongoing work, 
+  lessons I have learned so far, challenges encountered and how I managed to solve them, and the overall working environment with the team.
+
+## Early on Tasks 
+* Among the first tasks I was assigned involved understanding the general aspect of APIs (Application Programming Interfaces): how they work, different types (in this case, REST api), and  how to use and build them. I managed to work
+  on some of the tasks corresponding to this area. For more info, you can check out the following link below:
+=> https://github.com/fetche-lab/GeneNetwork_23FL/blob/main/API/python_REST-API_code.md
+* The other task involved experimenting with the SQLite tool in the process of understanding how to use the SQL database management system. The link to this task is:
+=> https://github.com/fetche-lab/GeneNetwork_23FL/tree/main/python_sql
+* Meanwhile, I am also taking the liberty of learning Python programming and getting familiar with contributing to the GeneNetwork web service.
+
+## Current and ongoing Tasks 
+* The current and ongoing tasks have mainly revolved around data curation and uploading them to the GeneNetwork web service. The primary focus involved uploading the test data as a demonstration, as well as uploading
+  Arabidopsis and C elegans phenotype datasets from known public sources (mostly NCBI, and AraQTL,) 
+* For data curation before uploading to the GeneNetwork database, which involved several data transformation steps, was important to ensure that there were no invalid dataset values to prevent the file to be
+  uploaded successfully. 
+* The biggest challenge so far has been to validate the strain names (represented as column headers in each dataset uploaded). The team responsible is currently working on this bug. 
+
+### Examples of datasets and scripts used in data preprocessing and transformation prior to a successful data upload 
