@@ -16,8 +16,8 @@ This issue will track the implementation of a system to allow the upload of stra
 
 ## TODO
 
-- [ ] UI to select species
-- [ ] UI to select or create a grouping for the strains (think InbredSet)
-- [ ] UI to select the CSV file with the strains data
-- [ ] UI to select the way to interprete the CSV file
-- [ ] Code to insert the new strains, into the database
+* [ ] UI to select species
+* [ ] UI to select or create a grouping for the strains (think InbredSet)
+* [ ] UI to select the CSV file with the strains data
+* [ ] UI to select the way to interprete the CSV file
+* [ ] Code to insert the new strains, into the database
