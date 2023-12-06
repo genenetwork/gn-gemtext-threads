@@ -1,0 +1,23 @@
+# Upload Strains
+
+## Tags
+
+* status: open
+* assigned: fredm, zachs, zsloan, acenteno
+* priority: high
+* type: feature-request
+* keywords: QC, quality control, strains
+
+## Description
+
+Currently, the uploader simply fails when it encounters unknown strains in the files being uploaded.
+
+This issue will track the implementation of a system to allow the upload of strains, and the grouping of said strains into populations/tissue etc.
+
+## TODO
+
+- [ ] UI to select species
+- [ ] UI to select or create a grouping for the strains (think InbredSet)
+- [ ] UI to select the CSV file with the strains data
+- [ ] UI to select the way to interprete the CSV file
+- [ ] Code to insert the new strains, into the database
