@@ -10,4 +10,7 @@
 
 Relevant PR's:
 
-=> https://github.com/genenetwork/genenetwork3/pull/139  Minor phenotype/dataset rdf query updates #139 
+=> https://github.com/genenetwork/genenetwork3/pull/139  (GN3) Minor phenotype/dataset rdf query updates #139 
+=> https://github.com/genenetwork/genenetwork2/pull/821 (GN2) Update datasets page with updated RDF json-ld results #821
+
+
