@@ -2,3 +2,14 @@
 
 * assigned: bonfacem
 * status: in progress
+
+Relevant PR's:
+
+=> https://github.com/genenetwork/genenetwork3/pull/139  (GN3) Minor phenotype/dataset rdf query updates #139 
+=> https://github.com/genenetwork/genenetwork2/pull/821 (GN2) Update datasets page with updated RDF json-ld results #821
+
+As seen in the original, page:
+
+=> https://gn1.genenetwork.org/webqtl/main.py?FormID=sharinginfo&GN_AccessionId=1 UTHSC Brain mRNA U74Av2 (Aug-Sep03)
+
+We still have utf-8 issues.  This would need a manual build.
