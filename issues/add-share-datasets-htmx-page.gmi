@@ -1,7 +1,6 @@
 # Add/Share Datasets HTMX Page
 
 * assigned: bonfacem
-* status: in progress
 
 Relevant PR's:
 
@@ -13,3 +12,16 @@ As seen in the original, page:
 => https://gn1.genenetwork.org/webqtl/main.py?FormID=sharinginfo&GN_AccessionId=1 UTHSC Brain mRNA U74Av2 (Aug-Sep03)
 
 We still have utf-8 issues.  This would need a manual build.
+
+
+Relevant commits related to this issues:
+
+=> https://github.com/genenetwork/genenetwork2/commit/43b4c53ebf77b8e5416965ce121ce659b9098463 (GN2) Make the font-size for block-quotes smaller compared to the default.
+
+=> https://github.com/genenetwork/genenetwork2/commit/932e5f64ce9505954151c6e1521fce697fc87d7e (GN2) Typo fix to make acknowledgenments appear in datasets page.
+
+=> https://github.com/genenetwork/genenetwork2/commit/78f3fe3c4080ca8e6a13cc25ecc599b25d6ba43c (GN2) Update how title is constructed to avoid having the accession Id appear as the title.
+
+=> https://github.com/genenetwork/genenetwork3/commits/main/ (GN3 )Fix typo in GoTree prefix.
+
+* closed
