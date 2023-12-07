@@ -1,0 +1,13 @@
+# Minor Datasets Page UI updates
+
+## Tags
+
+* assigned: bonfacem, robw, rupert
+* priority: high
+* type: ui
+* keywords: phenotypes
+
+
+Relevant PR's:
+
+=> https://github.com/genenetwork/genenetwork3/pull/139  Minor phenotype/dataset rdf query updates #139 
