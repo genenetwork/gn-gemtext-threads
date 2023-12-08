@@ -1,6 +1,7 @@
 # Add/Share Datasets HTMX Page
 
 * assigned: bonfacem
+* status: closed
 
 Relevant PR's:
 
