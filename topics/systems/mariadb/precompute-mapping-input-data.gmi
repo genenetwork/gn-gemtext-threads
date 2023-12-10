@@ -979,6 +979,28 @@ Genotype state lives in 4 places. Time to create a 5th one with lmdb ;). At leas
 
 Using this information we created our first phenotype file and GEMMA run!
 
+# Notes
+
+## NAs in GN
+
+A note from Zach:
+
+On Sat, Dec 09, 2023 at 06:09:56PM -0600, Zachary Sloan wrote:
+>    (After typing the rest of this out, I realized that part of the
+>    confusion might be about how locations are stored. We don't actually
+>    database locations in the ProbeSetXRef table - we only database the
+>    peak Locus marker name. This is then cross-referenced against the Geno
+>    table, where the actual Location is stored. This is the main source of
+>    the problem. So I think the best short-term solution might be to just
+>    directly database the locations in the ProbeSetXRef table. Those
+>    locations might become out of date, but as you mention they'd still
+>    probably be in the same ballpark.)
+
+It is logical to store the location with the peak - if it changes we
+should recompute. That also adds the idea that we should track the
+version of the genotypes in that table.
+
+
 ## More complicated datasets
 
 A good dataset to take apart is
