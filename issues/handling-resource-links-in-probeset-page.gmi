@@ -11,8 +11,7 @@
 
 During the finalization of the UI for endpoints, specifically the probeset page, modifications were made to streamline the ProbeSet RDF transform.  Unnecessary metadata was removed to reduce the transformed data.  Most of the metadata on the probeset page is utilized for constructing resources.  An example of a probeset page is:
 
-=> https://genenetwork.org/show_trait?trait_id=1435395_s_at&dataset=HC_M2_0606_P 
-Trait Data and Analysis for 1435395_s_at
+=> https://genenetwork.org/show_trait?trait_id=1435395_s_at&dataset=HC_M2_0606_P Trait Data and Analysis for 1435395_s_at
 
 Under the "Resource Links" section on this page, there's a specific URL:
 
