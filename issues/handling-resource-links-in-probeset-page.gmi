@@ -28,3 +28,31 @@ gn:probeset1435395_s_at gnt:hasGeneManiaResource <https://genemania.org/search/m
 ```
 
 The straightforward approach would be to construct this structure in the front-end.  However, the problem lies in the fact that these resource links are inferred, making it challenging to discern their connection within GN without visiting the website.  Therefore, it's preferable to store this information in RDF despite the ease of constructing it in the front-end.
+
+
+### GeneList Metadata
+
+Consider GN's approach for fetching GeneList entries for a specific trait.
+
+=> https://github.com/genenetwork/genenetwork2/blob/371cbaeb1b05a062d7f75083aa4ff7209e4e06b3/wqflask/wqflask/show_trait/show_trait.py#L398 Fetching GeneList for a given trait
+
+The GeneList table lacks unique GeneSymbols and GeneIds, as illustrated in the following examples:
+
+```
+SELECT * FROM GeneList WHERE SpeciesId = 1 AND GeneSymbol = "Sp3" AND GeneId = 20687 AND Chromosome = "2"\G
+```
+
+Duplicate entry examples:
+
+```
+SELECT * FROM GeneList WHERE GeneSymbol = "AB102723" AND 
+GeneId=3070 AND SpeciesId = 4 \G
+
+SELECT * FROM GeneList WHERE SpeciesId = 1 AND GeneSymbol = "Sp3" AND GeneId = 20687 AND Chromosome = "2"\G
+```
+
+Identifying duplicates:
+
+```
+SELECT GeneSymbol, GeneId, SpeciesId, COUNT(CONCAT(GeneSymbol, "_", GeneId, "_", SpeciesId)) AS `count` FROM GeneList GROUP BY BINARY GeneSymbol, GeneId, chromosome, txStart, txEnd HAVING COUNT(CONCAT(GeneSymbol, "_", GeneId, "_", SpeciesId)) > 1;
+```
