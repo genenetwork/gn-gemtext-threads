@@ -69,4 +69,12 @@ The aforementioned command takes:
 * user: 175m47.684s
 * sys: 6m15.076s
 
+A second try:
+
+* real: 87m45.751s
+* user: 179m40.676s
+* sys: 7m13.456s
+
+The file-size of the transformed metadata is 6.0G which is to be expected.
+
 Optimisations---perhaps using guile-fibers---can be considered later.
