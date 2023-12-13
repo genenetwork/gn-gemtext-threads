@@ -55,3 +55,18 @@ Identifying duplicates:
 ```
 SELECT GeneSymbol, GeneId, SpeciesId, COUNT(CONCAT(GeneSymbol, "_", GeneId, "_", SpeciesId)) AS `count` FROM GeneList GROUP BY BINARY GeneSymbol, GeneId, chromosome, txStart, txEnd HAVING COUNT(CONCAT(GeneSymbol, "_", GeneId, "_", SpeciesId)) > 1;
 ```
+
+Transforming ProbeSet metadata takes long.  The exact command:
+
+```shell
+time guix shell guile-dbi \
+guile-hashing -m manifest.scm -- ./pre-inst-env ./examples/probeset.scm --settings conn.scm --output /export/data/genenetwork-virtuoso/probeset-metadata.ttl --documentation ./docs/probeset-metadata.md
+```
+
+The aforementioned command takes:
+
+* real: 89m1.715s
+* user: 175m47.684s
+* sys: 6m15.076s
+
+Optimisations---perhaps using guile-fibers---can be considered later.
