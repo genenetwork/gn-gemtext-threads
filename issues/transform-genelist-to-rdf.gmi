@@ -20,3 +20,11 @@ Example:
 
 When dumping data, it's unclear how resources (GeneMANIA, STRING, PANTHER, etc.)  become links---they are manually constructed in GN's source code.  This transformation is crucial when converting data to RDF.
 
+## Resolution
+
+This has been resolved in 533c8d85809b, cfcfa78e0149 in:
+
+=> https://git.genenetwork.org/gn-transform-databases/ gn-transform-databases
+
+* closed
+
