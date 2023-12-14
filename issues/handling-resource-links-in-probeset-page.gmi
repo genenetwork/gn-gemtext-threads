@@ -28,15 +28,24 @@ gn:probeset1435395_s_at gnt:hasGeneManiaResource <https://genemania.org/search/m
 
 The straightforward approach would be to construct this structure in the front-end.  However, the problem lies in the fact that these resource links are inferred, making it challenging to discern their connection within GN without visiting the website.  Therefore, it's preferable to store this information in RDF despite the ease of constructing it in the front-end.
 
+One link that's difficult to construct is the UCSC link:
 
+=> http://genome.cse.ucsc.edu/cgi-bin/hgTracks?db=mm10&hgg_gene=NM_020582&hgg_chrom=chr5&hgg_start=145183705&hgg_end=145191592
 
+To construct the above link, we need to have the ProbeSet.refseq_transcriptid and the GeneList.TxStart/GeneList.TxEnd.  However, doing a join between these 2 tables takes too long and the generated file get's too big.
 
+### Resolution
 
 Transforming ProbeSet metadata takes long.  The exact command:
 
 ```shell
 time guix shell guile-dbi \
-guile-hashing -m manifest.scm -- ./pre-inst-env ./examples/probeset.scm --settings conn.scm --output /export/data/genenetwork-virtuoso/probeset-metadata.ttl --documentation ./docs/probeset-metadata.md
+     guile-hashing -m manifest.scm \
+     -- ./pre-inst-env \
+     ./examples/probeset.scm --settings \
+     conn.scm --output \
+     /export/data/genenetwork-virtuoso/probeset-metadata.ttl \
+     --documentation ./docs/probeset-metadata.md
 ```
 
 The aforementioned command takes:
@@ -54,3 +63,5 @@ A second try:
 The file-size of the transformed metadata is 6.0G which is to be expected.
 
 Optimisations---perhaps using guile-fibers---can be considered later.
+
+* closed
