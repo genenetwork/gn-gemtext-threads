@@ -5,7 +5,7 @@
 * assigned: bonfacem
 * priority: high
 * type: ui
-* keywords: phenotypes
+* keywords: virtuoso
 * status: stalled
 
 ## Description
