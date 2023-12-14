@@ -1,0 +1,19 @@
+# Add HTML Page for ProbeSet Page
+
+## Tags
+
+* assigned: bonfacem
+* priority: high
+* type: ui
+* keywords: phenotypes
+* status: stalled
+
+## Description
+
+Modelling ProbeSet/GeneList metadata has already been completed in:
+
+=> https://issues.genenetwork.org/issues/handling-resource-links-in-probeset-page Handling Resource Links in ProbeSet Page
+
+=> https://issues.genenetwork.org/search?query=tag%3Avirtuoso Add GeneList to Metadata
+
+Remaining work is to display this work in GN2.
