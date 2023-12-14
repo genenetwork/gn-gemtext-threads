@@ -18,7 +18,34 @@ Example:
 
 => https://genenetwork.org/show_trait?trait_id=1460303_at&dataset=HC_M2_0606_P Trait Data and Analysis for 1460303_at
 
-When dumping data, it's unclear how resources (GeneMANIA, STRING, PANTHER, etc.)  become links---they are manually constructed in GN's source code.  This transformation is crucial when converting data to RDF.
+When transforming data, it's unclear how resources (GeneMANIA, STRING, PANTHER, etc.)  become links---they are manually constructed in GN's source code.  This transformation is crucial when converting data to RDF.
+
+## GeneList Metadata
+
+Consider GN's approach for fetching GeneList entries for a specific trait.
+
+=> https://github.com/genenetwork/genenetwork2/blob/371cbaeb1b05a062d7f75083aa4ff7209e4e06b3/wqflask/wqflask/show_trait/show_trait.py#L398 Fetching GeneList for a given trait
+
+The GeneList table lacks unique GeneSymbols and GeneIds, as illustrated in the following examples:
+
+```
+SELECT * FROM GeneList WHERE SpeciesId = 1 AND GeneSymbol = "Sp3" AND GeneId = 20687 AND Chromosome = "2"\G
+```
+
+Duplicate entry examples:
+
+```
+SELECT * FROM GeneList WHERE GeneSymbol = "AB102723" AND 
+GeneId=3070 AND SpeciesId = 4 \G
+
+SELECT * FROM GeneList WHERE SpeciesId = 1 AND GeneSymbol = "Sp3" AND GeneId = 20687 AND Chromosome = "2"\G
+```
+
+Identifying duplicates:
+
+```
+SELECT GeneSymbol, GeneId, SpeciesId, COUNT(CONCAT(GeneSymbol, "_", GeneId, "_", SpeciesId)) AS `count` FROM GeneList GROUP BY BINARY GeneSymbol, GeneId, chromosome, txStart, txEnd HAVING COUNT(CONCAT(GeneSymbol, "_", GeneId, "_", SpeciesId)) > 1;
+```
 
 ## Resolution
 
