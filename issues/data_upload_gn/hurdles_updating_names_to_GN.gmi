@@ -1,0 +1,17 @@
+### HURDLES ASSOCIATED WITH UPDATING SAMPLE/STRAINS NAMES TO THE GENENETWORK WEBSERVICE DATABASE 
+
+ * Uploading datasets to the genenetwork database has recently been challenging due to the following reasons; 
+
+	* Some files contain strain names or sample names that are not found in the database 
+	* Some files contain strain names or sample names that are labelled differently but sharing the same genotypes with readily available datasets in the database 
+	* The uploader needs to be upgraded to cater for the challenges mentioned above 
+
+* This short document issues such a challenge, so as it can be tackled by the appropriate personnel at hand
+
+* In addition, the following were suggestions aired out after a series of discussions with the team responsible with maintaining the GN uploader;  
+
+	* Suggestion to compare genotypes between the available datasets in the database and the ones to be updated
+	* Experiment both datasets and compare their results to see the comparisons or differences there is 
+	* Coming to an agreement on how to establish an efficient naming convention system and update such information to the metadata corresponding to the datasets 
+
+* More contributions to this issue would be so much appreciated too., 
