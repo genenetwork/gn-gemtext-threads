@@ -17,3 +17,7 @@ Modelling ProbeSet/GeneList metadata has already been completed in:
 => https://issues.genenetwork.org/search?query=tag%3Avirtuoso Add GeneList to Metadata
 
 Remaining work is to display this work in GN2.
+
+## Resolution
+
+=> https://github.com/genenetwork/genenetwork3/pull/141  Probeset metadata rdf update #141 (GN3)
