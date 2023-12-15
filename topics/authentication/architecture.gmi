@@ -1,0 +1,93 @@
+# GeneNetwork Authentication/Authorisation Architecture
+
+## Tags
+
+* type: docs, documentation
+* status: ongoing, open
+* keywords: authentication, authorisation, architecture, docs, documentation
+* author: Frederick Muriuki Muriithi
+
+## Introduction
+
+There are various operation on the data that require some form of authorisation, examples of which include
+* uploading new data
+* editing data
+* user management
+etc.
+
+This document is all about how the authorisation (and to a small extent, the authentication) system is designed and built.
+
+There are three core concepts:
+* Privileges
+* Resources
+* Users
+and 2 minor concepts
+* Roles
+* User groups
+that are used in the organisation of the authorisation system.
+
+We shall tackle each of the concepts in the sections that follow.
+
+## Privileges
+
+Privileges determine what operations a user (see the "Users" section) is allowed to perform on a resource (see "Resources" section). They are implemented as string tokens that are checked for to ensure a user has the right to perform the operation they request.
+
+Examples of privileges:
+
+```
+|--------------------------------------+--------------------------------------------------------|
+| Privilege Name/Token                 | Description                                            |
+|--------------------------------------+--------------------------------------------------------|
+| group:resource:create-resource       | Create a new resource linked to a specific group       |
+| system:user:list                     | List users registered on the system                    |
+| system:inbredset:edit-case-attribute | Edit the values of case-attributes of InbredSet groups |
+|--------------------------------------+--------------------------------------------------------|
+```
+
+as is implied by the examples above, the privilege name/token is human-readable for the benefit of maintainers/developers of the system. In reality, these tokens could be any random text, but that would lead to a lot of "magic strings" in the code and documentation which would complicate maintainance of the system, and make the cognitive load exponentially larger for developers/maintainers.
+
+## Resources
+
+Everything[*1] that a user can act upon in the system, including the system itself, is considered a resource.
+
+Users are granted privileges (see "Privileges" section) to act upon resources, that are then used to determine what operations that user can perform upon a particular resource.
+
+Examples of "types" of resources on the system:
+
+- system: The system itself
+- group: Collection of users considered a group
+- genotype: A resource representing a genotype trait
+- phenotype: A resource representing a phenotype trait
+- mrna: A resource representing a collection of mRNA Assay traits
+- inbredset-group: A resource representing an InbredSet group
+
+* TODO: Figure out a better name/description for "InbredSet group" -- so far, I have "a classification/grouping of traits/datasets within a species". Another is to use the term "population".
+
+## Users
+
+A system without users is for most part useless. Users are the human beings (and possibly automated clients/bots) that can act on the system.
+
+Since GeneNetwork is a shared system (i.e. many different users (can) use the system at the same time), it is necessary to limit the operations any particular user is allowed to perform on the system -- after all, we do not want some user deleting all the data from the system, or corrupting the existing data, etc.
+
+The authorisation system therefore needs to be aware of users, and what privileges they have to act upon any particular system.
+
+* TODO: Maybe flesh out the statement below some more. It seems a tad technical, so maybe separate it from the high-level overview suitable for users?
+This is also where the authentication system comes in: The authentication part of the system, allows the user to identify themselves at login, and from there, they can simply use the token they receive to identif themselves.
+
+## Roles
+
+To avoid having to always deal with one privilege at a time, the system comes with some template roles, and allows the creation of group-level roles.
+
+A role is simply a collection of privileges that can be assigned to a user for a specific resource.
+
+Roles tend to be specific to the "type" of resource they are to be created/assigned for.
+
+## User Groups
+
+The system does give a way to organise the users into user groups. These are mostly meant to reflect the study/experiment/lab groups in real life.
+
+A user in the system can only ever belong to one and only one user group. Resources are also "owned" by these groups, for most part.
+
+# Footnotes
+
+- [*1]: Users, are at this point (2023-12-04T22:27+03:00UTC) not treated as resources, but the author is seriously considering proposing and implementing this

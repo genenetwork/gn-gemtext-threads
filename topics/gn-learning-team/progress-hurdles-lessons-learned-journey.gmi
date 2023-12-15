@@ -1,5 +1,6 @@
 # My Software Development Journey so far,
 
+
 * The following includes a brief story reflecting my progress so far in learning software development as part of the GeneNetwork team.
 * I am currently a bioinformatics expert by profession. My sole responsibility is to use computational tools and knowledge in statistics and mathematics to answer biological questions and problems.
   This is done by analyzing a bunch of biological data generated from a set of experiments.

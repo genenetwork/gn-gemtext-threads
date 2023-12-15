@@ -6,6 +6,10 @@ When the user signs in to GN2, there is no info on the account name in the menu.
 
 * assigned: bonfacem
 * priority: medium
-* status: unclear
+* status: closed, completed
 * type: bug
 * keywords: authentication, user info
+
+## Description
+
+The account name is displayed whenever the user is logged in.
