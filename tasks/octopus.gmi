@@ -1,0 +1,47 @@
+# Octopus HPC
+
+In this file we track tasks that need to be done.
+
+# Tasks
+
+* [X] get lizardfs and NFS going on tuxes tux06-09
+* [X] disable guix daemon on tuxes because we mount octopus01
+* [X] add PBS
+
+Later
+
+* [ ] tighten NFS allowed IPs
+* [ ] tighten lizard allowed IPs
+* [ ] sheepdog and fstrim
+* [ ] remote backups of configuration
+
+# Commands
+
+```
+export NODE=tux07
+./run-node.sh $NODE 'addgroup --gid 1004 guarracino'
+./run-node.sh $NODE 'adduser -uid 1004 --gid 1004 guarracino'
+./run-node.sh $NODE 'mkdir /home/guarracino/.ssh'
+scp -r /home/guarracino/.ssh/authorized_keys $NODE:/home/guarracino/.ssh/authorized_keys
+./run-node.sh $NODE 'chown guarracino:guarracino /home/guarracino/.ssh -R'
+ssh -i /home/guarracino/.ssh/id_ecdsa guarracino@$NODE
+./run-node.sh $NODE 'usermod -a -G sudo guarracino'
+```
+
+```
+apt-get install parted lvm2 mdadm
+parted -a optimal /dev/sdb
+
+(parted) mklabel gpt
+(parted) mkpart fat23 0% 1GB
+(parted) set 1 esp on
+(parted) align-check optimal 1
+(parted) mkpart bulk 1GB -1
+
+mkfs.xfs /dev/sdb2
+```
+
+```
+apt-get install nfs-common
+add to fstab: octopus01:/export       /export nfs     defaults        0 0
+```
