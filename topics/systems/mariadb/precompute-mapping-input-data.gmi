@@ -979,6 +979,16 @@ Genotype state lives in 4 places. Time to create a 5th one with lmdb ;). At leas
 
 Using this information we created our first phenotype file and GEMMA run!
 
+# Storing output
+
+To kick off precompute we added new nodes to the Octopus cluster: doubling its capacity. In the next step we have to compress the output of GEMMA so we can keep it forever. For this we want to have the peaks (obviously), but we als want to retain the 'shape' of the distribution - i.e., the QTL with sign. This shape we can use for correlations and potentially some AI-style mining. The way it is presented in AraQTL.
+
+For the sign we can use the SNP additive effect estimate. The se of Beta is a function of MAF of the SNP. So if you want to present Beta as the SNP additive effect for a standardized genotype, then you want to use Beta/se; otherwise, Beta is the SNP additive effect for the original, unstandardized genotype. The Beta is obtained by controlling for population structure. For effect sign we need to check the incoming genotypes because they may have been switched.
+
+Anyway, we can consider compressing the shape the way a CDROM is compressed.
+
+
+
 # Notes
 
 ## NAs in GN
@@ -1008,3 +1018,9 @@ A good dataset to take apart is
 => http://genenetwork.org/show_trait?trait_id=1436869_at&dataset=HC_M2_0606_P
 
 because it has 71 BXD samples and 32 other samples.
+
+## Variations
+
+This paper discusses a number of approaches that may be interesting:
+
+=> https://biodatamining.biomedcentral.com/articles/10.1186/s13040-023-00331-3 Automated quantitative trait locus analysis (AutoQTL)
