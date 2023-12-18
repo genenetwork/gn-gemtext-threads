@@ -26,7 +26,7 @@ I'm not sure how to deal with this. The only thing I can think of is having some
 
 Discovered new issue while troubleshooting this one:
 
-=> issues/collections_count_bug Collections Count Bug
+=> /issues/collections_count_bug Collections Count Bug
 
 ## Fixes
 
