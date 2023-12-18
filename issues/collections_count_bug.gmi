@@ -1,0 +1,13 @@
+# Collections Count Bug
+
+## Tags
+
+* assigned: fredm
+* priority: medium
+* type: bug
+* status: open
+* keywords: collections
+
+## Description
+
+If the user creates even a single collection, a default collection with the name `Your Default Collection` gets created. This collection will sometimes be empty and therefore doesn't show up on the page. It, however, counts towards the total displayed on the badge.

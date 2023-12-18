@@ -21,3 +21,9 @@ To reproduce:
 The reason for this seems pretty clear after looking at the code. There's something in the index page template that checks if anon_collections > 0, and it shows the pop-up if it is. So importing collections naturally doesn't get rid of this, since anon_collections still exist (which is desirable, since they should still be accessible if the user logs out).
 
 I'm not sure how to deal with this. The only thing I can think of is having some sort of flag indicating "collections have already been imported," but I'm not sure where to put that flag. And ideally it also needs to detect if there's any overlap between existing collections and the anon_collections (I'm not sure if it does this currently).
+
+## Notes
+
+Discovered new issue while troubleshooting this one:
+
+=> issues/collections_count_bug Collections Count Bug
