@@ -4,11 +4,15 @@
 
 * assigned: fredm, zsloan, zachs
 * priority: medium
-* status: open
+* status: closed, completed
 * keywords: authentication, authorisation, oauth2, data migration
 * type: migration
 
 ## Description
+
+A script was built for this and has been already been used.
+
+----
 
 From the information coming to light, all the "current data" needs to be publicly visible. There is therefore need to implement a temporary script that will be manually run to organise the data into resources and user groups and assign the appropriate privileges.
 
