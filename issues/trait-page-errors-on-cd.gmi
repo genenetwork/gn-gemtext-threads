@@ -4,7 +4,7 @@
 
 * type: bug
 * priority: critical, high
-* status: open
+* status: closed, completed
 * keywords: trait page
 * assigned:
 
