@@ -5,7 +5,7 @@
 * assigned: fredm, zachs
 * priority: urgent
 * type: bug
-* status: open
+* status: closed, completed
 * keywords: collections
 
 ## Description
@@ -27,3 +27,8 @@ I'm not sure how to deal with this. The only thing I can think of is having some
 Discovered new issue while troubleshooting this one:
 
 => issues/collections_count_bug Collections Count Bug
+
+## Fixes
+
+=> https://github.com/genenetwork/genenetwork2/commit/dd0673f95ed3508d42c93fd9cdfc2523979db284
+=> https://github.com/genenetwork/gn-auth/commit/5a644ebea8bf9708ec89674e5789a88add56b440
