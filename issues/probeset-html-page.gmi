@@ -6,7 +6,7 @@
 * priority: high
 * type: ui
 * keywords: virtuoso
-* status: stalled
+* status: in progress
 
 ## Description
 
