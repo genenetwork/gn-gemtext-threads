@@ -47,11 +47,21 @@ Identifying duplicates:
 SELECT GeneSymbol, GeneId, SpeciesId, COUNT(CONCAT(GeneSymbol, "_", GeneId, "_", SpeciesId)) AS `count` FROM GeneList GROUP BY BINARY GeneSymbol, GeneId, chromosome, txStart, txEnd HAVING COUNT(CONCAT(GeneSymbol, "_", GeneId, "_", SpeciesId)) > 1;
 ```
 
-## Resolution
 
-This has been resolved in 533c8d85809b, cfcfa78e0149 in:
+## Unique Gene Identifiers
 
-=> https://git.genenetwork.org/gn-transform-databases/ gn-transform-databases
+In the GeneList table, some genes share GeneIds and GeneSymbols. GeneIds are unique within a species, while GeneSymbols are unique across species. In cases where GeneSymbols and GeneIDs match, different AlignIDs exist. To create unique identifiers for genes in the GeneList table, we use a query like:
+
+```sql
+SELECT CONCAT_WS("_", GeneSymbol, GeneID, AlignID) FROM GeneList;
+```
+
+For the GeneList_rn33 table, due to ambiguous cases, we rely on the table's id as a unique identifier. Here's an example of duplicate entries for a gene, differing only in txStart/txEnd/cdsStart/cdsEnd/exonStarts/exonEnd values:
+
+```sql
+SELECT * FROM GeneList_rn33 WHERE geneSymbol="Cbara1" AND NM_ID="NM_199412"\G
+```
+
 
 * closed
 
