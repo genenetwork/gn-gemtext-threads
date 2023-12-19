@@ -10,11 +10,11 @@
 
 ### Problem description 
 
-#### Observations made by Rob 
+### Observations made by Rob 
 There was failure in enforcing unique {sample/case/individual} names when naming column datasets within and across 
 
-#### Observations by Zachary 
+### Observations by Zachary 
 The phenogen track is biased towards mouse and/or rat. Does not check for species, which is an important functionality to be included. 
 
-#### Harm Dataset genetype names versus the available genetype names in GeneNetwork webservice database 
+### Harm Dataset genetype names versus the available genetype names in GeneNetwork webservice database 
 There is/was a hurdle on identifying if the genetype name used in Harm dataset are the same as the ones in GN, or at least do they point to the same genotype dataset.  
