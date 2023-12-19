@@ -10,4 +10,6 @@ We need to be rebuilding the xapian index only when the database changes. Here's
 * [x] Register database table checksums in the xapian index.
 * [x] Trigger an index rebuild only when the checksums have changed.
 
+We now rebuild the xapian index up to once an hour. A cron job runs every hour and checks if the database checksums have changed. If they have indeed changed, the cron job triggers the xapian index rebuild CI job.
+
 * closed
