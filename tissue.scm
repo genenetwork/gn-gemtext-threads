@@ -29,6 +29,7 @@
  #:aliases '(("Alexander Kabui" "Alexander" "alex" "alexk")
              ("Arun Isaac" "arun" "aruni")
              ("BonfaceKilz" "Bonface Kilz" "bonfacem")
+	     ("Felix Lisso" "fetche")
              ("Efraim Flashner" "efraimf")
              ("Erik Garrison" "erikg")
              ("Frederick Muriuki Muriithi" "Muriithi Frederick Muriuki" "fredm" "fred")
