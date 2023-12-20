@@ -20,9 +20,9 @@ This development will be done in stages:
 * [ ] 9 - integrate new functionality into GN{2-3}
 
 ## Tasks for Priscilla
-* [-] 1 - Acquire 1000 research documents w.r.t. Genetics, genomics research on diabetes
+* [X] 1 - Acquire 1000 research documents w.r.t. Genetics, genomics research on diabetes
 * [X] 2 - Acquire 1000 more research documents w.r.t GeneNetwork.org
-* [-] 3 - Get bib data for documents and put in json format
+* [X] 3 - Get bib data for documents and put in json format
 
 ## Task for collaborator
 * [X] Build feedback into api for qualifying/rating references and answers
@@ -59,3 +59,14 @@ improvement suggestions from CTC
 * [ ] Ontology annotations in GN
 * [ ] Gene prioritization
 * [ ] Improving pdf to text algorithm
+
+Build lisp tools for pdf document processing.
+A probable library to use can be found at https://github.com/archimag/cl-pdf
+* [X] read directory structure
+* [ ] filter pdf files
+* [ ] call library to extract text from pdf
+* [ ] create rules to remove headings, references, and appendices
+* [ ] create json document with extracted data with bibliographical information
+* [ ] take file text and run through a tokenizer
+* [ ] make string tokenizer plug-n-play
+
