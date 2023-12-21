@@ -1,6 +1,6 @@
-## Challenges with uploading phenotype and genotype files 
+# Challenges with uploading phenotype and genotype files 
 
-### Tags 
+## Tags
 
 * assigned: fetche, fred
 * priority: high 
@@ -8,7 +8,7 @@
 * keywords: uploader
 * status: in progress 
 
-### Problem description 
+## Description
 
 ### Observations made by Rob
 
