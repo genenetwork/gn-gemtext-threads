@@ -2,16 +2,17 @@
 
 ### Tags 
 
-* assigned: bonfacem, fred
-* prioruty: high 
+* assigned by:flisso
+* assigned to: bonfacem, fred
+* priority: high 
 * type: backend 
-* keywords: 
+* keywords: uploader
 * status: in progress 
 
 ### Problem description 
 
 ### Observations made by Rob 
-There was failure in enforcing unique {sample/case/individual} names when naming column datasets within and across 
+There was failure in enforcing unique sample/case/individual names when naming column datasets within and across 
 
 ### Observations by Zachary 
 The phenogen track is biased towards mouse and/or rat. Does not check for species, which is an important functionality to be included. 
