@@ -2,8 +2,7 @@
 
 ### Tags 
 
-* assigned by:flisso
-* assigned to: bonfacem, fred
+* assigned: fetche, fred
 * priority: high 
 * type: backend 
 * keywords: uploader
