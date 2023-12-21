@@ -1,8 +1,11 @@
 # My Software Development Journey so far,
 
+
 The following includes a brief story reflecting my progress so far in learning software development as part of the GeneNetwork team.I am currently a bioinformatics expert by profession. My sole responsibility is to use computational tools and knowledge in statistics and mathematics to answer biological questions and problems.This is done by analyzing a bunch of biological data generated from a set of experiments.I developed a keen interest in software development after understanding the enormous power software tools can provide to scientists regarding data analysis. Many scientists and bioinformaticists have theability to do data analysis. But very few appreciate learning or becoming competent in being able to write their software tools to facilitate bioinformatics data analysis. And with this, my interest in developing softwares for bioinformatics purposes started to grow.
 
 Being part of the GeneNetwork team, I have had, so far, the best experience growing as a software developer as well as a data engineer. I would love to share my progress so far, the current ongoing work, lessons I have learned so far, challenges encountered, how I managed to solve them, and the overall working environment with the team.
+
+
 
 ## Early on Tasks 
 
