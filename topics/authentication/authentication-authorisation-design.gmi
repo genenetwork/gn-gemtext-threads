@@ -154,8 +154,8 @@ The privileges shall come as part of the system, and shall not be UI manageable.
 
 The following issues are related to this topic.
 
-=> /issues/authorisation Clean Up Authorisation (contains extra info)
-=> /topics/authentication/replace-hard-coded-auth-with-gn-proxy Replace Hard coded authentication with gn-proxy
-=> /topics/authentication/user-info Put user info in the a/c name in the menu
-=> /issues/authentication_authorisation/migrate-user-accounts-from-redis Migrate User Accounts from Redis to new Auth DB
-=> /issues/authentication_authorisation/build-oauth2-client-registration Build Registration Page for OAuth2 Clients
+=> /issues/authorisation (closed) Clean Up Authorisation (contains extra info)
+=> /topics/authentication/replace-hard-coded-auth-with-gn-proxy (closed) Replace Hard coded authentication with gn-proxy
+=> /topics/authentication/user-info (closed) Put user info in the a/c name in the menu
+=> /issues/authentication_authorisation/migrate-user-accounts-from-redis (closed) Migrate User Accounts from Redis to new Auth DB
+=> /issues/authentication_authorisation/build-oauth2-client-registration (closed) Build Registration Page for OAuth2 Clients

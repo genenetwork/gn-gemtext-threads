@@ -2,11 +2,11 @@
 
 ## Tags
 
-* assigned: bonfacem, robw, rupert
+* assigned: bonfacem, soloshelby
 * priority: high
 * type: ui
 * keywords: phenotypes
-* status: in progress
+* status: stalled
 
 ## Description
 

@@ -9,8 +9,10 @@ Atm genenetwork2's handling of authorisation is a bit clunky; Since @Bonface is 
 # Tags
 
 * assigned: bonfacem, pjotrp, zachs
-* keywords: authorisation
+* keywords: authorisation, reference
 * priority: medium
+* status: closed, completed, obsoleted
+* type: feature request
 
 ### Tasks
 

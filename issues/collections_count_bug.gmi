@@ -1,0 +1,17 @@
+# Collections Count Bug
+
+## Tags
+
+* assigned: fredm
+* priority: medium
+* type: bug
+* status: closed, completed
+* keywords: collections
+
+## Description
+
+If the user creates even a single collection, a default collection with the name `Your Default Collection` gets created. This collection will sometimes be empty and therefore doesn't show up on the page. It, however, counts towards the total displayed on the badge.
+
+## Fixes
+
+=> https://github.com/genenetwork/genenetwork2/commit/d16e4067ed7233ef34c24d7b1ede5442ad6e0f64

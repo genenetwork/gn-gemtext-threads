@@ -36,7 +36,7 @@ We need a CI job to run on every commit to guix-bioinformatics and check if guix
 
 Since our repositories are now Guix channels too, we can rewrite our existing genenetwork2/genenetwork3 CI jobs to be built and tested just like guix-bioinformatics.
 
-* [] Rewrite existing genenetwork2/genenetwork3 CI jobs using Guix channels
+* [x] Rewrite existing genenetwork2/genenetwork3 CI jobs using Guix channels
 
 The code we develop in this section will eventually move to guix-forge. Arun can handle this section.
 

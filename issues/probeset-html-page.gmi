@@ -1,0 +1,29 @@
+# Add HTML Page for ProbeSet Page
+
+## Tags
+
+* assigned: bonfacem
+* priority: high
+* type: ui
+* keywords: virtuoso
+* status: in progress
+
+## Description
+
+Modelling ProbeSet/GeneList metadata has already been completed in:
+
+=> https://issues.genenetwork.org/issues/handling-resource-links-in-probeset-page Handling Resource Links in ProbeSet Page
+
+=> https://issues.genenetwork.org/search?query=tag%3Avirtuoso Add GeneList to Metadata
+
+Remaining work is to display this work in GN2.
+
+## Resolution
+
+Some minor updates were done to fix how gene-symbols are transformed.  See: 1ea6e2dd7655, 00d36a2c7571, 03df1227c419, 1082c5bfb802.  Similarly, when constructing some resources, the relevant parameters were url-encoded to form valid urls.  See: 4a62e1781692, 56d09222742c, and 03df1227c419 from:
+
+=> https://git.genenetwork.org/gn-transform-databases/ gn-transform-databases
+
+Other Relevant PR's/Commits:
+
+=> https://github.com/genenetwork/genenetwork3/pull/141  Probeset metadata rdf update #141 (GN3)

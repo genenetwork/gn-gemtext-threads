@@ -1,0 +1,34 @@
+# Import Collections Pop-up Bug
+
+## Tags
+
+* assigned: fredm, zachs
+* priority: urgent
+* type: bug
+* status: closed, completed
+* keywords: collections
+
+## Description
+
+If you create collections while logged-out, log in, and import them, the notification asking if you want to import or delete will remain visible on the home page until you either log out or choose to delete instead.
+
+To reproduce:
+* Create a collection (just do a search like the following, select all, add to collection - https://genenetwork.org/search?species=mouse&group=BXD&type=Hippocampus+mRNA&dataset=HC_M2_0606_P&search_terms_or=shh&search_terms_and=&FormID=searchResult )
+* Log in
+* Choose "Import" in the "pop-up" and click Submit
+* The home/index page will continue to show the option to import/delete indefinitely
+
+The reason for this seems pretty clear after looking at the code. There's something in the index page template that checks if anon_collections > 0, and it shows the pop-up if it is. So importing collections naturally doesn't get rid of this, since anon_collections still exist (which is desirable, since they should still be accessible if the user logs out).
+
+I'm not sure how to deal with this. The only thing I can think of is having some sort of flag indicating "collections have already been imported," but I'm not sure where to put that flag. And ideally it also needs to detect if there's any overlap between existing collections and the anon_collections (I'm not sure if it does this currently).
+
+## Notes
+
+Discovered new issue while troubleshooting this one:
+
+=> /issues/collections_count_bug Collections Count Bug
+
+## Fixes
+
+=> https://github.com/genenetwork/genenetwork2/commit/dd0673f95ed3508d42c93fd9cdfc2523979db284
+=> https://github.com/genenetwork/gn-auth/commit/5a644ebea8bf9708ec89674e5789a88add56b440
