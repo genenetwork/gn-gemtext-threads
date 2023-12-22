@@ -35,6 +35,8 @@ MariaDB [db_webqtl]> select ProbeSetId,ProbeSetFreezeId,Locus,LRS,additive from 
 
 This means for every dataset one single maximum score gets stored (?)
 
-See also
+Moved to
 
 => ../../topics/systems/mariadb/precompute-mapping-input-data.gmi
+
+* closed
