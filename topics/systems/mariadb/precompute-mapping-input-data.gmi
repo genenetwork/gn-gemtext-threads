@@ -979,15 +979,38 @@ Genotype state lives in 4 places. Time to create a 5th one with lmdb ;). At leas
 
 Using this information we created our first phenotype file and GEMMA run!
 
-# Storing output
+# Successfully running gemma-wrapper
+
+Running the wrapper is a two step process:
+
+```
+env TMPDIR=tmp ruby ./bin/gemma-wrapper --force --json \
+        --loco -- \
+        -g test/data/input/BXD_geno.txt.gz \
+        -p test/data/input/BXD_pheno.txt \
+        -a test/data/input/BXD_snps.txt \
+        -gk > K.json
+env TMPDIR=tmp ruby ./bin/gemma-wrapper --json --input K.json \
+        -- \
+        -g test/data/input/BXD_geno.txt.gz \
+        -p test/data/input/BXD_pheno.txt \
+        -a test/data/input/BXD_snps.txt \
+        -lmm -maf 0.1 > G.json
+```
+
+The current LOCO approach leads to two files for every chromosome GRM and two files for every chr association output file. In this case 82 files with a total of 13Mb (4Mb compressed).
+That is a bit insane if you know the input is 300K, even knowing disk space is cheap(!) Cheap is not always cheap because we still need to process the data and with growing datasets the size grows rapidly overall.
+
+So, this is the right time to put gemma-wrapper on a diet. The GRM files are largest. Currently we create kinship files for every population subset that is used and that may change once we simply reduce the final GRM by removing cols/rows. But that is one exercise we want to prove first using our precompute exercise. In this case we will simply compress the kinship files and that halves the size with zip. xz compression brings it down to 1/4. That is impressive by itself. I also checked lmza and bzip2 and they were no better. So, with gemma-wrapper we can now store the GRMs in an xz archive. For the assoc files we will cat them in to one file and compress that too, reducing the size to 1/7th. As noted above, the current cache size for GN is 190Gb for 3 months. We can reduce that significantly and that will speed up lookups. Decompression with xz is very fast.
+
+# Storing assoc output
 
 To kick off precompute we added new nodes to the Octopus cluster: doubling its capacity. In the next step we have to compress the output of GEMMA so we can keep it forever. For this we want to have the peaks (obviously), but we als want to retain the 'shape' of the distribution - i.e., the QTL with sign. This shape we can use for correlations and potentially some AI-style mining. The way it is presented in AraQTL.
 
 For the sign we can use the SNP additive effect estimate. The se of Beta is a function of MAF of the SNP. So if you want to present Beta as the SNP additive effect for a standardized genotype, then you want to use Beta/se; otherwise, Beta is the SNP additive effect for the original, unstandardized genotype. The Beta is obtained by controlling for population structure. For effect sign we need to check the incoming genotypes because they may have been switched.
 
 Anyway, we can consider compressing the shape the way a CDROM is compressed.
-
-
+For now, in the next step we will compress the storage using xz - as discussed above. In the next step, after running the precompute and storing the highest hit in the DB, we will start using lmdb to store assoc values.
 
 # Notes
 
