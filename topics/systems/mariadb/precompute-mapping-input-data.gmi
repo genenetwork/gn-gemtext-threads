@@ -1003,6 +1003,10 @@ That is a bit insane if you know the input is 300K, even knowing disk space is c
 
 So, this is the right time to put gemma-wrapper on a diet. The GRM files are largest. Currently we create kinship files for every population subset that is used and that may change once we simply reduce the final GRM by removing cols/rows. But that is one exercise we want to prove first using our precompute exercise. In this case we will simply compress the kinship files and that halves the size with zip. xz compression brings it down to 1/4. That is impressive by itself. I also checked lmza and bzip2 and they were no better. So, with gemma-wrapper we can now store the GRMs in an xz archive. For the assoc files we will cat them in to one file and compress that too, reducing the size to 1/7th. As noted above, the current cache size for GN is 190Gb for 3 months. We can reduce that significantly and that will speed up lookups. Decompression with xz is very fast.
 
+# Storing GRM output
+
+gemma-wrapper stores per chromosome GRMs in separate files. The first fix was to store them in an xz archive. gemma-wrapper already uses a temporary directory so, that should be straightforward.
+
 # Storing assoc output
 
 To kick off precompute we added new nodes to the Octopus cluster: doubling its capacity. In the next step we have to compress the output of GEMMA so we can keep it forever. For this we want to have the peaks (obviously), but we als want to retain the 'shape' of the distribution - i.e., the QTL with sign. This shape we can use for correlations and potentially some AI-style mining. The way it is presented in AraQTL.
