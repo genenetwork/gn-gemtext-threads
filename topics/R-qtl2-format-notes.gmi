@@ -1,0 +1,38 @@
+# R/qtl2 Format Notes
+
+This document is mostly to help other non-biologists figure out their way around the format(s) of the R/qtl2 files. It mostly deals with the meaning/significance of the various fields.
+
+From the R/qtl2 format documentation:
+
+> The comma-delimited (CSV) files are each in the form of a simple matrix, with the first column being a set of IDs and the first row being a set of variable names.
+
+and
+
+> All of these CSV files may be transposed relative to the form described below.
+
+We are going to consider the "non-transposed" form here, for ease of documentation: simply flip the meanings as appropriate for the transposed files.
+
+## geno files
+
+> The genotype data file is a matrix of individuals × markers. The first column is the individual IDs; the first row is the marker names.
+
+For GeneNetwork, this means that the first column contains the Sample names (previously "strain names"). The first row would be a list of markers.
+
+## gmap and pmap files
+
+The first column of the gmap/pmap file contains genetic marker values. There are no Individuals/samples (or strains) here.
+
+## pheno files
+
+The first column is the list of individuals (samples/strains) whereas the first column is the list of phenotypes.
+
+## phenocovar files
+
+These seem to contain extra metadata for the phenotypes.
+
+The first column is the list of phenotype identifiers whereas the first column is a list of metadata headers (phenotype covariates).
+
+# References
+
+=> https://kbroman.org/qtl2/assets/vignettes/input_files.html
+=> https://github.com/rqtl/qtl2data
