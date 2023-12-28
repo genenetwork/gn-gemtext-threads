@@ -1005,7 +1005,9 @@ So, this is the right time to put gemma-wrapper on a diet. The GRM files are lar
 
 # Storing GRM output
 
-gemma-wrapper stores per chromosome GRMs in separate files. The first fix was to store them in an xz archive. gemma-wrapper already uses a temporary directory so, that should be straightforward.
+The current version of gemma-wrapper stores per chromosome GRMs in separate files. The first fix was to store them in an xz archive. gemma-wrapper already uses a temporary directory so, that was straightforward. Next I had to tell gemma-wrapper not to recompute when the xz archive exists. This now works.
+
+Next step is to use the archive to check the GWA run. In the final step we will archive results and write an lmdb file for further processing. If we can make it really small we'll retain that instead of the full archive.
 
 # Storing assoc output
 
