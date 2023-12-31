@@ -52,3 +52,16 @@ To avoid `./scratch/script.sh: Permission denied` on `device_file`:
 - `vim /etc/fstab`
 - replace `noexec` with `exec` for `device_file`
 - `mount -o remount [device_file]` to remount the partition with its new configuration.
+
+Some notes:
+
+root@tux09:~# mkdir -p /var/lib/nfs/statd
+root@tux09:~# systemctl enable rpcbind
+Synchronizing state of rpcbind.service with SysV service script with /lib/systemd/systemd-sysv-install.
+Executing: /lib/systemd/systemd-sysv-install enable rpcbind
+root@tux09:~# systemctl list-unit-files | grep -E 'rpc-statd.service'
+rpc-statd.service                                                         static          -
+
+network-online.target
+x-systemd.device-timeout=
+10.0.0.110:/export/3T  /mnt/3T  nfs nofail,x-systemd.automount,x-systemd.requires=network-online.target,x-systemd.device-timeout=10 0 0
