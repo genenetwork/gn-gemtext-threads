@@ -32,6 +32,11 @@ These seem to contain extra metadata for the phenotypes.
 
 The first column is the list of phenotype identifiers whereas the first column is a list of metadata headers (phenotype covariates).
 
+As an example,
+=> https://github.com/rqtl/qtl2data/blob/main/BXD/bxd_phenocovar.csv The phenocovar file for BXD mice
+
+We see here that this contains the individual identifier (id), and a description for each individual/sample.
+
 # References
 
 => https://kbroman.org/qtl2/assets/vignettes/input_files.html
