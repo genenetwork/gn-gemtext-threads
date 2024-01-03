@@ -9,10 +9,8 @@ We currently deploy production by hand. Not only is this more work, it is also p
 
 This new system container may not immediately replace our current production, it is still worth having as a model for a robust production deployment.
 
-* [] Write a genenetwork2 Guix service
-* [] Write a genenetwork3 Guix service
-
-Volunteers welcome for this section!
+* [x] Write a genenetwork2 Guix service
+* [x] Write a genenetwork3 Guix service
 
 ## Turn project repos into Guix channels
 
