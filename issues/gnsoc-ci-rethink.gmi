@@ -23,8 +23,6 @@ The first step of this process is to turn our project repos (genenetwork2 and ge
 * [x] Make genenetwork2 repo a Guix channel
 * [x] Make genenetwork3 repo a Guix channel
 
-Volunteers welcome for this section!
-
 ## Set up CI jobs
 
 We need a CI job to run on every commit to guix-bioinformatics and check if guix pull still succeeds. It would be doubly nice to build every package defined in the guix-bioinformatics channel and offer substitutes. This would make our CI system more or less feature-compatible with cuirass.
