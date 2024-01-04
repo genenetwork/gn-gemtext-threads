@@ -1,49 +1,72 @@
 # My Software Development Journey so far,
 
-* The following includes a brief story reflecting my progress so far in learning software development as part of the GeneNetwork team.
-* I am currently a bioinformatics expert by profession. My sole responsibility is to use computational tools and knowledge in statistics and mathematics to answer biological questions and problems.
-  This is done by analyzing a bunch of biological data generated from a set of experiments.
-* I developed a keen interest in software development after understanding the enormous power software tools can provide to scientists regarding data analysis. Many scientists and bioinformaticists have the
-  ability to do data analysis. But very few appreciate learning or becoming competent in being able to write their software tools to facilitate bioinformatics data analysis. And with this, my interest in 
-  developing softwares for bioinformatics purposes started to grow.
-* Being part of the GeneNetwork team, I have had, so far, the best experience growing as a software developer as well as a data engineer. I would love to share my progress so far, the current ongoing work, 
-  lessons I have learned so far, challenges encountered, how I managed to solve them, and the overall working environment with the team.
+
+The following includes a brief story reflecting my progress so far in learning software development as part of the GeneNetwork team.I am currently a bioinformatics expert by profession. My sole responsibility is to use computational tools and knowledge in statistics and mathematics to answer biological questions and problems.This is done by analyzing a bunch of biological data generated from a set of experiments.I developed a keen interest in software development after understanding the enormous power software tools can provide to scientists regarding data analysis. Many scientists and bioinformaticists have theability to do data analysis. But very few appreciate learning or becoming competent in being able to write their software tools to facilitate bioinformatics data analysis. And with this, my interest in developing softwares for bioinformatics purposes started to grow.
+
+Being part of the GeneNetwork team, I have had, so far, the best experience growing as a software developer as well as a data engineer. I would love to share my progress so far, the current ongoing work, lessons I have learned so far, challenges encountered, how I managed to solve them, and the overall working environment with the team.
+
+
 
 ## Early on Tasks 
-* Among the first tasks I was assigned involved understanding the general aspect of APIs (Application Programming Interfaces): how they work, different types (in this case, REST api), and  how to use and build them. I managed to work
-  on some of the tasks corresponding to this area. For more info, you can check out the following link below:
-=> https://github.com/fetche-lab/GeneNetwork_23FL/blob/main/API/python_REST-API_code.md
-* The other task involved experimenting with the SQLite tool in the process of understanding how to use the SQL database management system. The link to this task is:
-=> https://github.com/fetche-lab/GeneNetwork_23FL/tree/main/python_sql
-* Meanwhile, I am also taking the liberty of learning Python programming and getting familiar with contributing to the GeneNetwork web service.
 
-## Current and ongoing Tasks 
-* The current and ongoing tasks have mainly revolved around data curation and uploading them to the GeneNetwork web service. The primary focus involved uploading the test data as a demonstration, as well as uploading
-  Arabidopsis and C elegans phenotype datasets from known public sources (mostly NCBI, and AraQTL) 
-* For data curation before uploading to the GeneNetwork database, which involved several data transformation steps, was important to ensure that there were no invalid dataset values to prevent the file to be
-  uploaded successfully. 
-* The biggest challenge so far has been to validate the strain names (represented as column headers in each dataset uploaded). The team responsible is currently working on this bug. 
+Among the first tasks I was assigned involved understanding the general aspect of APIs (Application Programming Interfaces): how they work, different types (in this case, REST api), and  how to use and build them. I managed to workon some of the tasks corresponding to this area. For more info, you can check out the following link below:
+=> https://github.com/fetche-lab/GeneNetwork_23FL/blob/main/API/python_REST-API_code.md  Python REST-API code 
 
-### Examples of datasets and scripts used in data preprocessing and transformation before a successful data upload 
-The following link will direct you to the GitHub page, which contains a markdown document containing a series of Python scripts that were written to perform data wrangling and transformation 
-focusing on the previously mentioned datasets and how each of these datasets was being explored uniquely to achieve the desired goal.
+The other task involved experimenting with the SQLite tool in the process of understanding how to use the SQL database management system. The link to this task is:
+=> https://github.com/fetche-lab/GeneNetwork_23FL/tree/main/python_sql  SQLite code 
 
-=> https://github.com/fetche-lab/GeneNetwork_23FL/blob/main/GeneNetwork_QC/test_uploads/testdata_upload.md
-* You will observe that the only blocking factor to a successful data upload is the absence of strain names of most public datasets in the GeneNetwork database. This presents itself as a window
-of opportunity to improve the functionality of the uploader, where a user can directly update the names when discovering them to be missing in the database. 
+Meanwhile, I am also taking the liberty of learning Python programming and getting familiar with contributing to the GeneNetwork web service.
+
+## Current and ongoing Tasks
+ 
+The current and ongoing tasks have mainly revolved around data curation and uploading them to the GeneNetwork web service. The primary focus involved uploading the test data as a demonstration, as well as uploading Arabidopsis and C elegans phenotype datasets from known public sources (mostly NCBI, and AraQTL) 
+
+For data curation before uploading to the GeneNetwork database, which involved several data transformation steps, was important to ensure that there were no invalid dataset values to prevent the file to be uploaded successfully. 
+
+The biggest challenge so far has been to validate the strain names (represented as column headers in each dataset uploaded). The team responsible is currently working on this bug. 
+
+### Examples of datasets and scripts used in data preprocessing and transformation before a successful data upload
+ 
+The following link will direct you to the GitHub page, which contains a markdown document containing a series of Python scripts that were written to perform data wrangling and transformation focusing on the previously mentioned datasets and how each of these datasets was being explored uniquely to achieve the desired goal.
+=> https://github.com/fetche-lab/GeneNetwork_23FL/blob/main/GeneNetwork_QC/test_uploads/testdata_upload.md  Data Wrangling Python scripts 
+
+You will observe that the only blocking factor to a successful data upload is the absence of strain names of most public datasets in the GeneNetwork database. This presents itself as a window of opportunity to improve the functionality of the uploader, where a user can directly update the names when discovering them to be missing in the database. 
 
 ### Why choose the above datasets?..,
+
 Arabidopsis dataset from NCBI (GSE247158)
-* In summary, this experiment aimed to explore the genetic interactions of three MADS-box genes (XAL2/AGL14, SOC1, and AGL24), which are crucial in Arabid primary root development. The findings revealed that XAL2, SOC1, and AGL24 exhibit differential expression under osmotic stress conditions and that XAL2 also regulates several key genes involved in cell differentiation as well as in osmotic stress responses. Also, AGL24, SOC1, and XAL2 participate in primary root growth in all the osmotic stress conditions used.
+In summary, this experiment aimed to explore the genetic interactions of three MADS-box genes (XAL2/AGL14, SOC1, and AGL24), which are crucial in Arabid primary root development. The findings revealed that XAL2, SOC1, and AGL24 exhibit differential expression under osmotic stress conditions and that XAL2 also regulates several key genes involved in cell differentiation as well as in osmotic stress responses. Also, AGL24, SOC1, and XAL2 participate in primary root growth in all the osmotic stress conditions used.
 
 Arabidopsis dataset from AraQTL (shared by Harm) 
-* In this experiment, the goal was to understand the regulation of gene expression mechanisms during seed germination in Arabidopsis thaliana. An eQTL(expression Quantitative Trait Loci) mapping was performed at four important seed germination stages (primary dormant, after-ripened, six-hour after imbibition, and radicle protrusion stage), using  Arabidopsis thaliana Bay x Sha recombinant inbred lines (RILs). Each stage had a distinct eQTL landscape. An eQTL hotspot on chromosome five is collocated with hotspots for phenotypic and metabolic QTL in the same population. It was then revealed that genetic regulation of gene expression along the course of seed germination is dynamic, and after a network analysis, transcription factors  DEWAX and ICE1, as the most likely regulatory genes for the hotspot. 
+In this experiment, the goal was to understand the regulation of gene expression mechanisms during seed germination in Arabidopsis thaliana. An eQTL(expression Quantitative Trait Loci) mapping was performed at four important seed germination stages (primary dormant, after-ripened, six-hour after imbibition, and radicle protrusion stage), using  Arabidopsis thaliana Bay x Sha recombinant inbred lines (RILs). Each stage had a distinct eQTL landscape. An eQTL hotspot on chromosome five is collocated with hotspots for phenotypic and metabolic QTL in the same population. It was then revealed that genetic regulation of gene expression along the course of seed germination is dynamic, and after a network analysis, transcription factors  DEWAX and ICE1, as the most likely regulatory genes for the hotspot. 
 
 Mice experiment dataset from NCBI (GSE241528)
-* This experiment focused on understanding the prevalence of Post Stroke Epilepsy (PSE), which is a condition likely to occur after an individual suffers from a stroke, with the age factor. The idea is to monitor GABAA receptor-mediated seizure susceptibility (GABAA is a receptor for GABA neurotransmitter, responsible for regulating neuronal excitability), in individuals who have suffered from stroke, in two groups, the elderly and the young ones. This study revealed that GABAA receptor-mediated seizure susceptibility increased more in elderly individuals as compared to young individuals. 
+This experiment focused on understanding the prevalence of Post Stroke Epilepsy (PSE), which is a condition likely to occur after an individual suffers from a stroke, with the age factor. The idea is to monitor GABAA receptor-mediated seizure susceptibility (GABAA is a receptor for GABA neurotransmitter, responsible for regulating neuronal excitability), in individuals who have suffered from stroke, in two groups, the elderly and the young ones. This study revealed that GABAA receptor-mediated seizure susceptibility increased more in elderly individuals as compared to young individuals. 
 
 
-### Then, what is next after a successful upload of the dataset? .., 
-Verify that the data is indeed in the database.., 
-Take a further step and perform the analyses with the available datasets., 
+### Then, what is next after a successful upload of the dataset? ..,
+ 
+* Verify that the data is indeed in the database.., 
+* Take a further step and perform the analyses with the available datasets., 
+
+### Hurdles with uploading strain names to the QC uploader
+
+Apparently, the biggest challenge has been to update the GeneNetwork Webservice database with new strain names found in the corresponding datasets. Thanks to Fred and Bonface, this hurdle has been settled so far. So, the one thing left is to test the newly updated QC uploader and see how it functions. 
+
+### The need to have metadata information explaining the newly updated strain names 
+
+This step is very important due to the fact that there may be some strains already in the database, and the newly ones uploaded would have the same description, but labelled differently. At least, at the population level, it is important GN webservice pinpoints the importance of maintaining the use of a standard naming system of the strain names for particular species, so as to avoid any unnecessary confusion in the long run. This process is still in its development. 
+
+### Old microarray datasets
+
+The one big existing challenge with this dataset is that there is no available information regarding the annotation description of these datasets. One great suggestion from Arthur and Pjotr, is to revisit some of the R packages that were once used to access such annotation information. Succeeding on this will help push more and more datasets into GeneNetwork webservice test datasets and eventually towards the production stage. So, it is one of the ongoing tasks I am actively working on in addition to testing Fred's newly updated QC uploader. 
+
+### My learning progress so far.., 
+
+Alongside working on the above mentioned tasks, I am still making progress to learn and improve my programming skills. Currently, I focus on Python language as my foundational programming language. I have also been making progress with learning git version control and GitHub, thanks to Fred and Bonface, who consistently provide me with guidance and a push to make sure I really learn and understand these concepts and their realtime application. So far, I have learnt how to pull requests, create issues, performing git pull and rebasing, creating branches, resolving conflicts and staying upto date on both my local repo and the remote repo in GitHub. 
+
+### The journey continues.., more to come soon. Stay Tuned!! 
+
+ 
+
 
