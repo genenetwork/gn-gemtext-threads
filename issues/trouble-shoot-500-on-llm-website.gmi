@@ -6,7 +6,7 @@
 * priority: high
 * type: llm
 * keywords: llm
-* status: in progress
+* status: closed
 
 ## Description
 
@@ -44,3 +44,9 @@ raise HTTPError(http_error_msg, response=self)
 
 requests.exceptions.HTTPError: 500 Server Error: Internal Server Error for url: https://genenetwork.fahamuai.com/api/tasks? ask=Give%20me%20a%20dataset%20related%20to%20diabetes%20in%20GeneNetwork.org.
 ```
+
+## Resolution
+
+There was a small typo with the Bearer Token: api.config.json.  Fixing this resolved this issue.
+
+* closed
