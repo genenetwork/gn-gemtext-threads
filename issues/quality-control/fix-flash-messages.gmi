@@ -1,0 +1,20 @@
+# Fix Flash Messages
+
+## Tags
+
+* assigned: fredm
+* priority: low
+* type: bug
+* status: open
+* keywords: flask, flash
+
+## Description
+
+The
+
+```
+{% with messages = get_flashed_messages(with_categories=true) %}
+```
+statement seems to be getting the flashed messages as a generator, and as such, can only ever be looped through once. As such, the `flash_messages` macro defined in `qc_app/templates/flash_messages.html` does not work as expected.
+
+Instead, it will show the errors where it is first called on a template, and any subsequent calls will not show anything.
