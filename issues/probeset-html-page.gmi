@@ -1,12 +1,12 @@
 # Add HTML Page for ProbeSet Page
 
-## Tags
+o## Tags
 
 * assigned: bonfacem
 * priority: high
 * type: ui
 * keywords: virtuoso
-* status: in progress
+* status: closed
 
 ## Description
 
@@ -26,4 +26,10 @@ Some minor updates were done to fix how gene-symbols are transformed.  See: 1ea6
 
 Other Relevant PR's/Commits:
 
-=> https://github.com/genenetwork/genenetwork3/pull/141  Probeset metadata rdf update #141 (GN3)
+=> https://github.com/genenetwork/genenetwork3/pull/141 Probeset metadata rdf update #141 (GN3)
+
+=> https://github.com/genenetwork/genenetwork3/pull/143 Refine Probeset RDF Query and Metadata Handling
+
+=> https://github.com/genenetwork/genenetwork2/pull/825 Update ProbeSet Page with more metadata
+
+* closed
