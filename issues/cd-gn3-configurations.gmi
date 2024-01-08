@@ -6,6 +6,7 @@
 * keywords: configurations, CD, API, genenetwork3
 * type: bug
 * priority: high
+* status: closed, completed
 
 ## Description
 
