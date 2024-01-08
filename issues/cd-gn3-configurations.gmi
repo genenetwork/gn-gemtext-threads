@@ -9,15 +9,21 @@
 
 ## Description
 
-The issue is that there is no straightforward way of knowing how to call the GN3 API from GN2. Multiple configurations, such as GN_SERVER_URL and GN3_LOCAL_URL, exist, making it difficult to understand how to debug.
+The issue arises in GN3 when the Gunicorn worker dies due to the default 30-second time limit being exceeded. This occurs while polling the Fahamu API from GN3, where response times can occasionally take up to 1 minute.
 
-The `GN_SERVER_URL` which from  config is running on port 8880 results into this error:
+See error from GN2:
 
 ```
-"HTTPConnectionPool(host='localhost', port=8880): Max retries exceeded with URL: /api/llm/gnqna (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7fdd45a8d5a0>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+('Connection aborted.', RemoteDisconnected('Remote end closed connection without response')).
+
+
 ```
 
 
-## Notes  08/01/2024
+Error for worker timeout in GN3:
 
-The problem arises from GN3's default Gunicorn timeout setting of 30 seconds, causing worker termination if exceeded. Fixing the issue involves adjusting the timeout to 1200, as done in GN2.
+```
+[2024-01-08 13:35:17 +0300] [32527] [CRITICAL] WORKER TIMEOUT (pid:32661)
+```
+
+Fixing the issue involves adjusting the timeout to 1200, as done in GN2.
