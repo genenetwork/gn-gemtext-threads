@@ -14,3 +14,7 @@ context.  They have to be measured on a rectangular grid (or be
 imputed).
 
 => https://www.juliapackages.com/p/flxqtl
+
+## Reference titles
+
+= [] add aging reference titles to the GNQA system
