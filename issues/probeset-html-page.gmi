@@ -1,6 +1,6 @@
 # Add HTML Page for ProbeSet Page
 
-o## Tags
+## Tags
 
 * assigned: bonfacem
 * priority: high
