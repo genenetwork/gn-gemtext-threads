@@ -1,0 +1,13 @@
+# Add HTML Page for Genotypes
+
+## Tags
+
+* assigned: bonfacem
+* priority: high
+* type: ui
+* keywords: virtuoso
+* status: in progress
+
+## Description
+
+Create HTML frontend for Genotype metadata.
