@@ -6,8 +6,15 @@
 * priority: high
 * type: ui
 * keywords: virtuoso
-* status: in progress
+* status: closed
 
 ## Description
 
 Create HTML frontend for Genotype metadata.
+
+## Resolution
+
+=> https://github.com/genenetwork/genenetwork3/pull/145  Update genotype rdf query #145
+=> https://github.com/genenetwork/genenetwork2/pull/826 Update genotype page #826
+
+* closed
