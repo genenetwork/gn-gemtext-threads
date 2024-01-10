@@ -1,0 +1,12 @@
+# Edit Dataset Metadata
+
+## Tags
+
+* assigned: bonfacem
+* priority: high
+* type: editing
+* keywords: metadata editing
+
+## Description
+
+Currently, we can only showcase dataset metadata. This task involves adding a new feature to edit dataset metadata and integrating authentication features.
