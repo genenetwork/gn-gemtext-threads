@@ -13,5 +13,6 @@ For each reference in a query, we need to allow users to provide feedback or a r
 
 ## Tasks
 
-- [ ] Create an API endpoint for reference rating.
-- [ ] Implement the UI for this feature.
+* [ ] Create an API endpoint for reference rating.
+
+* [ ] Implement the UI for this feature.
