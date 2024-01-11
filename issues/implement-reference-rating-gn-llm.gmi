@@ -1,0 +1,17 @@
+# Implement Reference Rating for gn-llm
+
+## Tags
+
+* assigned: alexm,
+* keywords: llm, reference, rating
+* type: enhancements
+* status: in progress
+
+## Description
+
+For each reference in a query, we need to allow users to provide feedback or a rating on its relevance to a given task. This will help in improving future queries.
+
+## Tasks
+
+- [ ] Create an API endpoint for reference rating.
+- [ ] Implement the UI for this feature.
