@@ -1,4 +1,4 @@
-# Fix Failing GN2 Failing tests
+# Fix Failing GN2 tests
 
 ## Tags
 
