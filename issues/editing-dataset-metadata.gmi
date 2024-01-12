@@ -13,5 +13,12 @@ Currently, we can only showcase dataset metadata. This task involves adding a ne
 
 Some useful resources are:
 
+Alex' work:
 => https://ace.c9.io/#nav=howto Ace JS HOWTO
 => https://github.com/Alexanderlacuna/geditor-UI/ geditor-UI
+
+
+After some exploration, the chosen library for editing RTF text is QuillJS:
+
+=> https://quilljs.com/ QuillJS
+
