@@ -12,3 +12,12 @@
 We have failing tests, staring from:
 
 => https://ci.genenetwork.org/jobs/genenetwork2/995
+
+## Resolution
+
+Resolved in:
+
+=> https://github.com/genenetwork/genenetwork2/pull/827 Fix failing gn2 tests
+=> https://ci.genenetwork.org/jobs/genenetwork2/1006 genenetwork2 #1006
+
+* closed
