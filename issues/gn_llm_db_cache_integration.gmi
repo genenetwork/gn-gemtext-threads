@@ -1,0 +1,21 @@
+# Implementing Efficient Database Caching for Query Responses in GN-LLM system
+
+
+## Tags:
+
+* assigned: alexm,shelby
+* keywords: llm,caching,database,query,response
+* type: enhancements
+
+* status: in progress
+
+
+## Description:
+
+This implementation task aims to enhance the performance and responsiveness of our GN-LLM (Large Language Model) system by incorporating a robust database caching mechanism.
+The focus will be on utilizing a database to store queries along with their corresponding answers and references, ensuring quicker retrieval and reduced computational load.
+
+
+See main issue:
+
+=> topics/lmms/llm-metadata
