@@ -13,6 +13,15 @@ For each reference in a query, we need to allow users to provide feedback or a r
 
 ## Tasks
 
-* [ ] Create an API endpoint for reference rating.
+* [x] Create an API endpoint for reference rating.
 
-* [ ] Implement the UI for this feature.
+* [x] Implement the UI for this feature.
+
+* []  implementation user notification for feedback
+
+For the UI and api imeplementation see commits:
+
+
+=> https://github.com/genenetwork/genenetwork2/pull/828/files
+
+=> https://github.com/genenetwork/genenetwork3/commit/482a8908dc08d6e5a13e576c4ba4bc3ff934bb8d
