@@ -25,3 +25,10 @@ This bug is even "encoded" in
 The strains file linked to above contains a selection of strains from mice, which means that the checks will never pass for anything other than mice, and even then, for the samples that existed at the time the strains file was generated.
 
 This was a myopic view of the data uploader, and needs to be expanded significantly. The user will need to specify the species for the data they wish to upload before being allowed to upload. That implies a rework of the UI, and underlying code.
+
+## Notes
+
+Fixed with this commit:
+=> https://gitlab.com/fredmanglis/gnqc_py/-/commit/cdd4dc456e56bb4eb055e1cb7f2518d45fb3bfb9
+
+Awaiting deployment
