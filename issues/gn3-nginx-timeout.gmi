@@ -4,7 +4,7 @@
 
 * Assigned: alexm
 * Keywords: CD, GN3
-* Status: Unclear
+* Status: closed
 * Priority: Medium
 * Type: Bug
 
