@@ -12,9 +12,18 @@
 
 ## Description:
 
-This implementation task aims to enhance the performance and responsiveness of our GN-LLM (Large Language Model) system by incorporating a robust database caching mechanism.
-The focus will be on utilizing a database to store queries along with their corresponding answers and references, ensuring quicker retrieval and reduced computational load.
+This implementation task aims to enhance the performance and responsiveness of our GN-LLM (Large Language Model) system by incorporating a robust database caching mechanism. The focus will be on utilizing a database to store queries along with their corresponding answers and references, ensuring quicker retrieval and reduced computational load. Users can go back in time and see their search results at a given time.
 
+
+
+
+## Task
+
+* [x] implement endpoint for user caching 
+
+* [x] implement UI for QNQA search
+
+* [] More customization features  like e.g user clearing their history
 
 See main issue:
 
