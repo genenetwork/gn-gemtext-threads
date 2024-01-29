@@ -20,3 +20,8 @@ The task is to integrate PubMed references into the GNQA system by querying the 
 
 For lossy search, see:
 => https://github.com/pjotrp/bioruby-bioinformatics-impact/blob/master/bin/pubmed2bib.rb
+
+
+see link to main  issue:
+
+=> https://issues.genenetwork.org/topics/lmms/llm-metadata
