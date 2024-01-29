@@ -1,0 +1,29 @@
+# Error Handling: External Errors
+
+## Tags
+
+* assigned: fredm
+* status: open
+* type: bug
+* priority: high
+* keywords: error handling
+
+## Description
+
+We have been consistently moving a lot of our features out of GN2 to external API services like GN3 and GN-Auth. This means that when we have errors in the external service(s), then GN2 does not have direct access to the error(s) to handle it.
+
+So far, the error-handling for such services has been inconsistent at best. In this issue, we propose that such errors be handled by simply raising an exception with the passed in error information, to wit:
+
+> The better approach may be to simply raise this as an exception so that some
+> exception handler somewhere down the line can handle it.
+
+> Here's the larger philosophy. The exception system of a programming language
+> is meant to handle errors, and is well-suited to this purpose. But, we use
+> different backends connected over an API and break the exception system. Our
+> goal must be to bridge the API gap so that exceptions can cross over. Thus,
+> we enable the exception system to do the job it was always meant to do.
+
+> - Arun Isaac
+> => https://github.com/genenetwork/genenetwork2/pull/830
+
+We can then maybe incorporate the use of UUIDs in the errors, to help with tracking the errors in the logs where necessary.
