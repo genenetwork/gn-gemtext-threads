@@ -37,12 +37,13 @@ The following "key" details the meanings of certain notations in this file:
 ### [ ] pheno File(s)
 
 * [ ] Check for a minimal number of decimal places (three?)
+* [ ] Verify that all listed samples/cases exist in the database, prior to attempting to parse the file and load data into the database
 
 ### [ ] phenose File(s)
 
 This is a proposed addition for our specific use-case. If the data in the pheno file(s) was derived from averaging values, then the user could provide the corresponding "standard error" file(s).
 
-* [ ] Check for a minimal number of decimal places (six?)
+Has similar QC checks to those for the "pheno" file(s) above. The number of decimal places might vary, however.
 
 ## Questions Fred Has
 
