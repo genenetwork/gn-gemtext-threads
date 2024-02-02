@@ -14,9 +14,9 @@ Currently (2024-02-02T05:41+03:00UTC), the code simply allows the upload of data
 
 The following "key" details the meanings of certain notations in this file:
 
-* //[ ]//: not started
-* //[-]//: partially done or in progress
-* //[x]//: completed
+* [ ]: not started
+* [-]: partially done or in progress
+* [x]: completed
 
 ### [-] Control File
 
@@ -25,22 +25,22 @@ The following "key" details the meanings of certain notations in this file:
 * [-] Defaults for control data are auto-provided by code
 * [ ] Every file listed in control file MUST exist in the bundle
 
-### [ ] //geno// File(s)
+### [ ] geno File(s)
 
 * [ ] Every value existing in file is one of the genotype encodings in the control file
 
-### [ ] //phenocovar// File(s)
+### [ ] phenocovar File(s)
 
-* [ ] At least one of the //phenocovar// files contains a **description** column
+* [ ] At least one of the phenocovar files contains a "description" column
 * [ ] The description of every phenotype fits the rules[1]
 
-### [ ] //pheno// File(s)
+### [ ] pheno File(s)
 
 * [ ] Check for a minimal number of decimal places (three?)
 
-### [ ] //phenose// File(s)
+### [ ] phenose File(s)
 
-This is a proposed addition for our specific use-case. If the data in the //pheno// file(s) was derived from averaging values, then the user could provide the corresponding "//standard error//" file(s).
+This is a proposed addition for our specific use-case. If the data in the pheno file(s) was derived from averaging values, then the user could provide the corresponding "standard error" file(s).
 
 * [ ] Check for a minimal number of decimal places (six?)
 
