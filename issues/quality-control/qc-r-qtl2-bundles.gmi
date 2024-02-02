@@ -22,7 +22,7 @@ The following "key" details the meanings of certain notations in this file:
 
 * [x] MUST exist in bundle
 * [x] One and only one control file in the bundle
-* [-] Defaults for control data are auto-provided by code
+* [x] Defaults for control data are auto-provided by code
 * [ ] Every file listed in control file MUST exist in the bundle
 
 ### [ ] geno File(s)
