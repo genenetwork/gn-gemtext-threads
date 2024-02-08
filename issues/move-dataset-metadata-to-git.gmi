@@ -1,4 +1,4 @@
-# Move GN Dataset Metadata to cgit
+# Move GN Dataset/GeneRIF to Git
 
 * assigned: bonfacem
 * priority: high
