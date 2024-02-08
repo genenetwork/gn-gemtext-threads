@@ -1,0 +1,10 @@
+# Move GN Dataset Metadata to cgit
+
+* assigned: bonfacem
+* priority: high
+* type: metadata
+* keywords: metadata
+
+## Description
+
+Move GN metadata from RDF to text files.
