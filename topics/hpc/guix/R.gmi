@@ -1,0 +1,104 @@
+# R
+
+R is a statistics package often used by biologists. We run it on our Octopus HPC using Guix.
+
+Often with HPC the underlying Linux distribution is out of date. This is why people choose to use userland package managers, such as conda, brew etc.
+
+Guix provides userland support for installing packages. If the 'store' is shared across the HPC, e.g. through NFS, software can be run using the powerful Guix software distribution with no additional cost.
+
+The R language, for all its complexity and thousands of packages, is relatively easy to support in Guix and on HPC, partly due to the continuous integration that is happening by the R-project and CRAN.
+
+For our purposes we had to support a package that is not in CRAN, but in one of the derived packaging systems for R. The MEDIPS package is part of the BiocManager installer and pulls in dependencies and builds them from source.
+
+The first step was to build the package in a Guix container (guix shell -C) because that prevents from underlying dependencies getting linked from the HPC linux distro (in our case Debian Linux). For fixing the build and finding dependencies start from:
+
+```
+mkdir -p $HOME/.Rlibs && guix shell -C -N -F --share=$HOME/.Rlibs libpng pkg-config openblas gsl grep bzip2 libxml2 xz gfortran-toolchain r-curl zlib gcc-toolchain@10 sed gawk make r r-preprocesscore curl r-tidyverse openssl nss-certs linux-libre-headers bash which coreutils -- env R_LIBS_SITE=$HOME/.Rlibs:$R_LIBS_SITE R_LIBS_USER=$HOME/.Rlibs R -e '
+.libPaths()
+Sys.getenv("R_LIBS_USER")
+r = getOption("repos")
+r["CRAN"] = "http://cran.us.r-project.org"
+options(repos = r)
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("MEDIPS",force=TRUE) ; library("MEDIPS"); sessionInfo() ; BiocInstaller::biocValid() ;warnings() '
+```
+
+that looks complicated, but it is the nicest way to fix errors. What does this mean?
+
+```
+guix shell -C -N -F ...
+```
+
+guix is the command that installs packages. Note it is tightly coupled with the package tree. If you upgrade guix you get newer packages(!). We typically handle guix through a profile with
+
+```
+guix pull -p ~/opt/guix
+~/opt/guix/bin/guix --version
+```
+
+So, use the latter if you want to be up-to-date. A 'guix pull' takes some time, but on our systems it is typically done every 4 months or so.
+
+The -C means it is a proper container - i.e. only Guix dependencies are visible inside the container. This is incredibly useful for debugging the dependency graph. The -N allows network access for R to fetch sources. The -F means that we will emulate the POSIX /usr/bin /bin file hierarchy because some packages will ask for /usr/bin/env, for example.
+
+R is a bit funny about local builds is that you can supply a directory in $HOME and pass that in with R_LIBS_USER=$HOME/.Rlibs. It does not make that directory, however, so we create it and pass it into the container with --share.
+
+To have R build stuff it needs a bunch of dependencies. One thing to note is that using the default gcc-toolchain may cause an error similar to
+
+```
+Error in dyn.load(libLFile) :
+    unable to load shared object '/tmp/RtmpKqzbYg/file3245e787c.so':
+    /gnu/store/vqhamsanmlm8v6f90a635zc6gmhwlphp-gfortran-10.3.0-lib/lib/libstdc++.so.6: version 'GLIBCXX_3.4.29' not found (required by /tmp/RtmpKqzbYg/file3245e787c.so)
+```
+
+as describes in, for example
+
+=> https://issues.guix.gnu.org/60200
+
+The reason is that the gfortran-toolchain is actually built with the older gcc (even though gfortran itself is at 11.0). That is why we drop the overall toolchain to gcc-toolchain@10.
+
+Once that works, to run the tool we can use a non-container shell
+
+```
+mkdir -p $HOME/.Rlibs && guix shell --share=$HOME/.Rlibs libpng pkg-config openblas gsl grep bzip2 libxml2 xz gfortran-toolchain r-curl zlib gcc-toolchain@10 sed gawk make r r-preprocesscore curl r-tidyverse openssl    nss-certs linux-libre-headers bash which coreutils -- env R_LIBS_SITE=$HOME/.Rlibs:$R_LIBS_SITE R_LIBS_USER=$HOME/.Rlibs R
+```
+
+Fully functional. But this is not what we want to poor our users down the throat. One option is to use `guix shell` with a manifest file that loads above dependencies. But, now it works, why not create a profile with
+
+```
+mkdir -p $HOME/opt
+guix install libpng pkg-config openblas gsl grep bzip2 libxml2 xz gfortran-toolchain r-curl zlib gcc-toolchain@10 sed gawk make r r-preprocesscore curl r-tidyverse openssl nss-certs linux-libre-headers bash which coreutils -p $HOME/opt/R
+```
+
+Now we can do, after setting the environment (note there are a lot of parameters in that profile file which should be visible to R)
+
+```
+. $HOME/opt/R/etc/profile
+export R_LIBS_SITE=$HOME/.Rlibs:$R_LIBS_SITE
+export R_LIBS_USER=$HOME/.Rlibs
+set
+
+```
+
+and test R and building MEDIPS
+
+```
+which R
+  /gnu/store/plmrv9fm578kza4cf042ny7jyzw81znl-profile/bin/R
+R
+  BiocManager::install("MEDIPS",force=TRUE)
+  library("MEDIPS");
+  sessionInfo() ;
+```
+
+or some other package, such as
+
+```
+install.packages("qtl")
+```
+
+And in the final step make sure this loads in the user's shell environment and also works on cluster nodes. So all the user has to do is type 'R'. Try to submit a slurm job:
+
+TBD
+
+As a final note - I tested all of this on my workstation first. Because Guix is reproducible, once it works, it is easy to repeat on a remote server.
