@@ -1,4 +1,4 @@
-q# GN3 Setup on tux01 - Non-Deterministic Behavior
+# GN3 Setup on tux01 - Non-Deterministic Behavior
 
 ## Tags
 
