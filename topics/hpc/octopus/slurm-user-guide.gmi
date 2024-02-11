@@ -18,6 +18,12 @@ sinfo tells you about the slurm nodes:
 sinfo -i
 ```
 
+squeue gives info about the job queue
+
+```
+squeue -l
+```
+
 sbatch allows you to submit a batch job
 
 ```
