@@ -51,26 +51,29 @@ Error in dyn.load(libLFile) :
     /gnu/store/vqhamsanmlm8v6f90a635zc6gmhwlphp-gfortran-10.3.0-lib/lib/libstdc++.so.6: version 'GLIBCXX_3.4.29' not found (required by /tmp/RtmpKqzbYg/file3245e787c.so)
 ```
 
-as describes in, for example
+as described in, for example
 
 => https://issues.guix.gnu.org/60200
 
 The reason is that the gfortran-toolchain is actually built with the older gcc (even though gfortran itself is at 11.0). That is why we drop the overall toolchain to gcc-toolchain@10.
 
-Once that works, to run the tool we can use a non-container shell
+Note that issues.guix.gnu.org is worth searching when encountering problems.
+
+Once that build works inside a container, to run the tool we can move out and use a non-container shell
 
 ```
 mkdir -p $HOME/.Rlibs && guix shell --share=$HOME/.Rlibs libpng pkg-config openblas gsl grep bzip2 libxml2 xz gfortran-toolchain r-curl zlib gcc-toolchain@10 sed gawk make r r-preprocesscore curl r-tidyverse openssl    nss-certs linux-libre-headers bash which coreutils -- env R_LIBS_SITE=$HOME/.Rlibs:$R_LIBS_SITE R_LIBS_USER=$HOME/.Rlibs R
 ```
 
-Fully functional. But this is not what we want to poor our users down the throat. One option is to use `guix shell` with a manifest file that loads above dependencies. But, now it works, why not create a profile with
+Now R is fully functional. But this is not what we want our users to type.
+One option is to use `guix shell` with a manifest file that loads above dependencies. But, now it works, why not create a profile with
 
 ```
 mkdir -p $HOME/opt
 guix install libpng pkg-config openblas gsl grep bzip2 libxml2 xz gfortran-toolchain r-curl zlib gcc-toolchain@10 sed gawk make r r-preprocesscore curl r-tidyverse openssl nss-certs linux-libre-headers bash which coreutils -p $HOME/opt/R
 ```
 
-Now we can do, after setting the environment (note there are a lot of parameters in that profile file which should be visible to R)
+Now we can do, after setting the environment (note there are a lot of parameters in that profile file `$HOME/opt/R/etc/profile' which should be visible to R)
 
 ```
 . $HOME/opt/R/etc/profile
@@ -97,8 +100,12 @@ or some other package, such as
 install.packages("qtl")
 ```
 
-And in the final step make sure this loads in the user's shell environment and also works on cluster nodes. So all the user has to do is type 'R'. Try to submit a slurm job:
+And in the final step make sure this loads in the user's shell environment and also works on cluster nodes. So all the user has to do is type 'R'. Try to get a shell on a node with
 
-TBD
+```
+srun -N 1 --mem=32G --pty /bin/bash
+```
 
-As a final note - I tested all of this on my workstation first. Because Guix is reproducible, once it works, it is easy to repeat on a remote server.
+In the shell you can run R and check all environment settings. As I added them to the '~/.bashrc' file, they should work in bash.
+
+As a final note - apart from SLURM - I tested all of this on my workstation first. Because Guix is reproducible, once it works, it is easy to repeat on a remote server.
