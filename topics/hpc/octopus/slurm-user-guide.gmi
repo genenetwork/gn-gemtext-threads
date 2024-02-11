@@ -1,4 +1,4 @@
-# Slurm User Guide on Ocotopus HPC
+# Slurm User Guide on Octopus HPC
 
 The Octopus HPC uses slurm. There are many online resources for using slurm on HPC, including
 
