@@ -16,7 +16,7 @@ As an example, see "Standard-Error Files Upload - Opaque Error Message" below.
 
 Fixed issues are marked with [x], in progress, or partially fixed issue with [-] and issues that have not had any work done yet with [ ].
 
-### [ ] Standard-Error Files Upload - Opaque Error Message
+### [x] Standard-Error Files Upload - Opaque Error Message
 
 Trying to upload standard error files, the user might be faced with an error such as:
 => ./opaque-standard-error-upload-error.png
@@ -34,3 +34,6 @@ The error message in the screenshot attached above is obvious when one
 but it does not help the user figure out what they did wrong.
 
 The "more correct" error shown in the example above is arguably more helpful, and helps the user figure out what they did wrong.
+
+The fix:
+=> https://git.genenetwork.org/gn-uploader/commit/?id=3334120a07d8cc7d9ba2e1f23344df4d9c9c33bb
