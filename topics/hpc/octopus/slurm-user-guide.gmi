@@ -16,6 +16,7 @@ sinfo tells you about the slurm nodes:
 
 ```
 sinfo -i
+sinfo -R # show node state
 ```
 
 squeue gives info about the job queue
@@ -30,7 +31,7 @@ sbatch allows you to submit a batch job
 sbatch
 ```
 
-To get a shell prompt on one of the nodes
+To get a shell prompt on one of the nodes (useful for testing your environment)
 
 ```
 srun -N 1 --mem=32G --pty /bin/bash
@@ -47,4 +48,4 @@ An example of using R with guix is described here:
 
 => ../../hpc/guix/R
 
-If you choose, you can still use conda, brew, spack, Python virtualenv, and what not. Userland tools will work, even Docker or singularity may work.
+If you choose, you can still use conda, brew, spack, Python virtualenv, and what not. Userland tools will work. Even Docker or singularity may work as they work from Guix.

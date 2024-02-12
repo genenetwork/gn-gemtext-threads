@@ -10,6 +10,8 @@ The R language, for all its complexity and thousands of packages, is relatively 
 
 For our purposes we had to support a package that is not in CRAN, but in one of the derived packaging systems for R. The MEDIPS package is part of the BiocManager installer and pulls in dependencies and builds them from source.
 
+## Test with guix container
+
 The first step was to build the package in a Guix container (guix shell -C) because that prevents from underlying dependencies getting linked from the HPC linux distro (in our case Debian Linux). For fixing the build and finding dependencies start from:
 
 ```
@@ -59,6 +61,9 @@ The reason is that the gfortran-toolchain is actually built with the older gcc (
 
 Note that issues.guix.gnu.org is worth searching when encountering problems.
 
+## Run without Guix container
+
+
 Once that build works inside a container, to run the tool we can move out and use a non-container shell
 
 ```
@@ -100,6 +105,8 @@ or some other package, such as
 install.packages("qtl")
 ```
 
+## Run on PBS
+
 And in the final step make sure this loads in the user's shell environment and also works on cluster nodes. So all the user has to do is type 'R'. Try to get a shell on a node with
 
 ```
@@ -108,4 +115,22 @@ srun -N 1 --mem=32G --pty /bin/bash
 
 In the shell you can run R and check all environment settings. As I added them to the '~/.bashrc' file, they should work in bash.
 
+Finally set up a slurm script
+
+```
+#!/bin/bash
+#SBATCH -t 1:30:00
+#SBATCH -N 1
+#SBATCH --mem=32G
+
+# --- Display environment
+env
+set
+R -e 'library("MEDIPS")'
+```
+
 As a final note - apart from SLURM - I tested all of this on my workstation first. Because Guix is reproducible, once it works, it is easy to repeat on a remote server.
+
+For more information see
+
+=> ../octopus/slurm-user-guide
