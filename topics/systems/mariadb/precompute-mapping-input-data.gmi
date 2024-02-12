@@ -18,12 +18,21 @@ GN relies on precomputed mapping scores for search and other functionality. Here
 Above is the quick win for plugging in GEMMA values. We will make sure not to recompute the values that are already up to date.
 This is achieved by naming the input and output files as a hash on their DB inputs.
 
-Next:
+Next for running the full batch:
 
 * [X] Store all GEMMA values efficiently
+* [ ] Include metadata record in lmdb and as JSON file
+* [ ] Remove junk from tarball
+* [ ] List significant markers as metadata
+* [ ] Reread below info
+* [ ] Submit jobs to PBS
+* [ ] Report results to mariadb
+
+And after:
+
 * [ ] Track metadata of computed datasets (in RDF?)
 * [ ] Compute significance with GEMMA or other LMM (bulkLMM?)
-* [ ] Store signficance and significant values for processing
+* [ ] Store significance and significant values for processing
 * [ ] Update search & correlations to use these
 * [ ] Further optimize computations so they can run continuously in the background
 
