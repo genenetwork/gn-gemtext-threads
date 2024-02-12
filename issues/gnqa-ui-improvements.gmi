@@ -1,0 +1,18 @@
+# GNQA UI Enhancements
+
+## Tags
+
+* Assigned: alexm
+* Keywords: UI, GNQA
+* Type: Enhancements
+* Status: In Progress
+
+## Description
+
+This issue addresses user feedback received during the testing phase of GNQA on CD. The following improvements are planned:
+
+## Tasks
+
+* [] Replace the search history button: Users are confusing this with the submit button.
+
+* [] Integrate PubMed references: Provide users with useful information by integrating PubMed references and present them in a modal window.
