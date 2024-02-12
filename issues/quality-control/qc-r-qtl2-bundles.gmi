@@ -18,14 +18,14 @@ The following "key" details the meanings of certain notations in this file:
 * [-]: partially done or in progress
 * [x]: completed
 
-### [-] Control File
+### [x] Control File
 
 * [x] MUST exist in bundle
 * [x] One and only one control file in the bundle
 * [x] Defaults for control data are auto-provided by code
 * [x] Every file listed in control file MUST exist in the bundle
 
-### [ ] geno File(s)
+### [x] geno File(s)
 
 * [x] Every value existing in file is one of the genotype encodings in the control file
 
