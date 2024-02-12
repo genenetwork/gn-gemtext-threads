@@ -1,4 +1,4 @@
-# Fetch Pubmed data to GNWA
+# Fetch Pubmed data to GNQA
 
 ## Tags
 
