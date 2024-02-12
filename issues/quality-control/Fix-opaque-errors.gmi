@@ -32,3 +32,5 @@ This error does not tell the user much that is helpful. It should be changed to 
 The error message in the screenshot attached above is obvious when one
 => https://git.genenetwork.org/gn-uploader/tree/scripts/insert_data.py?id=a7410cb1c55f6a06606ab7dcdacd18b11c672632#n254-n257 looks at the code (lines 254 to 259)
 but it does not help the user figure out what they did wrong.
+
+The "more correct" error shown in the example above is arguably more helpful, and helps the user figure out what they did wrong.
