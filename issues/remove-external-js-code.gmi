@@ -35,3 +35,9 @@ new  packages being loaded with cdn
 => https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js
 => https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.css
 => https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/css/uikit.min.css
+
+## Notes 12/02/23
+
+new package:
+
+=> https://github.com/sampsyo/emfed.git
