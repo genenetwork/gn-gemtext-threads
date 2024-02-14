@@ -21,3 +21,11 @@ Right now troubleshooting RDF endpoints as mentioned in:
         breakpoint()
         return jsonify({})
 ```
+
+## Resolution
+
+This has been fixed in:
+
+=> https://github.com/genenetwork/genenetwork3/pull/151
+
+* closed
