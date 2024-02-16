@@ -36,7 +36,8 @@ The following "key" details the meanings of certain notations in this file:
 
 ### [ ] pheno File(s)
 
-* [ ] Check for a minimal number of decimal places (three?)
+* [x] Check for a minimal number of decimal places (three?)
+* [ ] Check that the numbers are log2 normalised (See 'Check for log2-normalised Values' section below)
 * [ ] Verify that all listed samples/cases exist in the database, prior to attempting to parse the file and load data into the database
 * [ ] If listed samples/cases do not exist in database, verify they are all listed in the "geno" file(s)
 
@@ -46,9 +47,10 @@ This is a proposed addition for our specific use-case. If the data in the pheno 
 
 Has similar QC checks to those for the "pheno" file(s) above. The number of decimal places might vary, however.
 
-## Questions Fred Has
+## Check for log2-normalised Values
 
-* Is there a way to detect whether data has been log2 normalised? GN requires that all data is log2 normalised.
+* Check that none of the values are negative
+* Check that the values do not exceed 20 -- This is probably wrong, e.g. `mth.log2(3472935867452934)=51.62507719292422`
 
 ## Resources
 
