@@ -19,24 +19,15 @@
 
 Network:
 
-* [ ] wire up machines so they talk with each other over fiber
+* [ ] Octopus: wire up machines so they talk with each other over fiber
 
 Lambda:
 
-* [X] racked up and runs
-* [+] add network (Roger)
-    link/ether 7c:c2:55:11:9c:ac brd ff:ff:ff:ff:ff:ff
-    inet 172.23.18.212/21 brd 172.23.23.255 scope global dynamic eno1
-* [ ] get service tag Tamara (with Erik?)
-* [X] install ubuntu (with Erik)
 * [ ] remote access? (with Erik)
   * [X] get BMC password
-* [X] get fiber working
-* [ ] add to Octopus HPC
 
 Backups & storage:
 
-* [+] Order storage and caddies (w. Tamara)
 * [_] data warehousing
 * [+] run sheepdog as root: redis password error; introduce SHEEPDOG_CONF
 * [ ] tux01 has unused 4TB spinning disk
@@ -56,14 +47,23 @@ Security:
 ### Spice
 
 * [ ] Run GN off balg01
-* [X] Firewall out of band
 * [ ] Add firewall test to sheepdog
-* [X] Add storage
 * [ ] Convert balg02 to Guix server
 * [ ] VM for student team
 
 ### Done
 
+* [X] lambda: get fiber working
+* [X] lambda: add to Octopus HPC
+* [X] lambda: racked up and runs
+* [X] lambda: add network (Roger)
+    link/ether 7c:c2:55:11:9c:ac brd ff:ff:ff:ff:ff:ff
+    inet 172.23.18.212/21 brd 172.23.23.255 scope global dynamic eno1
+* [X] lambda: get service tag Tamara (with Erik?)
+* [X] lambda: install ubuntu (with Erik)
+* [X] Order storage and caddies (w. Tamara)
+* [X] Spice: Firewall out of band
+* [X] Spice: Add storage
 * [X] Tux01 and Tux02 disk space issues
 * [X] Reinstate backup drops on tux02, rabbit, &space and &epysode; reduce incoming IP
 * [X] Pluto tool with Zach & Efraim

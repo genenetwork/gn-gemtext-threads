@@ -1,0 +1,24 @@
+# Fallbacks
+
+We will run fallback servers using Arun's Guix machine configuration.
+
+# Tags
+
+* assigned: pjotrp
+* priority: medium
+* type: system administration
+* keywords: system administration, GN, tux01, tux02, tux04, balg01
+
+# Tasks
+
+Prepare backups to copy to the new machines:
+
+* [.] Copy backup from tux01 to balg01
+* [.] Copy backup from tux01 to tux04
+* [ ] Copy backup from tux01 to tb
+* [ ] Make sure CRON works on tux01 for balg01
+* [ ] Make sure CRON works on tux01 for tux04
+* [ ] Make sure CRON works on tb
+* [ ] Create borg-borg on tux04
+* [ ] Create borg-borg on tb
+* [ ] Add CRON `borg prune' on tux01
