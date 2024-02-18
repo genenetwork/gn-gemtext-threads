@@ -112,6 +112,20 @@ chmod 0700 backup/bacchus/drop/
 
 If auth.log says error: /dev/pts/11: No such file or directory on ssh, or received disconnect (...) disconnected by user we are good to go!
 
+Note: at this stage it may pay to track the system log with
+
+```
+journalctl -u ssh -f
+```
+
+and, in a pinch, increase DEBUG output in sshd_config with
+
+```
+LogLevel DEBUG3
+```
+
+In my case I had to disable PAM!
+
 Next try sshfs
 
 ```
@@ -123,6 +137,10 @@ touch ~/mnt/dropserver/drop/HELLO
 ```
 
 And the remote directory should be ready for dropping files!
+
+```
+rsync  -vrltDP  /export2/backup/borg/borg-tux01 ~/mnt/balg01/drop/ --delete
+```
 
 To unmount the dir
 
