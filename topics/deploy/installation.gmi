@@ -260,6 +260,58 @@ ft_min_word_len = 3
 
 Note that we handle IP restrictions through the nftables firewall.
 
+The systemd config is
+
+```
+[Unit]
+Description=MariaDB database server
+Documentation=man:mysqld(8)
+Documentation=https://mariadb.com/kb/en/library/systemd/
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+Alias=mysqld.service
+
+[Service]
+TimeoutStartSec=infinity
+TimeoutStopSec=infinity
+LimitNOFILE=infinity
+LimitMEMLOCK=infinity
+
+Type=simple
+PrivateNetwork=false
+
+User=mariadb
+Group=mariadb
+
+CapabilityBoundingSet=CAP_IPC_LOCK                                                                  # Prevent writes to /usr, /boot, and /etc
+ProtectSystem=true
+                                                                       PrivateDevices=true
+# Prevent accessing /home, /root and /run/user
+ProtectHome=false
+
+# Execute pre and post scripts as root, otherwise it does it as User=
+PermissionsStartOnly=true
+
+ExecStartPre=/usr/bin/install -m 755 -o mariadb -g root -d /var/run/mysqld
+
+ExecStart=/usr/local/guix-profiles/gn-latest/bin/mariadbd --datadir=/export/mariadb/tux01_mariadb/latest $MYSQLD_OPTS $_WSREP_NEW_CLUSTER $_WS
+REP_START_POSITION -W
+
+ExecStartPost=/bin/sh -c "systemctl unset-environment _WSREP_START_POSITION"
+
+KillSignal=SIGTERM
+
+SendSIGKILL=no
+Restart=on-abort
+RestartSec=15s
+
+UMask=007
+
+PrivateTmp=false
+```
+
 ** Load the small database in MySQL
 
 Currently we have two databases for deployment,
