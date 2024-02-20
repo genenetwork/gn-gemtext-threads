@@ -127,14 +127,30 @@ startup script.
 These are the steps you can take to install a fresh installation of
 mariadb (which comes as part of the GNU Guix genenetwork2 install).
 
-As root configure the Guix profile
+As root configure the Guix profile, previously that was
 
-: . ~/opt/genenetwork2/etc/profile
+```
+. ~/opt/genenetwork2/etc/profile
+```
+
+But now we use the recommended
+
+```
+/usr/local/guix-profiles/guix-pull/bin/guix install mariadb borg -p /usr/local/guix-profiles/gn-latest
+. /usr/local/guix-profiles/gn-latest/etc/profile
+```
+
+Exctract the db (that takes a while too)
+
+```
+/usr/local/guix-profiles/gn-latest/bin/borg extract /export2/data/wrk/tux01/borg-tux01::borg-backup-mariadb-20240218-06:16-Sun --progress
+```
 
 and run for example
 
-#+BEGIN_SRC bash
-adduser mariadb && addgroup mariadb
+```
+adduser mariadb
+addgroup mariadb (and add user to group)
 mkdir -p /export2/mariadb/database
 chown mariadb.mariadb -R /export2/mariadb/
 mkdir -p /var/run/mysqld
@@ -144,7 +160,7 @@ mysql --version
   mysql  Ver 15.1 Distrib 10.1.45-MariaDB, for Linux (x86_64) using readline 5.1
 mysql_install_db --user=mariadb --datadir=/export2/mariadb/database
 mysqld -u mariadb --datadir=/exportdb/mariadb/database/mariadb --explicit_defaults_for_timestamp -P 12048"
-#+END_SRC
+```
 
 If you want to run as root you may have to set
 
