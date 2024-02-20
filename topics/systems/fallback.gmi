@@ -38,7 +38,8 @@ Having issues with sdd drive.
 ## Install mariadb
 
 * [X] Extract DB from backup on a fast partition
-* [ ] Install mariadb using guix
+* [X] Install mariadb using guix
+* [ ] Add to systemd
 
 see also
 
