@@ -156,45 +156,113 @@ chown mariadb.mariadb -R /export2/mariadb/
 mkdir -p /var/run/mysqld
 chown mariadb.mariadb /var/run/mysqld
 su mariadb
-mysql --version
-  mysql  Ver 15.1 Distrib 10.1.45-MariaDB, for Linux (x86_64) using readline 5.1
-mysql_install_db --user=mariadb --datadir=/export2/mariadb/database
-mysqld -u mariadb --datadir=/exportdb/mariadb/database/mariadb --explicit_defaults_for_timestamp -P 12048"
+. /usr/local/guix-profiles/gn-latest/etc/profile
+mariadb --version
+  mariadb  Ver 15.1 Distrib 10.10.2-MariaDB, for Linux (x86_64) using readline 5.1
+mariadb_install_db --user=mariadb --datadir=/export2/mariadb/database
+mariadbd -u mariadb --datadir=/exportdb/mariadb/database/mariadb --explicit_defaults_for_timestamp -P 12048"
 ```
 
-If you want to run as root you may have to set
+If you want to run as root you may have to set /etc/my.cnf
 
-: /etc/my.cnf
-: [mariadbd]
-: user=root
+```
+[mariadbd]
+user=root
+```
 
 You also need to set
 
-: ft_min_word_len = 3
+```
+ft_min_word_len = 3
+```
 
 To make sure word text searches (shh) work and rebuild the tables if
 required.
 
 To check error output in a file on start-up run with something like
 
-: mariadbd -u mariadb --console  --explicit_defaults_for_timestamp  --datadir=/gnu/mariadb --log-error=~/test.log
 
-Other tips are that Guix installs mariadbd in your profile, so this may work
-
-: /home/user/.guix-profile/bin/mariadbd -u mariadb --explicit_defaults_for_timestamp  --datadir=/gnu/mariadb
+```
+mariadbd -u mariadb --console  --explicit_defaults_for_timestamp  --datadir=/export/mariadb/tux01_mariadb/latest --log-error=~/test.log
+/usr/local/guix-profiles/gn-latest/bin/mariadb -uwebqtlout -pwebqtlout db_webqtl -e 'show tables'
+```
 
 When you get errors like:
 
-: qlalchemy.exc.IntegrityError: (_mariadb_exceptions.IntegrityError) (1215, 'Cannot add foreign key constraint')
+```
+qlalchemy.exc.IntegrityError: (_mariadb_exceptions.IntegrityError) (1215, 'Cannot add foreign key constraint')
+```
 
 you may need to set
 
-: set foreign_key_checks=0
+```
+set foreign_key_checks=0
+```
+
+The current production my.conf is
+
+```
+[mysqld]
+
+# innodb_empty_free_list_algorithm=backoff
+innodb_buffer_pool_size=16G
+# innodb_ibuf_max_size=2G
+innodb_ft_min_token_size=3
+# innodb_use_sys_malloc=0
+innodb_file_per_table=ON
+key_buffer_size=10M
+
+ft_min_word_len = 3
+
+# main = 1 for active master: server A
+gtid-domain-id=1
+
+tmpdir=/export/tmp
+wait_timeout=180
+lc_time_names=en_US
+lc_messages=en_US
+max_connections=2048
+thread_cache_size=16
+open_files_limit = 16384
+query_cache_type=1                                                                                  query_cache_min_res_unit = 1k
+query_cache_limit = 1M
+query_cache_size=128M
+
+log_error=/var/log/mysql/error.log
+skip-name-resolve
+
+# Skip recovery for now:
+innodb_force_recovery=1
+
+# Only when listening to the network!
+# bind-address = 0.0.0.0
+# port = 3306
+
+slow_query_log=1
+slow_query_log_file=/var/log/mysql/mysql-slow.log
+long_query_time=60.0
+log_queries_not_using_indexes=0
+log_warnings=4
+log_slow_admin_statements=ON
+
+ft_min_word_len=3
+
+log-bin=/var/lib/mysql/gn0-binary-log
+expire-logs-days=120
+server-id=1
+# Domain = 1 for active master: server A
+gtid-domain-id=1
+
+[myisamchk]
+sort_buffer_size=4M
+ft_min_word_len = 3
+```
+
+Note that we handle IP restrictions through the nftables firewall.
 
 ** Load the small database in MySQL
 
-At this point we require the underlying distribution to install and
-run mysqld (see next section for GNU Guix). Currently we have two databases for deployment,
+Currently we have two databases for deployment,
 'db_webqtl_s' is the small testing database containing experiments
 from BXD mice and 'db_webqtl_plant' which contains all plant related
 material.
