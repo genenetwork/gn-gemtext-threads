@@ -1,0 +1,11 @@
+# Remove References to Old gn-auth code
+
+## Tags
+
+* assigned: bonfacem
+* keywords: auth
+* status: open
+
+## Description
+
+We still reference the old Racket gn-auth code.  We should deprecate this.
