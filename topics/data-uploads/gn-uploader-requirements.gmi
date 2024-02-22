@@ -52,9 +52,9 @@ and for data in ProbeSetData, it would be something like:
 
 We can then have table indexes composed of one or more of the elements of the *FULL IDENTIFIER* for faster queries.
 
-**NOTE 01**: The *FULL IDENTIFIERS* above should be hieararchical, beginning with the "oldest" ancestor and ending with the current record's ID.
+**NOTE 01**: The FULL IDENTIFIERS above should be hieararchical, beginning with the "oldest" ancestor and ending with the current record's ID.
 
-**NOTE 02**: The examples of the *FULL IDENTIFIERS* above might not be complete. I'll update them as I tease more information from the database.
+**NOTE 02**: The examples of the FULL IDENTIFIERS above might not be complete. I'll update them as I tease more information from the database.
 
 ## Data Categories
 
@@ -115,14 +115,14 @@ Hierarchy
 We could index the genotype information by the following fields:
 
 * SpeciesId: For faster queries for a particular species' genotypes
-* …
+* ...
 
 ### Assembly Information
 
 * mm8
 * mm10
 * mm11
-* …
+* ...
 etc.
 
 I still do not wholly comprehend this. This might be related to the platform information.
@@ -135,7 +135,7 @@ Tables affected by this information:
 
 * Geno
 * Chr_Length
-* …
+* ...
 
 ### Population Information
 
@@ -167,7 +167,7 @@ The data we need to collect/have for the samples are:
 From the existing `Strain` table, it seems you can only have one-and-only-one sample for a particular species with a specific name.
 
 > MariaDB [db_webqtl]> SHOW CREATE TABLE Strain;
-> …
+> ...
 > | Strain | CREATE TABLE `Strain` (
 >   `Id` int(20) NOT NULL AUTO_INCREMENT,
 >   `Name` varchar(100) DEFAULT NULL,
@@ -179,7 +179,7 @@ From the existing `Strain` table, it seems you can only have one-and-only-one sa
 >   UNIQUE KEY `Name` (`Name`,`SpeciesId`),
 >   KEY `Symbol` (`Symbol`)
 > ) ENGINE=InnoDB AUTO_INCREMENT=180927 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci |
-> …
+> ...
 
 We could index this information by any one, or combinations of the following fields:
 
@@ -191,7 +191,7 @@ and maybe even drop the need for the 'StrainXRef' table. (*To be considered*)
 ### Tissue Information
 
 Hierarchy
-> Species --> ?? … ?? --> Tissue --> {{{ data of various sorts }}}
+> Species --> ?? ... ?? --> Tissue --> {{{ data of various sorts }}}
 
 Felix discovered the need for this when uploading the Arabidopsis Thaliana data into the test database with the uploader. Expression data to be uploaded has to be linked to a tissue, and the existing tissue information (as of before 2024-02-22T09:45+03:00UTC) seems to only belong to vertebrates, not plants.
 
@@ -205,15 +205,15 @@ Tables:
 * TissueProbeSetFreeze
 * TissueProbeSetXRef
 
-…
+...
 
 ### Expression Data Information
 
 
 Hierarchy
-> Species --> ?? … ?? --> Expression Data --> {{{ data of various sorts }}}
+> Species --> ?? ... ?? --> Expression Data --> {{{ data of various sorts }}}
 
-The ' --> ?? … ?? --> ' section winds through Platform, Population, Genotype, Tissue, Samples etc before making its way to the expression data information. I still need to unwind the hieararchy and list the paths here.
+The ' --> ?? ... ?? --> ' section winds through Platform, Population, Genotype, Tissue, Samples etc before making its way to the expression data information. I still need to unwind the hieararchy and list the paths here.
 
 Affects the following database tables:
 
@@ -228,18 +228,18 @@ Some mandatory data we need:
 * SpeciesId (see 'Species Information' above)
 * PlatformId (see 'Platform Information' above)
 * Name: Phenotype identifier for the platform above
-* Gene Symbol: …
+* Gene Symbol: ...
 * Chromosome:
 * Megabases:
 * Description: A description for the phenotype
 * GeneId: Entrez gene ID from NCBI
 * Strand_Gene/Strand_Probe: he DNA strand (+ or -) of the gene assigned to the phenotype. Leading or lagging strand.
 
-Maybe the *Chromosome* and  *Megabases* value could be replaced by a single link to a ChromosomeId or such… maybe a table linking the chromosome to its specific assembly e.g.
+Maybe the *Chromosome* and  *Megabases* value could be replaced by a single link to a ChromosomeId or such... maybe a table linking the chromosome to its specific assembly e.g.
 
 > Probeset(ChromosomeAssemblyId) --> (Id)ChromosomeAssembly(ChromosomeId) --> Chromosome(Id)
 
-…
+...
 
 ### Publish Phenotype Data
 
@@ -262,9 +262,9 @@ Some important data required:
 
 * Units: Units of measurement for the phenotype
 => https://info.genenetwork.org/faq.php#q-22 Description for "Publish Phenotypes"
-* Others? …
+* Others? ...
 
-…
+...
 
 ## Descriptions
 
