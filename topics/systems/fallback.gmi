@@ -17,11 +17,11 @@ Note that copying from the new machines is 10x faster.
 
 * [X] Copy backup from tux01 to balg01
 * [X] Copy backup from tux01 to tux04
-* [.] Copy backup from balg01 to tb
-* [ ] Make sure CRON works on tux01 for balg01
+* [X] Copy backup from balg01 to tb
+* [+] Make sure CRON works on tux01 for balg01
 * [X] Make sure CRON works on tux01 for tux04
+* [X] Make sure CRON works on tux01 for space
 * [ ] Make sure CRON works on tb
-* [ ] Create borg-borg on tux04
 * [ ] Create borg-borg on tb
 * [ ] After borg-borg add CRON `borg prune' on tux01
 
@@ -39,8 +39,13 @@ Having issues with sdd drive.
 
 * [X] Extract DB from backup on a fast partition
 * [X] Install mariadb using guix
-* [ ] Add to systemd
+* [X] Add to systemd
 
 see also
 
 => ../deploy/installation
+
+## Sheepdog monitoring
+
+* [ ] Move host to tb
+* [ ] Update all clients

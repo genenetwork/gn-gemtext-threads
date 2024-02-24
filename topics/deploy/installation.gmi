@@ -321,17 +321,17 @@ material.
 
 Download one database from
 
-http://ipfs.genenetwork.org/ipfs/QmRUmYu6ogxEdzZeE8PuXMGCDa8M3y2uFcfo4zqQRbpxtk
+=> https://files.genenetwork.org/database/
 
-After installation unzip the database binary in the MySQL directory
+After installation unzip the database binary in the MySQL directory, e.g.
 
-#+BEGIN_SRC sh
+```
 cd ~/mysql
 p7zip -d db_webqtl_s.7z
 chown -R mysql:mysql db_webqtl_s/
 chmod 700 db_webqtl_s/
 chmod 660 db_webqtl_s/*
-#+END_SRC
+```
 
 restart MySQL service (mysqld). Login as root
 
@@ -365,84 +365,22 @@ configuration (see below).
 Note for the plant database you can rename it to db_webqtl_s, or
 change the settings in etc/default_settings.py to match your path.
 
-* Get genotype files
+# Get genotype files
 
-The script looks for genotype files. You can find them in
-http://ipfs.genenetwork.org/ipfs/QmXQy3DAUWJuYxubLHLkPMNCEVq1oV7844xWG2d1GSPFPL
+The script looks for genotype files. You can find a BXD subset in
 
-#+BEGIN_SRC sh
+=> https://files.genenetwork.org/genotype_files/
+
+(Note we should add plants)
+
+```
 mkdir -p $HOME/genotype_files
 cd $HOME/genotype_files
+```
 
-#+END_SRC
+# Trouble shooting
 
-* GN2 Dependency Graph
-
-List of all runtime dependencies for GN2 as installed by GNU Guix.
-
-https://genenetwork.org/environments/
-
-* Working with the GN2 source code
-
-See [[development.org]].
-
-* Read more
-
-If you want to understand the architecture of GN2 read
-[[Architecture.org]].  The rest of this document is mostly on deployment
-of GN2.
-
-* Trouble shooting
-
-** ImportError: No module named jinja2
-
-If you have all the Guix packages installed this error points out that
-the environment variables are not set. Copy-paste the paths into your
-terminal (mainly so PYTHON_PATH and R_LIBS_SITE are set) from the
-information given by guix:
-
-: guix package --search-paths
-
-On one system:
-
-: export PYTHONPATH="$HOME/.guix-profile/lib/python3.8/site-packages"
-: export R_LIBS_SITE="$HOME/.guix-profile/site-library/"
-: export GEM_PATH="$HOME/.guix-profile/lib/ruby/gems/2.2.0"
-
-and perhaps a few more.
-** ERROR: 'can not find directory $HOME/gn2_data' or 'can not find directory $HOME/genotype_files/genotype'
-
-The default settings file looks in your $HOME/gn2_data. Since these
-files come with a Guix installation you should take a hint from the
-values in the installed version of default_settings.py (see above in
-this document).
-
-You can use the GENENETWORK_FILES switch to set the datadir, for example
-
-: env GN2_PROFILE=~/opt/gn-latest GENENETWORK_FILES=/gnu/data/gn2_data ./bin/genenetwork2
-
-** Can't run a module
-
-In rare cases, development modules are not brought in with Guix
-because no source code is available. This can lead to missing modules
-on a running server. Please check with the authors when a module
-is missing.
-** Rpy2 error 'show' now found
-
-This error
-
-: __show = rpy2.rinterface.baseenv.get("show")
-: LookupError: 'show' not found
-
-means that R was updated in your path, and that Rpy2 needs to be
-recompiled against this R - don't you love informative messages?
-
-In our case it means that GN's PYTHONPATH is not in sync with
-R_LIBS_SITE. Please check your GNU Guix GN2 installation paths,
-you man need to reinstall. Note that this may be the point you
-may want to start using profiles (see profile section).
-
-** Mysql can't connect server through socket ERROR
+## Mysql can't connect server through socket ERROR
 
 The following error
 
@@ -460,31 +398,3 @@ try to connect over the network interface instead, e.g.
 if that works run genenetwork after setting SQL_URI to something like
 
 : export SQL_URI=mysql://gn2:mysql_password@127.0.0.1/db_webqtl_s
-
-* NOTES
-
-** Deploying GN2 official
-
-Let's see how fast we can deploy a second copy of GN2.
-
-- [ ] Base install
-  + [ ] First install a Debian server with GNU Guix on board
-  + [ ] Get Guix build going
-    - [ ] Build the correct version of Guix
-    - [ ] Check out the correct gn-stable version of guix-bioinformatics http://git.genenetwork.org/pjotrp/guix-bioinformatics
-    - [ ] guix package -i genenetwork2 -p /usr/local/guix-profiles/gn2-stable
-  + [ ] Create a gn2 user and home with space
-  + [ ] Install redis
-    - [ ] add to systemd
-    - [ ] update redis.cnf
-    - [ ] update database
-  + [ ] Install mariadb (currently debian mariadb-server)
-    - [ ] add to systemd
-    - [ ] system stop mysql
-    - [ ] update mysql.cnf
-    - [ ] update database (see gn-services/services/mariadb.md)
-    - [ ] check tables
-  + [ ] run gn2
-  + [ ] update nginx
-  + [ ] install genenetwork3
-    - [ ] add to systemd
