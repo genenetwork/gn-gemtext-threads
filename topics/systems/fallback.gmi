@@ -45,6 +45,21 @@ see also
 
 => ../deploy/installation
 
+## Unpack genotype files and other files
+
+* [X] borg extract genotype files
+
+```
+/usr/local/guix-profiles/gn-latest/bin/borg extract /export2/data/wrk/tux01/borg-genenetwork::borg-GN2-home-20240218-10:00-Sun --progress
+```
+
+* [X] extract redis
+* [+] backup and extract sqlite for auth, e.g. auth_prod_20240218.db
+
+## Guix system container
+
+
+
 ## Sheepdog monitoring
 
 * [ ] Move host to tb

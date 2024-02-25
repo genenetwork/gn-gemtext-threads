@@ -312,7 +312,7 @@ UMask=007
 PrivateTmp=false
 ```
 
-** Load the small database in MySQL
+## Load the small database in MySQL
 
 Currently we have two databases for deployment,
 'db_webqtl_s' is the small testing database containing experiments
