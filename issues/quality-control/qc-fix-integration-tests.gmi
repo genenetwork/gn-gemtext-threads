@@ -4,8 +4,8 @@
 
 * assigned: fredm
 * priority: medium
-* status: open
-* keywords: quality control, qc, tests
+* status: closed, completed
+* keywords: quality control, qc, tests, gn-uploader
 * type: bug
 
 ## Description
@@ -19,3 +19,9 @@ command = [shutil.which("redis-server"), "--port", str(port)]
 This is because the `shutil.which("redis-server")` call returns `None` in the newer code, due to removal of redis (the server) from the list of dependencies.
 
 To work around the issue, I suggest the use of an explicit, albeit temporary, redis database for testing, by modifying the `REDIS_URL` value in the tests sessions. The modification will simply change the URL to point to a new database for the test session, enabling the tests to run unhindered, but also without tainting the production redis databases.
+
+### Update 2024-02-27
+
+The system was updated to use prefixed keys, and the full tests now run correctly.
+
+=> /issues/gn-uploader/rework-tests-remove-redis-as-test-dependency related issue

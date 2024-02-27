@@ -27,3 +27,9 @@ So far, the error-handling for such services has been inconsistent at best. In t
 > => https://github.com/genenetwork/genenetwork2/pull/830
 
 We can then maybe incorporate the use of UUIDs in the errors, to help with tracking the errors in the logs where necessary.
+
+----
+
+Some work has been done on this, but it is still a work in progress.
+
+**Maybe link the commits here…**

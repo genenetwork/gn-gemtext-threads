@@ -6,7 +6,7 @@
 * assigned: fredm, zachs, zsloan, acenteno
 * priority: high
 * type: feature-request
-* keywords: QC, quality control, strains
+* keywords: QC, quality control, strains, gn-uploader
 
 ## Description
 

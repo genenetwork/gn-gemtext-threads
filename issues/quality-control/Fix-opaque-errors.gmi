@@ -2,11 +2,11 @@
 
 ## Tags
 
-* status: open
+* status: closed, completed
 * assigned: fredm
 * type: bug
 * priority: high
-* keywords: opaque errors, errors, UX, user experience
+* keywords: opaque errors, errors, UX, user experience, gn-uploader
 
 ## Description
 

@@ -3,9 +3,9 @@
 ## Tags
 
 * assigned: fred, fredm
-* status: open
+* status: closed, completed
 * priority: medium
-* keywords: gnqc-py, tests
+* keywords: gn-uploader, tests
 * type: improvement
 
 ## Description
@@ -13,3 +13,7 @@
 Some tests depend on a running redis instance to work.
 
 Either move these to an integration tests harness, to be run after the system has run the unit tests and has been deployed, or remove them completely from the system.
+
+### Update 2024-02-27
+
+The system was updated to use prefixed keys, and the full tests now run correctly. Still need to add the tests to the guix CI/CD system perhaps...

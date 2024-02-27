@@ -3,10 +3,10 @@
 ## Tags
 
 * assigned: fredm
-* status: open
+* status: closed, completed
 * priority: medium
 * type: refactor, feature request, design change
-* keywords: auth, authorisation, resources, design change
+* keywords: auth, authorisation, resources, design change, gn-auth
 
 ## Description
 
@@ -29,3 +29,11 @@ This means that there is a need to refactor the code to make the concept of a "r
 * [x] Make resource to represent the system itself
 * [x] Make resources, each representing one of the "user groups"
 * [ ] Make resources, each representing the users of the system -- maybe?
+
+### Update 2024-02-27
+
+The resource system was updated a while ago.
+
+We still do not view users as resources for the time being, and handle them slightly different from the rest of the system, controlling access to the users via other resources like the 'System' and 'Group' resources.
+
+This is considered completed.

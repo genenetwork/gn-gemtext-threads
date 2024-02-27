@@ -5,8 +5,8 @@
 * type: bug
 * priority: critical
 * assigned: fredm, acenteno
-* keywords: QC, quality control, samples, strains, cases
-* status: open
+* keywords: QC, quality control, samples, strains, cases, gn-uploader
+* status: closed, completed
 
 ## Description
 
@@ -30,5 +30,3 @@ This was a myopic view of the data uploader, and needs to be expanded significan
 
 Fixed with this commit:
 => https://gitlab.com/fredmanglis/gnqc_py/-/commit/cdd4dc456e56bb4eb055e1cb7f2518d45fb3bfb9
-
-Awaiting deployment
