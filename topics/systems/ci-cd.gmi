@@ -1,8 +1,6 @@
 # CI/ CD for genetwork projects
 
-We need to figure out/ discuss and document how to go about doing the whole automated testing and deployment, from pushing code to deployment to production.
-
-For a first, we need various levels of tests to be run, from unit tests to the more complicated ones like integration, performance, regression, etc tests, and of course, they cannot all be run for each and every commit, and will thus need to be staggered across the entire deployment cycle to help with quick iteration of the code.
+We need various levels of tests to be run, from unit tests to the more complicated ones like integration, performance, regression, etc tests, and of course, they cannot all be run for each and every commit, and will thus need to be staggered across the entire deployment cycle to help with quick iteration of the code.
 
 ## Tags
 
@@ -11,6 +9,7 @@ For a first, we need various levels of tests to be run, from unit tests to the m
 * status: in progress
 * priority: high
 * type: enhancement
+* status: closed
 
 ## Tasks
 

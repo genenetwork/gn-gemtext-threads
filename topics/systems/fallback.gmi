@@ -58,9 +58,25 @@ see also
 
 ## Guix system container
 
+* [X] Assess gemtext documentation
+* [ ] Check tux02 configurations
+* [ ] Set up guix channels
+* [ ] Set up guix gcroot
+* [ ] Update systemd
+* [ ] Add gn-guile to configuration
+* [ ] Test, test, test
 
+=> guix-system-containers-and-how-we-use-them More info
 
 ## Sheepdog monitoring
 
 * [ ] Move host to tb
 * [ ] Update all clients
+* [ ] Add monitoring new fallback services
+
+## Continuous updates
+
+* [ ] Mariadb
+* [ ] Redis
+* [ ] Auth
+* [ ] Files
