@@ -1,20 +1,24 @@
 # Tasks for Fred
 
-## Tags
+## Description
 
-* assigned: fredm
-* status: in progress
-* priority: high
+These are the tasks and issues to be handled by Fred.
 
-## Tasks
+Here are all open issues
+=> https://issues.genenetwork.org/search?query=is%3Aopen+AND+assigned%3AFrederick&type=all assigned to Frederick
 
-* Complete correlation bug hunting and merge with production
-* Genotype data uploader on space
-  - finalise spack configuration (nginx)
-  - add simple password protection (using nginx?)
-* Start on authentication/authorization for GN2 (with @pjotrp)
-* Merge phenotype uploader functionality that is already in GN2 (with @bonfacem)
+The search used for the list above is
+> is:open AND assigned:Frederick
 
-Extra:
+You can refine the search by constraining the checks some more, e.g. to get high-priority issues
+
+> is:open AND assigned:Frederick AND priority:high
+
+
+## Priority
+
+…
+
+## Extra
 
 * Work on analysis of aging mice
