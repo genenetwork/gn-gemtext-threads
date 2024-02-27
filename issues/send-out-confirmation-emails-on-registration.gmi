@@ -1,0 +1,15 @@
+# Send out Confimation Emails on Registration
+
+## Tags
+
+* status: open
+* assigned: fredm
+* priority: medium
+* keywords: email, user registration
+* type: feature request, feature-request
+
+## Description
+
+Send out a emails to confirm that the emails users provide are valid. Probably add a way to check that the user is confirmed before allowing user to do anything in the application.
+
+=> https://matrix.to/#/!mBYtTotZGiPpHmjJnI:matrix.org/$ZgWbOMJweND9L_W91i3dhoHSvxh4By3GTLjCc1xoS14?via=matrix.org
