@@ -20,9 +20,11 @@ The task is to integrate PubMed references into the GNQA system by querying the 
 
 * [] Display the PubMed information as reference information on the GN2 user interface.
 
-* [] dump the results to a DB
+* [] dump the results to a DB e.g sqlite,lmdb
 
 * [x] If references are not found, perform a lossy search or list the closest three papers.
+
+* [] reimplement the reference ui to render the references as modal objects
 
 
 For lossy search, see:
@@ -30,3 +32,7 @@ For lossy search, see:
 
 see link to main  issue:
 => https://issues.genenetwork.org/topics/lmms/llm-metadata
+
+
+
+
