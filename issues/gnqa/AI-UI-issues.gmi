@@ -1,0 +1,45 @@
+# AI UI Enhancements
+
+## Tags
+
+* Assigned: alexm, shelbys
+* Keywords: UI, GNQA
+* Type: critical
+* Status: In Progress
+
+## Description
+
+This issue addresses user feedback received during the testing phase of GNQA on CD. The following improvements are required
+
+## Tasks
+
+* [ ] Only show the link when a user is logged in - they can't use it otherwise anyhow - or require login when hitting the link immediately. I prefer the former.
+
+* [ ] Replace the search history button - the current link is confusing. My suggestion is not to show a link/button at all until a first global search is done:
+
+* [ ] When a global search is done, before the table show a line that people can use the text search:
+
+```
+------- [search]
+
+GN searched for the term(s) "shh" in 754 datasets and 39,765,944 traits across 10 species
+and found 1210 results that match your query.
+You can filter these results by adding key words in the fields below
+and you can also sort results on most columns.
+
+You can also use free text search using our GPT [GNQA system] <- button
+
+Showing 1 to 69 of 1,210 entries
+	Index Record Species Group Tissue Dataset Symbol ...
+  table entries...
+```
+
+So suggest it as an option when continueing global search.
+
+Even better, after loading the table suggest a query that might work, e.g.
+
+What do we know about the shh gene in the BXD mouse?
+
+And that will take you to GNQA.
+
+Even better, would be to load a first answer - maybe we'll cache those.
