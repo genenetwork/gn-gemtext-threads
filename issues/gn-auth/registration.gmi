@@ -1,0 +1,26 @@
+# Login issues with gn-auth
+
+# Tags
+
+* assigned: fredm
+* priority: critical
+
+# Issues
+
+## With registration we get a JSON error
+
+On CD we get an error during registration of a new user using a strong password:
+
+```
+      GeneNetwork 2.11-rc2  http://cd.genenetwork.org/oauth2/user/register ( 7:33PM UTC Mar 01, 2024)
+Traceback (most recent call last):
+  File "/gnu/store/jh0b8nzrs7rh55axdwmz8i1lavni52c5-profile/lib/python3.10/site-packages/requests/models.py", line 971, in json
+    return complexjson.loads(self.text, **kwargs)
+  File "/gnu/store/jh0b8nzrs7rh55axdwmz8i1lavni52c5-profile/lib/python3.10/site-packages/simplejson/__init__.py", line 525, in loads
+    return _default_decoder.decode(s)
+  File "/gnu/store/jh0b8nzrs7rh55axdwmz8i1lavni52c5-profile/lib/python3.10/site-packages/simplejson/decoder.py", line 370, in decode
+    obj, end = self.raw_decode(s)
+  File "/gnu/store/jh0b8nzrs7rh55axdwmz8i1lavni52c5-profile/lib/python3.10/site-packages/simplejson/decoder.py", line 400, in raw_decode
+    return self.scan_once(s, idx=_w(s, idx).end())
+simplejson.errors.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+```
