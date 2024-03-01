@@ -14,6 +14,13 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 
 ## Tasks
 
+### Mempang24
+
+* [ ] Invites
+* [ ] Payments
+* [ ] Rooms
+* [ ] Catering
+
 ### Meta-tasks
 
 Now (X=done +=WIP _=kickoff ?=?)
