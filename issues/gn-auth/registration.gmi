@@ -107,6 +107,11 @@ drwxr-xr-x  2 guixbuilder13  981 4096 Nov  3 04:20 genenetwork-sqlite
 
 Attempting to register a user again was also successful.
 
+
+The lines that do the file ownership/permission changes are:
+=> https://git.genenetwork.org/gn-machines/tree/genenetwork-development.scm?id=3baf150595f0b7d7061a119f1c52d1dbea328e83#n697
+=> https://git.genenetwork.org/gn-machines/tree/genenetwork/services/genenetwork.scm?id=3baf150595f0b7d7061a119f1c52d1dbea328e83#n110
+
 ## Proposed Solution
 
 Figure out how to make the authorisation database file be accessible from multiple containers with read-write permissions.
