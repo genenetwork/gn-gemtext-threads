@@ -1,4 +1,4 @@
-# test1-auth.genenetwork.org Can't Find Templated
+# test1-auth.genenetwork.org Can't Find Templates
 
 ## Tags
 
@@ -46,7 +46,7 @@ Fixed by using MANIFEST.in to force inclusion of files
 
 We then had to update the commit of gn-auth in guix-bioinformatics, pull and rebuild the container.
 
-Now gn-auth runs, but we are getting new errors:
+Now gn-auth runs, but we are getting new errors when we try to sign-in from GN2:
 
 ```
 ︙
