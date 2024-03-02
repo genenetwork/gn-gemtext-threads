@@ -53,20 +53,20 @@ The cd container is built with the following options:
 
 ```
 container_script=$(guix system container --network \
-			…
+			︙
                         --share=/export/data/genenetwork-xapian \
                         --share=/export/data/genenetwork-sqlite \
-			…
+			︙
 ```
 
 meanwhile the test1 container is built with:
 
 ```
 container_script=$(guix system container \
-			…
+			︙
                         --expose=/export/data/genenetwork-xapian \
                         --share=/export/data/genenetwork-sqlite \
-			…
+			︙
 ```
 
 `--share` option allows read-write access within the container, while `--expose` just allows read access. From the snippets above, we see that the "genenetwork-sqlite" folder should (ideally) be writable from both systems.
