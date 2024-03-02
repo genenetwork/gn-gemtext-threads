@@ -60,6 +60,14 @@ see also
 
 * [X] Assess gemtext documentation
 * [ ] Check tux02 configurations
+
+The main example lives in
+
+
+we create fallback.scm, see
+
+=> fire-up-genenetwork-system-container.gmi
+
 * [ ] Set up guix channels
 * [ ] Set up guix gcroot
 * [ ] Update systemd
