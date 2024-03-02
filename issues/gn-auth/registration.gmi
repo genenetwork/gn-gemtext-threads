@@ -24,3 +24,70 @@ Traceback (most recent call last):
     return self.scan_once(s, idx=_w(s, idx).end())
 simplejson.errors.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
 ```
+
+## Troubleshooting
+
+From the logs:
+
+```
+2024-03-02 01:53:52     rv = self.handle_user_exception(e)
+2024-03-02 01:53:52   File "/gnu/store/w836rzklz9rigr0kjqw5px0ip1933l3y-profile/lib/python3.10/site-packages/flask/app.py", line 1523, in full_dispatch_request
+2024-03-02 01:53:52     rv = self.dispatch_request()
+2024-03-02 01:53:52   File "/gnu/store/w836rzklz9rigr0kjqw5px0ip1933l3y-profile/lib/python3.10/site-packages/flask/app.py", line 1509, in dispatch_request
+2024-03-02 01:53:52     return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+2024-03-02 01:53:52   File "/gn-auth/gn_auth/auth/authorisation/users/views.py", line 106, in register_user
+2024-03-02 01:53:52     cursor, save_user(
+2024-03-02 01:53:52   File "/gn-auth/gn_auth/auth/authentication/users.py", line 83, in save_user
+2024-03-02 01:53:52     cursor.execute("INSERT INTO users VALUES (?, ?, ?)",
+2024-03-02 01:53:52 sqlite3.OperationalError: attempt to write a readonly database
+```
+
+Looks like the container cannot write to the database.
+
+
+My current hypothesis is that `/export/data/genenetwork-sqlite` has been "taken over" by the new https://test1-auth.genenetwork.org and now https://auth-cd.genenetwork.org cannot write to the database file.
+
+Possible confirmation of the hypothesis:
+
+The cd container is built with the following options:
+
+```
+container_script=$(guix system container --network \
+			…
+                        --share=/export/data/genenetwork-xapian \
+                        --share=/export/data/genenetwork-sqlite \
+			…
+```
+
+meanwhile the test1 container is built with:
+
+```
+container_script=$(guix system container \
+			…
+                        --expose=/export/data/genenetwork-xapian \
+                        --share=/export/data/genenetwork-sqlite \
+			…
+```
+
+`--share` option allows read-write access within the container, while `--expose` just allows read access. From the snippets above, we see that the "genenetwork-sqlite" folder should (ideally) be writable from both systems.
+
+When you list the files:
+
+```
+fredm@tux02:/home/git/public$ ls -al /export/data/genenetwork-sqlite
+total 23764
+drwxr-xr-x 2 guixbuilder11  983     4096 Nov  3 04:20 .
+drwxr-xr-x 7 root          root     4096 Jul 29  2023 ..
+-rw-r--r-- 1 guixbuilder11  983 24322048 Feb 28 04:05 auth.db
+fredm@tux02:/home/git/public$ ls -al /export/data/
+total 28
+drwxr-xr-x  7 root          root 4096 Jul 29  2023 .
+drwxr-xr-x 12 root          root 4096 Jan  9 15:24 ..
+drwxr-xr-x  5 root          root 4096 Feb  9 09:29 genenetwork
+drwxr-xr-x  2 guixbuilder11  983 4096 Nov  3 04:20 genenetwork-sqlite
+drwxrwxrwx  2 root          root 4096 Jan 22 07:00 genenetwork-virtuoso
+drwxr-xr-x  3 guixbuilder17  977 4096 Dec 19 07:37 genenetwork-xapian
+drwxr-xr-x  2 wrk           root 4096 Jul 29  2023 wrk
+```
+
+you see that the genenetwork-sqlite and genenetwork-xapian directories are owned by different users (and groups for that matter), which might explain why after the test1 system was built, the cd system could no longer write to the db file.
