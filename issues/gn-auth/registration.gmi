@@ -91,3 +91,22 @@ drwxr-xr-x  2 wrk           root 4096 Jul 29  2023 wrk
 ```
 
 you see that the genenetwork-sqlite and genenetwork-xapian directories are owned by different users (and groups for that matter), which might explain why after the test1 system was built, the cd system could no longer write to the db file.
+
+----
+
+Testing the hypothesis: Hypothesis confirmed.
+
+Rebuilding the container changed ownership from:
+```
+drwxr-xr-x  2 guixbuilder11  983 4096 Nov  3 04:20 genenetwork-sqlite
+```
+to
+```
+drwxr-xr-x  2 guixbuilder13  981 4096 Nov  3 04:20 genenetwork-sqlite
+```
+
+Attempting to register a user again was also successful.
+
+## Proposed Solution
+
+Figure out how to make the authorisation database file be accessible from multiple containers with read-write permissions.
