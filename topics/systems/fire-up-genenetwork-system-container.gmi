@@ -9,6 +9,12 @@
 
 # Tasks
 
+We have the following check list
+
+* [ ] Create a system definition
+* [ ] Fire up container and get a shell inside using nsenter
+* [ ] Start mariadb
+
 ## Create a system definition
 
 We create
@@ -39,7 +45,7 @@ Generation 1    Mar 01 2024 17:01:22    (current)
     commit: aeaa390b71a15335bef03f83bd9dc946fa535398
 ```
 
-after fetching the latest channels defining ~/.config/guix/channels.scm:
+after fetching the latest channels with `git pull` defining ~/.config/guix/channels.scm:
 
 ```
 (list (channel
@@ -55,4 +61,71 @@ after fetching the latest channels defining ~/.config/guix/channels.scm:
    "0432e37b20dd678a02efee21adf0b9525a670310"
    (openpgp-fingerprint
     "7F73 0343 F2F0 9F3C 77BF  79D3 2E25 EE8B 6180 2BB3")))))
+```
+
+Now make sure the right guix gets fired up (the one you built) and run a container script as defined in gn-machines.
+
+```
+which guix
+./fallback-deploy.sh
+```
+
+To get a shell inside the system container try
+
+```
+nsenter -at 399307 /run/current-system/profile/bin/bash --login
+herd status
+```
+
+Note that mysql and virtuoso are running inside the container. It is important that these daemons do not share files with other daemons(!)
+
+# https certificates
+
+On the host we need to tell nginx to forward to the system container. This is done with the nginx streaming library.
+
+Note we use the stream feature of nginx. This requires on debian
+
+```
+apt-get install libnginx-mod-stream
+```
+
+Inside the contianer, the first time you may check the certificates
+
+```
+acme renew
+```
+
+After that you should be able to run
+
+```
+wget localhost:8891
+ERROR 400
+```
+
+because there is no upstream python server yet.
+
+# Start mariadb
+
+Herd will tell you that mariadb is running and if you use the client from the store you can see there is no GN database yet.
+
+```
+/gnu/store/xj4bfqch8zs3sfzvj65ykbvnpprwaj7f-mariadb-10.10.2/bin/mysql -e 'show databases'
+```
+
+mariadb initialized a new database in /var/lib/msyql. We need to stop the container and use an existing database on the host. Make sure not to share it with the host daemon! Disable mariadb in systemd if it is enabled.
+
+On restart the permissions in the container were not mysql.mysql user. So I had to do
+
+```
+chown mysql:mysql -R /var/lib/mysql/
+herd enable mysql
+herd start mysql
+/gnu/store/xj4bfqch8zs3sfzvj65ykbvnpprwaj7f-mariadb-10.10.2/bin/mysql -uwebqtlout -pwebqtlout -e 'show databases'
++---------------------------+
+| Database                  |
++---------------------------+
+| db_GeneOntology           |
+| db_webqtl                 |
+| db_webqtl_s               |
++---------------------------+
 ```
