@@ -125,3 +125,48 @@ That should copy the file retaining the original permissions.
 ```
 $ sudo systemctl start genenetwork-container.service
 ```
+
+
+## Web Server Configurations
+
+For any/all clients that might be served by the webserver via proxy, and that need to use the authorisation server, we need to pass the host and scheme to the proxied application. This 
+
+### Nginx
+
+The "location" configuration needs to have the following:
+
+```
+location … {
+	 ︙
+	 proxy_set_header Host $host;
+	 proxy_set_header X-Forwarded-Proto $scheme;
+	 ︙
+}
+```
+
+We have "proxy_set_header Host $host;" in order to ensure the URIs are built correctly in the proxied app, and do not end up as "http://localhost:<port>/…" or "http://127.0.0.1:<port>/…".
+
+The "proxy_set_header X-Forwarded-Proto $scheme;" setting ensures the URIs in the proxied application are built with the HTTPS scheme when the server URI (what the user sees, e.g. https://cd.genenetwork.org/) is served via HTTPS.
+
+See
+
+=> http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_set_header proxy_set_header
+
+### Apache2
+
+The "location" configuration will have to have the following:
+
+```
+<Location …>
+	  ︙
+	  ProxyPreserveHost On
+	  RequestHeader setifempty X-Forwarded-Proto "https"
+	  ︙
+</Location>
+```
+
+They do the same task as those in Nginx above.
+
+See
+=> https://httpd.apache.org/docs/2.4/mod/mod_proxy.html#proxypreservehost ProxyPreserveHost
+=> https://httpd.apache.org/docs/2.4/mod/mod_headers.html#requestheader RequestHeader
