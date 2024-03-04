@@ -1,0 +1,26 @@
+# Tasks for Fred
+
+## Description
+
+These are the tasks and issues to be handled by Alex.
+
+Here are all open issues
+=> https://issues.genenetwork.org/search?query=is%3Aopen+AND+assigned%3Aalexm&type=all
+
+The search used for the list above is
+> is:open AND assigned:alexm
+
+You can refine the search by constraining the checks some more, e.g. to get high-priority issues
+
+> is:open AND assigned:alexm AND priority:high
+
+# Tasks
+
+* [ ] Make GNQA reliable (with @fahamu)
+* [ ] Improve UX for GNQA (with @shelbys)
+* [ ] GNQA add abstracts pubmed (with @shelbys)
+
+=> ../issues/fetch-pubmed-references-to-gnqa
+
+* [ ] GNQA add GN metadata with @bonfacem
+* [ ] Create terminal output for external processes (WGCNA as a pilot, with @bonfacem and @pjotrp)
