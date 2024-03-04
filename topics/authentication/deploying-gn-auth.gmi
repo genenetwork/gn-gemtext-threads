@@ -129,7 +129,15 @@ $ sudo systemctl start genenetwork-container.service
 
 ## Web Server Configurations
 
-For any/all clients that might be served by the webserver via proxy, and that need to use the authorisation server, we need to pass the host and scheme to the proxied application. This 
+We serve most of the GeneNetwork services as applications proxied via a trusted web server such as Nginx or Apache2.
+
+Python applications are (mostly) run via gunicorn in HTTP mode. We however have all our endpoints exposed to the user via HTTPS. This means the web server proxies the HTTPS requests over to the applications running HTTP from a URI such as https://genenetwork.org to a local URI such as http://127.0.0.1:9393.
+
+By default, then, the URIs built by the application would end up being something like "http://127.0.0.1:9393/endpoint/…".
+
+For internal use, the URIs above are okay - the problem begins when such a URI is then exposed to the user: as you could probably guess, this will break the application, since the end user will probably not have anything running on their local device at the specified port, and even if they did, it will probably not be what the application expects.
+
+We, thus, need a way to build the applications correctly. Thankfully, mature webservers provide a way to pass the values we need to build the correct URIs on to any (and all) proxied applications - we just need to tweak the configurations. The sections below give some detail on how to achieve that for the webservers we use.
 
 ### Nginx
 
