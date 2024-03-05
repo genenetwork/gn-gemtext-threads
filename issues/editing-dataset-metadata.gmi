@@ -21,8 +21,7 @@ Chosen RTF editor is CKEditor v4.13.0
 
 * [X] Replace QuillJS with CKEditor
 * [X] Check out ckeditor and make it work
-* [X] Generate diffs  
-* [ ] SQL function to save
-* [ ] RDF Query to save
-* [ ] Integrate auth work
+* [X] Add extra endpoint for metadata authorisation
+* [ ] Create migrations for metadata resources table
+* [ ] Create UI for linking metadata resources to groups
 
