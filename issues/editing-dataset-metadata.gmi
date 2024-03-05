@@ -24,4 +24,5 @@ Chosen RTF editor is CKEditor v4.13.0
 * [X] Add extra endpoint for metadata authorisation
 * [ ] Create migrations for metadata resources table
 * [ ] Create UI for linking metadata resources to groups
+* [ ] Add extra RDF nodes to link the git resources to metadata
 
