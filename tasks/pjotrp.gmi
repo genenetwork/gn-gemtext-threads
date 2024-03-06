@@ -33,6 +33,7 @@ Now (X=done +=WIP _=kickoff ?=?)
 * [X] Complete Octopus setup with Erik, Andrea and Efraim - adding all machines
 * [ ] Audit DB security
 * [ ] p-value global search
+* [ ] Xapian search add tags, notmuch style
 
 => ../issues/systems/octopus
 

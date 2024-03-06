@@ -1,0 +1,54 @@
+# Tasks for Munyoki
+
+## Tags
+
+* kanban: felixl
+* assigned: felixl
+* status: in progress
+
+## October
+
+* [ ] Upload Arabidopsis dataset
+* [ ] Upload Medaka dataset
+
+## Tasks
+### On going tasks
+
+=> https://issues.genenetwork.org/search?query=assigned%3Afelixl+AND+is%3Aopen&type=open-issue All in-progress tasks
+
+Rank-ordered list of on-going tasks:
+
+=> https://issues.genenetwork.org/search?query=assigned%3Afelixl+AND+tag%3Ain-progress+AND+priority%3Ahigh+AND+is%3Aopen&type=open-issue High Priority
+
+=> https://issues.genenetwork.org/search?query=assigned%3Afelixl+AND+tag%3Ain-progress+AND+priority%3Amedium+AND+is%3Aopen&type=open-issue Medium Priority
+
+
+=> https://issues.genenetwork.org/search?query=assigned%3Afelixl+AND+tag%3Ain-progress+AND+priority%3Alow+AND+is%3Aopen&type=open-issue Low Priority
+
+### Stalled (To Be Done/Completed)
+
+=> https://issues.genenetwork.org/search?query=assigned%3Afelixl+AND+tag%3Astalled+AND+is%3Aopen&type=open-issue All stalled taskse that are to be promoted to in-progress
+
+Rank-ordered list of stalled tasks:
+
+=> https://issues.genenetwork.org/search?type=open-issue&query=assigned%3Afelixl%20AND%20tag%3Astalled%20AND%20priority%3Ahigh%20AND%20is%3Aopen%20AND%20NOT%20in-progress High Priority
+
+=> https://issues.genenetwork.org/search?type=open-issue&query=assigned%3Afelixl%20AND%20tag%3Astalled%20AND%20priority%3Amedium%20AND%20is%3Aopen%20AND%20NOT%20in-progress Medium Priority
+
+=> https://issues.genenetwork.org/search?type=open-issue&query=assigned%3Afelixl%20AND%20tag%3Astalled%20AND%20priority%3Alow%20AND%20is%3Aopen%20AND%20NOT%20in-progress Low Priority
+
+
+### Unclear Issues
+
+Ad-hoc issues that were picked some where some how:
+
+=> https://issues.genenetwork.org/search?type=open-issue&query=assigned%3Afelixl%20AND%20NOT%20tag%3Astalled%20AND%20NOT%20tag%3Ain-progress%20AND%20status%3Aunclear%20OR%20priority%3Aunclear Unclear Issues
+
+
+### Closed Issues
+
+Should something in one of these closed issues be amiss, we can always and should re-open the offending issue.
+
+Currently closed issues are:
+
+=> https://issues.genenetwork.org/search?type=closed-issue&query=assigned%3Afelixl%20AND%20type%3Aissue%20AND%20is%3Aclosed Closed Issues
