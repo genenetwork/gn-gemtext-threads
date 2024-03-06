@@ -6,35 +6,19 @@
 * assigned: bonfacem
 * status: in progress
 
-## October
-* [ ] Create a UI frontend for Pubi
-
 ## Tasks
+
+* [ ] Create UI for linking metadata resources to groups
+* [ ] Add extra RDF nodes to link the git resources (datasets and other markdown files) to metadata
+* [ ] Brain Data (To be spec'ed further)
+
 ### On going tasks
 
-=> https://issues.genenetwork.org/search?query=assigned%3ABonfaceKilz+AND+is%3Aopen&type=open-issue All in-progress tasks
-
-Rank-ordered list of on-going tasks:
-
-=> https://issues.genenetwork.org/search?query=assigned%3ABonfaceKilz+AND+tag%3Ain-progress+AND+priority%3Ahigh+AND+is%3Aopen&type=open-issue High Priority
-
-=> https://issues.genenetwork.org/search?query=assigned%3ABonfaceKilz+AND+tag%3Ain-progress+AND+priority%3Amedium+AND+is%3Aopen&type=open-issue Medium Priority
-
-
-=> https://issues.genenetwork.org/search?query=assigned%3ABonfaceKilz+AND+tag%3Ain-progress+AND+priority%3Alow+AND+is%3Aopen&type=open-issue Low Priority
+=> https://issues.genenetwork.org/search?query=assigned%3ABonfaceKilz+AND+is%3Aopen+AND+status%3Ain-progress&type=all All in-progress tasks
 
 ### Stalled (To Be Done/Completed)
 
-=> https://issues.genenetwork.org/search?query=assigned%3ABonfaceKilz+AND+tag%3Astalled+AND+is%3Aopen&type=open-issue All stalled taskse that are to be promoted to in-progress
-
-Rank-ordered list of stalled tasks:
-
-=> https://issues.genenetwork.org/search?type=open-issue&query=assigned%3ABonfaceKilz%20AND%20tag%3Astalled%20AND%20priority%3Ahigh%20AND%20is%3Aopen%20AND%20NOT%20in-progress High Priority
-
-=> https://issues.genenetwork.org/search?type=open-issue&query=assigned%3ABonfaceKilz%20AND%20tag%3Astalled%20AND%20priority%3Amedium%20AND%20is%3Aopen%20AND%20NOT%20in-progress Medium Priority
-
-=> https://issues.genenetwork.org/search?type=open-issue&query=assigned%3ABonfaceKilz%20AND%20tag%3Astalled%20AND%20priority%3Alow%20AND%20is%3Aopen%20AND%20NOT%20in-progress Low Priority
-
+=> https://issues.genenetwork.org/search?query=assigned%3ABonfaceKilz+AND+tag%3Astalled+AND+is%3Aopen&type=open-issueo All stalled taskse that are to be promoted to in-progress
 
 ### Unclear Issues
 
