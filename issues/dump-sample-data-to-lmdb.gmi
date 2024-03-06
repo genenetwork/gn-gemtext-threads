@@ -2,7 +2,7 @@
 
 * assigned: bonfacem
 * priority: high
-* status: in progress
+* status: stalled
 * keywords: lmdb, rdf
 
 ## Tasks

@@ -82,3 +82,5 @@ Whenever a resource is unavailable, show a search bar.
 * /probesets/<name>
 * /probesets?search=""&page=1&per_page=20
 * /genewikis/<symbol>
+
+* closed
