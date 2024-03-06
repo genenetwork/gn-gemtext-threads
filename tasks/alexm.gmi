@@ -19,8 +19,8 @@ You can refine the search by constraining the checks some more, e.g. to get high
 * [ ] Make GNQA reliable (with @fahamu)
 * [ ] Improve UX for GNQA (with @shelbys)
 * [ ] GNQA add abstracts pubmed (with @shelbys)
-
 => ../issues/fetch-pubmed-references-to-gnqa
 
+* [ ] Edit markdown/gemtext pages through web UI (with @bonfacem)
 * [ ] GNQA add GN metadata with @bonfacem
 * [ ] Create terminal output for external processes (WGCNA as a pilot, with @bonfacem and @pjotrp)
