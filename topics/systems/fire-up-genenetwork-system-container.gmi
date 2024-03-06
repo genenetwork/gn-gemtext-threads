@@ -14,6 +14,7 @@ We have the following check list
 * [ ] Create a system definition
 * [ ] Fire up container and get a shell inside using nsenter
 * [ ] Start mariadb
+* [ ] Start redis
 
 ## Create a system definition
 
@@ -129,3 +130,13 @@ herd start mysql
 | db_webqtl_s               |
 +---------------------------+
 ```
+
+Once I got this working, however, I decided to run mariadb on the base system instead (outside the container). The same with redis (see below).
+
+# Start redis
+
+After adding the default redis-service make sure the database is mounted on /var/lib/redis. `herd status` in the container will tell redis is running.
+
+Note that, again, file permissions may prevent redis from running. Debug output appears in /var/log/messages.
+
+The way to deal with this is chown in the activation stage. The alternative is to run a service directly on the host machine.

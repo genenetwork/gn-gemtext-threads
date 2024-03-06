@@ -30,7 +30,7 @@ Now (X=done +=WIP _=kickoff ?=?)
 * [+] Build GN consortium
 * [+] gBAM
 * [+] Set up stable GeneNetwork server instance with new hardware (see below)
-* [ ] Complete Octopus setup with Erik, Andrea and Efraim - adding all machines
+* [X] Complete Octopus setup with Erik, Andrea and Efraim - adding all machines
 * [ ] Audit DB security
 * [ ] p-value global search
 
@@ -44,7 +44,7 @@ Now (X=done +=WIP _=kickoff ?=?)
 
 * [ ] Add R/qtl2 and multi-parent support with Karl (DO and Magic populations)
 * [ ] Fix slow search on Mariadb?
-* [+] Shelby's application (fall)
+* [+] Shelby's application
 * [.] GeneNetwork paper
 *     + [ ] add FAIR statement
 * [ ] RISC-V trials
@@ -52,7 +52,7 @@ Now (X=done +=WIP _=kickoff ?=?)
 
 Longer term
 
-* [+] Aging grant application w. Rob (fall)
+* [X] Aging grant application w. Rob (fall)
 * [ ] Drive for stability of GN tools (particularly GEMMA OOMP)
 * [+] AraQTL and WormQTL2 embedding
 * [+] Work on REST API
