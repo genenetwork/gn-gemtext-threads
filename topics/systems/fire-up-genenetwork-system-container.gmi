@@ -13,8 +13,13 @@ We have the following check list
 
 * [ ] Create a system definition
 * [ ] Fire up container and get a shell inside using nsenter
-* [ ] Start mariadb
-* [ ] Start redis
+* [ ] Start mariadb (container or host)
+* [ ] Start redis (container or host)
+* [ ] Xapian search index
+* [ ] Set up sqlite auth.db
+* [ ] Genotype files
+
+# Create container
 
 ## Create a system definition
 
@@ -80,7 +85,7 @@ herd status
 
 Note that mysql and virtuoso are running inside the container. It is important that these daemons do not share files with other daemons(!)
 
-# https certificates
+## https certificates
 
 On the host we need to tell nginx to forward to the system container. This is done with the nginx streaming library.
 
@@ -105,7 +110,7 @@ ERROR 400
 
 because there is no upstream python server yet.
 
-# Start mariadb
+## Start mariadb
 
 Herd will tell you that mariadb is running and if you use the client from the store you can see there is no GN database yet.
 
@@ -132,11 +137,50 @@ herd start mysql
 ```
 
 Once I got this working, however, I decided to run mariadb on the base system instead (outside the container). The same with redis (see below).
+If /run/mysqld is mounted correctly we should be able to see mariadb on the base system.
 
-# Start redis
+## Start redis
 
 After adding the default redis-service make sure the database is mounted on /var/lib/redis. `herd status` in the container will tell redis is running.
 
 Note that, again, file permissions may prevent redis from running. Debug output appears in /var/log/messages.
 
 The way to deal with this is chown in the activation stage. The alternative is to run a service directly on the host machine.
+
+To test redis
+
+```
+redis-cli PING
+PONG
+```
+
+and similarly in the container:
+
+```
+/gnu/store/pglq03ffx9b26ky057171g50m1nl9iw9-redis-7.0.12/bin/redis-cli PING
+PONG
+```
+
+Try also INFO memory and the size should be in GBs.
+
+## Xapian index
+
+Search in GN3 uses xapian. To update the index there is a script in genenetwork3/scripts/index-genenetwork.
+
+Inside the container you can do something like
+
+```
+ /gnu/store/ysmyk5r15n1794m7j34wp9d4ixs16plm-genenetwork3-0.1.0-5.6bb4a5f/bin/index-genenetwork /export/data/genenetwork-xapian/new mysql://webqtlout:webqtlout@127.0.0.1:3306/db_webqtl
+```
+
+and then move the .glass files from new into its parent.
+
+## Genotype files
+
+This is a directory containing bimbam files etc.
+
+# Troubleshooting
+
+## Where are the logs?
+
+Inside the container you'll find the error logs in /var/log.
