@@ -17,9 +17,13 @@ This implies separate configurations, and separate startup.
 
 Some of the things to do to enable this, then, are:
 
-- [ ] Provide separate port to run the database: I propose 3307
-- [ ] Provide separate data directory for the content
-- [ ] Maybe suffix the files with the port number, e.g.
+- [x] Provide separate configs and run db server on separate port
+  - Configs put in /etc/mysql3307
+  - Selected port 3307
+  - datadir in /var/lib/mysql3307 -> /export5
+- [x] Provide separate data directory for the content
+  - extract backup
+- [x] Maybe suffix the files with the port number, e.g.
   ```
     datadir       = /var/lib/mysql3307
     socket        = /var/run/mysqld/mysqld3307.sock
@@ -39,6 +43,6 @@ Some of the things to do to enable this, then, are:
 
 ## Systemd
 
-- [ ] Provide unit file for separate MariadDB running on different port
+- [x] Provide unit file for separate MariadDB running on different port
 
 ## …
