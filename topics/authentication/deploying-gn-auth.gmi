@@ -126,6 +126,22 @@ That should copy the file retaining the original permissions.
 $ sudo systemctl start genenetwork-container.service
 ```
 
+### Register a System Admin
+
+This part expects that you have already run the migrations as above to setup the latest database schema in place. If you have not already done that, please do that first.
+
+The process is mostly very similar to that of the migrations, except in step 5, instead of running migrations, we instead run the CLI script to create the administrative user:
+
+```
+…/gn-auth [env]$ python3 -m scripts.register_sys_admin /home/fredm/auth.db
+Enter the user's name: Some Admin User
+Enter the administrator's email: some@admin.user
+Enter password: 
+Confirm password: 
+…/gn-auth [env]$
+```
+
+After that, we continue with steps 6 onward as in the section on running migrations.
 
 ## Web Server Configurations
 
