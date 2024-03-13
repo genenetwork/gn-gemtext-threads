@@ -90,6 +90,8 @@ A similar thing had shown up on space.uthsc.edu.
 
 ### More Troubleshooting Efforts
 
+I have attempted to do ~guix pull~ in case the version of guix I had was the problem to no avail.
+
 I have even attempted checking out
 => https://git.genenetwork.org/guix-bioinformatics/commit/?h=fred-updates-20240313&id=869598d39a532c6acc83bb0b9d21baaa79476973 commit 869598d39a532c6acc83bb0b9d21baaa79476973
 and creating a branch from it then
