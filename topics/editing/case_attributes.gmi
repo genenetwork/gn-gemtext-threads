@@ -93,6 +93,10 @@ while the `CaseAttributeXRefNew` table ends up with the following columns:
 
 There will not be any `NULL` values allowed for any of the columns in both tables. If a strain has no value, we simply delete the corresponding record from the `CaseAttributeXRefNew` table.
 
+To that end, the following script has been added to ease the migration of the table schemas:
+=> https://github.com/genenetwork/genenetwork3/blob/dd0b29c07017ec398c447ca683dd4b4be18d73b7/scripts/update-case-attribute-tables-20230818
+The script is meant to be run only once, and makes the changes mentioned above for both tables.
+
 ## Data Types
 
 > ... (and exist separately from "normal" traits mainly because they're non-numeric)
