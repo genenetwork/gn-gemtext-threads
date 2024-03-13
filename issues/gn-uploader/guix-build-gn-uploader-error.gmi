@@ -16,72 +16,81 @@ Trying to build `gn-uploader` with
 
 in my local development fails with:
 
-> ︙
-> ice-9/boot-9.scm:1685:16: In procedure raise-exception:
-> In procedure utime: No such file or directory
-> builder for `/gnu/store/i8pxiq0xlal1z4ifgqplvhizraj75lc3-gn-uploader-0.0.1-bf4f7c56.drv' failed with exit code 1
-> build of /gnu/store/i8pxiq0xlal1z4ifgqplvhizraj75lc3-gn-uploader-0.0.1-bf4f7c56.drv failed
-> View build log at '/var/log/guix/drvs/i8/pxiq0xlal1z4ifgqplvhizraj75lc3-gn-uploader-0.0.1-bf4f7c56.drv.gz'.
-> guix build: error: build of `/gnu/store/i8pxiq0xlal1z4ifgqplvhizraj75lc3-gn-uploader-0.0.1-bf4f7c56.drv' failed
+```
+︙
+ice-9/boot-9.scm:1685:16: In procedure raise-exception:
+In procedure utime: No such file or directory
+builder for `/gnu/store/i8pxiq0xlal1z4ifgqplvhizraj75lc3-gn-uploader-0.0.1-bf4f7c56.drv' failed with exit code 1
+build of /gnu/store/i8pxiq0xlal1z4ifgqplvhizraj75lc3-gn-uploader-0.0.1-bf4f7c56.drv failed
+View build log at '/var/log/guix/drvs/i8/pxiq0xlal1z4ifgqplvhizraj75lc3-gn-uploader-0.0.1-bf4f7c56.drv.gz'.
+guix build: error: build of `/gnu/store/i8pxiq0xlal1z4ifgqplvhizraj75lc3-gn-uploader-0.0.1-bf4f7c56.drv' failed
+```
 
 with the file having some of the following
 
-> ︙
-> phase `unpack' succeeded after 48.0 seconds
-> starting phase `ensure-no-mtimes-pre-1980'
-> error: in phase 'ensure-no-mtimes-pre-1980': uncaught exception:
-> system-error "utime" "~A" ("No such file or directory") (2) 
-> phase `ensure-no-mtimes-pre-1980' failed after 0.0 seconds
-> Backtrace:
->   13 (primitive-load "/gnu/store/qhg4m0nrrs3862fk9nzgxxrc0hj…")
-> In guix/build/gnu-build-system.scm:
->   908:2 12 (gnu-build #:source _ #:outputs _ #:inputs _ #:phases . #)
-> In ice-9/boot-9.scm:
->   1752:10 11 (with-exception-handler _ _ #:unwind? _ # _)
-> ︙
+```
+︙
+phase `unpack' succeeded after 48.0 seconds
+starting phase `ensure-no-mtimes-pre-1980'
+error: in phase 'ensure-no-mtimes-pre-1980': uncaught exception:
+system-error "utime" "~A" ("No such file or directory") (2)
+phase `ensure-no-mtimes-pre-1980' failed after 0.0 seconds
+Backtrace:
+  13 (primitive-load "/gnu/store/qhg4m0nrrs3862fk9nzgxxrc0hj…")
+In guix/build/gnu-build-system.scm:
+  908:2 12 (gnu-build #:source _ #:outputs _ #:inputs _ #:phases . #)
+In ice-9/boot-9.scm:
+  1752:10 11 (with-exception-handler _ _ #:unwind? _ # _)
+︙
+```
 
 Building on tux02 with the same commit raises the error
 
-> ︙
-> ice-9/boot-9.scm:1685:16: In procedure raise-exception:
-> In procedure copy-file: No space left on device
-> note: build failure may have been caused by lack of free disk space
-> builder for `/gnu/store/ra3f63zk1jr980vbhgcx5ssifr87bq8n-gn-uploader-0.0.1-bf4f7c56.drv' failed with exit code 1
-> build of /gnu/store/ra3f63zk1jr980vbhgcx5ssifr87bq8n-gn-uploader-0.0.1-bf4f7c56.drv failed
-> View build log at '/var/log/guix/drvs/ra/3f63zk1jr980vbhgcx5ssifr87bq8n-gn-uploader-0.0.1-bf4f7c56.drv.gz'.
-> guix build: error: build of `/gnu/store/ra3f63zk1jr980vbhgcx5ssifr87bq8n-gn-uploader-0.0.1-bf4f7c56.drv' failed
+```
+︙
+ice-9/boot-9.scm:1685:16: In procedure raise-exception:
+In procedure copy-file: No space left on device
+note: build failure may have been caused by lack of free disk space
+builder for `/gnu/store/ra3f63zk1jr980vbhgcx5ssifr87bq8n-gn-uploader-0.0.1-bf4f7c56.drv' failed with exit code 1
+build of /gnu/store/ra3f63zk1jr980vbhgcx5ssifr87bq8n-gn-uploader-0.0.1-bf4f7c56.drv failed
+View build log at '/var/log/guix/drvs/ra/3f63zk1jr980vbhgcx5ssifr87bq8n-gn-uploader-0.0.1-bf4f7c56.drv.gz'.
+guix build: error: build of `/gnu/store/ra3f63zk1jr980vbhgcx5ssifr87bq8n-gn-uploader-0.0.1-bf4f7c56.drv' failed
+```
 
 with the error file containing
 
-> ︙
-> `/gnu/store/h0zywgd0i8m6ssnyq5ngx34r1c26a65s-git-checkout/tests/test_data/standarderror_1_error_at_end.tsv' -> `./tests/test_data/standarderror_1_erro
-> r_at_end.tsv'
-> error: in phase 'unpack': uncaught exception:
-> system-error "copy-file" "~A" ("No space left on device") (28) 
-> phase `unpack' failed after 2.8 seconds
-> Backtrace:
->           17 (primitive-load "/gnu/store/qhg4m0nrrs3862fk9nzgxxrc0hj<E2><80><A6>")
-> In guix/build/gnu-build-system.scm:
->     908:2 16 (gnu-build #:source _ #:outputs _ #:inputs _ #:phases . #)
-> In ice-9/boot-9.scm:
-> ︙
-> ice-9/boot-9.scm:1685:16: In procedure raise-exception:
-> In procedure copy-file: No space left on device
+```
+︙
+`/gnu/store/h0zywgd0i8m6ssnyq5ngx34r1c26a65s-git-checkout/tests/test_data/standarderror_1_error_at_end.tsv' -> `./tests/test_data/standarderror_1_error_at_end.tsv'
+error: in phase 'unpack': uncaught exception:
+system-error "copy-file" "~A" ("No space left on device") (28) 
+phase `unpack' failed after 2.8 seconds
+Backtrace:
+          17 (primitive-load "/gnu/store/qhg4m0nrrs3862fk9nzgxxrc0hj<E2><80><A6>")
+In guix/build/gnu-build-system.scm:
+    908:2 16 (gnu-build #:source _ #:outputs _ #:inputs _ #:phases . #)
+In ice-9/boot-9.scm:
+︙
+ice-9/boot-9.scm:1685:16: In procedure raise-exception:
+In procedure copy-file: No space left on device
+```
 
 There is plenty of space on the tux02:
 
-> $ df -h /gnu /tmp
-> Filesystem      Size  Used Avail Use% Mounted on
-> /dev/nvme1n1p5  117G   82G   29G  74% /gnu
-> /dev/nvme1n1p2   30G   26G  2.1G  93% /
+```
+$ df -h /gnu /tmp
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/nvme1n1p5  117G   82G   29G  74% /gnu
+/dev/nvme1n1p2   30G   26G  2.1G  93% /
+```
 
 so we know that's not a problem.
 
 A similar thing had shown up on space.uthsc.edu.
 
-### Troubleshooting Efforts
+### More Troubleshooting Efforts
 
-I have attempted checking out
+I have even attempted checking out
 => https://git.genenetwork.org/guix-bioinformatics/commit/?h=fred-updates-20240313&id=869598d39a532c6acc83bb0b9d21baaa79476973 commit 869598d39a532c6acc83bb0b9d21baaa79476973
 and creating a branch from it then
 => https://git.genenetwork.org/guix-bioinformatics/commit/?h=fred-updates-20240313&id=4105a3e463982f46dcc9a537267fb77bb2322b9a updating the commit and hash
