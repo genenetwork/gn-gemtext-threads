@@ -97,3 +97,16 @@ I have even attempted checking out
 and creating a branch from it then
 => https://git.genenetwork.org/guix-bioinformatics/commit/?h=fred-updates-20240313&id=4105a3e463982f46dcc9a537267fb77bb2322b9a updating the commit and hash
 in the new branch, but I still get the same failures above.
+
+## Solutions
+
+
+### "In procedure copy-file: No space left on device" Error (Tux02)
+
+In tux02, the issue was, after all, a lack of space. Fixed by telling the daemon to use a different directory on a partition with more space as its TMPDIR. That fixes the "No space left on device" error. We do that by adding the following to the systemd unit file for the guix daemon:
+
+```
+ENVIRONMENT='TMPDIR=/export/tmp'
+```
+
+Now the system fails with the same error as local dev.
