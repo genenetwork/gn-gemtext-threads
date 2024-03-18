@@ -3,9 +3,9 @@
 ## Tags
 
 * assigned: fredm, aruni
-* status: open
+* status: closed
 * priority: critical
-* 
+* type: bug
 * keywords: guix, gn-uploader
 
 ## Description
@@ -110,3 +110,15 @@ ENVIRONMENT='TMPDIR=/export/tmp'
 ```
 
 Now the system fails with the same error as local dev.
+
+### system-error "utime" "~A" ("No such file or directory") (2)
+
+I previously renamed `.guix/modules/gnqc-py.scm` to `.guix/modules/gn-uploader.scm` but forgot to update the symbolic link, and that lead to the error above. This has been fixed now.
+
+### In procedure utime: No such file or directory
+
+The `etc/default_config.py` file was not being installed into the store for some reason, leading to the "No such file or directory" error.
+
+I fixed this by moving the file into the `qc_app` module.
+
+I renamed the file to "default_settings.py" for consistency with other GN services.
