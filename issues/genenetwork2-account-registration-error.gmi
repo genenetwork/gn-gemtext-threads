@@ -1,4 +1,4 @@
-# GeneNetwork: Account Registration Error
+# GeneNetwork2: Account Registration Error
 
 ## Tags
 
