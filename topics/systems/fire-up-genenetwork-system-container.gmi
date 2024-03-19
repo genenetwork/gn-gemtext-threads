@@ -163,6 +163,15 @@ PONG
 
 Try also INFO memory and the size should be in GBs.
 
+Note I got a `Failed opening the temp RDB file temp error` on the host redis. This turned out to be a systemd setting
+
+```
+[system]
+ReadWritePaths=-/export2/redis
+  # recommended that you remove/comment this line:
+ReadWriteDirectories=-/etc/redis
+```
+
 ## Xapian index
 
 Search in GN3 uses xapian. To update the index there is a script in genenetwork3/scripts/index-genenetwork.
@@ -179,8 +188,63 @@ and then move the .glass files from new into its parent.
 
 This is a directory containing bimbam files etc.
 
+## Mapping nginx on host
+
+The host needs to be told that certain connections get mapped to the system container. On tux02 we have, for example
+
+```
+server {
+    server_name test1.genenetwork.org test1-auth.genenetwork.org;
+    listen 80;
+    location / {
+        proxy_pass http://localhost:8890;
+        proxy_set_header Host $host;
+    }
+}
+```
+
+which maps two outside addresses into the container nginx setup. Note that the domains are handled inside the system container.
+
+Meanwhile nginx.conf on the host contains
+
+```
+  # We forward several HTTPS connections into various Guix containers.
+  # We do not decrypt the traffic.  TLS termination, certificates,
+  # etc. reside purely inside the Guix containers.
+stream {
+    upstream genenetwork {
+        server 127.0.0.1:8891;
+    }
+    upstream host-https {
+        server 127.0.0.1:8443;
+    }
+
+    map $ssl_preread_server_name $upstream {
+        test1.genenetwork.org genenetwork;
+        test1-auth.genenetwork.org genenetwork;
+        default host-https;
+    }
+
+    server {
+        listen 443;
+        proxy_pass $upstream;
+        ssl_preread on;
+    }
+}
+```
+
+So, the first forwards port 80 and the second 443. Certificates are (automagically) handled inside the system container (see acme above).
+
+In our case the ports are 8890 (http) and 8891 (https), reflected in fallback.scm.
+
 # Troubleshooting
 
 ## Where are the logs?
 
 Inside the container you'll find the error logs in /var/log.
+
+## Debugging and developing code
+
+see
+
+=> debug-and-developing-code-with-genenetwork-system-container

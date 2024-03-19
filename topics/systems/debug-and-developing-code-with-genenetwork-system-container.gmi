@@ -1,0 +1,3 @@
+# Debugging and developing code
+
+Once we get to the stage of having a working system container it would be nice to develop code against it.
