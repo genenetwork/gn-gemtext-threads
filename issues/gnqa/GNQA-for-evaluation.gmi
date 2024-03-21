@@ -1,0 +1,17 @@
+# Get GNQA Ready for evaluation
+
+## Tags
+
+* Assigned: alexm, shelbys
+* Keywords: UI, GNQA, evaluation
+* Type: immediate
+* Status: In Progress
+
+## Description
+
+We need to publish a paper on GeneNetwork Question & Answering system. To that end we have to modify the system make it easy for people to help us with the evaluation.
+
+## Tasks
+
+* [ ] Add a thumbs up and down for rating the answer to a question
+* [ ] Ensure to log the questions, respones, and ratings of each questions
