@@ -28,4 +28,4 @@ However, when I look at the logs, it seems the container is instead running the 
 
 instead, which seems to be stuck on an older commit without fixes for a circular import bug I'd fixed.
 
-=> ./issues/gn-uploader/build-uploader-container-20240321.org Troubleshooting log: 2024-03-21
+=> https://github.com/genenetwork/gn-gemtext-threads/blob/1c50ad278bb91d899909e9aa78304dfcebbabf9c/issues/gn-uploader/build-uploader-container-20240321.org Troubleshooting log: 2024-03-21
