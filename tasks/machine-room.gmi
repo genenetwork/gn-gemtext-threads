@@ -11,8 +11,10 @@
 
 ### UTHSC
 
+* [ ] describe machines with Rick Stripes
+* [ ] get bacchus back on line
 * [ ] fix www.genenetwork.org and gn2.genenetwork.org https
-* [ ] tux02 certbot failing
+* [ ] tux02 certbot failing (manual now)
 * [ ] get data from summer211.uthsc.edu (access machine room)
 * [ ] VPN access and FoUT
 * [ ] penguin2 has 32TB of space we can use on NFS/backups
