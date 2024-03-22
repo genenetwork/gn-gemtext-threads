@@ -1,0 +1,52 @@
+# Database: `ProbeSetSE` Schema Bug
+
+## Tags
+
+* type: bug
+* priority: critical
+* status: open
+* keywords: database, mariadb, schema
+* assigned:
+
+## Description
+
+The schemas are defined as follows:
+
+```
+MariaDB [db_webqtl]> DESC Strain;
++-----------+----------------------+------+-----+---------+----------------+
+| Field     | Type                 | Null | Key | Default | Extra          |
++-----------+----------------------+------+-----+---------+----------------+
+| Id        | int(20)              | NO   | PRI | NULL    | auto_increment |
+| Name      | varchar(100)         | YES  | MUL | NULL    |                |
+| Name2     | varchar(100)         | YES  |     | NULL    |                |
+| SpeciesId | smallint(5) unsigned | NO   |     | 0       |                |
+| Symbol    | varchar(20)          | YES  | MUL | NULL    |                |
+| Alias     | varchar(255)         | YES  |     | NULL    |                |
++-----------+----------------------+------+-----+---------+----------------+
+6 rows in set (0.00 sec)
+
+MariaDB [db_webqtl]> DESC ProbeSetData;
++----------+------------------+------+-----+---------+-------+
+| Field    | Type             | Null | Key | Default | Extra |
++----------+------------------+------+-----+---------+-------+
+| Id       | int(10) unsigned | NO   | PRI | 0       |       |
+| StrainId | int(20)          | NO   | PRI | NULL    |       |
+| value    | float            | NO   |     | NULL    |       |
++----------+------------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+MariaDB [db_webqtl]> DESC ProbeSetSE;
++----------+----------------------+------+-----+---------+-------+
+| Field    | Type                 | Null | Key | Default | Extra |
++----------+----------------------+------+-----+---------+-------+
+| DataId   | int(10) unsigned     | NO   | PRI | 0       |       |
+| StrainId | smallint(5) unsigned | NO   | PRI | 0       |       |
+| error    | float                | YES  |     | NULL    |       |
++----------+----------------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+```
+
+From this, you can see that "ProbeSetSE" has the column "StrainId" but with a different size integer (smaller) than that in table "Strain". This could at best, cause errors when inserting data, if the strain exceeds the value 65535, or at worst, do a silent conversion of inserted "StrainId" values into a value in the range [0, 65535] leading to data corruption.
+
+The schema needs to be updated accordingly.
