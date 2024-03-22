@@ -1,0 +1,46 @@
+# Fallback issues
+
+This page tracks outstanding problems with
+
+=> https://fallback.genenetwork.org/
+
+Note that some issues may be related to produciton (i.e. the same).
+
+# Tags
+
+* type: bug
+* assigned: pjotrp
+* keywords: systems, fallback, deploy
+* status: in progress
+* priority: critical
+
+# Tasks
+
+* [ ] Rqtl2 not working
+* [ ] 413 error
+
+## Rqtl2/HK/Pairscan not working
+
+URL error on result of
+
+=> https://fallback.genenetwork.org/show_trait?trait_id=5581148&dataset=UMUTAffyExon_0209_RMA
+
+```
+      GeneNetwork 2.11-rc2  https://fallback.genenetwork.org/run_mapping (10:01AM UTC Mar 22, 2024)
+Traceback (most recent call last):
+  File "/gnu/store/a39cgbdawj9vp24nsz9q25sf9g5vda7c-profile/lib/python3.10/site-packages/requests/models.py", line 434, in prepare_url
+    scheme, auth, host, port, path, query, fragment = parse_url(url)
+  File "/gnu/store/a39cgbdawj9vp24nsz9q25sf9g5vda7c-profile/lib/python3.10/site-packages/urllib3/util/url.py", line 397, in parse_url
+    return six.raise_from(LocationParseError(source_url), None)
+  File "<string>", line 3, in raise_from
+urllib3.exceptions.LocationParseError: Failed to parse: http://localhost:8893api/rqtl/compute
+
+```
+
+Gemma works though
+
+## 413 Request Entity Too Large
+
+On mapping from
+
+=> https://fallback.genenetwork.org/show_trait?trait_id=10002&dataset=HET3-ITPPublish
