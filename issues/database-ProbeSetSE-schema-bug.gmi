@@ -50,3 +50,12 @@ MariaDB [db_webqtl]> DESC ProbeSetSE;
 From this, you can see that "ProbeSetSE" has the column "StrainId" but with a different size integer (smaller) than that in table "Strain". This could at best, cause errors when inserting data, if the strain exceeds the value 65535, or at worst, do a silent conversion of inserted "StrainId" values into a value in the range [0, 65535] leading to data corruption.
 
 The schema needs to be updated accordingly.
+
+
+## Solution
+
+Run this query against the database:
+
+```
+ALTER TABLE ProbeSetSE MODIFY StrainId INT(20) NOT NULL;
+```
