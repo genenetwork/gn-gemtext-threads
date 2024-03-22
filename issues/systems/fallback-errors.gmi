@@ -16,8 +16,13 @@ Note that some issues may be related to produciton (i.e. the same).
 
 # Tasks
 
+* [X] 502 timeout errors
 * [ ] Rqtl2 not working
 * [ ] 413 error
+
+## 502 timeout errors
+
+These should no longer happen. It required relaxing timeouts on nginx and gunicorn.
 
 ## Rqtl2/HK/Pairscan not working
 
