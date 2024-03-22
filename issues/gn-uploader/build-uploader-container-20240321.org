@@ -420,3 +420,213 @@ Start the container for now:
 #+begin_src shell
   sudo systemctl start genenetwork-uploader-container.service
 #+end_src
+
+
+* Log 2024-03-22T11:24+03:00UTC
+
+Verify guix is clean:
+#+begin_src shell
+  /usr/local/guix-profiles/guix-daemon/bin/guix describe
+#+end_src
+giving:
+#+begin_example
+Generation 4 Mar 21 2024 05:04:28 (current)
+  guix 69951a6
+    repository URL: https://git.savannah.gnu.org/git/guix.git
+    branch: master
+    commit: 69951a61a1d8f1f2135ea2dc836738be282b97bc
+#+end_example
+
+Now clone/pull all relevant repositories
+#+begin_src shell
+  $ cd /home/fredm/gn-machines/ && git pull origin define-gn-uploader
+  $ cd /home/fredm/guix-bioinformatics/ && git pull origin master
+  $ cd /home/fredm/ && git clone https://gitlab.inria.fr/guix-hpc/guix-past
+#+end_src
+ all those succeeded.
+
+ Cloning =guix-forge= failed:
+ #+begin_src shell
+   $ cd /home/fredm/ && git clone https://git.systemreboot.net/guix-forge/
+   Cloning into 'guix-forge'...
+   fatal: unable to access 'https://git.systemreboot.net/guix-forge/': server certificate verification failed. CAfile: /etc/ssl/certs/ca-certificates.crt CRLfile: none
+ #+end_src
+looks like *tux02* does not trust the certificates from systemreboot.net
+
+Clone =guix-forge= with no verification
+ #+begin_src shell
+   $ cd /home/fredm/ && env GIT_SSL_NO_VERIFY=1 git clone https://git.systemreboot.net/guix-forge/
+ #+end_src
+
+ Success!!!
+
+ Now stop uploader container:
+ #+begin_src shell
+   sudo systemctl stop genenetwork-uploader-container.service
+ #+end_src
+
+Delete existing logs:
+#+begin_src shell
+  sudo rm -fv /export2/guix-containers/genenetwork/uploader/var/log/gunicorn-g*.log
+#+end_src
+
+Find out the process related to the annoying log file:
+#+begin_src shell
+  sudo lsof /export2/guix-containers/genenetwork/uploader/var/log/gunicorn-genenetwork2.log
+#+end_src
+and we get:
+#+begin_example
+COMMAND    PID USER   FD   TYPE DEVICE SIZE/OFF    NODE NAME
+shepherd 94815 root   15w   REG  259,8  2322452 9830599 /export2/guix-containers/genenetwork/uploader/var/log/gunicorn-genenetwork2.log
+#+end_example
+
+Get into the container and check the container name:
+#+begin_src shell
+  $ sudo /usr/local/guix-profiles/guix-daemon/bin/guix container exec 94815 /run/current-system/profile/bin/bash --login
+  root@genenetwork /# hostname 
+  genenetwork
+#+end_src
+
+Aha! Looks like I might have run the build for the uploader container on *tux02*
+before I had changed the hostnames and paths!
+
+Check PID(s) of production container:
+#+begin_src shell
+  $ ps -u root -f --forest | grep -A4 '/usr/local/bin/genenetwork-container'
+#+end_src
+which gives:
+#+begin_example
+root      61415      1  0 Mar20 ?        00:00:00 /gnu/store/1gd9nsy4cps8fnrd1avkc9l01l7ywiai-guile-3.0.9/bin/guile --no-auto-compile /usr/local/bin/genenetwork-container
+root      61436  61415  0 Mar20 ?        00:15:27  \_ /gnu/store/bhynhk0c6ssq3fqqc59fvhxjzwywsjbb-guile-3.0.9/bin/guile --no-auto-compile /gnu/store/06mz0yjkghi7r6d7lmhvv7gryipljhdd-shepherd-0.10.3/bin/shepherd --config /gnu/store/gg29j35fvsx04xc41yb3zx7zgd09519a-shepherd.conf
+root      61488  61436  0 Mar20 ?        00:00:00      \_ /gnu/store/gbz5y54xi3bxc843azjsssmv6n5p8kj3-eudev-3.2.11/sbin/udevd
+root      61533  61436  0 Mar20 ?        00:00:00      \_ /gnu/store/lx54pvb5523v45i6c3axzcjlvl6z18wz-guix-1.4.0-16.aeb4943/bin/guix-daemon --build-users-group guixbuild --max-silent-time 3600 --timeout 86400 --log-compression gzip --discover=no --substitute-urls https://ci.guix.gnu.org https://bordeaux.guix.gnu.org --disable-chroot
+root      61567  61436  0 Mar20 ?        00:00:16      \_ /gnu/store/6i3bj0j8m97rmgdsg2vgrx38crpmnwan-inetutils-2.3/libexec/syslogd --rcfile=/etc/syslog.conf
+#+end_example
+
+So the container that is shouting into the log file is not the production container! Awesome! We can safely kill the process.
+
+First off, let's try and figure out the parent PID for the process:
+#+begin_src shell
+  ps -f --forest -p 94815
+#+end_src
+
+which gives:
+#+begin_example
+UID         PID   PPID  C STIME TTY          TIME CMD
+root      94815      1 13 Mar12 pts/31   1-08:33:46 /gnu/store/bhynhk0c6ssq3fqqc59fvhxjzwywsjbb-guile-3.0.9/bin/guile --no-auto-compile /gnu/store/06m
+#+end_example
+
+There are no other related processes! Looks like an orphaned process from a possibly older container…
+
+Kill it!
+#+begin_src shell
+  sudo kill -s SIGKILL 94815
+#+end_src
+
+Check whether production (test1.genenetwork.org) is still online
+#+begin_src
+  systemctl status genenetwork-container.service
+#+end_src
+
+Yep! We are good!
+
+Now delete the log file again and check that it is not recreated:
+#+begin_src shell
+  $ sudo rm -f /export2/guix-containers/genenetwork/uploader/var/log/gunicorn-g*.log
+  $ ls /export2/guix-containers/genenetwork/uploader/var/log/
+#+end_src
+and we get
+#+begin_example
+debug            maillog    mcron.log.1.gz  messages.1.gz  nginx     secure       virtuoso.log
+guix-daemon.log  mcron.log  messages        mysqld.log     nscd.log  secure.1.gz  wtmp
+#+end_example
+
+Great success!!! 🎉🎉
+
+Now, let us build the container with the pristine guix
+#+begin_src shell
+  $ echo $PATH
+  /usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
+  $ export PATH="/usr/local/guix-profiles/guix-daemon/bin:${PATH}"
+  $ echo $PATH
+  /usr/local/guix-profiles/guix-daemon/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
+  $ cd /home/fredm/gn-machines/
+  $ ./uploader-deploy.sh /home/fredm/guix-forge /home/fredm/guix-past /home/fredm/guix-bioinformatics
+#+end_src
+
+The upload step fails with
+#+begin_example
+===== Auxilliary module load paths =====
+-L /home/fredm/guix-forge/guix
+-L /home/fredm/guix-past
+-L /home/fredm/guix-bioinformatics
+===== END: Auxilliary module load paths =====
+hint: Consider installing the `glibc-locales' package and defining
+`GUIX_LOCPATH', along these lines:
+
+     guix install glibc-locales
+     export GUIX_LOCPATH="$HOME/.guix-profile/lib/locale"
+
+See the "Application Setup" section in the manual, for more info.
+
+guix system: warning: Consider running 'guix pull' followed by
+'guix system reconfigure' to get up-to-date packages and security updates.
+
+Backtrace:
+In guix/store.scm:
+  2065:12 19 (_ #<store-connection 256.100 7fae2bd9bd70>)
+  1382:11 18 (map/accumulate-builds #<store-connection 256.100 7fae…> …)
+   1300:8 17 (call-with-build-handler #<procedure 7fae2b7a4bd0 at g…> …)
+  2180:25 16 (run-with-store #<store-connection 256.100 7fae2bd9bd70> …)
+In guix/gexp.scm:
+   914:13 15 (_ _)
+In guix/store.scm:
+   2008:8 14 (_ _)
+In guix/gexp.scm:
+   299:22 13 (_ _)
+In guix/store.scm:
+  2052:38 12 (_ #<store-connection 256.100 7fae2bd9bd70>)
+In gnu/system.scm:
+   1632:9 11 (_ _)
+In guix/store.scm:
+  2180:25 10 (run-with-store #<store-connection 256.100 7fae2bd9bd70> …)
+In gnu/system.scm:
+  1299:19  9 (_ _)
+   836:11  8 (operating-system-services #<<operating-system> kernel:…>)
+In gnu/system/linux-container.scm:
+   174:27  7 (services _)
+In ice-9/eval.scm:
+   191:35  6 (_ #(#(#<module (#{ g709}#) 7fae2f601640>) #<<operati…>))
+   173:55  5 (_ #(#(#<module (#{ g709}#) 7fae2f601640>) #<<operati…>))
+   196:35  4 (_ #(#(#<module (#{ g709}#) 7fae2f601640>) #<<operati…>))
+   223:20  3 (proc #(#(#<module (#{ g709}#) 7fae2f601640>) #<<oper…>))
+In unknown file:
+           2 (%resolve-variable (7 . genenetwork-service-type) #<mod…>)
+In ice-9/boot-9.scm:
+  1685:16  1 (raise-exception _ #:continuable? _)
+  1685:16  0 (raise-exception _ #:continuable? _)
+
+ice-9/boot-9.scm:1685:16: In procedure raise-exception:
+error: genenetwork-service-type: unbound variable
+#+end_example
+
+😭😭😭
+
+Reset path, and first build with non-pristine guix:
+#+begin_src shell
+  $ export PATH=""
+  $ env PATH="/home/fredm/opt/guix/bin:${PATH}" ./uploader-deploy.sh
+#+end_src
+Success!
+
+Start the container
+#+begin_src shell
+  sudo systemctl start genenetwork-uploader-container.service
+#+end_src
+
+Check GN2 log for former weirdness
+#+begin_src shell
+  sudo cat /export2/guix-containers/genenetwork/uploader/var/log/gunicorn-genenetwork2.log
+#+end_src
+
+No more of the errors from the wrong profile!
