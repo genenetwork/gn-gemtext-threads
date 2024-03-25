@@ -19,6 +19,7 @@ Note that some issues may be related to produciton (i.e. the same).
 * [X] 502 timeout errors
 * [ ] Rqtl2 not working
 * [ ] 413 error
+* [ ] Monitor service - both systemd and sheepdog
 
 ## 502 timeout errors
 
@@ -39,10 +40,83 @@ Traceback (most recent call last):
     return six.raise_from(LocationParseError(source_url), None)
   File "<string>", line 3, in raise_from
 urllib3.exceptions.LocationParseError: Failed to parse: http://localhost:8893api/rqtl/compute
-
 ```
 
-Gemma works though
+The error points out a missing slash in the local URL: http://localhost:8893api/rqtl/compute
+
+Grepping machines we get:
+
+```
+gn3-port 8893
+("GN3_LOCAL_URL" ,(string-append "http://localhost:" (number->string gn3-port)))
+```
+
+On production we set a trailing slash
+
+```
+GN3_LOCAL_URL = "http://localhost:8081/"
+```
+
+and in the code we mostly see another addition of the slash - except for this particular link. Arguably the slash is not part of the URL prefix (it is part of the path), so I think setting GN3_LOCAL_URL without the trailing slash is preferred. See also
+
+=> https://en.wikipedia.org/wiki/URL
+
+# R/qtl JSONDecodeError
+
+After adding the slash to GN3 URLs (see above) led to the next error:
+
+```
+simplejson.errors.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+```
+
+This looks similar to the earlier documented
+
+=> ../rqtl-mapping-throws-JSONDecodeError
+
+suggesting a missing path for R. In the container log GN3 actually gives the error
+
+```
+2024-03-24 08:02:24     return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+2024-03-24 08:02:24   File "/gnu/store/yi76sybwqql4ky60yahv91z57srb2fr0-profile/lib/python3.10/site-packages/gn3/api/rqtl.py", line 25, in compute
+2024-03-24 08:02:24     raise FileNotFoundError
+2024-03-24 08:02:24 FileNotFoundError
+```
+
+Now two things are bad here becuase there is no context other than the error lines! For FileNotFound pass in the filename as suggested here:
+
+=> https://stackoverflow.com/questions/36077266/how-do-i-raise-a-filenotfounderror-properly
+
+Patched in
+
+=> https://github.com/genenetwork/genenetwork3/commit/b615df8c65d4fb6c8f08cf653e920c360c136552
+
+That should help clarify the missing path or file.
+
+```
+  File "/export/source/fallback-debug/genenetwork3/gn3/fs_helpers.py", line 21, in assert_paths_exist
+    raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), path)
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/gn2/83f0831af5911ab6dc62cbbd37d13741.csv'
+```
+
+So, GN2 is miscommunicating the path to GN3.
+
+This also led to documenting how one should test GN2 and GN3 in a running VM:
+
+=> /topics/guix/guix-system-containers-and-how-we-use-them.gmi
+
+## QTLReaper showing font problem
+
+Try HK on
+
+=> https://fallback.genenetwork.org/show_trait?trait_id=5581148&dataset=UMUTAffyExon_0209_RMA
+
+```
+  File "/gnu/store/hvv0r5nzhbbsnd9s68cmx5q0sznjhnrp-profile/lib/python3.10/site-packages/PIL/ImageFont.py", line 956, in freetype
+    return FreeTypeFont(font, size, index, encoding, layout_engine)
+  File "/gnu/store/hvv0r5nzhbbsnd9s68cmx5q0sznjhnrp-profile/lib/python3.10/site-packages/PIL/ImageFont.py", line 247, in __init__
+    self.font = core.getfont(
+OSError: cannot open resource
+```
 
 ## 413 Request Entity Too Large
 

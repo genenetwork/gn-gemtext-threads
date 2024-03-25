@@ -101,3 +101,9 @@ Probably worth reading the
 Here we focus on the production server setup running on test01:
 
 => https://git.genenetwork.org/gn-machines/tree/production.scm
+
+# Debugging and development
+
+See
+
+=> /topics/systems/debug-and-developing-code-with-genenetwork-system-container
