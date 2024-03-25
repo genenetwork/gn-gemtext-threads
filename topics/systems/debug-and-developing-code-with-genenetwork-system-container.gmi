@@ -51,8 +51,6 @@ Now we can start GN3 properly. We can reuse the gunicorn setup above, but for de
 
 ```
 /gnu/store/1gd9nsy4cps8fnrd1avkc9l01l7ywiai-guile-3.0.9/bin/guile --no-auto-compile /gnu/store/zm5cxkhy0gx6b7vyyr54dh99gk8zbncn-gunicorn-genenetwork3-pola-wrapper --workers 1 --timeout 1200 --bind 127.0.0.1:8893 --env GN3_CONF=/gnu/store/8lmjj0vv0616cgwy2dx56pg30rkvgsj0-gn3.conf --env GN3_SECRETS=/etc/genenetwork/gn3-secrets.py --env HOME=/tmp "gn3.app:create_app()"
-
- /gnu/store/1gd9nsy4cps8fnrd1avkc9l01l7ywiai-guile-3.0.9/bin/guile --no-auto-compile /gnu/store/zm5cxkhy0gx6b7vyyr54dh99gk8zbncn-gunicorn-genenetwork3-pola-wrapper --workers 20 --timeout 1200 --bind 127.0.0.1:8893 --env GN3_CONF=/gnu/store/8lmjj0vv0616cgwy2dx56pg30rkvgsj0-gn3.conf --env GN3_SECRETS=/etc/genenetwork/gn3-secrets.py --env HOME=/tmp gn3.app:create_app()
 ```
 
 Note the added quotes. The command will fail with 'No module named gn3'. Good! Now to load the source dir we need to make it visible. We'll use $SOURCES for that.
