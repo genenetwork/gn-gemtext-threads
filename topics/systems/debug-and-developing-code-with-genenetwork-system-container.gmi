@@ -1,3 +1,73 @@
 # Debugging and developing code
 
-Once we get to the stage of having a working system container it would be nice to develop code against it.
+Once we get to the stage of having a working system container it would be nice to develop code against it. The idea is to take an existing running system container and start modifying code *inside* the container by brining in an external path.
+
+First build and start a guix system container as described in
+
+=> /topics/guix/guix-system-containers-and-how-we-use-them.gmi
+
+The idea is to do less `guix pull' and system container builds, so as to speed up development. The advantage of using an existing system container is that the full deployment is the same on our other running systems! No more path hacks, in other words.
+
+# GN3 in system container
+
+The easiest one is GN3 because it is meant to give a quick turnaround on debugging and testing. Login to the container using nsenter or equal. Doing a `ps xau` should show the gn3 config used, e.g.
+
+```
+guile --no-auto
+-compile /gnu/store/zm5cxkhy0gx6b7vyyr54dh99gk8zbncn-gunicorn-genenetwork3-pola-wrapper --workers 20 --timeout 1200 --bind 127.0.0.1:8893 --env GN3_CONF=/gnu/store/8lmjj0vv0616cgwy2dx56pg30rkvgsj0-gn3.conf --env GN3_SECRETS=/etc/genenetwork/gn3-secrets.py --env HOME=/tmp gn3.app:create_app()
+```
+
+the config file may contain something like
+
+```
+AUTH_DB = "/export/data/genenetwork-sqlite/auth.db"
+DATA_DIR = "/export/data/genenetwork"
+SPARQL_ENDPOINT = "http://localhost:8892/sparql"
+SQL_URI = "mysql://webqtlout:webqtlout@localhost/db_webqtl"
+XAPIAN_DB_PATH = "/export/data/genenetwork-xapian"
+```
+
+When building the container you can add a source path that is shared with the host machine. We can use that to share the source directory for GN3 with the path in the guix deploy script:
+
+```
+--share=/export/source/fallback-debug
+```
+
+in that directory we clone the genenetwork3 repo and rebuild the machine. After restarting the machine the path should be visible. E.g.
+
+```
+nsenter -at 1359047 /run/current-system/profile/bin/bash --login
+root@genenetwork /# ls /export/source/fallback-debug/
+  genenetwork3/
+```
+
+Next, after making a note of the port and paths with `ps xau`, we stop the running GN3 instance with
+
+```
+herd stop gunicorn-genenetwork3
+```
+
+Now we can start GN3 properly. We can reuse the gunicorn setup above, but for debugging it may be better to run a single threaded flask server on the same port. The wrapper contains all paths and PYTHON modules, so let's reuse that:
+
+```
+/gnu/store/1gd9nsy4cps8fnrd1avkc9l01l7ywiai-guile-3.0.9/bin/guile --no-auto-compile /gnu/store/zm5cxkhy0gx6b7vyyr54dh99gk8zbncn-gunicorn-genenetwork3-pola-wrapper --workers 1 --timeout 1200 --bind 127.0.0.1:8893 --env GN3_CONF=/gnu/store/8lmjj0vv0616cgwy2dx56pg30rkvgsj0-gn3.conf --env GN3_SECRETS=/etc/genenetwork/gn3-secrets.py --env HOME=/tmp "gn3.app:create_app()"
+
+ /gnu/store/1gd9nsy4cps8fnrd1avkc9l01l7ywiai-guile-3.0.9/bin/guile --no-auto-compile /gnu/store/zm5cxkhy0gx6b7vyyr54dh99gk8zbncn-gunicorn-genenetwork3-pola-wrapper --workers 20 --timeout 1200 --bind 127.0.0.1:8893 --env GN3_CONF=/gnu/store/8lmjj0vv0616cgwy2dx56pg30rkvgsj0-gn3.conf --env GN3_SECRETS=/etc/genenetwork/gn3-secrets.py --env HOME=/tmp gn3.app:create_app()
+```
+
+Note the added quotes. The command will fail with 'No module named gn3'. Good! Now to load the source dir we need to make it visible. We'll use $SOURCES for that.
+
+Through shepherd find the profile in use
+
+```
+/gnu/store/yi76sybwqql4ky60yahv91z57srb2fr0-profile/lib/python3.10/site-packages/
+```
+
+This worked loading the PYTHONPATH worker source path with `--chdir`!
+
+```
+root@genenetwork: cd /export/source/fallback-debug/genenetwork3
+root@genenetwork /export/source/fallback-debug/genenetwork3# PYTHONPATH=/gnu/store/yi76sybwqql4ky60yahv91z57srb2fr0-profile/lib/python3.10/site-packages /gnu/store/hhn20xg4vag4xiib2d7d4c1vkm09dcav-gunicorn-20.1.0/bin/gunicorn --workers 1 --timeout 1200 --bind 127.0.0.1:8893 --env GN3_CONF=/gnu/store/592bscjpr6xyz8asn743iqzgczg8l947-gn3.conf --env GN3_SECRETS=/etc/genenetwork/gn3-secrets.py --chdir /export/source/fallback-debug/genenetwork3 --log-level debug --log-file gn3.log --reload --env HOME=/tmp gn3.app:create_app\(\)
+```
+
+Note that gunicorn also has a `--pythonpath` switch, but I could not get that to work. Make sure you are loading gn3 code from your source dir (e.g. by introducing an error).
