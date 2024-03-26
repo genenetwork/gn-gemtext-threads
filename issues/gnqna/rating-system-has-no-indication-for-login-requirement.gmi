@@ -1,0 +1,30 @@
+# Rating System: No Indication for Login Requirement
+
+## Tags
+
+* type: bug
+* status: open
+* priority: medium
+* assigned: alex, shelby
+* keywords: gnqna, user experience, UX
+
+## Description
+
+=> https://cd.genenetwork.org/gnqna The GNQNA system on CD
+requires the user to be logged in for them to be able to rate the answers.
+
+There is, however, no indication that that is expected; instead, the user receives an alert with the following cryptic error when they attempt to rate an answer when not logged in:
+
+```
+HTTP Error:HTTP Response Code: 500-reason-Generic Exception
+```
+
+This is not a friendly response to the user, since it does not tell the user what they did wrong.
+
+I propose a message that lets the user know they need to be logged in to rate the answer, something like:
+
+```
+You attempted to rate your answer, but you are not logged in. We do not allow rating unless you are logged in.
+
+This is in place to reduce the chances of spam ratings. Do, please, log in and attempt rating again.
+```
