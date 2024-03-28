@@ -110,5 +110,5 @@ ALTER TABLE Tissue MODIFY Id INT(5) UNIQUE NOT NULL;
 
 ## References
 
-[1] https://gn1.genenetwork.org/webqtl/main.py?FormID=schemaShowPage#ProbeFreeze
-[2] https://gn1.genenetwork.org/webqtl/main.py?FormID=schemaShowPage#Tissue
+* [1] https://gn1.genenetwork.org/webqtl/main.py?FormID=schemaShowPage#ProbeFreeze
+* [2] https://gn1.genenetwork.org/webqtl/main.py?FormID=schemaShowPage#Tissue
