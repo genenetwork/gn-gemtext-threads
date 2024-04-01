@@ -1,39 +1,47 @@
 # Pjotr tasks
 
-## Tags
+# Tags
 
 * kanban: pjotrp
 * assigned: pjotrp
 * status: in progress
 
-## Notes
+# Notes
 
 The tasks here should probably be broken out into appropriately tagged issues, where they have not - they can be found and filtered out with tissue (formerly gnbug).
 
 => https://issues.genenetwork.org
 
-## Tasks
+# Current
 
-### Mempang24
+## Mempang24
 
-* [ ] Invites
-* [ ] Payments
-* [ ] Rooms
-* [ ] Catering
+* [+] Invites
+* [+] Payments
+* [+] Rooms
+* [+] Catering
 
-### Meta-tasks
+## Ongoing tasks (current/urgent)
+
+* [+] Set up stable GeneNetwork server instance with new hardware (see below)
+=> /topics/systems/fire-up-genenetwork-system-container.gmi
+* [+] Julia as part of GN3 deployment
+=> /topics/deploy/julia.gmi
+* [+] Shelby's paper+application
+* [+] Debian/free software issues incl. vcflib work in Zig and release
+
+# Tasks
+
+## Meta-tasks
 
 Now (X=done +=WIP _=kickoff ?=?)
 
 * [+] Build leadership team
-* [X] Build junior team
 * [+] Build GN consortium
 * [+] gBAM
-* [+] Set up stable GeneNetwork server instance with new hardware (see below)
-* [X] Complete Octopus setup with Erik, Andrea and Efraim - adding all machines
 * [ ] Audit DB security
 * [ ] p-value global search
-* [ ] Xapian search add tags, notmuch style
+* [ ] Xapian search add tags, notmuch style (with @zachs)
 
 => ../issues/systems/octopus
 
@@ -42,10 +50,9 @@ Now (X=done +=WIP _=kickoff ?=?)
 => ../issues/gemma/lmm-precomputed-scores
 
 * [ ] GEMMA/bulklmm speedups
-
+* [ ] bulklmm paper
 * [ ] Add R/qtl2 and multi-parent support with Karl (DO and Magic populations)
 * [ ] Fix slow search on Mariadb?
-* [+] Shelby's application
 * [.] GeneNetwork paper
 *     + [ ] add FAIR statement
 * [ ] RISC-V trials
@@ -53,7 +60,6 @@ Now (X=done +=WIP _=kickoff ?=?)
 
 Longer term
 
-* [X] Aging grant application w. Rob (fall)
 * [ ] Drive for stability of GN tools (particularly GEMMA OOMP)
 * [+] AraQTL and WormQTL2 embedding
 * [+] Work on REST API
@@ -68,8 +74,6 @@ Later
 * [ ] UCSC browser and big wig files
 * [ ] Jbrowse2 browser
 
-### Ongoing tasks
-
 ### Set up stable server instance with new hardware
 
 * [ ] R/qtl2 with Karl
@@ -83,7 +87,6 @@ Later
 * [+] move backup dirs on tux01 to a larger partition (from export3 to export2)
 * [.] Check Tony's list and improve search for SNPs and Hs
 * [ ] GeneNetwork consortium (paper & CTC)
-* [+] Complete vcflib work in Zig and release
 * [ ] Fix issues:
 => https://genenetwork.org/show_trait?trait_id=10441&dataset=HSNIH-PalmerPublish slow mapping
 => http://gn1.genenetwork.org/webqtl/main.py?FormID=sharinginfo&GN_AccessionId=2
@@ -93,6 +96,9 @@ Later
 
 ### Done
 
+* [X] Build junior team
+* [X] Complete Octopus setup with Erik, Andrea and Efraim - adding all machines
+* [X] Aging grant application w. Rob (fall)
 * [X] Update facilities with new machines
 * [X] Machine room security and access for bonz, fred, shelby, others...
 * [X] Support pluto notebooks with Efraim
