@@ -1,0 +1,64 @@
+# Unresponsive Virtuoso in CD
+
+* assigned: bonfacem
+* tags: critical
+
+## Description
+
+In CD, when you navigate to a datasets page, say:
+
+=> https://cd.genenetwork.org/datasets/BXDPublish /datasets/BXDPublish
+
+you get the following stack trace:
+
+```
+      GeneNetwork 2.11-rc2  https://cd.genenetwork.org/datasets/BXDPublish (11:31AM UTC Apr 02, 2024) 
+Traceback (most recent call last):
+  File "/gnu/store/jl6x90wdbwbs7c7zxnyz2kfd0qx8bf5h-profile/lib/python3.10/site-packages/flask/app.py", line 1523, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/gnu/store/jl6x90wdbwbs7c7zxnyz2kfd0qx8bf5h-profile/lib/python3.10/site-packages/flask/app.py", line 1509, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/genenetwork2/gn2/wqflask/views.py", line 1176, in get_dataset
+    return render_template(
+  File "/gnu/store/jl6x90wdbwbs7c7zxnyz2kfd0qx8bf5h-profile/lib/python3.10/site-packages/flask/templating.py", line 148, in render_template
+    return _render(
+  File "/gnu/store/jl6x90wdbwbs7c7zxnyz2kfd0qx8bf5h-profile/lib/python3.10/site-packages/flask/templating.py", line 128, in _render
+    rv = template.render(context)
+  File "/gnu/store/jl6x90wdbwbs7c7zxnyz2kfd0qx8bf5h-profile/lib/python3.10/site-packages/jinja2/environment.py", line 1291, in render
+    self.environment.handle_exception()
+  File "/gnu/store/jl6x90wdbwbs7c7zxnyz2kfd0qx8bf5h-profile/lib/python3.10/site-packages/jinja2/environment.py", line 926, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/genenetwork2/gn2/wqflask/templates/dataset.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/genenetwork2/gn2/wqflask/templates/base.html", line 200, in top-level template code
+    {% block content %}
+  File "/genenetwork2/gn2/wqflask/templates/dataset.html", line 91, in block 'content'
+    <a hx-get={{ url_for('metadata.view_history', id_=dataset.id.split('/')[-1], name=name, title=(dataset.title or dataset.label or dataset.altLabel)) }} hx-target=".dataset-content" hx-push-url="true" hx-select="#history">History</a>
+  File "/gnu/store/jl6x90wdbwbs7c7zxnyz2kfd0qx8bf5h-profile/lib/python3.10/site-packages/jinja2/environment.py", line 475, in getattr
+    return getattr(obj, attribute)
+jinja2.exceptions.UndefinedError: 'dict object' has no attribute 'id'
+```
+
+Doing a CURL on the CD RDF endpoint yields:
+
+
+```
+╭─munyoki@saitama ~  ╰─➤  curl https://cd.genenetwork.org/api3/metadata/datasets/BXDPublish 
+{}
+```
+
+## Resolution
+
+At one point, CD was restarted and the password was not set.  To remedy this:
+
+```
+SQL> set password "dba" "XXXXXXXXXX";
+SQL> UPDATE ws.ws.sys_dav_user SET u_account_disabled=1 WHERE u_name='dav';
+SQL> CHECKPOINT;
+```
+
+Refer to the following for more details:
+
+=> /topics/systems/virtuoso Configuring Virtuoso
+
+* closed
