@@ -58,14 +58,16 @@ Note the added quotes. The command will fail with 'No module named gn3'. Good! N
 Through shepherd find the profile in use
 
 ```
-/gnu/store/yi76sybwqql4ky60yahv91z57srb2fr0-profile/lib/python3.10/site-packages/
+export PROFILE=/gnu/store/yi76sybwqql4ky60yahv91z57srb2fr0-profile/lib/python3.10/site-packages/
 ```
 
 This worked loading the PYTHONPATH worker source path with `--chdir`!
 
 ```
+herd stop gunicorn-genenetwork3
+
 root@genenetwork: cd /export/source/fallback-debug/genenetwork3
-root@genenetwork /export/source/fallback-debug/genenetwork3# PYTHONPATH=/gnu/store/yi76sybwqql4ky60yahv91z57srb2fr0-profile/lib/python3.10/site-packages /gnu/store/hhn20xg4vag4xiib2d7d4c1vkm09dcav-gunicorn-20.1.0/bin/gunicorn --workers 1 --timeout 1200 --bind 127.0.0.1:8893 --env GN3_CONF=/gnu/store/592bscjpr6xyz8asn743iqzgczg8l947-gn3.conf --env GN3_SECRETS=/etc/genenetwork/gn3-secrets.py --chdir /export/source/fallback-debug/genenetwork3 --log-level debug --log-file gn3.log --reload --env HOME=/tmp gn3.app:create_app\(\)
+PYTHONPATH=$PROFILE/lib/python3.10/site-packages /gnu/store/hhn20xg4vag4xiib2d7d4c1vkm09dcav-gunicorn-20.1.0/bin/gunicorn --workers 1 --timeout 1200 --bind 127.0.0.1:8893 --env GN3_CONF=/gnu/store/592bscjpr6xyz8asn743iqzgczg8l947-gn3.conf --env GN3_SECRETS=/etc/genenetwork/gn3-secrets.py --chdir /export/source/fallback-debug/genenetwork3 --log-level debug --reload --env HOME=/tmp gn3.app:create_app\(\)
 ```
 
 Make sure you are loading gn3 code from your source dir (e.g. by introducing an error). The commit for sharing sources is at
@@ -85,6 +87,7 @@ We clone genenetwork2 in the source path, next we take a hint from shepherd:
 and we tell herd to stop genenetwork2.
 
 ```
+herd stop gunicorn-genenetwork2
  PYTHONPATH=/gnu/store/yi76sybwqql4ky60yahv91z57srb2fr0-profile/lib/python3.10/site-packages /gnu/store/1gd9nsy4cps8fnrd1avkc9l01l7ywiai-guile-3.0.9/bin/guile --no-auto-compile /gnu/store/vg8q4kdnkzy7skv04z57ngm8rqn7kvhd-gunicorn-genenetwork2-pola-wrapper --workers 20 --timeout 1200 --bind 127.0.0.1:8892 --env GN2_PROFILE=/gnu/store/jl6x90wdbwbs7c7zxnyz2kfd0qx8bf5h-profile --env GN2_SETTINGS=/gnu/store/gn9pr6kvmf1zlaskd1bqn1dssx4sy5lw-gn2.conf --chdir /export/source/fallback-debug/genenetwork2 --env HOME=/tmp gn2.wsgi
 ```
 
@@ -97,13 +100,52 @@ But, we'll have to look into such optimizations later.
 After adding the source dir and changing the permissions of the secrets file I can
 
 ```
-/export/source/fallback-debug/genenetwork2# /gnu/store/1gd9nsy4cps8fnrd1avkc9l01l7ywiai-guile-3.0.9/bin/guile --no-auto-compile /gnu/store/47vplgxkcwd7vk3r71qvvfkwr9rcqlsl-gunicorn-genenetwork2-pola-wrapper --workers 1 --timeout 1200 --bind 127.0.0.1:8892 --env GN2_PROFILE=/gnu/store/jl6x90wdbwbs7c7zxnyz2kfd0qx8bf5h-profile --env GN2_SETTINGS=/gnu/store/gn9pr6kvmf1zlaskd1bqn1dssx4sy5lw-gn2.conf  --chdir /export/source/fallback-debug/genenetwork2 --pythonpath=/gnu/store/hvv0r5nzhbbsnd9s68cmx5q0sznjhnrp-profile/lib/python3.10/site-packages  --log-level debug --log-file /tmp/gn2.log --reload --env HOME=/tmp  gn2.wsgi
+export PROFILE=/gnu/store/d77wrqsb11igma3ay5mykc57mnzwc76q-profile
+/export/source/fallback-debug/genenetwork2# /gnu/store/1gd9nsy4cps8fnrd1avkc9l01l7ywiai-guile-3.0.9/bin/guile --no-auto-compile /gnu/store/47vplgxkcwd7vk3r71qvvfkwr9rcqlsl-gunicorn-genenetwork2-pola-wrapper --workers 1 --timeout 1200 --bind 127.0.0.1:8892 --env GN2_PROFILE=$PROFILE --env GN2_SETTINGS=/gnu/store/gn9pr6kvmf1zlaskd1bqn1dssx4sy5lw-gn2.conf  --chdir /export/source/fallback-debug/genenetwork2 --pythonpath=$PROFILE/lib/python3.10/site-packages  --log-level debug --reload --env HOME=/tmp  gn2.wsgi
 ```
 
-Note that we need the --pythonpath. I pick up that profile from pola-wrapper.
+Note that we need the --pythonpath. I pick up that profile from pola-wrapper, as well as the R path etc with
+
+```
+export PROFILE=/gnu/store/v1nv6nnfsmvsi5aangj580f46741nvx6-profile
+root@genenetwork /export/source/fallback-debug/genenetwork3# PATH=$PATH:$PROFILE/bin R_LIBS_USER=$PROFILE/site-library PYTHONPATH=$PROFILE/lib/python3.10/site-packages /gnu/store/hhn20xg4vag4xiib2d7d4c1vkm09dcav-gunicorn-20.1.0/bin/gunicorn --workers 1 --timeout 1200 --bind 127.0.0.1:8893 --env GN3_CONF=/gnu/store/592bscjpr6xyz8asn743iqzgczg8l947-gn3.conf --env GN3_SECRETS=/etc/genenetwork/gn3-secrets.py --chdir /export/source/fallback-debug/genenetwork3 --log-level debug --reload --env HOME=/tmp gn3.app:create_app\(\)
+```
+
+To run the tests you can do something like
+
+```
+export PROFILE=/gnu/store/v1nv6nnfsmvsi5aangj580f46741nvx6-profile
+export AUTHLIB_INSECURE_TRANSPORT=true
+export OAUTH2_ACCESS_TOKEN_GENERATOR="tests.unit.auth.test_token.gen_token"
+PATH=$PATH:$PROFILE/bin R_LIBS_USER=$PROFILE/site-library PYTHONPATH=$PROFILE/lib/python3.10/site-packages pytest
+```
 
 # Fixing shared paths
 
 By default both GN2 and GN3 run as containers. We pass temporary files through the file sytem, so let's try and fix that first. The good news is that they only have to share the TMPDIR. First we share a new directory under /var/tmp for the system container. Next we have to tell GN2 and GN3 system containers to use /var/tmp/gn2. This was done in commit
 
 => https://git.genenetwork.org/gn-machines/commit/?id=831cf86b4fbf7b054640fa46eede6040ad01340f
+
+# Showing debug output
+
+Flask typically runs in a gunicorn. To have debug output the simple thing is to print to stderr with
+
+```
+sys.stderr.write("Example error output shows in gunicorn log")
+```
+
+Once the flask app runs it has its own logger settings. What we can do is set the app logging locally
+
+```
+from flask import current_app
+current_app.logger.setLevel(logging.DEBUG) # Force debug level since we assume we are using it!
+current_app.logger.debug("%s: %s", title_vals, value)
+```
+
+I have forced that in gn3/debug.py for now. Putting __pk__ around rqtl_cmd it turned out the script was not defined. The file it should be calling is ./scripts/rqtl_wrapper.R. There are some confusing settings in GN3.
+
+```
+rqtl_wrapper = current_app.config["RQTL_WRAPPER"]
+```
+
+http://127.0.0.1:8893/api/menu/generate/json

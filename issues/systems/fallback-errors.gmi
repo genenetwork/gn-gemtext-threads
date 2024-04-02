@@ -104,6 +104,21 @@ This also led to documenting how one should test GN2 and GN3 in a running VM:
 
 => /topics/guix/guix-system-containers-and-how-we-use-them.gmi
 
+and fixing the shared TMPDIR. The next step however fails with
+
+```
+sh: line 1: Rscript: command not found
+2024-04-01 07:33:13   File "/gnu/store/yi76sybwqql4ky60yahv91z57srb2fr0-profile/lib/python3.10/site-packages/gn3/computations/rqtl.py", line 6
+5, in process_rqtl_mapping
+(...)
+2024-04-01 07:33:13     with open(
+2024-04-01 07:33:13 FileNotFoundError: [Errno 2] No such file or directory: '/tmp/output/d41d8cd98f00b204e9800998ecf8427ePr1axOhhSF5DMEMowkGu6AvGj6hf+TA2Ra7FIrlrT4Pw-output.csv'
+```
+
+So, for some reason Rscript is not in the path for GN3. So I added that to the propagated inputs. Now we still have the output error. There is no information the Rscript has actually been invoked and successfuly (or unsuccessfully) wrote the file. To fix this we mount the GN3 source directory in the container again. See
+
+=>  /topics/systems/debug-and-developing-code-with-genenetwork-system-container.gmi
+
 ## QTLReaper showing font problem
 
 Try HK on
@@ -118,8 +133,44 @@ Try HK on
 OSError: cannot open resource
 ```
 
+This error in on gn2. An image file appears in /tmp/gn2/generated/.
+
+The fonts exist in the GN2 directory, e.g.
+/gnu/store/mymfiz2jgkfc196az1c0vcc2digc84jy-genenetwork2-stable-stable-3.11-1.42b37bb/lib/python3.10/site-packages/gn2/wqflask/static/fonts/courbd.ttf, but are not found. In the code the path is set to
+
+```
+COUR_FILE = "./gn2/wqflask/static/fonts/courbd.ttf"
+```
+
+so most likely GN2 is not running from that actually source dir.
+
+## Pair scan runs, but does not show image
+
+Pair scan shows a table on the fallback, but not the image. On CD and production no pair scan results!
+
 ## 413 Request Entity Too Large
 
 On mapping from
 
 => https://fallback.genenetwork.org/show_trait?trait_id=10002&dataset=HET3-ITPPublish
+
+## Purescript genome browser icons not showing
+
+## Files generated in /tmp
+
+Not unique file names appearing in TMPDIR:
+
+```
+-rw-r--r-- 1 gunicorn-genenetwork2 gunicorn-genenetwork2 337 Apr  2 07:03 175.png
+-rw-r--r-- 1 gunicorn-genenetwork2 gunicorn-genenetwork2 287 Apr  2 07:03 75.png
+-rw-r--r-- 1 gunicorn-genenetwork2 gunicorn-genenetwork2 303 Apr  2 07:03 25.png
+-rw-r--r-- 1 gunicorn-genenetwork2 gunicorn-genenetwork2 348 Apr  2 07:03 125.png
+-rw-r--r-- 1 gunicorn-genenetwork2 gunicorn-genenetwork2 835 Apr  2 07:03 -logP.png
+```
+
+Unique file names, but lingering on file system - note they are root because I created them outside a container
+
+```
+-rw-r--r-- 1 root root   10M Apr  2 07:03 4OJCzmGV.cross
+-rw-r--r-- 1 root root   10M Apr  2 07:03 6cExgwkd.cross
+```
