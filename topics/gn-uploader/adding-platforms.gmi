@@ -1,0 +1,96 @@
+# Adding Platforms
+
+## Tags
+
+* status: open
+* priority: medium
+* type: documentation
+* assigned: fredm, flisso, acenteno
+* keywords: doc, documentation, platform, gn-uploader, uploader
+
+## Description
+
+For the new data being uploaded, we sometimes need to add new platforms to the system. This document will list the new platforms that were added and the process to add them.
+
+The platforms will be listed below, according to the species.
+
+## Arabidopsis thaliana
+
+First off, get the species identifier:
+```
+MariaDB [db_webqtl]> SELECT * FROM Species WHERE SpeciesName LIKE 'Arabidopsis%';
++----+-----------+-------------+-------------+---------------------------------------------+----------------------+--------+---------------+------------+---------+
+| Id | SpeciesId | SpeciesName | Name        | MenuName                                    | FullName             | Family | FamilyOrderId | TaxonomyId | OrderId |
++----+-----------+-------------+-------------+---------------------------------------------+----------------------+--------+---------------+------------+---------+
+|  3 |         3 | Arabidopsis | arabidopsis | Arabidopsis (Arabidopsis thaliana, araTha1) | Arabidopsis thaliana | Plants |             3 |       3702 |      45 |
++----+-----------+-------------+-------------+---------------------------------------------+----------------------+--------+---------------+------------+---------+
+1 row in set (0.00 sec)
+```
+
+From this we see the Id is "3". We will use this identifier when creating the new platform(s).
+
+### A. thaliana Platforms
+
+=> https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL198 GPL198: Affymetrix Arabidopsis ATH1 Genome Array
+
+## Drosophila melanogaster dm6
+
+…
+
+## Glossophaga soricina
+
+…
+
+## Glycine max
+
+…
+
+## Homo sapiens
+
+…
+
+## Hordeum vulgare
+
+…
+
+## Macaca mulatta
+
+…
+
+## Mus musculus
+
+…
+
+## Oryzias latipes
+
+…
+
+## Populus trichocarpa
+
+…
+
+## Rattus norvegicus
+
+…
+
+## Solanum lycopersicum
+
+…
+
+## Inserting A Platform: Example
+
+Using the "GPL198" (for the A. thaliana species) as an example, we add the new platform with the following queries:
+
+```
+INSERT INTO GeneChip(
+  GeneChipName, Name, GeoPlatform, Title, SpeciesId, GO_tree_value)
+VALUES(
+  "Affymetrix Arabidopsis ATH1 Genome Array (ATH1-121501)",
+  "Affy_AG_ATH1_121501", "GPL198", "Affymetrix Arabidopsis ATH1 Genome Array",
+  "3", "affy_ag_ath1_121501");
+
+UPDATE GeneChip SET GeneChipId=Id WHERE GeoPlatform="GPL198";
+```
+
+The rules for the data in the `Name` field can be found under the
+=> https://gn1.genenetwork.org/webqtl/main.py?FormID=schemaShowPage#GeneChip GeneChip section of the Schema documentation.
