@@ -4,7 +4,7 @@ This page tracks outstanding problems with
 
 => https://fallback.genenetwork.org/
 
-Note that some issues may be related to produciton (i.e. the same).
+Note that some issues may be related to production (i.e. the same). Note also I created my own development VM in just an hour, so I don't have to mess with the fallback while others are using it.
 
 # Tags
 
@@ -17,15 +17,16 @@ Note that some issues may be related to produciton (i.e. the same).
 # Tasks
 
 * [X] 502 timeout errors
-* [ ] Rqtl2 not working
+* [X] Rqtl2 not working
 * [ ] 413 error
 * [ ] Monitor service - both systemd and sheepdog
+* [ ] Files in /tmp
 
-## 502 timeout errors
+## 502 timeout errors (fixed)
 
 These should no longer happen. It required relaxing timeouts on nginx and gunicorn.
 
-## Rqtl2/HK/Pairscan not working
+## Rqtl2/HK/Pairscan not working (fixed)
 
 URL error on result of
 
@@ -61,7 +62,7 @@ and in the code we mostly see another addition of the slash - except for this pa
 
 => https://en.wikipedia.org/wiki/URL
 
-# R/qtl JSONDecodeError
+# R/qtl JSONDecodeError (fixed)
 
 After adding the slash to GN3 URLs (see above) led to the next error:
 
@@ -119,7 +120,9 @@ So, for some reason Rscript is not in the path for GN3. So I added that to the p
 
 =>  /topics/systems/debug-and-developing-code-with-genenetwork-system-container.gmi
 
-## QTLReaper showing font problem
+That way I was able to troubleshoot the paths and added them to the containers.
+
+## QTLReaper showing font problem (fixed)
 
 Try HK on
 
@@ -144,9 +147,32 @@ COUR_FILE = "./gn2/wqflask/static/fonts/courbd.ttf"
 
 so most likely GN2 is not running from that actually source dir.
 
-## Pair scan runs, but does not show image
+## Pair scan runs, but does not show image (fixed)
 
 Pair scan shows a table on the fallback, but not the image. On CD and production no pair scan results!
+
+=> https://gndev.genenetwork.org/show_trait?trait_id=10150&dataset=BXDPublish
+
+Takes about a minute for 26 mice. The csv files are generated in /tmp/gn3, but no image. The relevant code is
+
+```
+   <div class="qtlcharts" id="chart_container">
+        <div id="pairscan_chart"></div>
+    </div>
+```
+
+The problem is with Karl's D3 panels, we get an error 'TypeError: d3.scaleLinear is not a function'. That 1.7.1 release is a bit old, so let's try updating that first. After updating to 1.8.4 we have the same error. D3 is at 3.5.17 - that is 2016(!).
+
+Now the latest versions of D3 do *not* provide the actual JS through github. The page
+
+=> https://d3js.org/getting-started
+
+has links to
+
+=> https://d3js.org/d3.v7.js
+=> https://d3js.org/d3.v7.min.js
+
+We can't use those because the SHA may change. So we have to host a local copy. That is fine.
 
 ## 413 Request Entity Too Large
 
@@ -154,9 +180,7 @@ On mapping from
 
 => https://fallback.genenetwork.org/show_trait?trait_id=10002&dataset=HET3-ITPPublish
 
-## Purescript genome browser icons not showing
-
-## Files generated in /tmp
+## Files generated in /tmp (later)
 
 Not unique file names appearing in TMPDIR:
 
@@ -168,9 +192,22 @@ Not unique file names appearing in TMPDIR:
 -rw-r--r-- 1 gunicorn-genenetwork2 gunicorn-genenetwork2 835 Apr  2 07:03 -logP.png
 ```
 
+These are created by the HK run. Harmless for now, but if two people run HK at the same time we'll get a conflict.
+
 Unique file names, but lingering on file system - note they are root because I created them outside a container
 
 ```
 -rw-r--r-- 1 root root   10M Apr  2 07:03 4OJCzmGV.cross
 -rw-r--r-- 1 root root   10M Apr  2 07:03 6cExgwkd.cross
 ```
+
+# Purescript browser buttons not showing (fixed)
+
+The following button does not display:
+
+```
+                       <button id="scrollLeft"  type="button" >
+                          <i class="fas fa-arrow-left"></i>
+```
+
+it is part of font-awesome and apparently not loaded properly. Actually the stylesheet is loaded twice(!) in mapping_results.html AND we use two different class names (fas and fa). Changing the class name fixed it.

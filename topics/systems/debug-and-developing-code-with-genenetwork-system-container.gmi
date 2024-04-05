@@ -41,6 +41,12 @@ root@genenetwork /# ls /export/source/fallback-debug/
   genenetwork3/
 ```
 
+Another useful command is running a command from outside the VM:
+
+```
+nsenter -at 1359047 /run/current-system/profile/bin/tail -f /var/log/gunicorn-genenetwork3.log
+```
+
 Next, after making a note of the port and paths with `ps xau`, we stop the running GN3 instance with
 
 ```
@@ -55,13 +61,22 @@ Now we can start GN3 properly. We can reuse the gunicorn setup above, but for de
 
 Note the added quotes. The command will fail with 'No module named gn3'. Good! Now to load the source dir we need to make it visible. We'll use $SOURCES for that.
 
-Through shepherd find the profile in use
+Through above shepherd command find the profile in use by printing pola-wrapper. You can use a local Ruby command, such as
 
 ```
-export PROFILE=/gnu/store/yi76sybwqql4ky60yahv91z57srb2fr0-profile/lib/python3.10/site-packages/
+/gnu/store/7ri578qarmn1cj2inl243xar6p7j1vxh-ruby-3.1.4/bin/ruby -n -e '$_ =~ /(\"\S+-profile)/; p $1 if $1' < /gnu/store/d7idvpad0d49l7647ci046w3xiz58xym-gunicorn-genenetwork3-pola-wrapper
+"\"/gnu/store/yi76sybwqql4ky60yahv91z57srb2fr0-profile
 ```
 
-This worked loading the PYTHONPATH worker source path with `--chdir`!
+and set the profile to match
+
+```
+export PROFILE=/gnu/store/yi76sybwqql4ky60yahv91z57srb2fr0-profile
+```
+
+> Note: you can find ruby in /gnu/store in the VM as it shares with the host
+
+This worked running gunicorn directly and loading the PYTHONPATH worker source path with `--chdir`!
 
 ```
 herd stop gunicorn-genenetwork3
@@ -120,6 +135,26 @@ export OAUTH2_ACCESS_TOKEN_GENERATOR="tests.unit.auth.test_token.gen_token"
 PATH=$PATH:$PROFILE/bin R_LIBS_USER=$PROFILE/site-library PYTHONPATH=$PROFILE/lib/python3.10/site-packages pytest
 ```
 
+# Locating scripts and fonts
+
+In Guix VMs we can not assume the start dir is the base of the source code - as we do in development. Paths may need to be written and that happens at the package level. E.g.
+
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=6303fe046b944a380704eb02144cca777fee689b
+
+The great thing is that, once it is done, it will always work with Guix! It is also a security feature that the full store is hard coded.
+
+For fonts we have
+
+```
+gn2/utility/Plot.py
+44:VERDANA_FILE = "./gn2/wqflask/static/fonts/verdana.ttf"
+45:COUR_FILE = "./gn2/wqflask/static/fonts/courbd.ttf"
+```
+
+and rewrite them with
+
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=1a6522f3a5a7d0990e50fe5dd91f286f62e083e7
+
 # Fixing shared paths
 
 By default both GN2 and GN3 run as containers. We pass temporary files through the file sytem, so let's try and fix that first. The good news is that they only have to share the TMPDIR. First we share a new directory under /var/tmp for the system container. Next we have to tell GN2 and GN3 system containers to use /var/tmp/gn2. This was done in commit
@@ -149,3 +184,46 @@ rqtl_wrapper = current_app.config["RQTL_WRAPPER"]
 ```
 
 http://127.0.0.1:8893/api/menu/generate/json
+
+# Speeding up channel builds
+
+The routine of `guix pull` for channel builds is quite elaborate in a development phase. Also, for every change you'll have to update the remote guix-bioinformatics repository - and that is not so great either. One solution is to *remove* the guix-bioinformatics channel and use the -L switch on a local repo instead.
+
+```
+git clone https://git.genenetwork.org/guix-bioinformatics/
+```
+
+Now you need to remove guix-bioinformatics from `.config/guix/channels.scm` and now do a guix pull using the local repo:
+
+```
+guix pull -p ~/opt/guix-dev
+```
+
+To get a channel list from an existing guix try `guix describe -f channel`. That can be pasted into a channels file. Anyway, you should end up with something like this:
+
+```
+~/opt/guix-dev/bin/guix describe
+Generation 1    Apr 02 2024 10:13:37    (current)
+  guix b0b988c
+    repository URL: https://git.savannah.gnu.org/git/guix.git
+    branch: master
+    commit: b0b988c41c9e0e591274495a1b2d6f27fcdae15a
+  guix-forge 6c622a6
+    repository URL: https://git.systemreboot.net/guix-forge/
+    branch: main
+    commit: 6c622a67051c22eeefe37eedb17d427fbb70c99b
+  guix-past 921f845
+    repository URL: https://gitlab.inria.fr/guix-hpc/guix-past
+    branch: master
+    commit: 921f845dc0dec9f052dcda479a15e787f9fd5b0a
+```
+
+Now we can use guix bioinformatics with
+
+```
+~/opt/guix-dev/bin/guix search -L ~/guix-bioinformatics genenetwork
+```
+
+and it should show the genenetwork stack. Now you can build a machine using -L. See for example:
+
+=> gndev-deploy

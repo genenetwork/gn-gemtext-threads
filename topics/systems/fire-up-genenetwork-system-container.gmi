@@ -98,7 +98,7 @@ apt-get install libnginx-mod-stream
 Inside the contianer, the first time you may check the certificates
 
 ```
-acme renew
+/usr/bin/acme renew
 ```
 
 After that you should be able to run
