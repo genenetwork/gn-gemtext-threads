@@ -226,4 +226,40 @@ Now we can use guix bioinformatics with
 
 and it should show the genenetwork stack. Now you can build a machine using -L. See for example:
 
-=> gndev-deploy
+=> https://git.genenetwork.org/gn-machines/tree/specials/gndev-deploy.sh
+
+# Scripts
+
+## Get a login on the VM
+
+e.g. guix-vm-login $pid
+
+```
+guix-vm-login:
+  #! /bin/bash
+  echo "Login to guix container"
+  pid=$1
+  shift
+  cmd="nsenter -at $pid /run/current-system/profile/bin/bash --login $*"
+  echo $cmd
+  $cmd
+```
+
+e.g. guix-vm-run $pid tail -f /var/log/gunicorn-genenetwork3.log
+
+```
+guix-vm-run:
+  #! /bin/bash
+  echo "Login to guix container"
+  pid=$1
+  shift
+  cmd="nsenter -at $pid /run/current-system/profile/bin/$*"
+  echo $cmd
+  $cmd
+```
+
+# Troubleshooting
+
+## Updating the VM does not show latest fixes
+
+It may be another service is using the port(s) of your VM. Check /var/log/gunicorn-$name.log. Another possibility is that you are checking the wrong URL - both things happened to me ;)

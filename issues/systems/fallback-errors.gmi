@@ -18,7 +18,8 @@ Note that some issues may be related to production (i.e. the same). Note also I 
 
 * [X] 502 timeout errors
 * [X] Rqtl2 not working
-* [ ] 413 error
+* [X] 413 error
+* [ ] BNW error
 * [ ] Monitor service - both systemd and sheepdog
 * [ ] Files in /tmp
 
@@ -174,11 +175,13 @@ has links to
 
 We can't use those because the SHA may change. So we have to host a local copy. That is fine.
 
-## 413 Request Entity Too Large
+## 413 Request Entity Too Large (fixed)
 
 On mapping from
 
 => https://fallback.genenetwork.org/show_trait?trait_id=10002&dataset=HET3-ITPPublish
+
+This resolved itself - probably a permission issue.
 
 ## Files generated in /tmp (later)
 
@@ -211,3 +214,13 @@ The following button does not display:
 ```
 
 it is part of font-awesome and apparently not loaded properly. Actually the stylesheet is loaded twice(!) in mapping_results.html AND we use two different class names (fas and fa). Changing the class name fixed it.
+
+# BNW gives a jquery error
+
+This is probably a jquery update is causing
+
+```
+Uncaught TypeError: data1.join is not a function
+    <anonymous> https://bnw.genenetwork.org/sourcecodes/layout_cyto.php?My_key=jFv:102
+    jQuery 4
+```
