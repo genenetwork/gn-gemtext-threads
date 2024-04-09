@@ -53,6 +53,14 @@ Download it, tweak the %hosts variable to specify the hosts you are interested i
 $(guix build -f uthsc-vpn.scm)
 ```
 
+# Troubleshooting
+
+Older versions would not show a proper dialog for sign-in. Try
+
+```
+export QTWEBENGINE_CHROMIUM_FLAGS=--disable-seccomp-filter-sandbox
+```
+
 ## Acknowledgement
 
 Many thanks to Pjotr Prins and Erik Garrison without whose earlier work this guide would not be possible.
