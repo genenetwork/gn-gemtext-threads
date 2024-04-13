@@ -65,3 +65,18 @@ rpc-statd.service                                                         static
 network-online.target
 x-systemd.device-timeout=
 10.0.0.110:/export/3T  /mnt/3T  nfs nofail,x-systemd.automount,x-systemd.requires=network-online.target,x-systemd.device-timeout=10 0 0
+
+
+## Installation on a new node
+
+Current nodes in the pool have
+
+munge --version
+    munge-0.5.13 (2017-09-26)
+sbatch --version
+    slurm-wlm 18.08.5-2
+
+so, on new nodes, we need to use
+
+guix package -i munge@0.5.14 -p /export/octopus01/guix-profiles/slurm
+guix package -i slurm@18.08.9 -p /export/octopus01/guix-profiles/slurm
