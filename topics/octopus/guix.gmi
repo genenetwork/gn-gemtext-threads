@@ -1,0 +1,86 @@
+# Moving /gnu
+
+We needed to move /gnu on Octopus01 because we ran out of disk space. As it is shared across all nodes through NFS and, in turn, the nodes run services of that directory it required a strategic approach.
+
+Fri, Apr 12, 2024, 18:38:29 - pjotrp: IMPORTANT: all nodes will be depleted tomorrow. Any running jobs will be killed.
+Fri, Apr 12, 2024, 18:38:46 - pjotrp: you may want to stop long running jobs today.
+Fri, Apr 12, 2024, 19:38:14 - Arun Isaac: Are we moving the store tomorrow? Should I be around? If so, when? I may be away in the day time.
+Sat, Apr 13, 2024, 02:59:45 - andreaguarracino: I think so, but I have no idea about the time
+Sat, Apr 13, 2024, 05:51:42 - erikg: Spring cleaning!!???!!!
+Sat, Apr 13, 2024, 08:22:39 - pjotrp: yup
+Sat, Apr 13, 2024, 08:23:10 - pjotrp: Arun Isaac: you may want to test later today when you are back.
+Sat, Apr 13, 2024, 09:29:42 - pjotrp: <@erikgarrison:matrix.org "pjotrp: do we have backups of ho..."> /home is on /export and that is a disk array - so we can handle disk failure. Should we backup /home? People have all sorts of stuff there.
+Sat, Apr 13, 2024, 09:36:25 - pjotrp: On Octo1 erik and flavia are using some tools in ~/.guix-profile. emacs, nucmer and perl. They may be OK, but just so you are aware.
+Sat, Apr 13, 2024, 09:36:39 - pjotrp: I stopped the guix-daemon and started copying the store.
+Sat, Apr 13, 2024, 10:22:56 - pjotrp: the store is now mounted on /export2/gnu:
+```
+/export2/gnu /gnu none defaults,bind 0 0
+```
+Sat, Apr 13, 2024, 10:57:33 - pjotrp: /gnu successfully mounted on octo8
+Sat, Apr 13, 2024, 10:58:24 - pjotrp: also I updated the guix-daemon on octo1.
+Sat, Apr 13, 2024, 11:08:38 - pjotrp: Funny thing
+```
+root@octopus08:/etc/systemd# systemctl status lizardfs-mount
+● lizardfs-mount.service - LizardFS mounts
+   Loaded: loaded (/root/lizardfs-mount.service; enabled; vendor preset: enabled)
+   Active: failed (Result: exit-code) since Thu 2022-02-03 19:18:08 UTC; 2 years 2 months ago
+
+Feb 03 19:18:08 octopus08 systemd[1]: Starting LizardFS mounts...
+Feb 03 19:18:08 octopus08 mfsmount[1298]: can't resolve master hostname and/or portname (octopus01:9421)
+Feb 03 19:18:08 octopus08 mfsmount[1298]: [2022-02-03 19:18:08.562] [error] Can't initialize connection with master ser
+Feb 03 19:18:08 octopus08 mfsmount[1299]: Can't initialize connection with master server
+Feb 03 19:18:08 octopus08 systemd[1]: lizardfs-mount.service: Control process exited, code=exited, status=1/FAILURE
+Feb 03 19:18:08 octopus08 systemd[1]: lizardfs-mount.service: Failed with result 'exit-code'.
+Feb 03 19:18:08 octopus08 systemd[1]: Failed to start LizardFS mounts.
+```
+Sat, Apr 13, 2024, 11:08:52 - pjotrp: note the dates
+Sat, Apr 13, 2024, 11:09:59 - pjotrp: /lizardfs is mounted so mfsmount is running. Weird. Nothing to do with guix btw - this is on Debian still
+Sat, Apr 13, 2024, 11:10:14 - pjotrp: Checking tux06
+Sat, Apr 13, 2024, 11:12:31 - pjotrp: After
+```
+umount -l /gnu
+mount /gnu
+```
+tux06 sees the right guix
+Sat, Apr 13, 2024, 11:14:12 - pjotrp: lizardfs profile is fine on that machine
+Sat, Apr 13, 2024, 11:18:07 - pjotrp: ```
+systemctl restart lizardfs-mount
+systemctl restart lizardfs-chunkserver-hdd
+```
+Sat, Apr 13, 2024, 11:18:29 - pjotrp: the last is still unloading. I don't think we have to do that for the other machines, just testing if I can bring it back up.
+Sat, Apr 13, 2024, 11:19:42 - pjotrp: bit dangerous if we stop all chunkservers ;). But this one is restarting and appears happy enough
+Sat, Apr 13, 2024, 11:20:05 - pjotrp: ```
+Apr 13 04:13:48 tux06 mfschunkserver[1343867]: loaded charts data file from /var/lib/lizardfs_hdd/csstats.mfs
+Apr 13 04:13:48 tux06 mfschunkserver[1343867]: open files limit: 10000
+Apr 13 04:13:48 tux06 mfschunkserver[1343867]: mfschunkserver daemon initialized properly
+Apr 13 04:13:48 tux06 systemd[1]: Finished lizardfs-chunkserver-hdd.service - LizardFS chunkserver daemon.
+Apr 13 04:13:48 tux06 mfschunkserver[1343867]: connected to Master
+Apr 13 04:13:48 tux06 mfschunkserver[1343867]: scanning folder /mnt/lizardserve/lizardfs_temp_vol/: complete (0s)
+```
+Sat, Apr 13, 2024, 11:20:23 - pjotrp: OK, I'll remount nfs on all other machines and we should be OK
+Sat, Apr 13, 2024, 11:21:10 - pjotrp: root on octo1:
+```
+/dev/sda2            63G   16G   44G  26% /
+```
+Sat, Apr 13, 2024, 11:34:41 - pjotrp: that is better
+Sat, Apr 13, 2024, 11:42:17 - pjotrp: all nodes should see /gnu:
+```
+---- node tux06
+octopus01:/gnu       2.2T  656G  1.4T  32% /gnu
+---- node tux07
+octopus01:/gnu       2.2T  656G  1.4T  32% /gnu
+---- node tux08
+octopus01:/gnu       2.2T  656G  1.4T  32% /gnu
+---- node tux09
+octopus01:/gnu       2.2T  656G  1.4T  32% /gnu
+```
+Sat, Apr 13, 2024, 11:50:37 - pjotrp: lizard appears to be happy. OK andreaguarracino and Arun Isaac, please validate everything runs as expected. PBS does not run from guix, so that should be OK.
+Sat, Apr 13, 2024, 11:53:59 - pjotrp: oh, checking, munged is also on guix on the tuxes and, oops:
+Sat, Apr 13, 2024, 11:54:32 - pjotrp: ```
+root@tux06:/home/wrk# ls -l /export/octopus01/guix-profiles/slurm-1-link/sbin/munged
+ls: cannot access '/export/octopus01/guix-profiles/slurm-1-link/sbin/munged': No such file or directory
+```
+Sat, Apr 13, 2024, 11:55:58 - pjotrp: must have happened during the profile cleanup andreaguarracino
+Sat, Apr 13, 2024, 11:56:07 - pjotrp: fixed it
+Sat, Apr 13, 2024, 12:00:21 - pjotrp: munge should be good now. Please test.
+Sat, Apr 13, 2024, 12:06:14 - pjotrp: on a future cluster we should really consider net started nodes. With Efraim we looked into it, but never completed. It would make guix nodes an option, for one.
