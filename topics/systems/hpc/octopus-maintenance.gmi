@@ -67,16 +67,112 @@ x-systemd.device-timeout=
 10.0.0.110:/export/3T  /mnt/3T  nfs nofail,x-systemd.automount,x-systemd.requires=network-online.target,x-systemd.device-timeout=10 0 0
 
 
-## Installation on a new node
+## Installation of `munge` and `slurm` on a new node
 
-Current nodes in the pool have
+Current nodes in the pool have:
 
+```shell
 munge --version
     munge-0.5.13 (2017-09-26)
 sbatch --version
     slurm-wlm 18.08.5-2
+```
 
-so, on new nodes, we need to use
+To install `munge`, go to `octopus01` and run:
 
+```shell
 guix package -i munge@0.5.14 -p /export/octopus01/guix-profiles/slurm
+
+systemctl status munge # to check if the service is running and where its service file is
+```
+
+We need to setup the rights for `munge`:
+
+```shell
+sudo bash
+
+addgroup -gid 900 munge
+adduser -uid 900 -gid 900 --disabled-password munge
+
+sed 's,/home/munge:/bin/bash,/var/lib/munge:/usr/sbin/nologin,g' /etc/passwd -i
+
+mkdir -p /var/lib/munge
+chown munge:munge /var/lib/munge/
+
+mkdir -p /etc/munge
+# copy `munge.key` (from a working node) to `/etc/munge/munge.key`
+chown -R munge:munge /etc/munge
+
+mkdir -p /run/munge
+chown munge:munge /run/munge
+
+mkdir -p /var/log/munge
+chown munge:munge /var/log/munge
+
+mkdir -p /var/run/munge # todo: not sure why it needs such a folder
+chown munge:munge /var/run/munge
+
+# copy `munge.service` (from a working node) to `/etc/systemd/system/munge.service`
+
+systemctl daemon-reload
+systemctl enable munge
+systemctl start munge
+systemctl status munge
+```
+
+To test the new installation, go to `octopus01` and then:
+
+```shell
+munge -n | ssh tux08 /export/octopus01/guix-profiles/slurm-2-link/bin/unmunge
+```
+
+To install `slurm`, go to `octopus01` and run:
+
+```shell
 guix package -i slurm@18.08.9 -p /export/octopus01/guix-profiles/slurm
+```
+
+We need to setup the rights for `slurm`:
+
+```shell
+sudo bash
+
+addgroup -gid 901 slurm
+adduser -uid 901 -gid 901 --no-create-home --disabled-password slurm
+
+sed 's,/home/slurm:/bin/bash,/var/lib/slurm:/bin/bash,g' /etc/passwd -i
+
+mkdir -p /var/lib/slurm
+chown munge:munge /var/lib/slurm/
+
+mkdir -p /etc/slurm
+# copy `slurm.conf` to `/etc/slurm/slurm.conf`
+# copy `cgroup.conf` to `/etc/slurm/cgroup.conf`
+
+chown -R slurm:slurm /etc/slurm
+
+mkdir -p /run/slurm
+chown slurm:slurm /run/slurm
+
+mkdir -p /var/log/slurm
+chown slurm:slurm /var/log/slurm
+
+# copy `slurm.service` to `/etc/systemd/system/slurm.service`
+
+/export/octopus01/guix-profiles/slurm-2-link/sbin/slurmd -f /etc/slurm/slurm.conf -C | head -n 1 >> /etc/slurm/slurm.conf # add node configuration information
+
+systemctl daemon-reload
+systemctl enable slurm
+systemctl start slurm
+systemctl status slurm
+```
+
+On `octopus01` (the master):
+
+```shell
+sudo bash
+
+# add the new node to `/etc/slurm/slurm.conf`
+
+systemctl restart slurmctld # after editing /etc/slurm/slurm.conf on the master
+```
