@@ -3,9 +3,9 @@
 ## Tags
 
 * type: bug
-* status: open
 * assigned: fredm
 * priority: critical
+* status: closed, completed
 * keywords: data integrity, mariadb, gn-uploader
 
 ## Description
@@ -37,3 +37,11 @@ To see the modules that need to be updated, do
 $ cd /path/to/gn-uploader/
 $ find ./ -name '*.py' -print0 | xargs --no-run-if-empty --null --max-procs=7 grep 'MAX(Id)'
 ```
+
+The changes proposed above only work for single inserts; it will not work for `executemany()` calls like those present in the following files:
+
+* scripts/insert_data.py
+* scripts/rqtl2/install_phenos.py
+* scripts/rqtl2/install_genotypes.py
+
+For these, we have to retain the `SELECT MAX(Id) …` form.
