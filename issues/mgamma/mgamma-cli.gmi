@@ -1,1 +1,17 @@
 # MGAMMA CLI
+
+Tasks for the command line interface
+
+# Tags
+
+* assigned: pjotrp, artyom
+* type: feature
+* priority: high
+
+# Tasks
+
+* [ ] Provide sane CLI interface
+* [ ] Add --map-size 10M switch
+* [ ] Use lmdb files instead of dir (no switch for --lmdb)
+* [ ] Move mgamma into ./bin
+* [ ] Add ./bin/mgemma compatibility tool (note it is not mgamma)
