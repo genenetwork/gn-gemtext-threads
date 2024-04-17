@@ -1,0 +1,18 @@
+# MGAMMA Convert
+
+MGamma can convert between different formats.
+
+# Tags
+
+* assigned: pjotrp, artyom
+* type: feature
+* priority: high
+
+# Tasks
+
+* [ ] Store genotypes as floats instead of doubles in lmdb
+* [ ] Add annotations to genotype lmdb format - probably as the first named columns
+* [ ] Provide a metadata header in JSON that tracks such info and a version
+* [ ] Convert genotypes from strings using Rqtl2 CSV and metadata-JSON version of the control format, see
+
+=> https://kbroman.org/qtl2/assets/vignettes/input_files.html
