@@ -1,0 +1,6 @@
+# MGAMMA
+
+In this project we are attempting a new LMM runner. This page indexes items we are working on.
+
+=> ./mgamma-design design philosophy
+=> ./mgamma-cli command line interface

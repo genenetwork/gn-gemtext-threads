@@ -1,0 +1,9 @@
+# MGAMMA design philosophy
+
+We have a lot of experience running and hacking the GEMMA tool in GeneNetwork.org:
+
+=> https://github.com/genetics-statistics/GEMMA
+
+GEMMA proves to give great GWA results and has a decent speed for a single threaded implementation - even though the matrix calls to openblas use multiple threads. The source code base of GEMMA, however, proves hard to build on. This is why we are creating a next generation tool that has a focus on *performance and hackability*.
+
+After several attempts using R, D, Julia, python, Ruby we have in 2023 settled on Guile+C+Zig. Guile provides a REPL and great hackabability. C+Zig we'll use for performance. The other languages are all great, but we think we can work faster in this setup.
