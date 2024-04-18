@@ -1,0 +1,85 @@
+# Generating Key-Pairs
+
+## Tags
+
+* type: documentation
+* keywords: doc, documentation, gn-auth, key-pair, jwt
+
+## Generating the Key-Pair
+
+If openssl is not present on your system, you need to get it. You can either install it with your package manager, or if you are using GNU Guix, you can do something like:
+
+```
+$ guix shell --container --network --share=</path/to/key-pair/storage/directory> openssl
+```
+
+where </path/to/key-pair/storage/directory> is where you will store the key-pairs.
+
+Now we can generate a private key (2048-bit RSA key) with:
+
+```
+[env] $ openssl genrsa -out </path/to/key-pair/storage/directory>/private.pem 2048
+```
+
+and the public key with:
+
+```
+[env] $ openssl rsa \
+      -in </path/to/key-pair/storage/directory>/private.pem \
+      -outform PEM \
+      -pubout \
+      -out </path/to/key-pair/storage/directory>/public.pem
+```
+
+**NOTE**: You can store the public key separately from the private key. In that case, you'd have to have something like:
+
+```
+$ guix shell --container --network \
+  --share=</path/to/public-key/storage/directory> \
+  --share=</path/to/private-key/storage/directory> \
+  openssl
+```
+
+and run the generation commands above with the appropriate directories in mind.
+
+## Configuring Services
+
+Now we need to configure the various services to make use of the key-pair.
+
+For the client services (GN2, gn-uploader, etc), we only need to give access to the public key, so we can do:
+
+```
+# gn2.conf
+︙
+SSL_KEY_PAIR_PUBLIC_KEY = "</path/to/public-key/storage/directory>/public.pem"
+︙
+```
+
+For the authorisation server (gn-auth), we need both:
+
+```
+# gn-auth.conf
+SSL_KEY_PAIR_PUBLIC_KEY = "</path/to/public-key/storage/directory>/public.pem"
+SSL_KEY_PAIR_PRIVATE_KEY = "</path/to/private-key/storage/directory>/private.pem"
+```
+
+## Exposing the Key-Pairs to Guix shell/container
+
+The generated keys above do not need to be modified within the running application, so we will use the "--expose" option e.g.
+
+```
+$ guix system container \
+  ︙
+  --expose=</path/to/key-pair/storage/directory> \
+  ︙
+```
+
+or if you stored the keys separately:
+
+```
+$ guix system container \
+  ︙
+  --expose=</path/to/public-key/storage/directory> \
+  --expose=</path/to/private-key/storage/directory> \
+  ︙
+```
