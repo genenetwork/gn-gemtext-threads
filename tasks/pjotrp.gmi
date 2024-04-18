@@ -66,6 +66,7 @@ Longer term
 
 Later
 
+* [ ] Remove ttf files GN2
 * [+] DOI support GN
 * [+] Tree of life w. Andrea
 * [ ] Hao's idea for counting cis-qtl
