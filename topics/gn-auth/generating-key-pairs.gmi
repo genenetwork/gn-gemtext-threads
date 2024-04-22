@@ -46,24 +46,39 @@ and run the generation commands above with the appropriate directories in mind.
 
 Now we need to configure the various services to make use of the key-pair.
 
-The private key should only be accessible from the client (e.g. GN2, gn-uploader, etc.). In that respect, we can, for example have the following example config for GN2
+### Clients
+
+Each client (e.g. GN2, gn-uploader, etc.) should have its own private key. This private key is used in signing the initial token assertions. These assertions are then sent to the authorisation server to get the authorisation token.
+
+Each client will also need the authorisation server's public key, to verify that the authorisation token(s) received is/are actually from the server and have not been modified.
+
+In that respect, we can, for example have the following example config for GN2
 
 ```
 # gn2.conf
 ︙
-SSL_KEY_PAIR_PRIVATE_KEY = "</path/to/private-key/storage/directory>/private.pem"
-SSL_KEY_PAIR_PUBLIC_KEY = "</path/to/public-key/storage/directory>/public.pem"
+AUTH_SERVER_SSL_PUBLIC_KEY "</path/to/auth/server/public-key.pem>"
+SSL_PRIVATE_KEY = "</path/to/client/private-key/storage/directory>/private.pem"
 ︙
 ```
 
-The authorisation server (gn-auth), only needs access to the public keys for the various clients. As such, we could have something like:
+### Authorization Server
+
+The authorisation server (gn-auth) needs its own private key to sign any authorisation token it generates.
+
+It also needs access to the public keys from all registered clients.
+
+In that respect, we can have a configuration such as:
 
 ```
 # gn-auth.conf
-SSL_KEY_PAIR_PRIVATE_KEY = "</path/to/public-keys/storage/directory>"
+︙
+CLIENTS_SSL_PUBLIC_KEYS_DIR = "</path/to/clients/public-keys/storage/directory>"
+SSL_PRIVATE_KEY = "</path/to/auth/private-key/storage/directory>/private.pem"
+︙
 ```
 
-The directory should be writable for the authorisation server, since each client that will be registered will need to provide its own public key.
+The `CLIENTS_SSL_PUBLIC_KEYS_DIR` directory should be writable since that is where the server will put the keys for any registered client.
 
 ## Exposing the Key-Pairs to Guix shell/container
 
