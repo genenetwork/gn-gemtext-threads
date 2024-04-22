@@ -46,22 +46,24 @@ and run the generation commands above with the appropriate directories in mind.
 
 Now we need to configure the various services to make use of the key-pair.
 
-For the client services (GN2, gn-uploader, etc), we only need to give access to the public key, so we can do:
+The private key should only be accessible from the client (e.g. GN2, gn-uploader, etc.). In that respect, we can, for example have the following example config for GN2
 
 ```
 # gn2.conf
 ︙
+SSL_KEY_PAIR_PRIVATE_KEY = "</path/to/private-key/storage/directory>/private.pem"
 SSL_KEY_PAIR_PUBLIC_KEY = "</path/to/public-key/storage/directory>/public.pem"
 ︙
 ```
 
-For the authorisation server (gn-auth), we need both:
+The authorisation server (gn-auth), only needs access to the public keys for the various clients. As such, we could have something like:
 
 ```
 # gn-auth.conf
-SSL_KEY_PAIR_PUBLIC_KEY = "</path/to/public-key/storage/directory>/public.pem"
-SSL_KEY_PAIR_PRIVATE_KEY = "</path/to/private-key/storage/directory>/private.pem"
+SSL_KEY_PAIR_PRIVATE_KEY = "</path/to/public-keys/storage/directory>"
 ```
+
+The directory should be writable for the authorisation server, since each client that will be registered will need to provide its own public key.
 
 ## Exposing the Key-Pairs to Guix shell/container
 
@@ -83,3 +85,5 @@ $ guix system container \
   --expose=</path/to/private-key/storage/directory> \
   ︙
 ```
+
+To make this easy, and since each client can (and should) have a different private key, we can put these keys in the same directory as the secrets, and simply allow access to that. Each service within the guix container can then have access to the relevant key(s) as appropriate.
