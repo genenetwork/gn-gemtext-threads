@@ -1,0 +1,15 @@
+# Edit OAuth2 Clients
+
+## Tags
+
+* status: open
+* priority: high
+* type: enhancement
+* assigned: fredm
+* keywords: gn-auth, issue, oauth2
+
+## Description
+
+With the recent updates to use JWT in place of simple "AuthorizationCode" tokens, we needed to update the database to ensure the OAuth2 clients had the appropriate grant types set up.
+
+It turns out, at least for a while, that we will need a way to easily update the properties of the clients that are registered. This means adding a UI that enables editing/deleting of existing oauth2 clients.
