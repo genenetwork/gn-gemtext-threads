@@ -11,6 +11,7 @@ MGamma can convert between different formats.
 # Tasks
 
 * [ ] Store genotypes as floats instead of doubles in lmdb
+* [ ] Required for the above: rework the type system in guile-gsl to allow float vectors/matrices
 * [ ] Add annotations to genotype lmdb format - probably as the first named columns
 * [ ] Provide a metadata header in JSON that tracks such info and a version
 
