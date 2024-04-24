@@ -6,7 +6,7 @@
 * priority: medium
 * type: documentation
 * assigned: fredm, flisso, acenteno
-* keywords: doc, documentation, platform, gn-uploader, uploader
+* keywords: doc, documentation, platform, gn-uploader, uploader, adding data
 
 ## Description
 
