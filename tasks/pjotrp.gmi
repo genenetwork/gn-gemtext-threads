@@ -16,7 +16,7 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 
 ## Mempang24
 
-* [+] Invites
+* [X] Invites
 * [+] Payments
 * [+] Rooms
 * [+] Catering
@@ -28,7 +28,6 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 * [+] Julia as part of GN3 deployment
 => /topics/deploy/julia.gmi
 * [+] Shelby's paper+application
-* [+] Debian/free software issues incl. vcflib work in Zig and release
 
 # Tasks
 
@@ -36,8 +35,13 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 
 Now (X=done +=WIP _=kickoff ?=?)
 
+* [ ] ~Test GEMMA/bulklmm speedups & paper
+* [ ] GEMMA batch run and precompute
+=> ../issues/gemma/lmm-precomputed-scores
+* [ ] Genotyping and sparse VCF
+* [ ] GeneNetwork consortium (paper & CTC)
+
 * [+] Build leadership team
-* [+] Build GN consortium
 * [+] gBAM
 * [ ] Audit DB security
 * [ ] p-value global search
@@ -45,12 +49,6 @@ Now (X=done +=WIP _=kickoff ?=?)
 
 => ../issues/systems/octopus
 
-* [ ] GEMMA batch run and precompute
-
-=> ../issues/gemma/lmm-precomputed-scores
-
-* [ ] GEMMA/bulklmm speedups
-* [ ] bulklmm paper
 * [ ] Add R/qtl2 and multi-parent support with Karl (DO and Magic populations)
 * [ ] Fix slow search on Mariadb?
 * [.] GeneNetwork paper
@@ -85,9 +83,6 @@ Later
 
 => ./machine-room.gmi machine room
 
-* [+] move backup dirs on tux01 to a larger partition (from export3 to export2)
-* [.] Check Tony's list and improve search for SNPs and Hs
-* [ ] GeneNetwork consortium (paper & CTC)
 * [ ] Fix issues:
 => https://genenetwork.org/show_trait?trait_id=10441&dataset=HSNIH-PalmerPublish slow mapping
 => http://gn1.genenetwork.org/webqtl/main.py?FormID=sharinginfo&GN_AccessionId=2
@@ -108,3 +103,4 @@ Later
 * [X] Set up cgit as a service
 * [X] Fix mariadb index search - need to upgrade mariadb to convert final utf8mb4, see
   => ../issues/slow-sql-query-for-xapian-indexing.gmi
+* [X] Debian/free software issues incl. vcflib work in Zig and release

@@ -664,6 +664,7 @@ CREATE TABLE 'ProbeSetFreeze' (
 
 There is a primary key. Good.
 
+```
 ALTER TABLE ProbeSetSE
   ADD PRIMARY KEY(DataId,StrainId);
 Query OK, 688744613 rows affected (15 min 13.830 sec)
@@ -920,12 +921,14 @@ Or
 
 ```
 SHOW CREATE TABLE ProbeSet;
+```
 
 E.g.
 
-  FULLTEXT KEY `SEARCH_GENE_IDX` (`Symbol`,`alias`),
-  FULLTEXT KEY `SEARCH_FULL_IDX` (`Name`,`description`,`Symbol`,`alias`,`GenbankId`,`UniGeneId`,`Probe_Target_Description`),
-  FULLTEXT KEY `RefSeq_FULL_IDX` (`RefSeq_TranscriptId`)
+```
+FULLTEXT KEY 'SEARCH_GENE_IDX' ('Symbol','alias'),
+  FULLTEXT KEY 'SEARCH_FULL_IDX' ('Name','description','Symbol','alias','GenbankId','UniGeneId','Probe_Target_Description'),
+  FULLTEXT KEY 'RefSeq_FULL_IDX' ('RefSeq_TranscriptId')
 ```
 
 To see all:
@@ -995,10 +998,10 @@ CREATE FULLTEXT INDEX ft_ProbeSet_Symbol ON ProbeSet(Symbol);
 Now we have
 
 ```
-FULLTEXT KEY `SEARCH_GENE_IDX` (`Symbol`,`alias`),
-FULLTEXT KEY `SEARCH_FULL_IDX` (`Name`,`description`,`Symbol`,`alias`,`GenbankId`,`UniGeneId`,`Probe_Target_Description`),
-FULLTEXT KEY `RefSeq_FULL_IDX` (`RefSeq_TranscriptId`),
-FULLTEXT KEY `ft_ProbeSet_Symbol` (`Symbol`)
+FULLTEXT KEY 'SEARCH_GENE_IDX' ('Symbol','alias'),
+FULLTEXT KEY 'SEARCH_FULL_IDX' ('Name','description','Symbol','alias','GenbankId','UniGeneId','Probe_Target_Description'),
+FULLTEXT KEY 'RefSeq_FULL_IDX' ('RefSeq_TranscriptId'),
+FULLTEXT KEY 'ft_ProbeSet_Symbol' ('Symbol')
 ```
 
 and the query works.
@@ -1061,24 +1064,24 @@ select count(*) from ProbeSetFreeze limit 2;
 |      931 |
 +----------+
 SHOW CREATE TABLE ProbeSetFreeze;
-CREATE TABLE `ProbeSetFreeze` (
-  `Id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `ProbeFreezeId` smallint(5) unsigned NOT NULL DEFAULT 0,
-  `AvgID` smallint(5) unsigned NOT NULL DEFAULT 0,
-  `Name` varchar(40) DEFAULT NULL,
-  `Name2` varchar(100) NOT NULL DEFAULT '',
-  `FullName` varchar(100) NOT NULL DEFAULT '',
-  `ShortName` varchar(100) NOT NULL DEFAULT '',
-  `CreateTime` date NOT NULL DEFAULT '0000-00-00',
-  `OrderList` int(5) DEFAULT NULL,
-  `public` tinyint(4) NOT NULL DEFAULT 0,
-  `confidentiality` tinyint(4) NOT NULL DEFAULT 0,
-  `AuthorisedUsers` varchar(300) NOT NULL,
-  `DataScale` varchar(20) NOT NULL DEFAULT 'log2',
-  PRIMARY KEY (`Id`),
-  UNIQUE KEY `FullName` (`FullName`),
-  UNIQUE KEY `Name` (`Name`),
-  KEY `NameIndex` (`Name2`)
+CREATE TABLE 'ProbeSetFreeze' (
+  'Id' smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  'ProbeFreezeId' smallint(5) unsigned NOT NULL DEFAULT 0,
+  'AvgID' smallint(5) unsigned NOT NULL DEFAULT 0,
+  'Name' varchar(40) DEFAULT NULL,
+  'Name2' varchar(100) NOT NULL DEFAULT '',
+  'FullName' varchar(100) NOT NULL DEFAULT '',
+  'ShortName' varchar(100) NOT NULL DEFAULT '',
+  'CreateTime' date NOT NULL DEFAULT '0000-00-00',
+  'OrderList' int(5) DEFAULT NULL,
+  'public' tinyint(4) NOT NULL DEFAULT 0,
+  'confidentiality' tinyint(4) NOT NULL DEFAULT 0,
+  'AuthorisedUsers' varchar(300) NOT NULL,
+  'DataScale' varchar(20) NOT NULL DEFAULT 'log2',
+  PRIMARY KEY ('Id'),
+  UNIQUE KEY 'FullName' ('FullName'),
+  UNIQUE KEY 'Name' ('Name'),
+  KEY 'NameIndex' ('Name2')
 ) ENGINE=MyISAM AUTO_INCREMENT=1054 DEFAULT CHARSET=latin1
 ```
 
