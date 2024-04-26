@@ -2,13 +2,81 @@
 
 ## Tags
 
-* assigned: pjotrp
+* assigned: pjotrp, zachs
 * type: feature
 * priority: high
 
 ## Description
 
-Integrate BulkLMM in GeneNetwork. The first step is to test the command line interface to BulkLMM in GeneNetwork using the BulkLMMSysimage. 
+Integrate BulkLMM in GeneNetwork. The first step is to test the command line interface to BulkLMM in GeneNetwork using the BulkLMMSysimage.
 The BulkLMMSysimage files provides instructions for generating the BulkLMM.jl sysimage,along with the code for the command-line functions.
 
 => https://github.com/senresearch/BulkLMMSysimage	BulkLMMSysimage files
+
+Looks like we can make 'warming up' work.
+
+# Tasks
+
+* [ ] Command line interface
+* [ ] Conversion between GN formats and bulkLMM
+
+# Install
+
+With Julia 1.8.3 we select the packages in .guix-shell. E.g.
+
+```
+guix shell -C -N --share=$HOME/.julia nss-certs openssl julia julia-csv julia-dataframes julia-datastructures
+```
+
+```
+julia> using Pkg; Pkg.add("Optim")
+    Updating registry at '~/.julia/registries/General.toml'
+   Resolving package versions...
+  No Changes to '~/.julia/environments/v1.8/Project.toml'
+  No Changes to '~/.julia/environments/v1.8/Manifest.toml'
+Precompiling project...
+  2 dependencies successfully precompiled in 59 seconds. 55 already precompiled.
+```
+
+## Testing in the REPL
+
+```
+include("BulkLMM.jl")
+bulklmmdir = dirname("../data");
+```
+
+```
+julia> @time single_results = scan(pheno_y, geno_processed, kinship);
+  1.440780 seconds (3.94 M allocations: 236.052 MiB, 95.20% compilation time)
+```
+
+and with permutations
+
+```
+julia> @time single_results = scan(pheno_y, geno_processed, kinship, permutation_test = true, nperms = 1000);
+  0.551511 seconds (1.09 M allocations: 194.873 MiB, 17.68% gc time, 59.35% compilation time)
+```
+
+After warming up it gets faster
+
+```
+julia> @time single_results = scan(pheno_y, geno_processed, kinship, permutation_test = true, nperms = 1000);
+  0.140773 seconds (91.09 k allocations: 146.527 MiB, 19.73% gc time)
+
+julia> @time single_results = scan(pheno_y, geno_processed, kinship);
+  0.064438 seconds (182.99 k allocations: 49.064 MiB)
+```
+
+## Precompiler
+
+To avoid running the warm up every time there is also an example in BulkLMMSysimage/BulkLMM_API that generates a warmed up sys image by running the test framework of BulkLMM. Note that the tests may not be completely representative for every use case. See also TestSysimage.
+
+## Command line
+
+At this point there is no command line access for BulkLMM.
+
+# Notes
+
+=> https://julialang.github.io/PackageCompiler.jl/dev/sysimages.html
+=> https://github.com/GregFa/TestSysimage
+=> https://github.com/GregFa/BulkLMMSysimage
