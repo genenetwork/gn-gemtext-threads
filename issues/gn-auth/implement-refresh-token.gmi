@@ -1,0 +1,13 @@
+# Implement "Refresh Token" Feature for JWTs
+
+## Tags
+
+* status: open
+* priority: high
+* assigned: fredm, bonfacem
+* type: feature-request, bug
+* keywords: gn-auth, token, refresh token, jwt
+
+## Description
+
+We have recently moved to using JWT tokens in place of the older simpler tokens. The JWT tokens have a tiny expiry window (5 minutes from generation), which means we need a way to get a new token from the existing one. As such, we need to implement a way of refreshing the token(s).
