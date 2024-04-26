@@ -23,7 +23,8 @@ MGamma can convert between different formats.
 => https://kbroman.org/qtl2/assets/vignettes/input_files.html
 
 * [ ] Write kinship lmdb as floats (half size)
-* [ ] Add individual names as first column in kinship rows
+* [X] Add individual names as first column in kinship rows (implemented as plain unsigned ints for now)
+* [ ] Somehow find the names for individuals? Is there a file format for that?
 * [ ] If symmetric only store half the data
 * [ ] Add JSON meta header to track that information
 
