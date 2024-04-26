@@ -1,7 +1,7 @@
 # Handle Invalid Login Errors Correctly
 
 * type: bug
-* status: open
+* status: closed, completed
 * priority: high
 * assigned: fredm
 * keywords: gn-auth, issue, login
@@ -20,3 +20,7 @@ The system should show the user a message about the credentials being invalid, t
 ### Actual
 
 We get a generic "400 Bad Request" server error page.
+
+### Resolution
+
+=> https://git.genenetwork.org/gn-auth/commit/?id=a19ad9852945fe882be1231b727b6687bccd0b37
