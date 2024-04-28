@@ -35,6 +35,18 @@ To learn the basics of functional databases, see the following talks:
 
 Being a functional database, genodb can store multiple versions of the genotype matrix. These versions are stored efficiently on disk optimizing for disk usage. Two additional copies of the most recent version of the matrix are stored in read-optimized form for fast retrieval.
 
+### Row order
+
+>    Probably caused by a mismatch between cases in GN database and the
+>    genotype file. It would be great to have code that would automatically
+>    update geno files when we add a sample of known type.
+
+Currently we are juggling 4 genotype formats and soon a 5th. I agree
+that dynamic genotypes would be nice and we will probably have to look
+at versioning lmdb for that. If the markers are fixed and we store
+individuals as rows that could work.
+
+
 ### Encoding
 
 LMDB maps octet vector keys to octet vector values. Any data we put into a LMDB database needs to be encoded to octets (effectively aka bytes). genodb supports the following three data types with their respective encodings.
