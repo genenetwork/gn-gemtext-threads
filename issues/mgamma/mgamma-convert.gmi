@@ -27,6 +27,8 @@ MGamma can convert between different formats.
 * [ ] Somehow find the names for individuals? Is there a file format for that?
 * [ ] If symmetric only store half the data
 * [ ] Add JSON meta header to track that information
+* [ ] Support genodb database format:
+=> ../../topics/database/genotype-database.gmi See the genotype-database topic
 
 ```
 {type: "GRM", version:0.01, float: true, symmetric: true}
