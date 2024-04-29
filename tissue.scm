@@ -39,7 +39,8 @@
              ("jgart")
 	     ("Solomon Shelby" "soloshelby" "SidiBlak")
 	     ("priscilla")
-             ("Zachary Sloan" "zach" "zachs" "zsloan"))
+             ("Zachary Sloan" "zach" "zachs" "zsloan")
+             ("Artyom Bologov" "aartaka" "artyom" "artyomb"))
  #:indexed-documents (append (map (lambda (filename)
                                     (slot-set (read-gemtext-issue filename)
                                               'web-uri
