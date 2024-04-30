@@ -1,15 +1,17 @@
-# Move GN Dataset/GeneRIF to Git
+# Move GN Dataset to Git
 
 * assigned: bonfacem
 * priority: high
 * type: metadata
 * keywords: metadata
+* status: closed
 
 ## Description
 
 Move GN metadata from RDF to text files.
 
-* [ ] Transform InfoFiles (public) data to text files that are versioned---use gn-docs
-* [ ] Refactor GN code to source this data from git
-* [ ] Editing/Auth
-* [ ] Repeat above for private data
+* [X] Transform InfoFiles (public) data to text files that are versioned---use gn-docs
+* [X] Refactor GN code to source this data from git
+* [X] Editing/Auth
+* [-] Repeat above for private data
+
