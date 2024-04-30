@@ -21,7 +21,7 @@ I selected the suitable file type from the expression data options, whether aver
 
 # Challenges Faced and Solutions
 
-During the data upload process, I encountered several challenges that required solutions. One challenge was identified as a database schema bug: a bug in which the "ProbeSetSE" has the column "StrainId" but with a different size integer (smaller) than that in table "Strain” which could cause errors when inserting data, if the strain exceeds the value 65535. The solution to this was to run a query to correct it against the database.
+During the data upload process, I encountered several challenges that required solutions. One challenge was identified as a database schema bug: a bug in which the "ProbeSetSE" has the column "StrainId" but with a different size integer (smaller) than that in table "Strain" which could cause errors when inserting data, if the strain exceeds the value 65535. The solution to this was to run a query to correct it against the database.
 
 Another error surfaced during the dataset upload process:
 
