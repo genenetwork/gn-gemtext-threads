@@ -25,7 +25,7 @@ MGamma can convert between different formats.
 * [ ] Write kinship lmdb as floats (half size)
 * [X] Add individual names as first column in kinship rows (implemented as plain unsigned ints for now)
 * [ ] Somehow find the names for individuals? Is there a file format for that?
-* [ ] If symmetric only store half the data
+* [X] If symmetric only store half the data
 * [ ] Add JSON meta header to track that information
 * [ ] Support genodb database format:
 => ../../topics/database/genotype-database.gmi See the genotype-database topic
