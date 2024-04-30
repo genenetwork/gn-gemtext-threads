@@ -6,11 +6,15 @@
 * keywords: documentation, gn-uploader
 
 The process of uploading data to the GeneNetwork platform began with retrieving the dataset from the Gene Network page:
+
 => https://genenetwork.org/show_trait?trait_id=24668&dataset=BXDPublish BXDPublish
 
-which comprised a phenotype matrix of the BXD mouse group identified by the phenotype ID: BXD_24668. This research paper associated with this dataset is titled "Novel pre-clinical model to identify genetic modifiers of triple negative breast cancer," accessible at => https://aacrjournals.org/cancerres/article/81/13_Supplement/2919/668784/Abstract-2919-Novel-pre-clinical-model-to-identify.
+which comprised a phenotype matrix of the BXD mouse group identified by the phenotype ID: BXD_24668. This research paper associated with this dataset is titled "Novel pre-clinical model to identify genetic modifiers of triple negative breast cancer," accessible at:
 
-This dataset contained both “standard error” and “average” values. To begin upload of the data to the uploader at:
+=> https://aacrjournals.org/cancerres/article/81/13_Supplement/2919/668784/Abstract-2919-Novel-pre-clinical-model-to-identify.
+
+This dataset contained both "standard error" and "average" values. To begin upload of the data to the uploader at:
+
 => https://staging-uploader.genenetwork.org/ Staging GN Uploader
 
 I selected the suitable file type from the expression data options, whether average or standard error. Following this, I selected the species - mouse, platform - 54- Affymetrix Clariom S Array Mouse, created a new study - "UTHSC BXD Mice Group for Breast Cancer Dataset", group - BXD family, type - mammary gland mRNA and defined the dataset - "BXD Mice Group Study for Breast Cancer Dataset".
@@ -22,7 +26,7 @@ During the data upload process, I encountered several challenges that required s
 Another error surfaced during the dataset upload process:
 
 ```
-"ERROR: no annotations found for platform 54 and dataset 1068. Quiting’."
+ERROR: no annotations found for platform 54 and dataset 1068. Quiting
 ```
 
 
@@ -34,7 +38,7 @@ The original format of the data was in an Excel file which contained 8 columns, 
 
 ## Modifications
 
-* To clean up the data, I used Python to remove the metadata fields: "index", "status," "RRID," "epoch," and "SeqCvge." in order to remain with only the relevant fields "name", “value” and “SE”.
+* To clean up the data, I used Python to remove the metadata fields: "index", "status," "RRID," "epoch," and "SeqCvge." in order to remain with only the relevant fields "name", "value" and "SE".
 
 * I ensured the first row in the matrix contains the headings to so that the dataset complies with the system requirements.
 
@@ -72,6 +76,6 @@ The specific code used for fetching data from the API endpoints was:
 curl -k https://staging.genenetwork.org/api/v_pre1/datasets/bxd
 ```
 
-The “-k” option in this command permits insecure SSL connections, while the provided API endpoint “datasets/bxd’ fetches information about the specific BXD dataset.
+The "-k" option in this command permits insecure SSL connections, while the provided API endpoint “datasets/bxd’ fetches information about the specific BXD dataset.
 
 The information retrieved by accessing the specified API endpoint included fields such as create time, ProbeFreeze Id, Id, public, confidentiality, full name, short name, long abbreviation, short abbreviation and data scale, confirming the data has been successfully uploaded.
