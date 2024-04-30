@@ -9,8 +9,8 @@
 ## Tasks
 
 * [x] Add metadata to gn-auth
-* [X] Troubleshoot confs---RDF---in CD.
-* [-] Add extra RDF nodes to link the git resources (datasets and other markdown files) to metadata
+* [X] Troubleshoot confs---RDF---in CD
+* [-] Indexing generif data
 * [-] Brain Data (To be spec'ed further)
 
 ### On going tasks
