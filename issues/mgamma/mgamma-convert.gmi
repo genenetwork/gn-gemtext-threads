@@ -28,7 +28,7 @@ MGamma can convert between different formats.
 * [X] If symmetric only store half the data
 * [ ] Add JSON meta header to track that information
 * [ ] Support genodb database format:
-=> ../../topics/database/genotype-database.gmi See the genotype-database topic
+=> ../../topics/database/genotype-database See the genotype-database topic
 
 ```
 {type: "GRM", version:0.01, float: true, symmetric: true}
