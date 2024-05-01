@@ -10,7 +10,7 @@ MGamma can convert between different formats.
 
 # Tasks
 
-* [ ] Store genotypes as floats instead of doubles in lmdb
+* [X] Store genotypes as floats instead of doubles in lmdb
 * [X] Required for the above: rework the type system in guile-gsl to allow float vectors/matrices
 * [ ] Add annotations to genotype lmdb format - probably as the first named columns
 * [X] Provide a metadata header in JSON that tracks such info and a version
@@ -22,7 +22,7 @@ MGamma can convert between different formats.
 
 => https://kbroman.org/qtl2/assets/vignettes/input_files.html
 
-* [ ] Write kinship lmdb as floats (half size)
+* [X] Write kinship lmdb as floats (half size)
 * [X] Add individual names as first column in kinship rows (implemented as plain unsigned ints for now)
 * [ ] Somehow find the names for individuals? Is there a file format for that?
 * [X] If symmetric only store half the data
