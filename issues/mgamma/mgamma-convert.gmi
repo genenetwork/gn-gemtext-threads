@@ -13,7 +13,7 @@ MGamma can convert between different formats.
 * [ ] Store genotypes as floats instead of doubles in lmdb
 * [X] Required for the above: rework the type system in guile-gsl to allow float vectors/matrices
 * [ ] Add annotations to genotype lmdb format - probably as the first named columns
-* [ ] Provide a metadata header in JSON that tracks such info and a version
+* [X] Provide a metadata header in JSON that tracks such info and a version
 
 ```
 {type: "geno", version:0.01, float: true, anno:["name","chr","pos"]}
@@ -26,7 +26,7 @@ MGamma can convert between different formats.
 * [X] Add individual names as first column in kinship rows (implemented as plain unsigned ints for now)
 * [ ] Somehow find the names for individuals? Is there a file format for that?
 * [X] If symmetric only store half the data
-* [ ] Add JSON meta header to track that information
+* [X] Add JSON meta header to track that information
 
 ```
 {type: "GRM", version:0.01, float: true, symmetric: true}
