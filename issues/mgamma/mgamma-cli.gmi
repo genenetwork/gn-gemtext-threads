@@ -11,7 +11,7 @@ Tasks for the command line interface
 # Tasks
 
 * [ ] Provide sane CLI interface
-* [ ] Add --map-size 10M switch
+* [X] Add --map-size 10M switch
 * [X] Use lmdb files instead of dir
 * [ ] Find a way to open/create named DBs. Right now it's based on data.mdb renaming.
 * [X] Move mgamma into ./bin
