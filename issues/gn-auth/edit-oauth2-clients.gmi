@@ -2,7 +2,7 @@
 
 ## Tags
 
-* status: open
+* status: closed, completed
 * priority: high
 * type: enhancement
 * assigned: fredm
@@ -13,3 +13,16 @@
 With the recent updates to use JWT in place of simple "AuthorizationCode" tokens, we needed to update the database to ensure the OAuth2 clients had the appropriate grant types set up.
 
 It turns out, at least for a while, that we will need a way to easily update the properties of the clients that are registered. This means adding a UI that enables editing/deleting of existing oauth2 clients.
+
+## Resolution
+
+These commits resolve the issue:
+
+=> https://git.genenetwork.org/gn-auth/commit/?id=137648f5db940b8a6d65db31eee231ef1ce5d761
+=> https://git.genenetwork.org/gn-auth/commit/?id=8e79d0f7b8faba92bebb27c345563ebc1bd6e945
+=> https://git.genenetwork.org/gn-auth/commit/?id=24bc0df2ae77867f80850ea52ff20736271f4b89
+=> https://git.genenetwork.org/gn-auth/commit/?id=abb8ab84cd948edbe9e678aebbaa5a59681c5adc
+=> https://git.genenetwork.org/gn-auth/commit/?id=b3244a70776b75d9f35a3d1ff6f01fd6244f4e36
+=> https://git.genenetwork.org/gn-auth/commit/?id=1f25d024040e17ad86472fb29f17753218b9c119
+=> https://git.genenetwork.org/gn-auth/commit/?id=b80924613a641110bb05d5129fd485698006c3dc
+=> https://git.genenetwork.org/gn-auth/commit/?id=bd8324ebdf0b94c64f6e6ff2fa732e7cd1f0b6ef
