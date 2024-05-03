@@ -81,3 +81,17 @@ Device Firmware Level: R30A
 ```
 
 So the drives are OK and the controller is not complaining.
+
+Smartctl self tests do not work on this controller:
+
+```
+tux04:/$ smartctl -t short -d megaraid,0 /dev/sdf -c
+Short Background Self Test has begun
+Use smartctl -X to abort test
+```
+
+and nothing ;). Megacli is actually the tool to use
+
+```
+megacli -AdpAllInfo -aAll
+```
