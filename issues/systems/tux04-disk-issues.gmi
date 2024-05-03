@@ -1,0 +1,71 @@
+# Tux04 disk issues
+
+We are facing some disk issues with Tux04:
+
+```
+May 02 20:57:42 tux04 kernel: Buffer I/O error on device sdf1, logical block 859240457
+```
+
+```
+journalctl |grep mega
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_00], opened
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_00], [NVMe     Dell DC NVMe PE8 .2.0], lu id: 0x9a9ad026002ee4ac, S/N: SSBBN7299I250C41H, 960 GB
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_01], opened
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_01], [NVMe     Dell Ent NVMe FI .0.0], lu id: 0x3655523054a001820025384500000002, S/N: S6URNE0TA00182, 1.60 TB
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_02], opened
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_02], [NVMe     UMIS RPJTJ512MGE 0630], lu id: 0x8a13205102504a04, S/N: SS0L25210X8RC25E14WA, 512 GB
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_03], opened
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_03], [NVMe     CT4000P3SSD8     R30A], lu id: 0x550000f077a77964, S/N: 2314E6C3E33E, 4.00 TB
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_04], opened
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_04], [NVMe     CT4000P3SSD8     R30A], lu id: 0x830000f077a77964, S/N: 2314E6C3E2E2, 4.00 TB
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_05], opened
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_05], [NVMe     CT4000P3SSD8     R30A], lu id: 0x4d0000907da77964, S/N: 2327E6E9CB05, 4.00 TB
+```
+
+Switched on smartmontools.
+
+```
+smartctl -a /dev/sdf -d megaraid,0
+```
+
+shows no errors.
+
+```
+tux04:/$ lspci |grep RAID
+41:00.0 RAID bus controller: Broadcom / LSI MegaRAID 12GSAS/PCIe Secure SAS39xx
+```
+
+Download megacli from
+
+=> https://hwraid.le-vert.net/wiki/DebianPackages
+
+```
+megacli -LDInfo -L5 -a0
+
+```
+
+```
+tux04:/$  megacli -PDList -a0|grep -i S.M
+megacli -PDList -a0
+Drive has flagged a S.M.A.R.T alert : No
+Drive has flagged a S.M.A.R.T alert : No
+Drive has flagged a S.M.A.R.T alert : No
+Drive has flagged a S.M.A.R.T alert : No
+Drive has flagged a S.M.A.R.T alert : No
+Drive has flagged a S.M.A.R.T alert : No
+tux04:/$  megacli -PDList -a0|grep -i Firm
+Firmware state: Online, Spun Up
+Device Firmware Level: .2.0
+Firmware state: Online, Spun Up
+Device Firmware Level: .0.0
+Firmware state: Online, Spun Up
+Device Firmware Level: 0630
+Firmware state: Online, Spun Up
+Device Firmware Level: R30A
+Firmware state: Online, Spun Up
+Device Firmware Level: R30A
+Firmware state: Online, Spun Up
+Device Firmware Level: R30A
+```
+
+So the drives are OK and the controller is not complaining.
