@@ -2,24 +2,23 @@
 
 At this stage precompute fetches a trait from the DB and runs GEMMA. Next it tar balls up the vector for later use. It also updates the database with the latest info.
 
-To actually kick off compute on machines that do not access the DB I realize now we need a step-wise approach. Basically you want to shift files around without connecting to a DB. And then update the DB whenever it is convenient. So we are going to make it a multi-step procedure.
+To actually kick off compute on machines that do not access the DB I realize now we need a step-wise approach. Basically you want to shift files around without connecting to a DB. And then update the DB whenever it is convenient. So we are going to make it a multi-step procedure. I don't have to write all code because we have a working runner. I just need to chunk the work.
 
 We will track precompute steps here. We will have:
 
-* [ ] steps g: genotype archives (first we only do BXD-latest, include BXD.json)
-* [ ] steps k: kinship archives (first we only do BXD-latest)
-* [ ] steps p: trait archives (first we do p1-4)
+* [X] steps g: genotype archives (first we only do BXD-latest, include BXD.json)
+* [X] steps k: kinship archives (first we only do BXD-latest)
+* [ ] steps p: trait archives (first we do p1-3)
 
 Trait archives will have steps for
 
-* [ ] step p1: list-traits-to-compute
-* [ ] step p2: trait-values-export: get trait values from mariadb
-* [ ] step p3: gemma-lmm9-loco-output: Compute standard GEMMA lmm9 LOCO vector with gemma-wrapper
-* [ ] step p4: gemma-to-lmdb: create a clean vector
+* [+] step p1: list-traits-to-compute
+* [ ] step p2: gemma-lmm9-loco-output: Compute standard GEMMA lmm9 LOCO vector with gemma-wrapper
+* [ ] step p3: gemma-to-lmdb: create a clean vector
 
 The DB itself can be updated from these
 
-* [ ] step p5: updated-db-v1: update DB using single LOD score, number of samples and
+* [ ] step p4: updated-db-v1: update DB using single LOD score, number of samples and
 
 Later
 
@@ -36,9 +35,15 @@ Later
 # Tasks
 
 * [ ] Check Artyoms LMDB version for kinship and maybe add LOCO
-* [ ] Create JSON metadata controller for every compute incl. type of content
-* [ ] Create genotype archive
-* [ ] Create kinship archive
-* [ ] Create trait archives
-* [ ] Kick off lmm9 step
+* [+] Create JSON metadata controller for every compute incl. type of content
+* [+] Create genotype archive
+* [+] Create kinship archive
+* [+] Create trait archives
+* [+] Kick off lmm9 step
 * [ ] Update DB step v1
+
+# Step p1: list traits to compute
+
+In the first phenotype step p1 we iterate through all datasets and fetch the traits. We limit the number of SQL calls by chunking up on dataset IDs. At this point we just have to make sure we are actually computing for BXD. See
+
+=> https://git.genenetwork.org/gn-guile/tree/scripts/precompute/list-traits-to-compute.scm
