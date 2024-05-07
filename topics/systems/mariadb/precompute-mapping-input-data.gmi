@@ -2,6 +2,12 @@
 
 GN relies on precomputed mapping scores for search and other functionality. Here we prepare for a new generation of functionality that introduces LMMs for compute and multiple significant scores for queries.
 
+At this stage we precompute GEMMA and tarball or lmdb it. As a project is never complete we need to add a metadata record in each tarball that track the status of the 'package'. Also, to offload compute to machines without DB access we need to prepare a first step that contains genotypes and phenotypes for compute. The genotypes have to be shared, as well as the computed kinship with and without LOCO. See
+
+=> /topics/data/precompute/steps
+
+The mariadb database gets (re)updated from the computed data, parsing metadata and forcing an update. We only need to handle state to track creating batches for (offline) compute. As this can happen on a single machine we don't need to do anything real fancy. Just write out the last updated traitid, i.e., DataId from ProbeSetXRef which is indexed. Before doing anything we use Locus_old to identify updates by setting it to NULL. See the header of list-traits-to-compute.scm.
+
 # Tags
 
 * assigned: pjotrp
@@ -12,16 +18,15 @@ GN relies on precomputed mapping scores for search and other functionality. Here
 
 # Tasks
 
-* [ ] Start using GEMMA for precomputed values as a background pipeline on a different machine
-* [ ] Update the table values using GEMMA output (single highest score)
+See
 
-Above is the quick win for plugging in GEMMA values. We will make sure not to recompute the values that are already up to date.
-This is achieved by naming the input and output files as a hash on their DB inputs.
+=> topics/data/precompute/steps
 
-Next for running the full batch:
+Next, for running the full batch:
 
 * [X] Store all GEMMA values efficiently
 * [ ] Include metadata record in lmdb and as JSON file
+* [ ] Include metadata record on compute status
 * [ ] Remove junk from tarball
 * [ ] List significant markers as metadata
 * [ ] Reread below info
@@ -72,7 +77,7 @@ MariaDB [db_webqtl]> select Id, Name from InbredSet limit 5;
 +----+----------+
 ```
 
-and expands them to a .geno file, e.g. BXD.geno. Note that the script does not compute with the many variations of .geno files we have today. Next it sets the Id for ProbeSetFreeze which is the same as the InbredSet Id. So, ProbeSetFreeze.Id == IndbredSet.Id.
+and expands them to a .geno file, e.g. BXD.geno. Note that the script does not compute with the many variations of .geno files we have today (let alone the latest?). Next it sets the Id for ProbeSetFreeze which is the same as the InbredSet Id. So, ProbeSetFreeze.Id == IndbredSet.Id.
 
 There are groups/collections, such as "Hippocampus_M430_V2_BXD_PDNN_Jun06"
 
@@ -1085,6 +1090,9 @@ For one result we have
   }
 ```
 
+Continue with steps:
+
+=> /topics/data/precompute/steps
 
 
 # Notes
@@ -1112,6 +1120,9 @@ The l_lrt runs between 0.0 and 1.0. The smaller the number the higher the log10 
 
 The point in the parameter space that maximizes the likelihood function is called the maximum likelihood estimate. In our case it is always exactly 10^5 or -10^5 for some reason. According to GEMMA doc that means it is a pure genetic effect when positive.
 
+## Xapian
+
+We want to add the log values, effect size and number of individuals to the xapian search
 
 ## NAs in GN
 
@@ -1146,3 +1157,37 @@ because it has 71 BXD samples and 32 other samples.
 This paper discusses a number of approaches that may be interesting:
 
 => https://biodatamining.biomedcentral.com/articles/10.1186/s13040-023-00331-3 Automated quantitative trait locus analysis (AutoQTL)
+
+## Fetch strain IDs
+
+The following join will fetch StrainID in a dataset
+
+```
+MariaDB [db_webqtl]> select StrainId, Locus, DataId, ProbeSetId, ProbeSetFreezeId from ProbeSetXRef INNER JOIN ProbeSetData ON ProbeSetXRef.DataId=ProbeSetData.Id where DataId>0 AND Locus_old is NULL ORDER BY DataId LIMIT 5;
++----------+-----------+--------+------------+------------------+
+| StrainId | Locus     | DataId | ProbeSetId | ProbeSetFreezeId |
++----------+-----------+--------+------------+------------------+
+|        1 | rs6394483 | 115467 |      13825 |                8 |
+|        2 | rs6394483 | 115467 |      13825 |                8 |
+|        3 | rs6394483 | 115467 |      13825 |                8 |
+|        4 | rs6394483 | 115467 |      13825 |                8 |
+|        5 | rs6394483 | 115467 |      13825 |                8 |
++----------+-----------+--------+------------+------------------+
+5 rows in set (0.205 sec)
+```
+
+## Count data sets
+
+Using above line we can count the number of times BXD1 was used:
+
+```
+MariaDB [db_webqtl]> select count(StrainId) from ProbeSetXRef INNER JOIN ProbeSetData ON ProbeSetXRef.DataId=ProbeSetData.Id where DataId>0 AND Locus_old is NULL AND StrainId=1 ORDER BY DataId LIMIT 5;
++-----------------+
+| count(StrainId) |
++-----------------+
+|        10432197 |
++-----------------+
+1 row in set (39.545 sec)
+```
+
+Or the main BXDs

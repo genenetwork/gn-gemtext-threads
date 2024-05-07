@@ -7,36 +7,15 @@ Here we will track introducing a new precomputation of scores for GN. Interestin
 * assigned: pjotrp
 * priority: high
 * type: bug, enhancement
-* status: unclear
+* status: ongoing
 * keywords: database, gemma, reaper
 
-# Old storage
+# Tasks
 
-The old reaper scores are in
+* [ ] Add the log values, effect size and number of individuals to the xapian search.
 
-```
-MariaDB [db_webqtl]> select ProbeSetId,ProbeSetFreezeId,Locus,LRS,additive from ProbeSetXRef limit 10;
-+------------+------------------+----------------+------------------+--------------------+
-| ProbeSetId | ProbeSetFreezeId | Locus          | LRS              | additive           |
-+------------+------------------+----------------+------------------+--------------------+
-|          1 |                1 | rs13480619     |  12.590069931048 |        -0.28515625 |
-|          2 |                1 | rs29535974     | 10.5970737900941 | -0.116783333333333 |
-|          3 |                1 | rs49742109     |  6.0970532702754 |  0.112957489878542 |
-|          4 |                1 | rsm10000002321 | 11.7748675511731 | -0.157113725490196 |
-|          5 |                1 | rsm10000019445 | 10.9232633740162 |  0.114764705882353 |
-|          6 |                1 | rsm10000017255 | 8.45741703245224 | -0.200034412955466 |
-|          7 |                1 | rs4178505      | 7.46477918183565 |  0.104331983805668 |
-|          8 |                1 | rsm10000144086 | 12.1201771258006 | -0.134278431372548 |
-|          9 |                1 | rsm10000014965 | 11.8837168740735 |  0.341458333333334 |
-|         10 |                1 | rsm10000020208 | 10.2809848009836 | -0.173866666666667 |
-+------------+------------------+----------------+------------------+--------------------+
-10 rows in set (0.000 sec)
-```
+# Note
 
-This means for every dataset one single maximum score gets stored (?)
-
-Moved to
+First implementation in
 
 => ../../topics/systems/mariadb/precompute-mapping-input-data.gmi
-
-* closed
