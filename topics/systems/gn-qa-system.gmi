@@ -1,0 +1,164 @@
+# Fire up system container for GN-QA System
+
+# Tags
+
+* assigned: bonfacem, alexm
+
+
+The current code is a WIP.  Patches will be sent after a working container is set-up.  Most recent code can be found at /home/bonfacem/gn-machines and the current confs that were copied to the respective paths can be found at: /home/bonfacem/qa-set-up-files/.  Important files that were changed/introduced are: /home/bonfacem/gn-machines/{qa-gn.scm, qa-gn-deploy.sh, genenetwork/services/genenetwork.scm}.
+
+### Setting up SSL Keys
+
+Generated RS256 key-pairs by following:
+
+=> Generating How to generate Key-Pairs
+
+Currently, on tux02, you can find the key-pairs:
+
+```
+ls /home/bonfacem/qa-set-up-files/*pem
+```
+
+These have been saved in
+
+```
+/export2/guix-containers/genenetwork/gn-qa/var/ssl
+```
+
+The client key pairs have been saved in:
+
+```
+/export2/guix-containers/genenetwork/gn-qa/var/ssl/clients-public-keys/
+```
+
+If the above directory is empty, gn-auth will crap out.
+
+In the container, we have that mounted as:
+
+```
+--share=/export2/guix-containers/genenetwork/gn-qa/var/ssl=/var/ssl
+```
+
+Because of permission issues, this is a lazy work-around---when setting up the container---to get things up and running:
+
+```
+(for-each (lambda (file)
+                      (chmod file #o777))
+                    (find-files #$ssl-path #:directories? #t))
+```
+
+and for the gunicorn app, for similar issues around permissions:
+
+```
+(gunicorn-app
+             (name "gn-auth")
+             (package gn-auth)
+             (sockets (list (forge-ip-socket
+                             (port gn-auth-port))))
+             (wsgi-app-module "gn_auth:create_app()")
+             (workers 20)
+             (environment-variables
+              (list (environment-variable
+                     (name "GN_AUTH_CONF")
+                     (value gn-auth-conf))
+                    (environment-variable
+                     (name "HOME")
+                     (value "/tmp"))
+                    (environment-variable
+                     (name "AUTHLIB_INSECURE_TRANSPORT")
+                     (value "true"))))
+             (mappings (list database-mapping
+                             [...]
+                             (file-system-mapping
+                              (source ssl-path)
+                              (target source)
+                              (writable? #t)))))
+```
+
+### GN2 Set-up
+
+
+Had the following tangled to /export2/guix-containers/genenetwork/gn-qa/etc/genenetwork/gn2-secrets.py:
+
+```
+SECRET_KEY="XXXX"
+OAUTH2_CLIENT_ID="XXXX"
+OAUTH2_CLIENT_SECRET="XXXX"
+```
+
+### GN3 Set-up
+
+Had the following tangled to /export2/guix-containers/genenetwork/gn-qa/etc/genenetwork/gn3-secrets.py:
+
+```
+SECRET_KEY="f@D{ra4uZfAU?9GfV!Y}"
+FAHAMU_AUTH_TOKEN="SFMyNTY.g2gDYQJuBgDhZbMejgFiAAFRgA.Qj7KGv9WmDxcHzjQo8IExMtIbZt8lDZ4h14rcjYl_Q8"
+```
+
+### gn-auth Set-up
+
+Had the following tangled to /export2/guix-containers/genenetwork/gn-qa/etc/genenetwork/gn3-secrets.py:
+
+```
+SECRET_KEY="XXXX"
+FAHAMU_AUTH_TOKEN="XXXXX"
+```
+
+For the db, I manually inserted entries for Bonfacem and AlexM using scripts from gn-auth in SQLITE and saved that to /export/data/gn-qa/genenetwork-sqlite/auth-qa.db
+
+### Nginx configuration / Building the container
+
+Added this block to /etc/nginx/nginx.conf:
+
+
+```
+stream {
+    [...]
+
+    upstream qa-gn-genenetwork {
+        server 127.0.0.1:10908;
+    }
+
+    [...]
+
+    map $ssl_preread_server_name $upstream {
+        qa.genenetwork.org qa-gn-genenetwork;
+        qa-auth.genenetwork.org qa-gn-genenetwork;
+        [...]
+    }
+```
+
+Reload nginx gracefully:
+
+```
+sudo systemctl reload nginx
+```
+
+### AI Set-up and Systemd service set-up
+
+
+XXX: TODO with Alexm
+
+### Troubleshooting
+
+In the container SSL issues were resolved by running:
+
+```
+/usr/bin/acme renew
+```
+
+Error related to a missing key in GN2 when trying to sign a new user in wqflask/oauth2/toplevel.py:
+
+```
+[...]
+"sub": request.args["user_id"]
+[...]
+`````
+
+was fixed by using the latest gn-auth code.  The one in guix-bioinformatics is stale.
+
+There was an error when displaying the error page.  Fixed upstream in guix-bioinformatics:
+
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=7f9908d03acd6d2c44733188122313036dc63b64
+
+Whenever our git instance fails, CD---in particular auth---will fail.  This needs further investigation.  Restarting the CD container will fix things.
