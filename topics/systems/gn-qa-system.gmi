@@ -91,8 +91,8 @@ OAUTH2_CLIENT_SECRET="XXXX"
 Had the following tangled to /export2/guix-containers/genenetwork/gn-qa/etc/genenetwork/gn3-secrets.py:
 
 ```
-SECRET_KEY="f@D{ra4uZfAU?9GfV!Y}"
-FAHAMU_AUTH_TOKEN="SFMyNTY.g2gDYQJuBgDhZbMejgFiAAFRgA.Qj7KGv9WmDxcHzjQo8IExMtIbZt8lDZ4h14rcjYl_Q8"
+SECRET_KEY="XXXX"
+FAHAMU_AUTH_TOKEN="XXXX"
 ```
 
 ### gn-auth Set-up
