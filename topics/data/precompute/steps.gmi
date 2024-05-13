@@ -47,3 +47,19 @@ Later
 In the first phenotype step p1 we iterate through all datasets and fetch the traits. We limit the number of SQL calls by chunking up on dataset IDs. At this point we just have to make sure we are actually computing for BXD. See
 
 => https://git.genenetwork.org/gn-guile/tree/scripts/precompute/list-traits-to-compute.scm
+
+The current implementation selects all BXD datasets and has to test for strains containing 'BXD' string in the name because the database includes HXB for strain 1, for example. We memoize this query, see
+
+=> https://git.genenetwork.org/gn-guile/tree/gn/data/strains.scm
+
+Fetching 1000 IDs takes about 10s. That is good enough to start writing phenotype files. I added batch processing and it appears that fetching 500 items from the DB works best. That way we have a balance between a SQL DB return and using assoc lists - it may be we replace them with proper hashes down the line if we need the speed.
+
+In the next step we write the phenotypes as a single JSON file. That way we can easily track metadata related to the traits and their computations. The JSON files are essentially the precompute database and can be loaded into a SQL database on demand. This is all to be able to distribute data and make sure we only compute once.
+
+At this point we can write
+
+```
+{"2":9.40338,"3":10.196,"4":10.1093,"5":9.42362,"6":9.8285,"7":10.0808,"8":9.17844,"9":10.1527,"10":10.1167,"11":9.88551,"13":9.58127,"15":9.82312,"17":9.88005,"19":10.0761,"20":10.2739,"21":9.54171,"22":10.1056,"23":10.5702,"25":10.1433,"26":9.68685,"28":9.98464,"29":10.132,"30":9.96049,"31":10.2055,"35":10.1406,"36":9.94794,"37":9.96864,"39":9.31048}
+```
+
+Note that it includes the parents. Also the strain-id is a string and we may want to plug in the strain name. To allow for easy comparison downstream. Finally we may want to store a checksum of sorts. In the next step we have to check the normal distribution of the trait values.
