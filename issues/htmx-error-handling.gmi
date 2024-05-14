@@ -6,12 +6,12 @@
 * priority:  high
 * status: open
 * assigned: alexm
-* keywords: url
+* keywords: htmx,error,javascript,api
 
 ## Description
 The issue occurs when you send a post request using HTMX javascript Api.this does
-not provide a well defined to handle errors from the callback
-A code snippet can be show below
+not provide a well defined way to handle errors from the callback
+A code snippet can be show below to reproduce the issue:
 
 ```js
   htmx.on("#upvote", "click", function(evt){
@@ -25,16 +25,15 @@ alert("html")
 })
 });
 ```
-In the above snipped incase of a response error you would expert the catch method
-method to be invoked but that doesn'tn occur
-This is the htmx docs which does not provide a proper error handling mechanism
-
+In the above snippet; incase of a response error you would expert the catch error
+method to be invoked but only the success callback is invoked
+This is the htmx api docs which does not provide a proper error handling mechanism
 => https://htmx.org/api/
 
 ## Note
 the reason for using the htmx  javascript api is to toggle the rating class for
 both like and dislike functionality depending if the requests fails or succeeds
-
+An alternative would be to  explore  using javascript/jquery to achieve this(TODO)
 
 
 
