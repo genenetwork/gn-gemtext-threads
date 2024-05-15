@@ -1,0 +1,49 @@
+# Can't Masquarade as another user as a system admin
+
+* assigned: fredm
+* tags: critical
+
+Right now you can't masquared as another user.  Here's the trace:
+
+```
+ GeneNetwork 2.11-rc2  https://qa.genenetwork.org/oauth2/user/masquerade ( 3:38PM UTC May 15, 2024) 
+Traceback (most recent call last):
+  File "/gnu/store/5c185c9plrhqa0wg9cwi961qzw6gf43m-profile/lib/python3.10/site-packages/flask/app.py", line 1523, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/gnu/store/5c185c9plrhqa0wg9cwi961qzw6gf43m-profile/lib/python3.10/site-packages/flask/app.py", line 1509, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/gnu/store/5c185c9plrhqa0wg9cwi961qzw6gf43m-profile/lib/python3.10/site-packages/gn2/wqflask/oauth2/users.py", line 126, in masquerade
+    return client.get("auth/user/list").either(
+  File "/gnu/store/5c185c9plrhqa0wg9cwi961qzw6gf43m-profile/lib/python3.10/site-packages/pymonad/either.py", line 91, in either
+    return left_function(self.monoid[0])
+  File "/gnu/store/5c185c9plrhqa0wg9cwi961qzw6gf43m-profile/lib/python3.10/site-packages/gn2/wqflask/oauth2/users.py", line 127, in <lambda>
+    lambda err: render_ui(
+  File "/gnu/store/5c185c9plrhqa0wg9cwi961qzw6gf43m-profile/lib/python3.10/site-packages/gn2/wqflask/oauth2/ui.py", line 22, in render_ui
+    return render_template(templatepath, **kwargs)
+  File "/gnu/store/5c185c9plrhqa0wg9cwi961qzw6gf43m-profile/lib/python3.10/site-packages/flask/templating.py", line 148, in render_template
+    return _render(
+  File "/gnu/store/5c185c9plrhqa0wg9cwi961qzw6gf43m-profile/lib/python3.10/site-packages/flask/templating.py", line 128, in _render
+    rv = template.render(context)
+  File "/gnu/store/5c185c9plrhqa0wg9cwi961qzw6gf43m-profile/lib/python3.10/site-packages/jinja2/environment.py", line 1291, in render
+    self.environment.handle_exception()
+  File "/gnu/store/5c185c9plrhqa0wg9cwi961qzw6gf43m-profile/lib/python3.10/site-packages/jinja2/environment.py", line 926, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/gnu/store/5c185c9plrhqa0wg9cwi961qzw6gf43m-profile/lib/python3.10/site-packages/gn2/wqflask/templates/oauth2/masquerade.html", line 3, in top-level template code
+    {%from "oauth2/display_error.html" import display_error%}
+  File "/gnu/store/5c185c9plrhqa0wg9cwi961qzw6gf43m-profile/lib/python3.10/site-packages/gn2/wqflask/templates/base.html", line 200, in top-level template code
+    {% block content %}
+  File "/gnu/store/5c185c9plrhqa0wg9cwi961qzw6gf43m-profile/lib/python3.10/site-packages/gn2/wqflask/templates/oauth2/masquerade.html", line 7, in block 'content'
+    {{profile_nav("masquerade", user_privileges)}}
+  File "/gnu/store/5c185c9plrhqa0wg9cwi961qzw6gf43m-profile/lib/python3.10/site-packages/jinja2/runtime.py", line 777, in _invoke
+    rv = self._func(*arguments)
+  File "/gnu/store/5c185c9plrhqa0wg9cwi961qzw6gf43m-profile/lib/python3.10/site-packages/gn2/wqflask/templates/oauth2/profile_nav.html", line 58, in template
+    <a href="{{url_for('oauth2.user.login')}}">Login</a>
+  File "/gnu/store/5c185c9plrhqa0wg9cwi961qzw6gf43m-profile/lib/python3.10/site-packages/flask/helpers.py", line 336, in url_for
+    return appctx.app.handle_url_build_error(error, endpoint, values)
+  File "/gnu/store/5c185c9plrhqa0wg9cwi961qzw6gf43m-profile/lib/python3.10/site-packages/flask/helpers.py", line 323, in url_for
+    rv = url_adapter.build(
+  File "/gnu/store/5c185c9plrhqa0wg9cwi961qzw6gf43m-profile/lib/python3.10/site-packages/werkzeug/routing.py", line 2314, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.BuildError: Could not build url for endpoint 'oauth2.user.login'. Did you mean 'oauth2.user.logout' instead?
+
+```
