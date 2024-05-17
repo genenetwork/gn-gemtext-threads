@@ -13,6 +13,9 @@ Tasks for the command line interface
 * [ ] Provide sane CLI interface
 * [X] Add --map-size 10M switch
 * [X] Use lmdb files instead of dir
-* [ ] Find a way to open/create named DBs. Right now it's based on data.mdb renaming.
+* [X] Find a way to open/create named DBs
+
+Not possible—LMDB is a directory with data.mdb, by definition. For now, mgamma renames and copies files under the hood, which is not cool, but kind of works.
+
 * [X] Move mgamma into ./bin
 * [ ] Add ./bin/mgemma compatibility tool (note it is not mgamma)
