@@ -32,4 +32,4 @@ MGamma can convert between different formats.
 {type: "GRM", version:0.01, float: true, symmetric: true}
 ```
 * [ ] Support genodb database format:
-=> ../../topics/database/genotype-database See the genotype-database topic
+=> ../../topics/database/genotype-database.gmi See the genotype-database topic
