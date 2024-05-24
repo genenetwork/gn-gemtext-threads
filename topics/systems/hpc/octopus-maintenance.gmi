@@ -126,6 +126,12 @@ To test the new installation, go to `octopus01` and then:
 munge -n | ssh tux08 /export/octopus01/guix-profiles/slurm-2-link/bin/unmunge
 ```
 
+If you get `STATUS: Rewound credential (16)`, it means that there is a difference between the encoding and decoding times. To fix it, go into the new machine and fix the time with
+
+```shell
+sudo date MMDDhhmmYYYY.ss
+```
+
 To install `slurm`, go to `octopus01` and run:
 
 ```shell
