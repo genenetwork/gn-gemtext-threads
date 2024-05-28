@@ -14,7 +14,9 @@ The issue occurs when you send a post request using the HTMX JavaScript API. Thi
 ```js
 htmx.on("#upvote", "click", function(evt){
     vote_count = htmx.find(".btn-success") ? 0 : 1;
-    htmx.ajax("POST", `/gnqna/rating/${task_id}/${vote_count}`, {target: "#rate", swap: "innerHTML", values: {'query': query, 'answer': answer}})
+    htmx.ajax("POST", `/gnqna/rating/${task_id}/${vote_count}`,
+    {target: "#rate",
+    swap: "innerHTML", values: {'query': query, 'answer': answer}})
         .then(() => {
             htmx.toggleClass(htmx.find('#upvote'), 'btn-success');
             htmx.removeClass(htmx.find("#downvote"), "btn-danger");
@@ -29,7 +31,7 @@ In the above snippet, in case of a response error, you would expect the catch er
 ## Note
 The reason for using the HTMX JavaScript API is to toggle the rating class for both like and dislike functionality depending on whether the request fails or succeeds. An alternative would be to explore using JavaScript/jQuery to achieve this (TODO).
 
-## Solution
+## Solution 1
 
 * Using the HTMX after request handler:
 
@@ -59,7 +61,7 @@ document.body.addEventListener('htmx:afterRequest', function (evt) {
 
 Note: I found the solution incomplete in my case since this fails to target when using the HTMX JavaScript API and is triggered on all requests for the body.
 
-* Solution 2
+## Solution 2
 
 In my case, I need to handle this when sending Ajax requests via the JavaScript HTMX API:
 From the docs: see: https://htmx.org/api/ the htmx.ajax() method has a context parameter which takes a handler that will handle the response HTML.
@@ -70,7 +72,10 @@ Example:
 // HTMX ajax request via JS API
 htmx.on("#upvote", "click", function(evt){
     vote_count = htmx.find(".btn-success") ? 0 : 1;
-    htmx.ajax("POST", `/gnqna/rating/${task_id}/${vote_count}`, {target: "#rate", handler: (target, obj) => updateRatingHandler(target, obj, "upvote"), swap: "innerHTML", values: {'query': query, 'answer': answer}});
+    htmx.ajax("POST", `/gnqna/rating/${task_id}/${vote_count}`,
+    {target: "#rate",
+    handler: (target, obj) => updateRatingHandler(target, obj, "upvote"),
+    swap: "innerHTML", values: {'query': query, 'answer': answer}});
 });
 ```
 
@@ -82,5 +87,5 @@ function updateRatingHandler(target, responseObj, args){
 ```
 
 Other related issues:
-* https://github.com/bigskysoftware/htmx/issues/701
-* https://www.reddit.com/r/htmx/comments/18bls33/multiple_htmxafterrequestx_events/
+=> https://github.com/bigskysoftware/htmx/issues/701
+=> https://www.reddit.com/r/htmx/comments/18bls33/multiple_htmxafterrequestx_events/
