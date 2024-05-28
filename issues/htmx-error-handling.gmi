@@ -3,39 +3,84 @@
 ## Tags
 
 * type: bug
-* priority:  high
-* status: open
+* priority: high
+* status: complete, closed
 * assigned: alexm
-* keywords: htmx,error,javascript,api
+* keywords: htmx, error, javascript, api
 
 ## Description
-The issue occurs when you send a post request using HTMX javascript Api.this does
-not provide a well defined way to handle errors from the callback
-A code snippet can be show below to reproduce the issue:
+The issue occurs when you send a post request using the HTMX JavaScript API. This does not provide a well-defined way to handle errors from the callback. A code snippet is shown below to reproduce the issue:
 
 ```js
-  htmx.on("#upvote", "click", function(evt){
-      vote_count = htmx.find(".btn-success") ? 0 : 1
-      htmx.ajax("POST", `/gnqna/rating/${task_id}/${vote_count}`, {target: "#rate", swap:"innerHTML",values: {'query': query, 'answer': answer}}).then(()=>{
-	  htmx.toggleClass(htmx.find('#upvote'), 'btn-success');
-	  htmx.removeClass(htmx.find("#downvote"), "btn-danger");
-})
-.catch((err)=>{
-alert("html")
-})
+htmx.on("#upvote", "click", function(evt){
+    vote_count = htmx.find(".btn-success") ? 0 : 1;
+    htmx.ajax("POST", `/gnqna/rating/${task_id}/${vote_count}`, {target: "#rate", swap: "innerHTML", values: {'query': query, 'answer': answer}})
+        .then(() => {
+            htmx.toggleClass(htmx.find('#upvote'), 'btn-success');
+            htmx.removeClass(htmx.find("#downvote"), "btn-danger");
+        })
+        .catch((err) => {
+            alert("html");
+        });
 });
 ```
-In the above snippet; incase of a response error you would expert the catch error
-method to be invoked but only the success callback is invoked
-This is the htmx api docs which does not provide a proper error handling mechanism
-=> https://htmx.org/api/
+In the above snippet, in case of a response error, you would expect the catch error method to be invoked, but only the success callback is invoked. The HTMX API documentation does not provide a proper error handling mechanism: https://htmx.org/api/
 
 ## Note
-the reason for using the htmx  javascript api is to toggle the rating class for
-both like and dislike functionality depending if the requests fails or succeeds
-An alternative would be to  explore  using javascript/jquery to achieve this(TODO)
+The reason for using the HTMX JavaScript API is to toggle the rating class for both like and dislike functionality depending on whether the request fails or succeeds. An alternative would be to explore using JavaScript/jQuery to achieve this (TODO).
 
+## Solution
 
+* Using the HTMX after request handler:
 
+For example:
 
+```js
+document.body.addEventListener('htmx:afterRequest', function (evt) {
+    const errorTarget = document.getElementById("htmx-alert");
+    if (evt.detail.successful) {
+        // Successful request, clear out alert
+        errorTarget.setAttribute("hidden", "true");
+        errorTarget.innerText = "";
+    } else if (evt.detail.failed && evt.detail.xhr) {
+        // Server error with response contents, equivalent to htmx:responseError
+        console.warn("Server error", evt.detail);
+        const xhr = evt.detail.xhr;
+        errorTarget.innerText = `Unexpected server error: ${xhr.status} - ${xhr.statusText}`;
+        errorTarget.removeAttribute("hidden");
+    } else {
+        // Unspecified failure, usually caused by a network error
+        console.error("Unexpected htmx error", evt.detail);
+        errorTarget.innerText = "Unexpected error, check your connection and try to refresh the page.";
+        errorTarget.removeAttribute("hidden");
+    }
+});
+```
 
+Note: I found the solution incomplete in my case since this fails to target when using the HTMX JavaScript API and is triggered on all requests for the body.
+
+* Solution 2
+
+In my case, I need to handle this when sending Ajax requests via the JavaScript HTMX API:
+From the docs: see: https://htmx.org/api/ the htmx.ajax() method has a context parameter which takes a handler that will handle the response HTML.
+
+Example:
+
+```js
+// HTMX ajax request via JS API
+htmx.on("#upvote", "click", function(evt){
+    vote_count = htmx.find(".btn-success") ? 0 : 1;
+    htmx.ajax("POST", `/gnqna/rating/${task_id}/${vote_count}`, {target: "#rate", handler: (target, obj) => updateRatingHandler(target, obj, "upvote"), swap: "innerHTML", values: {'query': query, 'answer': answer}});
+});
+```
+
+```js
+// Callback handler for this
+function updateRatingHandler(target, responseObj, args){
+    // do something here
+}
+```
+
+Other related issues:
+* https://github.com/bigskysoftware/htmx/issues/701
+* https://www.reddit.com/r/htmx/comments/18bls33/multiple_htmxafterrequestx_events/
