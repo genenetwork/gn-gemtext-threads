@@ -7,7 +7,7 @@
 * keywords: llm,caching,database,query,response
 * type: enhancements
 
-* status: in progress
+* status: closed, done, completed
 
 
 ## Description:
@@ -23,8 +23,13 @@ This implementation task aims to enhance the performance and responsiveness of o
 
 * [x] implement UI for QNQA search
 
-* [] More customization features  like e.g user clearing their history
+* [x] More customization features  like e.g user clearing their history
 
 See main issue:
 
 => topics/lmms/llm-metadata
+
+## Note for commits See:
+
+=> https://github.com/genenetwork/genenetwork3/pull/165
+
