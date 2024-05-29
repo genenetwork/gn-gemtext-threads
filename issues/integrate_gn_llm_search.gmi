@@ -13,12 +13,13 @@ For reference on the initial implementation, please visit:
 * Assigned: alexm
 * Type: Feature
 * Priority: High
+* status: completed, done, closed.
 
 ## Tasks
 
-* [ ] Move API Endpoint + logic code from QNQA to GN3.
-* [ ] Implement UI in GN2.
-* [ ] Add GN authentication.
+* [x] Move API Endpoint + logic code from QNQA to GN3.
+* [x] Implement UI in GN2.
+* [x] Add GN authentication.
 
 ## Notes
 
