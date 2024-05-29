@@ -4,7 +4,7 @@
 
 * type: bug
 * priority: medium
-* status: open
+* status: closed
 * assigned: alexm
 * keywords: errors, Exceptions, gn2, Bug
 
@@ -14,4 +14,4 @@ raised at the application level when returning a response object, which is incor
 
 This commit fixes this issue:
 
-=> https://github.com/genenetwork/genenetwork2/commit/632dbb8921228b3f0973043dde545fecca572691
+=> https://github.com/genenetwork/genenetwork2/commit/c9543343c92f7282992d61ff51b50101d66dc059
