@@ -5,7 +5,7 @@
 * assigned: alexm,
 * keywords: llm, reference, rating
 * type: enhancements
-* status: in progress
+* status: closed, completed
 
 ## Description
 
@@ -17,7 +17,6 @@ For each reference in a query, we need to allow users to provide feedback or a r
 
 * [x] Implement the UI for this feature.
 
-* []  implementation user notification for feedback
 
 For the UI and api imeplementation see commits:
 
