@@ -5,13 +5,13 @@
 * Assigned: alexm
 * Keywords: UI, GNQA
 * Type: enhancement
-* Status: In Progress
+* Status: completed, closed
 
 ## Description
 
-This issue addresses user feedback received during the testing phase of GNQA on CD.
+The issue involves integrating pubmed data to references list from fahamu api.
 
 ## Tasks
 
 
-* [ ] Integrate PubMed references: Provide users with useful information by integrating PubMed references and present them in a modal window.
+* [x] Integrate PubMed references: Provide users with useful information by integrating PubMed references and present them in a modal window.
