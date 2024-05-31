@@ -1,0 +1,40 @@
+# Sort by Attributes
+
+## Tags
+
+* assigned: zachs, fredm
+* type: feature-request, feature request
+* priority: high
+* status: open
+* keywords: genenetwork2, sorting, attributes
+
+## Description
+
+From the email:
+
+
+> This trait:
+>
+> https://genenetwork.org/show_trait?trait_id=L2229-L8228&dataset=Duke_UTHSC_ConnStrgROIs4zlog2_0524
+>
+> I want to sort by the attribute Age, from youngest to oldest but all of the NULL values are treated as the lowest value. I would much prefer sorting to ignore these empty fields..
+
+Javascript is weird, and we'd have to do something like the following to sort with ages:
+
+```
+myarr.toSorted((a, b) => {
+    if(a == null) {/*isNumber(null) = true*/
+        return 1;
+    }
+    if(b == null) {
+        return -1;
+    }
+    if(isNumber(a) && isNumber(b)) {
+        return a - b;
+    }
+});
+```
+
+to ensure that null values always come last.
+
+Mixed lists are going to have to be sorted in alphabetical order, I guess, while still ensuring nulls end up last with something like the above.
