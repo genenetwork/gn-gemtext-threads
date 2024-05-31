@@ -5,7 +5,7 @@
 * assigned: zachs, fredm
 * type: feature-request, feature request
 * priority: high
-* status: open
+* status: closed
 * keywords: genenetwork2, sorting, attributes
 
 ## Description
@@ -33,8 +33,23 @@ myarr.toSorted((a, b) => {
         return a - b;
     }
 });
+
+
 ```
 
 to ensure that null values always come last.
 
 Mixed lists are going to have to be sorted in alphabetical order, I guess, while still ensuring nulls end up last with something like the above.
+
+### Fixed
+
+With commit https://github.com/genenetwork/genenetwork2/commit/4c4d91d03a873969315727918206097a0d89bb19
+
+The sort functions in search_results.js were moved into table_functions.js so they could be used by more pages. 
+In this case, the trait page needed access so that the case attribute columns could be sorted such that NA/NULL value
+are always at the bottom.
+
+
+
+
+
