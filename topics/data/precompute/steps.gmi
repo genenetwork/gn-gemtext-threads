@@ -8,12 +8,12 @@ We will track precompute steps here. We will have:
 
 * [X] steps g: genotype archives (first we only do BXD-latest, include BXD.json)
 * [X] steps k: kinship archives (first we only do BXD-latest)
-* [ ] steps p: trait archives (first we do p1-3)
+* [X] steps p: trait archives (first we do p1-3)
 
 Trait archives will have steps for
 
-* [+] step p1: list-traits-to-compute
-* [ ] step p2: gemma-lmm9-loco-output: Compute standard GEMMA lmm9 LOCO vector with gemma-wrapper
+* [X] step p1: list-traits-to-compute
+* [+] step p2: gemma-lmm9-loco-output: Compute standard GEMMA lmm9 LOCO vector with gemma-wrapper
 * [ ] step p3: gemma-to-lmdb: create a clean vector
 
 The DB itself can be updated from these
@@ -74,3 +74,29 @@ Note that it (potentially) includes the parents. Also the strain-id is a string 
 from guile-hashing and guile-gcrypt modules.
 
 In the next step we have to check the normal distribution of the trait values and maybe winsorize outliers.
+Actually we should brute force the default first.
+Be interesting to see the effect of handling outliers and normalisation of phenotypes.
+
+# Step p2: run GEMMA lmm9 + LOCO
+
+Last week I checked out Arun's CCWL. Anything more complicated that a few steps can go into CCWL. It will also handle cluster work loads using, for example, toil. We will use trait files + genotypes as inputs for gemma-wrapper initially.
+
+p1: Workflow 1:
+
+```
+batch traits from DB
+```
+
+p2+p3: Workflow 2:
+
+```
+batched traits, genotypes ->
+  gemma-wrapper ->
+    lmdb'ize
+```
+
+p4: Workflow 3:
+
+```
+Update DB
+```

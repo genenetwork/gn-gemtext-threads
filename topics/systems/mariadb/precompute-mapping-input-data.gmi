@@ -27,10 +27,10 @@ Next, for running the full batch:
 * [X] Store all GEMMA values efficiently
 * [ ] Include metadata record in lmdb and as JSON file
 * [ ] Include metadata record on compute status
-* [ ] Remove junk from tarball
-* [ ] List significant markers as metadata
+* [ ] Remove junk from tarball - use lmdb?
+* [ ] List significant markers as metadata in lmdb
 * [ ] Reread below info
-* [ ] Submit jobs to PBS
+* [ ] Submit jobs to PBS using CCWL
 * [ ] Report results to mariadb
 
 And after:
