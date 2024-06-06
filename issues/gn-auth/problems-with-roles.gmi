@@ -25,8 +25,10 @@ The implementation should instead, tie the roles to the specific resource, rathe
 
 * [x] Remove the `….create_action` function: raise exception when used
 * [x] Remove the "Roles" page on the UI
-* [ ] migration: Remove `group:role:[create|delete|edit]-role` privileges from `group-admin` role
+* [ ] migration: Remove `group:role:[create|delete|edit]-role` privileges from `group-leader` role
 * [ ] migration: Add `resource:role:[create|delete|edit]-role` privileges to `resource-owner` role
+* [ ] migration: Create new `resource_roles` db table linking each resource to roles that can act on it, and the user that created the role
+* [ ] migration: Drop table `group_roles` deleting all data: data here could already have privilege escalation in place
 * [ ] Create a new "Roles" section on the "Resource-View" page, or a separate "Resource-Roles" page to handle the management of that resource's roles
 * [ ] Ensure user can only assign roles they have created - maybe?
 
