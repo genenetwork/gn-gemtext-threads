@@ -23,6 +23,11 @@ The implementation should instead, tie the roles to the specific resource, rathe
 
 ### Plan of Action
 
-* Remove the `….create_action` function: raise exception when used
-* Remove the "Roles" page on the UI
-* Create a new "Roles" section on the "Resource-View" page, or a separate "Resource-Roles" page to handle the management of that resource's roles
+* [x] Remove the `….create_action` function: raise exception when used
+* [x] Remove the "Roles" page on the UI
+* [ ] Create a new "Roles" section on the "Resource-View" page, or a separate "Resource-Roles" page to handle the management of that resource's roles
+
+### Fixes
+
+=> https://github.com/genenetwork/genenetwork2/commit/7d0c5cf8d2ab49f6a98c0a15189da5b7fa1695fd
+=> https://github.com/genenetwork/genenetwork2/commit/c1af1940cca1ae54d424632e8c5f06b55cae071a
