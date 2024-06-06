@@ -1,0 +1,28 @@
+# Problem With Roles: Privilege Escalation
+
+## Tags
+
+* type: bug
+* status: open
+* priority: critical
+* assigned: fredm, zachs
+* keywords: gn-auth, authorisation, authorization, roles, privileges
+
+## Description
+
+The current implementation of `gn2.wqflask.oauth2.roles.create_role(…)` function is broken and can lead to possibly unbounded privilege escalation.
+
+What it currently does is that it fetches all the roles a user has, on all resources, regardless of type and/or ownership, then allows the user to create a role from that. As such, a user with write access to ResourceA and no write access to ResourceB could hypothetically gain write access to ResourceB, by say:
+
+* Create a new throw-away account
+* Creating a new role, that includes the write access from ResourceA
+* Assign new role to throw-away account on ResourceB
+* Do unapproved writes on ResourceB with throw-away account
+
+The implementation should instead, tie the roles to the specific resource, rather than group. This means, then, that the user cannot create a role on any resource that exceeds their access level for that resource — thus no privilege escalation is possible.
+
+### Plan of Action
+
+* Remove the `….create_action` function: raise exception when used
+* Remove the "Roles" page on the UI
+* Create a new "Roles" section on the "Resource-View" page, or a separate "Resource-Roles" page to handle the management of that resource's roles
