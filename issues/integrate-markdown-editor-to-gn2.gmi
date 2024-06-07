@@ -1,0 +1,29 @@
+# GN Markdown Editor Integration
+
+## Tags
+
+* assigned: alexm
+* status: in progress
+* priority: high
+
+## Notes
+This is a to-do list to integrate the GN Markdown editor into GN2.  
+To see the implementation, see:
+
+=> https://github.com/Alexanderlacuna/geditor
+
+## Tasks
+
+* [ ] Implement APIs to fetch file for edit
+* [ ] Add verification for the repository
+* [ ] Implement API to edit and commit changes
+* [ ] Replace JS with HTMX
+* [ ] Support external links and image rendering
+* [ ] Package dependencies
+* [ ] Handle errors
+* [ ] Review by users
+
+Related issues:
+
+=> https://issues.genenetwork.org/issues/implement-gn-markdown-editor-in-guile
+=> https://issues.genenetwork.org/issues/implement-gn-markdown-editor
