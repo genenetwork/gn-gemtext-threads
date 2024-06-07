@@ -22,6 +22,7 @@ To see the implementation, see:
 * [ ] Package dependencies
 * [ ] Handle errors
 * [ ] Review by users
+* [ ] Integrate auth to the system.
 
 Related issues:
 
