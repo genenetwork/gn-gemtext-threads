@@ -8,9 +8,8 @@
 
 ## Tasks
 
-* [x] Add metadata to gn-auth
-* [X] Troubleshoot confs---RDF---in CD
-* [-] Indexing generif data
+* [X] Indexing generif data / Improve Local Search
+* [ ] Add hashes to RDF metadata
 * [-] Brain Data (To be spec'ed further)
 
 ### On going tasks
