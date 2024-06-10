@@ -1,0 +1,7 @@
+# Hash RDF Graph
+
+* assigned: bonfacem
+
+## Description
+
+Building the index is an expesive operation.  Hash the graph and store the metadata in xapian, and similarly in the RDF store.  The mcron-job should check whether this has changed, and if there's any difference, go ahead and re-build the index.
