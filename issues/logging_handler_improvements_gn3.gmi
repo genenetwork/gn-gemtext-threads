@@ -1,0 +1,41 @@
+# Logging Handler Improvements for GN3
+
+## Tags
+
+* assigned: jnduli
+* priority: low
+* type: enhancement
+
+## Goal
+
+Our logs help us fix problems without the need for LOG_LEVEL=DEBUG
+
+## Background
+
+When fixing logs in our database_connection
+
+=> https://github.com/genenetwork/genenetwork3/pull/167 related PR
+
+I realized that our logs don't provide enough context to debug and fix problems.
+
+Also looking at the code in gn3
+
+=> https://github.com/jnduli/genenetwork3/blob/8e4c5eefaa8d02b10d0d0a38ac81718a7cadf231/gn3/loggers.py#L16 gn3 log set up control
+
+We only provide StreamHandler which I still don't understand how it links up to the overall logging infrastructure.
+
+## Proposal
+
+* Change our FORMAT message to provide more context for failures i.e. use "%(levelname)s:%(name)s:%(pathname)s:%(funcName)s:%(asctime)s:%(message)s"
+
+=> https://docs.python.org/3/library/logging.html#logrecord-attributes ref for attributes
+
+* Add extra handlers that help easily parse and store errors permanently. Piping the StreamHandler to a file may still help and work here. Storing the logs in a file supports some nice future features that may help with maintentance.
+
+* Build a tool that can parse and search through the log files looking for `ERROR`s. This helps us with early detection of potential problems instead of waiting for users to complain about this. This means attempting to be more detailed on our logs. A potential improvement would be to log our errors in gn3's error logging code meaning we have user failures in our code.
+
+=> https://github.com/jnduli/genenetwork3/blob/8e4c5eefaa8d02b10d0d0a38ac81718a7cadf231/gn3/errors.py#L1 suggestion for where to add more error logs
+
+* Log rotation strategy?
+
+* Infrastructure for managing logs? I'm familiar with ELK.
