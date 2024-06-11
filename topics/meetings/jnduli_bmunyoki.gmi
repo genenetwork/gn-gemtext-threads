@@ -1,0 +1,31 @@
+# Meeting Notes
+
+## 2024-06-11
+
+### Agenda
+
+* Local checks to do before PRs: 
+
+In gn3, make sure to run:
+ 
+> pylint main.py setup.py wsgi.py setup_commands tests gn3 scripts
+> TODO jnduli run this: mypy --show-error-codes .
+> pytest -k unit_test
+
+* Set up new DB before sync + fixing any problems that occur: DONE, no errors after Jnduli set up new DB.
+
+### Generif Indexing
+
+* Probeset data exists in SQL. Generif metadata exists in RDF.
+* Write code that queries RDF for Generif metadata and enriches exising Probeset query.
+* DONE: checksums in Generif rdf output
+* TODO: jnduli look at xapian docs and their example for python bindings
+* TODO: bonfacem makes sure tux02 indexing works
+* TODO: bonfacem make changes to mcron and guix-machines.
+
+### How would GeneWiki work?
+
+* GeneWiki = GeneRif data from NCBI
+* Workflow would be similar to Generif Indexing. We need to figure out if we'll need an extra RDF query or if we can modify the existing SPARQL query.
+* TODO: jnduli attempts to add stronger types to index-genenetwork script, to make it explicit that we're using MonadicDicts.
+* TODO: bonfacem makes sure that mypy in CI runs against the index-genenetwork script.
