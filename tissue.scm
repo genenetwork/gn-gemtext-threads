@@ -40,7 +40,8 @@
 	     ("Solomon Shelby" "soloshelby" "SidiBlak")
 	     ("priscilla")
              ("Zachary Sloan" "zach" "zachs" "zsloan")
-             ("Artyom Bologov" "aartaka" "artyom" "artyomb"))
+             ("Artyom Bologov" "aartaka" "artyom" "artyomb")
+             ("John Nduli" "jnduli" "rookie101"))
  #:indexed-documents (append (map (lambda (filename)
                                     (slot-set (read-gemtext-issue filename)
                                               'web-uri
