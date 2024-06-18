@@ -1,5 +1,41 @@
 # Meeting Notes
 
+## 2024-06-18
+### Agenda
+
+* Last week review: DONE, made good progress on what we planned. We need to make sure we're more aware of the TODOs we had.
+* Plan for this week: DONE, LET'S GOOO!
+* Reviewing patches: added to week's goals.
+* Search bugs discussions: Boni will create an issue with all details and we'll plan further on how to attack this.
+
+If we have a plan for the week, and something comes up that breaks our plan:
+
+* Are we aware that it broke our plans?
+* Communicate the impact this may have on the plan.
+
+### Plan for Week
+
+* TODO: @bmunyoki rebuild guix container with new mcron changes
+* TODO: @jnduli attempts to make UI change that shows all supported keys in the search
+* TODO: @bmunyoki create an issue with all the problems experienced with search and potential solutions. Make sure it has replication steps, and plans for solutions.
+* TODO: @bmunyoki follows up to make sure RDF changes are visible in production and fix issues that come up
+* TODO: @bmunyoki and @jnduli genewiki indexing
+* TODO: @bmunyoki demoes and documents how to run and test guix cron job for indexing
+* TODO: @bmunyoki trains @jnduli on how to review patchsets from emails
+* TODO: @jnduli attempts to add stronger types to index-genenetwork script, to make it explicit that we're using MonadicDicts
+* TODO: @jnduli Documentation improvements for GN2 and GN3 and auth? None done last week. 
+* TODO: @jnduli Follow up notes on setting up local index-genenetwork search
+
+
+Nice to haves:
+
+* TODO: minor: bonfacem makes sure that mypy in CI runs against the index-genenetwork script.
+* TODO: @bmunyoki improve search documentation and fix bugs in the frontend: binary term search doesn't work as expected
+* TODO: @bmunyoki follow up with Rob to makes sure he tests search after everything is complete
+* TODO: @bmunyoki follow up how do we make sure that xapian prefix changes in code retrigger xapian indexing?
+
+
+
 ## 2024-06-11
 
 ### Agenda
@@ -10,6 +46,7 @@ In gn3, make sure to run:
  
 > pylint main.py setup.py wsgi.py setup_commands tests gn3 scripts
 > TODO jnduli run this: mypy --show-error-codes .
+    DONE: led to a PR that fixed all mypy errors in index-genenetwork
 > pytest -k unit_test
 
 * Set up new DB before sync + fixing any problems that occur: DONE, no errors after Jnduli set up new DB.
@@ -19,13 +56,14 @@ In gn3, make sure to run:
 * Probeset data exists in SQL. Generif metadata exists in RDF.
 * Write code that queries RDF for Generif metadata and enriches exising Probeset query.
 * DONE: checksums in Generif rdf output
-* TODO: jnduli look at xapian docs and their example for python bindings
-* TODO: bonfacem makes sure tux02 indexing works
-* TODO: bonfacem make changes to mcron and guix-machines.
+* TODO: jnduli look at xapian docs and their example for python bindings: DONE, led to a WIP PR for wiki data indexing and a local custom script to search the index without the need to run genenetwork web service
+* TODO: bonfacem makes sure tux02 indexing works: DONE, there's a working patchset sent to Arun for review.
+* TODO: bonfacem make changes to mcron and guix-machines: DONE, there's a working patch set sent to Arun. Follow up needs to be done for the learnings gained
+
 
 ### How would GeneWiki work?
 
 * GeneWiki = GeneRif data from NCBI
 * Workflow would be similar to Generif Indexing. We need to figure out if we'll need an extra RDF query or if we can modify the existing SPARQL query.
-* TODO: jnduli attempts to add stronger types to index-genenetwork script, to make it explicit that we're using MonadicDicts.
-* TODO: bonfacem makes sure that mypy in CI runs against the index-genenetwork script.
+* TODO: jnduli attempts to add stronger types to index-genenetwork script, to make it explicit that we're using MonadicDicts: Not DONE, got stuck trying to run index-genenetwork locally and removing global variables from the script..
+* TODO: bonfacem makes sure that mypy in CI runs against the index-genenetwork script: NOT DONE, needs a separate PR that will be sent to Arun.
