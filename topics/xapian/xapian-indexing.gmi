@@ -48,7 +48,8 @@ and load up the backup file using:
 
 A backup file can be generated using:
 
-> mysqldump --opt --where="1 limit 1000000" database
+> mysqldump -u mysqluser -pmysqlpasswd --opt --where="1 limit 100000" db_webqtl > out.sql                                  
+> xz out.sql
 
 And run the index script using:
 
