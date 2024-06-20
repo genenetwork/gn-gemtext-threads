@@ -1,0 +1,27 @@
+# Indicating Heterozygosity
+
+## Tags
+
+* status: ongoing
+* assigned: fredm, zachs, acenteno
+* type: documentation
+* priority: medium
+* keywords: doc, documentation, heterozygous, hererozygosity
+
+## Description
+
+For GeneNetwork, we indicate the the allele values in one of two formats:
+
+```
+|--------------|----------|----------|
+| Source       | Format 1 | Format 2 |
+|--------------|----------|----------|
+| Founder      | 0        | 0        |
+| Heterozygous | 1        | 0.5      |
+| Other        | 2        | 1        |
+|--------------|----------|----------|
+```
+
+Values outside of these are considered an error.
+
+These values are stored in the GenoData table.
