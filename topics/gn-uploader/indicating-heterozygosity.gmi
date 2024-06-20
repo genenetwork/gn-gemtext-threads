@@ -24,4 +24,4 @@ For GeneNetwork, we indicate the the allele values in one of two formats:
 
 Values outside of these are considered an error.
 
-These values are stored in the GenoData table.
+These values are stored in the GenoCode table.
