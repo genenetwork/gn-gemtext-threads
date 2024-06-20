@@ -1,0 +1,22 @@
+# ProbeSet not Applicable to All Data
+
+## Tags
+
+* type: bug
+* assigned: fredm
+* status: open
+* priority: high
+* keywords: gn-uploader, uploader, ProbeSet
+
+## Description
+
+From the email from Lucia:
+
+```
+The only other issue I'm having is that I have no "Tissue" to choose from
+(because we're measuring different traits/phenotypes), so I created "Trait" as
+a new "Tissue." However, it's asking me to choose a ProbeSet which isn't
+applicable to our data, I don't think.
+```
+
+It seems like some of the data does not require a ProbeSet, and in that case, it should be possible to add it without one.
