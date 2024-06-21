@@ -1,5 +1,35 @@
 # Meeting Notes
 
+## 2024-06-21
+### Outage for 2024-06-20
+
+What happened?
+
+2024-06-19: Dev experienced intermittent ssh connections, and got logged out  
+2024-06-19: Dev assumed this wasn't related to the server problems and clocked out
+2024-06-20: Another team mate experienced problems accessing git.genenetwork.org and reported this to the genenetwork sphere channel
+2024-06-20: We noted that CI and CD services were also down
+2024-06-20: We assumed it could be a DNS issue and followed up with our providers??
+2024-06-20: Realized it was because the server was out of RAM. Killing processes resolved the issue
+
+What can we learn from this?
+
+* If we experience network problems, communicate to other team members.
+* Our gunicorn processes are expensive each taking 17GB.
+* We don't have monitoring and alerting for our server resources.
+* Shouldn't OOM have helped with this?
+* How much memory/resources do the scripts we run use? This can help us know the impact before running in production.
+* If we start multiple processes from python, similar to the index-genenetwork script, does sending SIGTERM or SIGKILL kill the children processes or will they remain as orphans? Note: there were orphans, so we should investigate ways of killing the script next time completely.
+
+How do we prevent something similar from happening in the future?
+
+* Ask if anything our server is slow and attempt to inspect this. Add documentation for quick bash scripts to run for this.
+* Reduce the amount of gunicorn processes to reduce their memory footprints. How did we end up with the no of processes we currently have? What impact will reducing this have on our users?
+* Attempt to get an estimate memory footprint for `index-genenetwork` and use this to determine when it's safe to run the script or not. This can even end up integrated into the cron job.
+* Create some alerting mechanism for sane thresholds that can be send to a common channel/framework e.g. when CPU usage > 90%, memory usage > 90% etc. This allows someone to be on the look out in case something drastic needs to be taken.
+
+
+
 ## 2024-06-18
 ### Agenda
 
