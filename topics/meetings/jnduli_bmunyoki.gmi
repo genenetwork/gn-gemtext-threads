@@ -27,6 +27,9 @@ How do we prevent something similar from happening in the future?
 * Reduce the amount of gunicorn processes to reduce their memory footprints. How did we end up with the no of processes we currently have? What impact will reducing this have on our users?
 * Attempt to get an estimate memory footprint for `index-genenetwork` and use this to determine when it's safe to run the script or not. This can even end up integrated into the cron job.
 * Create some alerting mechanism for sane thresholds that can be send to a common channel/framework e.g. when CPU usage > 90%, memory usage > 90% etc. This allows someone to be on the look out in case something drastic needs to be taken.
+* Python doesn't kill child processes when SIGTERM is used. This means when testings, we were creating more and more orphaned processes. Investigate how to propagate the SIGTERM signal to all children processes.
+
+=> https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Process.terminate
 
 
 
