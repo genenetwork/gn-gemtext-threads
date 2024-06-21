@@ -1,0 +1,30 @@
+# Deploying genecup
+
+On Tux02 as shepherd user I can build:
+
+```
+./guix/bin/guix build -L ~/services/genecup/guix-past/modules -L ~/services/genecup/guix-bioinformatics genecup-latest-with-tensorflow-native -c 24 -M 8
+```
+
+To run genecup in a container we have a trick to include the source code by cd'ing into the built version
+
+```
+export EDIRECT_PUBMED_MASTER=/export2/PubMed
+export TMPDIR=/export/ratspub/tmp
+export NLTK_DATA=/export2/PubMed/nltk_data
+
+# This version for the genecup guix profile which includes guix-bioinformatics, using genecup-channels.scm.
+# shepherd@tux02:~/services/genecup$ ./guix/bin/guix build -L ~/services/genecup/guix-past/modules -L ~/services/genecup/guix-bioinformatics genecup-latest-with-tensorflow-native -c 24 -M 8
+
+cd /home/shepherd/services/genecup
+cd $(/home/shepherd/services/genecup/guix/bin/guix build -L /home/shepherd/services/genecup/guix-past/modules -L /home/shepherd/services/genecup/guix-bioinformatics genecup-latest-with-tensorflow-native -c 4)
+
+/home/shepherd/services/genecup/guix/bin/guix shell -C -N --expose=/etc/ssl/certs --expose=$EDIRECT_PUBMED_MASTER --share=$TMPDIR -L /home/shepherd/services/genecup/guix-past/modules -L /home/shepherd/services/genecup/guix-bioinformatics genecup-latest-with-tensorflow-native coreutils-minimal -- env TMPDIR=$TMPDIR EDIRECT_PUBMED_MASTER=$EDIRECT_PUBMED_MASTER NLTK_DATA=$NLTK_DATA ./server.py
+```
+
+That means you can also develop software running in a container with the last command by switching into a repo:
+
+```
+cd $repo
+run last command using guix shell
+```
