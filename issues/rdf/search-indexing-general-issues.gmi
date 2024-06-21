@@ -1,0 +1,32 @@
+
+# XAPIAN Search General Issues
+
+* assigned: bonfacem
+
+## Dataset Search Issues
+
+The following full dataset name search yields no results
+
+> dataset:"BXD Published Phenotypes"
+
+In the indexer, we index the dataset name using "index_text"
+
+> index_dataset = lambda dataset: termgenerator.index_text(dataset, 0, "XDS")
+
+Yet in the search, we use a boolean prefix:
+
+> queryparser.add_boolean_prefix("dataset", "XDS")
+
+Currently to be able to do a search for "BXD Published Phenotypes", one would have to do:
+
+> dataset:bxd dataset:published dataset:phenotypes
+
+Note that the search is in all lower-case.  The reason for this is that we have:
+
+> queryparser.set_stemming_strategy(queryparser.STEM_SOME)
+
+A fix for this would be to replace "add_boolean_prefix" with "add_prefix".
+
+## CIS/TRANS Searches
+
+The challenge with this search is that we would have to compare valuse for each possible result against one another, necessitating the generation of position values separately for every possible result.  Also, for the devs (jnduli, bonfacem) we need to have a better understanding of how this work, which is currently vague.
