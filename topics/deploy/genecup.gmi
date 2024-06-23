@@ -1,5 +1,17 @@
 # Deploying genecup
 
+# Hosting
+
+The source repo has moved to
+
+=> https://git.genenetwork.org/genecup/
+
+If you have ssh access you can push to the repo with
+
+=> yourname@git.genenetwork.org:/home/git/public/genecup
+
+# Deploy on tux02
+
 On Tux02 as shepherd user I can build:
 
 ```
@@ -27,4 +39,17 @@ That means you can also develop software running in a container with the last co
 ```
 cd $repo
 run last command using guix shell
+```
+
+The only problem, at this point, is that python is not in the path.
+
+The alternative is to use a guix shell, as described in the README.md
+
+=> https://git.genenetwork.org/genecup/tree/README.md
+
+and port forward:
+
+```
+ssh -L 4200:127.0.0.1:4200 -f -N server
+curl localhost:4200
 ```
