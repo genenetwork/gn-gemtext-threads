@@ -69,9 +69,22 @@ When the certificate expires you can download the new one with:
 * Move it to /usr/local/share/ca-certificates (with .crt extension) or equivalent
 * On Debian/Ubuntu update the certificate store with update-ca-certificates
 
+You should see
+
+```
+Updating certificates in /etc/ssl/certs...
+1 added, 0 removed; done.
+```
+
 Thanks Niklas. See also
 
 => https://superuser.com/a/719047/914881
+
+On GUIX you may need to point to the updated certificates file with:
+
+```
+env REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt  openconnect-sso --server uthscvpn1.uthsc.edu --authgroup UTHSC
+```
 
 ## Acknowledgement
 
