@@ -1,0 +1,22 @@
+# gn-uploader: Resume Upload
+
+## Tags
+
+* status: open
+* priority: medium
+* assigned: fredm, flisso
+* type: feature request, feature-request
+* keywords: gn-uploader, uploader, upload, resume upload
+
+## Description
+
+If a user is uploading a particularly large file, we might need to provide a way for the user to resume their upload of the file.
+
+Maybe this can wait until we have
+=> /issues/gn-uploader/link-authentication-authorisation linked authentication/authorisation to gn-uploader.
+In this way, each upload can be linked to a specific user.
+
+### Possible Resources
+
+=> https://javascript.info/resume-upload
+=> https://github.com/23/resumable.js/
