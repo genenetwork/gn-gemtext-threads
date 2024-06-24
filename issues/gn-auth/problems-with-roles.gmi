@@ -39,3 +39,4 @@ The implementation should instead, tie the roles to the specific resource, rathe
 => https://git.genenetwork.org/gn-auth/commit/?h=handle-role-privilege-escalation&id=5d34332f356164ce539044f538ed74b983fcc706
 => https://git.genenetwork.org/gn-auth/commit/?h=handle-role-privilege-escalation&id=f691603a8e7a1700783b2be6f855f30d30f645f1
 => https://git.genenetwork.org/gn-auth/commit/?h=handle-role-privilege-escalation&id=2363842cc81132a2592d5cda98e6ebf1305e8482
+=> https://github.com/genenetwork/genenetwork2/commit/a7a8754a57594e5705fea8e5bbea391a09e8f64c
