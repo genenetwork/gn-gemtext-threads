@@ -1,6 +1,10 @@
 # Fallbacks and backups
 
-As a hurricane is barreling towards our machine room in Memphis we are checking our fallbacks and backups for GeneNetwork. For years we have been making backups on Amazon - both S3 and a running virtual machine. The latter was expensive, so I replaced it with a bare metal server which earns itself (if it hadn't been down for months, but that is a different story).
+A revisit to previous work on backups etc. The sheepdog hosts are no longer responding and we should really run sheepdog on a machine that is not physically with the other machines. In time sheepdog should also move away from redis and run in a system container, but that is for later. I did most of the work late 2021 when I wrote:
+
+> As a hurricane is barreling towards our machine room in Memphis we are checking our fallbacks and backups for GeneNetwork. For years we have been making backups on Amazon - both S3 and a running virtual machine. The latter was expensive, so I replaced it with a bare metal server which earns itself (if it hadn't been down for months, but that is a different story).
+
+As we are introducing an external sheepdog server we may give it a DNS entry as sheepdog.genenetwork.org.
 
 See also
 
@@ -16,13 +20,14 @@ See also
 
 ## Tasks
 
-* [.] backup ratspub, r/shiny, bnw, covid19, hegp, pluto services
-* [X] /etc /home/shepherd backups for Octopus
-* [X] /etc /home/shepherd backups for P2
-* [X] Get backups running again on fallback
-* [ ] fix redis queue for P2 - needs to be on rabbit
+* [X] fix redis queue and sheepdog server
+* [ ] check backups on tux01
+* [ ] backup ratspub, r/shiny, bnw, covid19, hegp, pluto services
+* [ ] /etc /home/shepherd backups for Octopus
+* [ ] /etc /home/shepherd /home/git CI-CD GN-QA backups on Tux02
+* [ ] Get backups running again on fallback
 * [ ] fix bacchus large backups
-* [ ] backup octopus01:/lizardfs/backup-pangenome on bacchus
+* [ ] mount bacchus on HPC
 
 ## Backup and restore
 
@@ -52,22 +57,21 @@ Recently epysode was reinstated after hardware failure. I took the opportunity t
 As epysode was one of the main sheepdog messaging servers I need to reinstate:
 
 * [X] scripts for sheepdog
-* [X] enable trim
-* [X] reinstate monitoring web services
-* [X] reinstate daily backup from penguin2
-* [X] CRON
-* [X] make sure messaging works through redis
-* [X] fix and propagate GN1 backup
-* [X] fix and propagate IPFS and gitea backups
-* [X] add GN1 backup
-* [X] add IPFS backup
-* [X] other backups
+* [ ] Check tunnel on tux01 is reinstated
+* [ ] enable trim
+* [ ] reinstate monitoring web services
+* [ ] reinstate daily backups
+* [ ] CRON
+* [ ] make sure messaging works through redis
+* [ ] fix and propagate GN1 backup
+* [ ] fix and propagate fileserver and git backups
+* [ ] add GN1 backup
+* [ ] other backups
 * [ ] email on fail
 
 Tux01 is backed up now. Need to make sure it propagates to
 
-* [X] P2
-* [X] epysode
-* [X] rabbit
-* [X] Tux02
+* [ ] rabbit
+* [ ] Tux02
+* [ ] balg01
 * [ ] bacchus
