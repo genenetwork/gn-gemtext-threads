@@ -1,0 +1,30 @@
+# Speed Up QC on R/qtl2 Bundles
+
+## Tags
+
+## Description
+
+The default format for the CSV files in a R/qtl2 bundle is:
+
+```
+matrix of individuals × (markers/phenotypes/covariates/phenotype covariates/etc.)
+```
+
+(A) (f/F)ile(s) in the R/qtl2 bundle could however
+=> https://kbroman.org/qtl2/assets/vignettes/input_files.html#csv-files be transposed,
+which means the system needs to "un-transpose" the file(s) before processing.
+
+Currently, the system does this by reading all the files of a particular type, and then "un-transposing" the entire thing. This leads to a very slow system.
+
+This issue proposes to do the quality control/assurance processing on each file in isolation, where possible - this will allow parallelisation/multiprocessing of the QC checks.
+
+The main considerations that need to be handled are as follows:
+
+* Do QC on (founder) genotype files (when present) before any of the other files
+* Genetic and physical maps (if present) can have QC run on them after the genotype files
+* Do QC on phenotype files (when present) after genotype files but before any other files
+* Covariate and phenotype covariate files come after the phenotype files
+* Cross information files … ?
+* Sex information files … ?
+
+We should probably detail the type of QC checks done for each type of file
