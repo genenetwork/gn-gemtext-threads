@@ -61,6 +61,18 @@ Older versions would not show a proper dialog for sign-in. Try
 export QTWEBENGINE_CHROMIUM_FLAGS=--disable-seccomp-filter-sandbox
 ```
 
+## Update certificate
+
+When the certificate expires you can download the new one with:
+
+* Navigate with browser to https://uthscvpn1.uthsc.edu/. Inspect the certificate in the browser (lock icon next to search bar) and export .pem file
+* Move it to /usr/local/share/ca-certificates (with .crt extension) or equivalent
+* On Debian/Ubuntu update the certificate store with update-ca-certificates
+
+Thanks Niklas. See also
+
+=> https://superuser.com/a/719047/914881
+
 ## Acknowledgement
 
 Many thanks to Pjotr Prins and Erik Garrison without whose earlier work this guide would not be possible.
