@@ -1,5 +1,58 @@
 # Meeting Notes
 
+## 2024-06-24
+
+Plan for this Week:
+
+* @bmunyoki Remove boolean prefixes from search where it makes sense.
+* @bmunyoki GeneWiki + GeneRIF search in production. Mostly needs to be run in prod to see impact.
+* @jnduli Children process termination when we kill the main index-genenetwork script
+* @bmunyoki Follow up on getting virtuoso child pages in production
+* @alexm push endpoints for editting and making commits for markdown files
+* @all Reply to survey from Shelby
+* @jnduli Fix JS import orders (without messing up the rest of Genenetwork)
+* @jnduli fix search results when nothing is found
+
+
+Note: For qa.genenetwork.com, we chose to pause work on this until papers are done.
+
+Review for last week
+
+* DONE: @bmunyoki rebuild guix container with new mcron changes
+* WIP: @jnduli attempts to make UI change that shows all supported keys in the search:
+    - our JS imports are not ordered correctly
+    - using boolean_prefixes means our searches dont work as we'd expect
+* WIP: @bmunyoki create an issue with all the problems experienced with search and potential solutions. Make sure it has replication steps, and plans for solutions.
+    - cis and trans searches not added to the issue
+    - boolean searches has a potential fix that @bmunyoki will work on
+* TODO: @bmunyoki follows up to make sure RDF changes are visible in production and fix issues that come up
+* TODO: @bmunyoki and @jnduli genewiki indexing
+    - PR still open, script hasn't been tested out due the RAM outage.
+    - No way to easily instrument how RAM works and how we'll kill the process.
+* DONE: @bmunyoki demoes and documents how to run and test guix cron job for indexing
+    - @jnduli need to run the instructions and see if they work as expected
+* DONE: @bmunyoki trains @jnduli on how to review patchsets from emails
+* TODO: @jnduli attempts to add stronger types to index-genenetwork script, to make it explicit that we're using MonadicDicts
+* TODO: @jnduli Documentation improvements for GN2 and GN3 and auth? None done last week. 
+* DONE: @jnduli Follow up notes on setting up local index-genenetwork search
+    - @jnduli figures out where to add a mention to the xapian docs in gn2 README
+* DONE: @alexm handling with graduation, AFK
+
+Nice to haves:
+
+* TODO: minor: bonfacem makes sure that mypy/pylint in CI runs against the index-genenetwork script.
+* TODO: @bmunyoki follow up with Rob to makes sure he tests search after everything is complete
+    - got some feedback since he commented on some PR. He's out of Town. Goal for RIF and Wiki search by July 2nd.
+    - can't do a normal RIF search using the normal mysql since nginx times out
+* TODO: @bmunyoki follow up how do we make sure that xapian prefix changes in code retrigger xapian indexing?
+    - howto: xapian prefix changes, let's maintain a hash for the file and store it in xapian
+    - howto: for RDF changes, since we have ttl files, if this ever changes we trigger the script. It's also nice to be able to automatically also load up data to virtuoso if this file changes.
+
+
+
+
+Plan for this week
+
 ## 2024-06-21
 ### Outage for 2024-06-20
 
