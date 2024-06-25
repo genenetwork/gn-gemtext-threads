@@ -44,11 +44,30 @@ export OPENSSL_CONF=/tmp/openssl.cnf
 ```
 Then, run the openconnect-sso client as usual.
 
+## Misconfigured UTHSC TLS certificate
+
+The UTHSC TLS certificate does not validate on some systems. You can work around this by downloading the certificate chain and adding it to your system:
+* Navigate with browser to https://uthscvpn1.uthsc.edu/. Inspect the certificate in the browser (lock icon next to search bar) and export .pem file
+* Move it to /usr/local/share/ca-certificates (with .crt extension) or equivalent
+* On Debian/Ubuntu update the certificate store with update-ca-certificates
+You should see
+```
+Updating certificates in /etc/ssl/certs...
+1 added, 0 removed; done.
+```
+Thanks Niklas. See also
+=> https://superuser.com/a/719047/914881
+
+However, adding certificates to your system manually is not good security practice. It is better to limit the added certificate to the openconnect process. You can do this using the REQUESTS_CA_BUNDLE environment variable like so:
+```
+REQUESTS_CA_BUNDLE=/path/to/uthsc/certificate.pem openconnect-sso --server uthscvpn1.uthsc.edu --authgroup UTHSC
+```
+
 ## Putting it all together using Guix G-expressions
 
 Remembering to do all these steps is a hassle. Writing a shell script to automate this is a good idea, but why write shell scripts when we have G-expressions! Here's a G-expression script that I prepared earlier.
 => uthsc-vpn.scm
-Download it, tweak the %hosts variable to specify the hosts you are interested in, and run it like so:
+Download it, download the UTHSC TLS certificate chain to uthsc-certificate.pem, tweak the %hosts variable to specify the hosts you are interested in, and run it like so:
 ```
 $(guix build -f uthsc-vpn.scm)
 ```
@@ -59,31 +78,6 @@ Older versions would not show a proper dialog for sign-in. Try
 
 ```
 export QTWEBENGINE_CHROMIUM_FLAGS=--disable-seccomp-filter-sandbox
-```
-
-## Update certificate
-
-When the certificate expires you can download the new one with:
-
-* Navigate with browser to https://uthscvpn1.uthsc.edu/. Inspect the certificate in the browser (lock icon next to search bar) and export .pem file
-* Move it to /usr/local/share/ca-certificates (with .crt extension) or equivalent
-* On Debian/Ubuntu update the certificate store with update-ca-certificates
-
-You should see
-
-```
-Updating certificates in /etc/ssl/certs...
-1 added, 0 removed; done.
-```
-
-Thanks Niklas. See also
-
-=> https://superuser.com/a/719047/914881
-
-On GUIX you may need to point to the updated certificates file with:
-
-```
-env REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt  openconnect-sso --server uthscvpn1.uthsc.edu --authgroup UTHSC
 ```
 
 ## Acknowledgement

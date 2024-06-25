@@ -34,6 +34,8 @@
                                  ("system_default" . "system_default_sect"))
                                 ("system_default_sect"
                                  ("Options" . "UnsafeLegacyRenegotiation")))))
+        (setenv "REQUESTS_CA_BUNDLE"
+                #$(local-file "uthsc-certificate.pem"))
         (invoke #$(file-append openconnect-sso "/bin/openconnect-sso")
                 "--server" "uthscvpn1.uthsc.edu"
                 "--authgroup" "UTHSC"
