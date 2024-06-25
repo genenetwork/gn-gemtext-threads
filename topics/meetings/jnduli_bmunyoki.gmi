@@ -38,10 +38,6 @@ Nice to haves:
     - howto: for RDF changes, since we have ttl files, if this ever changes we trigger the script. It's also nice to be able to automatically also load up data to virtuoso if this file changes.
 
 
-
-
-Plan for this week
-
 ## 2024-06-21
 ### Outage for 2024-06-20
 
