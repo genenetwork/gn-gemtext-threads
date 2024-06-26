@@ -4,7 +4,7 @@
 
 * assigned: fredm, aruni
 * priority: critical
-* status: open
+* status: closed, completed, fixed
 * type: bug
 * keywords: gn-auth, deployment, test1
 
