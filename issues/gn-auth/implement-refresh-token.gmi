@@ -2,7 +2,7 @@
 
 ## Tags
 
-* status: open
+* status: closed, completed, fixed
 * priority: high
 * assigned: fredm, bonfacem
 * type: feature-request, bug
