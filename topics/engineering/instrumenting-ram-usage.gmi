@@ -1,0 +1,32 @@
+# Instrumenting RAM usage
+
+* author: bonfacem
+* reviewed-by: jnduli
+
+On 2024-06-21, TUX02 experienced an outage because we ran out of RAM on the server.  Here we outline how to instrument processes that consume RAM, in particular, what to watch out for.
+
+=> https://issues.genenetwork.org/topics/meetings/jnduli_bmunyoki Meeting Notes
+
+The output of "free -m -h" looks like:
+
+```
+              total        used        free      shared  buff/cache   available
+Mem:           251G         88G         57G        6.2G        105G        155G
+Swap:           29G         20G        9.8G
+```
+
+When running "free", you can refresh the output regularly.  As an example, to get human readable output every 2 seconds:
+
+> free -m -h -s 2
+
+It's tempting to check the "free" column to see how much RAM is being used.  However, this column also includes disk caching.  Disk caching doesn't prevent applications from getting the memory they want[1].  What we need to be aware of instead are:
+
+* available: Make sure this is within acceptable thresholds.
+* swap used: Make sure this does not change significantly.
+
+Also, use htop/top and filter out the process (and preferably order by RAM usage) you are monitoring to see how much RAM a process and it's children (if any) consume.
+
+## References
+
+=> https://www.linuxatemyram.com/index.html [0] Linux ate my ram!
+=> https://www.linuxatemyram.com/play.html [1] Experiments and fun with Linux disk cache
