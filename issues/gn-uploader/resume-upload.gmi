@@ -16,6 +16,25 @@ Maybe this can wait until we have
 => /issues/gn-uploader/link-authentication-authorisation linked authentication/authorisation to gn-uploader.
 In this way, each upload can be linked to a specific user.
 
+### TODOs
+
+* [x] Build UI to allow uploads
+* [x] Build back-end to handle uploads
+* [ ] Rework cancel to actually kill the upload
+* [ ] Provide pause functionality
+* [ ] Maybe trigger job on separate endpoint: cleaner and avoids
+* [ ] Handle upload failures/errors
+* [ ]
+* [ ]
+* [ ]
+* [ ]
+
+  .
+  .
+  .
+
+* [ ] Deploy to staging
+
 ### Possible Resources
 
 => https://javascript.info/resume-upload
