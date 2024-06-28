@@ -6,6 +6,8 @@ A revisit to previous work on backups etc. The sheepdog hosts are no longer resp
 
 As we are introducing an external sheepdog server we may give it a DNS entry as sheepdog.genenetwork.org.
 
+=> http://sheepdog.genenetwork.org/sheepdog/index.html
+
 See also
 
 => /topics/systems/restore-backups Restore Backups
@@ -21,7 +23,8 @@ See also
 ## Tasks
 
 * [X] fix redis queue and sheepdog server
-* [ ] check backups on tux01
+* [X] check backups on tux01
+* [ ] drop tux02 backups off-site
 * [ ] backup ratspub, r/shiny, bnw, covid19, hegp, pluto services
 * [ ] /etc /home/shepherd backups for Octopus
 * [ ] /etc /home/shepherd /home/git CI-CD GN-QA backups on Tux02
