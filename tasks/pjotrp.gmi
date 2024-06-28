@@ -14,20 +14,19 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 
 # Current
 
-## Mempang24
+## Systems
 
-* [X] Invites
-* [+] Payments
-* [+] Rooms
-* [+] Catering
+- [X] mount NFS bacchus on octopus
+- [ ] drop tux02 backups on balg01
+- [ ] reintroduce borg-borg
 
 ## Ongoing tasks (current/urgent)
 
+* [ ] Precompute
 * [+] Set up stable GeneNetwork server instance with new hardware (see below)
 => /topics/systems/fire-up-genenetwork-system-container.gmi
 * [+] Julia as part of GN3 deployment
 => /topics/deploy/julia.gmi
-* [+] Shelby's paper+application
 
 # Tasks
 
@@ -43,18 +42,16 @@ Now (X=done +=WIP _=kickoff ?=?)
 
 * [+] Build leadership team
 * [+] gBAM
-* [ ] Audit DB security
 * [ ] p-value global search
-* [ ] Xapian search add tags, notmuch style (with @zachs)
+* [+] Xapian search add tags, notmuch style (with @zachs)
 
 => ../issues/systems/octopus
 
 * [ ] Add R/qtl2 and multi-parent support with Karl (DO and Magic populations)
-* [ ] Fix slow search on Mariadb?
+* [+] Fix slow search on Mariadb? Moving to xapian
 * [.] GeneNetwork paper
 *     + [ ] add FAIR statement
 * [ ] RISC-V trials
-* [ ] Guix project server
 
 Longer term
 
@@ -64,21 +61,26 @@ Longer term
 
 Later
 
-* [ ] Remove ttf files GN2
+* [ ] Mempang25
+  + [ ] Invites
+  + [ ] Payments
+  + [ ] Rooms
+  + [ ] Catering
+
+* [ ] Remove ttf files GN2 git repo
 * [+] DOI support GN
-* [+] Tree of life w. Andrea
 * [ ] Hao's idea for counting cis-qtl
 * [ ] Improve search for significant and suggestive hits
 * [ ] Include dominance matrix results in gemma (gene expression and transcript isophorms)
-* [ ] UCSC browser and big wig files
-* [ ] Jbrowse2 browser
+* [-] UCSC browser and big wig files (no longer applicable)
+* [+] Jbrowse2 browser
 
 ### Set up stable server instance with new hardware
 
 * [ ] R/qtl2 with Karl
 * [ ] Set up opensmtpd as a service
   + [ ] Add package dependency
-  + [ ] Test on open port 25
+  + [X] Test on open port 25
   + [ ] Add public-inbox (Arun)
 
 => ./machine-room.gmi machine room
@@ -92,6 +94,7 @@ Later
 
 ### Done
 
+* [X] Guix project server
 * [X] Build junior team
 * [X] Complete Octopus setup with Erik, Andrea and Efraim - adding all machines
 * [X] Aging grant application w. Rob (fall)

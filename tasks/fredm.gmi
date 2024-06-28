@@ -17,8 +17,12 @@ You can refine the search by constraining the checks some more, e.g. to get high
 
 ## Priority
 
-…
+For gn-uploader
+
+=> https://issues.genenetwork.org/search?query=assigned%3Afrederick+keywords%3Agn-uploader&type=all
+
+For gn-auth
+
+=> https://issues.genenetwork.org/search?query=assigned%3Afrederick+keywords%3Agn-auth+is%3Aopen&type=all
 
 ## Extra
-
-* Work on analysis of aging mice
