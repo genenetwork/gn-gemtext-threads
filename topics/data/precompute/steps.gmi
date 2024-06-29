@@ -24,6 +24,8 @@ Later
 
 * [ ] bulklmm: Compute bulklmm vector
 
+Interestingly this work coincides with Arun's work on CWL. Rather than trying to write a workflow in bash, we'll use ccwl and accompanying tools to scale up the effort.
+
 # Tags
 
 * assigned: pjotrp
@@ -36,10 +38,10 @@ Later
 
 * [ ] Check Artyoms LMDB version for kinship and maybe add LOCO
 * [+] Create JSON metadata controller for every compute incl. type of content
-* [+] Create genotype archive
-* [+] Create kinship archive
+* [X] Create genotype archive
+* [X] Create kinship archive
 * [+] Create trait archives
-* [+] Kick off lmm9 step
+* [X] Kick off lmm9 step
 * [ ] Update DB step v1
 
 # Step p1: list traits to compute
@@ -62,7 +64,7 @@ At this point we can write
 {"2":9.40338,"3":10.196,"4":10.1093,"5":9.42362,"6":9.8285,"7":10.0808,"8":9.17844,"9":10.1527,"10":10.1167,"11":9.88551,"13":9.58127,"15":9.82312,"17":9.88005,"19":10.0761,"20":10.2739,"21":9.54171,"22":10.1056,"23":10.5702,"25":10.1433,"26":9.68685,"28":9.98464,"29":10.132,"30":9.96049,"31":10.2055,"35":10.1406,"36":9.94794,"37":9.96864,"39":9.31048}
 ```
 
-Note that it (potentially) includes the parents. Also the strain-id is a string and we may want to plug in the strain name. To allow for easy comparison downstream. Finally we may want to store a checksum of sorts. In Guile this can be achieved with:
+Note that it (potentially) includes the parents and that is corrected when generating the phenotype file for GEMMA. Also the strain-id is a string and we may want to plug in the strain name. To allow for easy comparison downstream. Finally we may want to store a checksum of sorts. In Guile this can be achieved with:
 
 ```scheme
 (use-modules  (rnrs bytevectors)
