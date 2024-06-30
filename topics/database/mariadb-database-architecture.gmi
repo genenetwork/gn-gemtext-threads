@@ -19,6 +19,9 @@ These are the terms we use
 * ProbeSetData: trait/case values
 * ProbeSetFreeze: points to datasets
 
+## More on naming
+
+Naming convention-wise there is a confusing use of id and data-id in particular. We should stick to the table-id naming.
 
 # The small test database (2GB)
 
@@ -158,6 +161,10 @@ The trait-id can also be a probe name
 
 One of the more problematic aspects of GN is that there are two tables containing trait values (actually there are three!). ProbeSetData mostly contains expression data. PublishData contains 'classical' phenotypes. ProbeData is considered defunct.
 
+So, a set of trait values gets described by the dataset+probe (trait_id) OR by BXDPublish --- which is its own table --- and an identifier, here 10031.
+
+OK, let's look at the ProbeSetData (expression) traits:
+
 ```
 MariaDB [db_webqtl]> select * from ProbeSetData limit 5;
 +----+----------+-------+
@@ -198,13 +205,15 @@ Group -> PublishData
 Group -> Tissue -> Dataset -> ProbeSetData
 ```
 
+## ProbeData
+
 [OBSOLETE] ProbeData meanwhile is a table with fine-grained probe level Affymetrix data only. Contains 1 billion rows March 2016. This table may be *deleted* later since it is only used by the Probe Table display in GN1. Not used in GN2
 "ProbeData" should probably be "AssayData" or something more neutral.
 
 In comparison the "ProbeSetData" table contains more molecular assay data, including probe set data, RNA-seq data, proteomic data, and metabolomic data. 2.5 billion rows March 2016.
 ProbeData contains data only for Affymetrix probe level data (e.g. Exon array probes and M430 probes).
 
-"StrainId" should be "CaseId" or "SampleId" or "GenometypeId".
+"StrainId" should be "CaseId" or "SampleId" or "GenometypeId", see nomenclature above.
 
 ```
 select * from ProbeData limit 2;
@@ -226,6 +235,8 @@ select count(*) from ProbeData limit 2;
 ```
 
 ## PublishData
+
+These are the classic phenotypes under BXDPublish.
 
 ```
 MariaDB [db_webqtl]> select * from PublishData where StrainId=5 limit 5;
@@ -266,9 +277,9 @@ robwilliams modified post_publication_description at Sat Jan 30 13:48:49 2016
 ## ProbeSet
 
 
-Comment: PLEASE CHANGE TABLE NAME and rework fields carefully. This is a terrible table but it works well (RWW March 2016). It is used in combination with the crucial TRAIT DATA and ANALYSIS pages in GN1 and GN2. It is also used by annotators using the UPDATE INFO AND DATA web form to correct and update annotation. It is used by Arthur to enter new annotation files and metadata for arrays, genes, proteins, metabolites. The main problem with this table is that it is doing too much work.
+Comment: PLEASE CHANGE TABLE NAME and rework fields carefully. This is a terrible table but it works well (RWW March 2016). It is used in combination with the crucial TRAIT DATA and ANALYSIS pages in GN1 and GN2. It is also used by annotators using the UPDATE INFO AND DATA web form to correct and update annotation. It is used by Arthur to enter new annotation files and metadata for arrays, genes, proteins, metabolites. The main problem with this table is that it is doing too much work. And it is not doing enough because it is huge, but does not track changes. The plan is to migrate to lmdb for that.
 
-Initially (2003) this table contained only Affymetrix ProbeSet data for mouse (U74aV2 initially). Many other array platforms for different species were added. At least four other major categories of molecular assays have been added since about 2010.
+Initially (2003) this table contained only Affymetrix ProbeSet data for mouse (U74aV2 initially). Many other array platforms for different species were added. At least four other major categories of molecular assays have been added since about 2010:
 
 1. RNA-seq annotation and sequence data for transcripts using ENSEMBL identifiers or NCBI NM_XXXXX and NR_XXXXX type identifiers
 
@@ -278,7 +289,7 @@ Initially (2003) this table contained only Affymetrix ProbeSet data for mouse (U
 
 4. Epigenomic and methylome data (e.g. Human CANDLE Methylation data with identifiers such as "cg24523000")
 
-It would make good sense to break this table into four or more types of molecular assay metadata or annotation tables) (AssayRNA_Anno, AssayProtein_Anno, AssayMetabolite_Anno, AssayEpigenome_Anno, AssayMetagenome_Anno), since these assays will have many differences in annotation content compared to RNAs.
+It would make good sense to break this table into four or more types of molecular assay metadata or annotation tables) (AssayRNA_Anno, AssayProtein_Anno, AssayMetabolite_Anno, AssayEpigenome_Anno, AssayMetagenome_Anno), since these assays will have many differences in annotation content compared to RNAs (RWW).
 
 Some complex logic is used to update contents of this table when annotators modify and correct the information (for example, updating gene symbols). These features requested by Rob so that annotating one gene symbol in one species would annotate all gene symbols in the same species based on common NCBI GeneID number. For example, changing the gene alias for one ProbeSet.Id will changing the list of aliases in all instances with the same gene symbol.
 
