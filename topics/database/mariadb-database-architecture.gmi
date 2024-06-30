@@ -173,13 +173,27 @@ MariaDB [db_webqtl]> select * from ProbeData limit 5;
 
 ProbeSet describes ProbeSetData. I.e., every probe ID comes with a sequence (microarray) etc.
 
-[OBSOLETE] ProbeData is a table with fine-grained probe level Affymetrix data only. Contains 1 billion rows March 2016. This table may be *deleted* later since it is only used by the Probe Table display in GN1. Not used in GN2
+As for duplicated data - I'm pretty sure duplicated or "detached"* data happens sometimes, though that's not related to the PublishData/ProbeSetData distinction (unless this is done deliberately for some reason). I believe that whether data is entered as one or the other primarily comes down to the desire/need to divide it into datasets (or by tissue) within a group (with mRNA expression data just being the most common reason for this). I've encountered a situation before with Arthur where there was data in ProbeSetData that wasn't also in ProbeSetXRef
+
+an you give an example of exactly what you mean? PublishData would be stuff like sex, weight, etc (is this what you mean?) while ProbeSetData is used for mRNA expression data (except for a few situations where it isn't lol).
+
+That being said, *functionally*, I think the only real distinction (aside from what metadata is displayed) is that "ProbeSet" data has extra levels of "granularity" where it's also organized by tissue type and can be split into "datasets" (while "PublishData" traits are only associated with a Group (InbredSet in DB). That's why some non-mRNA expression data is still classified as "ProbeSet" - I think it's basically just a way to separate it into datasets within a group, often for specific tissues.
+
+So the organization is something like this:
+
+```
+Group -> PublishData
+Group -> Tissue -> Dataset -> ProbeSetData
+```
+
+[OBSOLETE] ProbeData meanwhile is a table with fine-grained probe level Affymetrix data only. Contains 1 billion rows March 2016. This table may be *deleted* later since it is only used by the Probe Table display in GN1. Not used in GN2
 "ProbeData" should probably be "AssayData" or something more neutral.
 
 In comparison the "ProbeSetData" table contains more molecular assay data, including probe set data, RNA-seq data, proteomic data, and metabolomic data. 2.5 billion rows March 2016. In comparison, ProbeData contains data only for Affymetrix probe level data (e.g. Exon array probes and M430 probes).
 
 "StrainId" should be "CaseId" or "SampleId".
 
+```
 select * from ProbeData limit 2;
 +--------+----------+---------+
 | Id     | StrainId | value   |
@@ -196,9 +210,10 @@ select count(*) from ProbeData limit 2;
 | 976753435 |
 +-----------+
 1 row in set (0.00 sec)
-
+```
 
 ## ProbeSet
+
 
 Comment: PLEASE CHANGE TABLE NAME and rework fields carefully. This is a terrible table but it works well (RWW March 2016). It is used in combination with the crucial TRAIT DATA and ANALYSIS pages in GN1 and GN2. It is also used by annotators using the UPDATE INFO AND DATA web form to correct and update annotation. It is used by Arthur to enter new annotation files and metadata for arrays, genes, proteins, metabolites. The main problem with this table is that it is doing too much work.
 
@@ -280,6 +295,7 @@ select * from Strain limit 5;
 +----+----------+----------+-----------+--------+-------+
 ```
 
+```
 show indexes from Strain;
 +--------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
 | Table  | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
@@ -314,9 +330,11 @@ SELECT Strain.Name, ProbeSetData.value, ProbeSetSE.error, ProbeSetData.Id
 | SM001 |   8.2 |  NULL | 25309534 |
 +-------+-------+-------+----------+
 5 rows in set (22.28 sec)
+```
 
 # ProbeSetFreeze
 
+```
 select * from ProbeSetFreeze limit 5;
 +----+---------------+-------+-------------+---------------------------------+---------------------------------------------+-------------------------+------------+-----------+--------+-----------------+-----------------+-----------+
 | Id | ProbeFreezeId | AvgID | Name        | Name2                           | FullName                                    | ShortName               | CreateTime | OrderList | public | confidentiality | AuthorisedUsers | DataScale |
@@ -327,10 +345,12 @@ select * from ProbeSetFreeze limit 5;
 |  4 |             5 |     1 | Br_U_0503_M | BXDMicroArray_ProbeSet_May03    | UTHSC Brain mRNA U74Av2 (May03) MAS5        | Brain U74Av2 05/03 MAS5 | 2003-05-01 |      NULL |      0 |               0 | NULL            | log2      |
 |  5 |             4 |     1 | HC_U_0303_M | GNFMicroArray_ProbeSet_March03  | GNF Hematopoietic Cells U74Av2 (Mar03) MAS5 | GNF U74Av2 03/03 MAS5   | 2003-03-01 |      NULL |      0 |               0 | NULL            | log2      |
 +----+---------------+-------+-------------+---------------------------------+---------------------------------------------+-------------------------+------------+-----------+--------+-----------------+-----------------+-----------+
+```
 
 # ProbeSetXRef
 
- select * from ProbeSetXRef limit 5;
+```
+select * from ProbeSetXRef limit 5;
 +------------------+------------+--------+------------+--------------------+------------+-------------------+---------------------+-----------------+--------------------+--------+----------------------+------+
 | ProbeSetFreezeId | ProbeSetId | DataId | Locus_old  | LRS_old            | pValue_old | mean              | se                  | Locus           | LRS                | pValue | additive             | h2   |
 +------------------+------------+--------+------------+--------------------+------------+-------------------+---------------------+-----------------+--------------------+--------+----------------------+------+
@@ -340,18 +360,21 @@ select * from ProbeSetFreeze limit 5;
 |                1 |          4 |      4 | D1Mit511   |   9.87815279480766 |      0.483 | 8.315628571428569 |  0.0470396593931327 | rs6154379       | 11.774867551173099 |  0.286 |   -0.157113725490196 | NULL |
 |                1 |          5 |      5 | D16H21S16  | 10.191723834264499 |      0.528 |  9.19345714285714 |  0.0354801718293322 | rs4199265       | 10.923263374016202 |  0.468 |  0.11476470588235299 | NULL |
 +------------------+------------+--------+------------+--------------------+------------+-------------------+---------------------+-----------------+--------------------+--------+----------------------+------+
+```
 
 
 Note that the following unlimited search is very slow:
 
 select max(value) from ProbeSetData;
 
+```
 +------------+
 | max(value) |
 +------------+
 |   26436006 |
 +------------+
 1 row in set (2 min 16.31 sec)
+```
 
 which is in some form is used in the search page, see [[https://github.com/genenetwork/genenetwork2_diet/blob/master/wqflask/wqflask/do_search.py#L811][the search code]].
 
@@ -366,18 +389,20 @@ Experiment is here in a wide sense, GTex can be one - I don't want to use datase
 
 This means a (slight) reordering:
 
+```
 phenotypes:  (id), sample_id, value
 samples:     experiment_id, individual_id
 experiments: name, version
 individual:  strain_id
 strains:     species_id
 species:     ...
+```
 
 ProbeData is also interesting, because it has the same structure as ProbeSetData, but only contains microarrays. This tables should be one (when we clear up the cross-referencing) as they both contain phenotype values. Both are large tables.
 
 PublishData is another phenotype table with values only which can be merged into that same table. This data does not require the annotations of probesets(!)
 
-https://genenetwork.org/show_trait?trait_id=10031&dataset=BXDPublish
+=> https://genenetwork.org/show_trait?trait_id=10031&dataset=BXDPublish
 
 So we have phenotype data in 3 tables with exactly the same
 layout. There is also TissueProbeSet*, but we'll ignore those for
@@ -393,7 +418,7 @@ move into NoSQL. There is plenty redundancy in that table now.
 I know it is going to be a pain to reorganize the database, but if we
 want to use it in the long run we are going to have to simplify it.
 
-** ProbeSetFreeze and ProbeFreeze (/dataset/name.json)
+# ProbeSetFreeze and ProbeFreeze (/dataset/name.json)
 
 GN_SERVER: /dataset/HC_M2_0606_P.json
 
@@ -401,19 +426,24 @@ ProbesetFreeze contains DataSet information, such as name, fullname of
 datasets, as well as whether they are public and how the data is
 scaled:
 
+```
 select * from ProbeSetFreeze;
 | Id  | ProbeFreezeId | AvgID | Name         | Name2                              | FullName                                      | ShortName                                     | CreateTime | OrderList | public | confidentiality | AuthorisedUsers | DataScale |
 | 112 |            30 |     2 | HC_M2_0606_P | Hippocampus_M430_V2_BXD_PDNN_Jun06 | Hippocampus Consortium M430v2 (Jun06) PDNN    | Hippocampus M430v2 BXD 06/06 PDNN             | 2006-06-23 |      NULL |      2 |               0 | NULL            | log2      |
+```
 
 Another table contains a tissue reference and a back reference to the cross
 type:
 
+```
 select * from ProbeFreeze;
 | Id  | ProbeFreezeId | ChipId | TissueId | Name                                        | FullName | ShortName | CreateTime | InbredSetId |
 |  30 |            30 |      4 |        9 | Hippocampus Consortium M430v2 Probe (Jun06) |          |           | 2006-07-07 |           1 |
+```
 
 NOTE: these tables can probably be merged into one.
 
+```
 show indexes from ProbeSetFreeze;
 +----------------+------------+-----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
 | Table          | Non_unique | Key_name  | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
@@ -423,9 +453,11 @@ show indexes from ProbeSetFreeze;
 | ProbeSetFreeze |          0 | Name      |            1 | Name        | A         |           2 |     NULL | NULL   | YES  | BTREE      |         |               |
 | ProbeSetFreeze |          1 | NameIndex |            1 | Name2       | A         |           2 |     NULL | NULL   |      | BTREE      |         |               |
 +----------------+------------+-----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+```
 
-** ProbeSetSE
+# ProbeSetSE
 
+```
 select * from ProbeSetSE limit 5;
 +--------+----------+----------+
 | DataId | StrainId | error    |
@@ -436,6 +468,7 @@ select * from ProbeSetSE limit 5;
 |      1 |        4 | 0.827588 |
 |      1 |        5 | 0.303492 |
 +--------+----------+----------+
+```
 
 # More information
 
