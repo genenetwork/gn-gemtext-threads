@@ -5,6 +5,10 @@ We are increasingly moving material out into lmdb (genotypes and phenotypes) and
 
 In this document we'll discuss where things are, where they ought to go, and how the nomenclature should change.
 
+An SVG of the SQL layout can be found here
+
+=> https://raw.githubusercontent.com/genenetwork/gn-gemtext-threads/main/topics/database/sql.svg
+
 # Nomenclature
 
 These are the terms we use
@@ -144,7 +148,15 @@ All *Data tables are large
 
 ## Tables containing trait values
 
-One of the more problematic aspects of GN is that there are two tables containing trait values. ProbeData contains expression data. ProbeSetData contains both 'classical' phenotypes and mRNA.
+A trait on GN is defined by a trait-id with a dataset-id.
+
+=> https://genenetwork.org/show_trait?trait_id=10031&dataset=BXDPublish
+
+The trait-id can also be a probe name
+
+=> https://genenetwork.org/show_trait?trait_id=1441566_at&dataset=HC_M2_0606_P
+
+One of the more problematic aspects of GN is that there are two tables containing trait values (actually there are three!). ProbeSetData mostly contains expression data. PublishData contains 'classical' phenotypes. ProbeData is considered defunct.
 
 ```
 MariaDB [db_webqtl]> select * from ProbeSetData limit 5;
