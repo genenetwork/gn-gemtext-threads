@@ -26,7 +26,7 @@ Naming convention-wise there is a confusing use of id and data-id in particular.
 # The small test database (2GB)
 
 The default install comes with a smaller database which includes a
-number of the BXD's and the Human liver dataset (GSE9588).
+number of the BXDs and the Human liver dataset (GSE9588).
 
 # GeneNetwork database
 
