@@ -5,7 +5,7 @@
 * type: bug
 * assigned: fredm
 * priority: high
-* status: open
+* status: closed, completed, fixed
 * keywords: gn-uploader, uploader, upload, genotypes, geno
 
 ## Description
@@ -15,3 +15,8 @@ Currently, the uploader expects that a R/qtl2 bundle be self-contained, i.e. it 
 This is unnecessary, in a lot of situations, seeing as Genenetwork might already have the appropriate genotypes already in its database.
 
 This issue tracks the implementation for the check of the genotypes against both the genotypes provided in the bundle, and those already in the database.
+
+### Updates
+
+Fixed in
+=> https://git.genenetwork.org/gn-uploader/commit/?id=0e74a1589db9f367cdbc3dce232b1b6168e3aca1 this commit
