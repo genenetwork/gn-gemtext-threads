@@ -1,0 +1,42 @@
+# Genome Details
+
+This file is probably misnamed.
+
+*TODO*: Update name once we know where this fits
+
+## Tags
+
+* type: documentation, doc, docs
+* assigned: fredm
+* priority: docs
+* status: open
+* keywords: gn-uploader, uploader, genome
+
+## Location
+
+### centiMorgan (cM)
+
+We no longer use centiMorgan in GeneNetwork
+
+From the email threads:
+
+```
+> …
+> Sorry, we now generally do not use centimorgans. Chr 19 is 57 cM
+> using markers that exclude telomeres in most crosses.
+> …
+```
+
+and
+
+```
+> …
+> I know that cM is a bit more variable because it's not a direct measurement, …
+> …
+```
+
+### Megabasepairs (Mbp)
+
+The uploader will store any provided physical location values (in megabasepairs) in the
+=> https://gn1.genenetwork.org/webqtl/main.py?FormID=schemaShowPage#Geno Geno table
+specifically in the `Mb` field of that table.
