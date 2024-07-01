@@ -20,20 +20,25 @@ In this way, each upload can be linked to a specific user.
 
 * [x] Build UI to allow uploads
 * [x] Build back-end to handle uploads
+* [x] Handle upload failures/errors
+* [x] Deploy to staging
+  .
+  .
+  .
 * [ ] Rework cancel to actually kill the upload
 * [ ] Provide pause functionality
-* [ ] Maybe trigger job on separate endpoint: cleaner and avoids
-* [ ] Handle upload failures/errors
+* [ ] Maybe trigger job on separate endpoint: If I can figure it out, it gives a cleaner way to run the job with the "complete" handler rather than the "fileSuccess" handler.
 * [ ]
 * [ ]
 * [ ]
 * [ ]
 
-  .
-  .
-  .
+### Updates
 
-* [ ] Deploy to staging
+=> https://git.genenetwork.org/gn-uploader/commit/?id=9a8dddab072748a70d43416ac8e6db69ad6fb0cb
+=> https://git.genenetwork.org/gn-uploader/commit/?id=df9da3d5b5e4382976ede1b54eb1aeb04c4c45e5
+=> https://git.genenetwork.org/gn-uploader/commit/?id=47c2ea64682064d7cb609e5459d7bd2e49efa17e
+=> https://git.genenetwork.org/gn-uploader/commit/?id=a68fe177ae41f2e58a64b3f8dcf3f825d004eeca
 
 ### Possible Resources
 
