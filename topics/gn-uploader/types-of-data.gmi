@@ -6,7 +6,7 @@
 * priority:
 * status: open
 * type: documentation
-* keywords: gn-uploader, uploader, genenetwork, documentation, doc, docs, data, data type
+* keywords: gn-uploader, uploader, genenetwork, documentation, doc, docs, data, data type, types of data
 
 ## Description
 
@@ -30,9 +30,13 @@ Examples of this data are the mRNA assay data saved in the `ProbeSet*` database 
 
 ### Genotype Data
 
-Useful for correlations, cofactor and PheWAS computations.
+This is core data, and all other data seem to rely on its existence.
 
-This is core data, and all other data seems to rely on its existence.
+Useful for:
+* correlations, cofactor and PheWAS computations.
+* mapping purposes
+* search and display
+* editing and curation
 
 ### Cofactors and Attributes
 
