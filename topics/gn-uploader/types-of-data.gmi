@@ -1,0 +1,47 @@
+# Types of Data in GeneNetwork
+
+## Tags
+
+* assigned:
+* priority:
+* status: open
+* type: documentation
+* keywords: gn-uploader, uploader, genenetwork, documentation, doc, docs, data, data type
+
+## Description
+
+There are five (5) main types of data in GeneNetwork
+
+* Classical Phenotypes (PublishData)
+* High Content Data
+* Genotype Data
+* Cofactors and Attributes
+* Metadata
+
+### Classical Phenotypes
+
+This is usually low-content data e.g. body weight.
+
+This is currently saved in the `Publish*` tables in the database.
+
+### High Content Data
+
+Examples of this data are the mRNA assay data saved in the `ProbeSet*` database tables.
+
+### Genotype Data
+
+Useful for correlations, cofactor and PheWAS computations.
+
+This is core data, and all other data seems to rely on its existence.
+
+### Cofactors and Attributes
+
+This data can be alphanumeric (mix of numerical and non-numerical) data.
+
+It is not intended for mapping.
+
+### Metadata
+
+This data should (ideally) always accompany any and all of the data types above. It provides contextual information regarding the data it accompanies, and is useful for search, and other contextualising operations.
+
+It is alphanumeric data, and mostly cannot be used for numeric computations.
