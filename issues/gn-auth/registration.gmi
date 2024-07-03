@@ -2,8 +2,11 @@
 
 # Tags
 
+* type: bug
 * assigned: fredm
 * priority: critical
+* status: closed, completed, fixed
+* keywords: gn-auth, auth, authorisation, authentication, registration
 
 # Issues
 
