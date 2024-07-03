@@ -2,7 +2,7 @@
 
 ## Tags
 
-* status: open
+* status: closed, completed, fixed
 * priority: medium
 * assigned: fredm, flisso
 * type: feature request, feature-request
@@ -22,16 +22,6 @@ In this way, each upload can be linked to a specific user.
 * [x] Build back-end to handle uploads
 * [x] Handle upload failures/errors
 * [x] Deploy to staging
-  .
-  .
-  .
-* [ ] Rework cancel to actually kill the upload
-* [ ] Provide pause functionality
-* [ ] Maybe trigger job on separate endpoint: If I can figure it out, it gives a cleaner way to run the job with the "complete" handler rather than the "fileSuccess" handler.
-* [ ]
-* [ ]
-* [ ]
-* [ ]
 
 ### Updates
 
@@ -46,3 +36,6 @@ In this way, each upload can be linked to a specific user.
 => https://github.com/23/resumable.js/
 => https://www.dropzone.dev/
 => https://stackoverflow.com/questions/69339582/what-hash-python-3-hashlib-yields-a-portable-hash-of-file-contents
+
+
+This is mostly fixed. Any arising bugs can be tracked is separate issues.
