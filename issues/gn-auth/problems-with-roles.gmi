@@ -3,9 +3,9 @@
 ## Tags
 
 * type: bug
-* status: open
 * priority: critical
 * assigned: fredm, zachs
+* status: closed, completed, fixed
 * keywords: gn-auth, authorisation, authorization, roles, privileges
 
 ## Description
@@ -29,8 +29,8 @@ The implementation should instead, tie the roles to the specific resource, rathe
 * [x] migration: Add `resource:role:[create|delete|edit]-role` privileges to `resource-owner` role
 * [x] migration: Create new `resource_roles` db table linking each resource to roles that can act on it, and the user that created the role
 * [x] migration: Drop table `group_roles` deleting all data in the table: data here could already have privilege escalation in place
-* [ ] Create a new "Roles" section on the "Resource-View" page, or a separate "Resource-Roles" page to handle the management of that resource's roles
-* [ ] Ensure user can only assign roles they have created - maybe?
+* [x] Create a new "Roles" section on the "Resource-View" page, or a separate "Resource-Roles" page to handle the management of that resource's roles
+* [x] Ensure user can only assign roles they have created - maybe?
 
 ### Fixes
 
