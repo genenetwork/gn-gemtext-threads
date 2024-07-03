@@ -5,8 +5,8 @@
 * status: open
 * assigned: fredm
 * priority: medium
-* keywords: email, user registration
 * type: feature request, feature-request
+* keywords: gn-auth, email, user registration, email confirmation
 
 ## Description
 
