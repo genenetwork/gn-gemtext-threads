@@ -45,3 +45,7 @@ Traceback (most recent call last):
     for sample in samples:
 TypeError: 'NoneType' object is not iterable
 ```
+
+### Updates
+
+This is likely just because the genotype file doesn't exist in the necessary format (BIMBAM). We probably need to convert the R/qtl2 genotypes to BIMBAM.
