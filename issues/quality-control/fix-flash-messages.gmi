@@ -5,7 +5,7 @@
 * assigned: fredm
 * priority: low
 * type: bug
-* status: open
+* status: closed, completed, fixed
 * keywords: flask, flash
 
 ## Description
