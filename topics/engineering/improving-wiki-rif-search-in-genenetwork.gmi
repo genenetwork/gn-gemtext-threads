@@ -1,0 +1,164 @@
+# Improving RIF+WIKI Search
+
+* author: bonfacem
+* reviewed-by: jnduli
+
+At the time of this writing, WIKI and/or RIF Search is extremely slow.  As an example, searching: "WIKI=nicotine MEAN=(12.103 12.105)" causes an Nginx time-out in Genenetwork2.  This blog discusses how we improved the WIKI+RIF search using XAPIAN and some of our key learnings.
+
+
+### Adding RIF+WIKI Search to Existing Gene Index
+
+When indexing genes, we have this complex query which returns 48,308,714 rows:
+
+```
+genes_query = SQLQuery(
+    ["ProbeSet.Name AS name",
+     "ProbeSet.Symbol AS symbol",
+     "ProbeSet.description AS description",
+     "ProbeSet.Chr AS chr",
+     "ProbeSet.Mb as mb",
+     "ProbeSet.alias AS alias",
+     "ProbeSet.GenbankId AS genbankid",
+     "ProbeSet.UniGeneId AS unigeneid",
+     "ProbeSet.Probe_Target_Description AS probe_target_description",
+     "ProbeSetFreeze.Name AS dataset",
+     "ProbeSetFreeze.FullName AS dataset_fullname",
+     "Species.Name AS species",
+     "InbredSet.Name AS `group`",
+     "Tissue.Name AS tissue",
+     "ProbeSetXRef.Mean AS mean",
+     "ProbeSetXRef.LRS AS lrs",
+     "ProbeSetXRef.additive AS additive",
+     "Geno.Chr AS geno_chr",
+     "Geno.Mb as geno_mb"],
+    ["Species",
+     SQLTableClause("INNER JOIN", "InbredSet",
+                    "InbredSet.SpeciesId = Species.Id"),
+     SQLTableClause("INNER JOIN", "ProbeFreeze",
+                    "ProbeFreeze.InbredSetId = InbredSet.Id"),
+     SQLTableClause("INNER JOIN", "Tissue",
+                    "ProbeFreeze.TissueId = Tissue.Id"),
+     SQLTableClause("INNER JOIN", "ProbeSetFreeze",
+                    "ProbeSetFreeze.ProbeFreezeId = ProbeFreeze.Id"),
+     SQLTableClause("INNER JOIN", "ProbeSetXRef",
+                    "ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id"),
+     SQLTableClause("INNER JOIN", "ProbeSet",
+                    "ProbeSet.Id = ProbeSetXRef.ProbeSetId"),
+     SQLTableClause("LEFT JOIN", "Geno",
+                    "ProbeSetXRef.Locus = Geno.Name AND Geno.SpeciesId = Species.Id")],
+    Just("ProbeSetFreeze.confidentiality < 1 AND ProbeSetFreeze.public > 0"))
+```
+
+Simply doing a simple count for the above query takes 4 minutes 3.73 seconds.  The count query is:
+
+```
+SELECT COUNT(*) FROM Species
+INNER JOIN InbredSet ON InbredSet.SpeciesId = Species.Id
+INNER JOIN ProbeFreeze ON ProbeFreeze.InbredSetId = InbredSet.Id
+INNER JOIN Tissue ON ProbeFreeze.TissueId = Tissue.Id
+INNER JOIN ProbeSetFreeze
+ON ProbeSetFreeze.ProbeFreezeId = ProbeFreeze.Id
+INNER JOIN ProbeSetXRef ON
+ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id
+INNER JOIN ProbeSet
+ON ProbeSet.Id = ProbeSetXRef.ProbeSetId
+LEFT JOIN Geno ON ProbeSetXRef.Locus = Geno.Name
+AND Geno.SpeciesId = Species.Id;
+```
+
+For each row returned, we index each field I.e. description, symbol, etc as such:
+
+
+```
+index_text_without_positions = lambda text: termgenerator.index_text_without_positions(text)
+index_authors = lambda authors: termgenerator.index_text(authors, 0, "A")
+index_species = lambda species: termgenerator.index_text_without_positions(species, 0, "XS")
+index_group = lambda group: termgenerator.index_text_without_positions(group, 0, "XG")
+index_tissue = lambda tissue: termgenerator.index_text(tissue, 0, "XI")
+index_dataset = lambda dataset: termgenerator.index_text(dataset, 0, "XDS")
+index_symbol = lambda symbol: termgenerator.index_text_without_positions(symbol, 0, "XY")
+index_chr = lambda chr: termgenerator.index_text_without_positions(chr, 0, "XC")
+index_peakchr = lambda peakchr: termgenerator.index_text_without_positions(peakchr, 0, "XPC")
+
+[...]
+
+trait["mean"].bind(partial(add_mean, doc))
+trait["lrs"].bind(partial(add_peak, doc))
+trait["geno_mb"].bind(partial(add_peakmb, doc))
+trait["additive"].bind(partial(add_additive, doc))
+trait["year"].bind(partial(add_year, doc))
+
+# Index free text.
+for key in ["description", "authors", "dataset"]:
+    trait[key].bind(index_text)
+for key in ["Abstract", "Title"]:
+    trait.pop(key).bind(index_text)
+for key in ["species", "group", "inbredsetcode"]:
+    trait[key].bind(index_text_without_positions)
+for key in ["abbreviation", "Lab_code"]:
+    trait.pop(key).bind(index_text_without_positions)
+
+# Index text with prefixes.
+trait["species"].bind(index_species)
+trait["group"].bind(index_group)
+trait["authors"].bind(index_authors)
+trait["geno_chr"].bind(index_peakchr)
+trait["dataset"].bind(index_dataset)
+
+[...]
+```
+
+With the above indexing, even without RIF+WIKI indices, we take around 1 hour 15 minutes to index.  To add generif+wiki indexes, one naive solution would be to add an extra join to the relevant tables, in our case: "GeneRIF" (WIKI) and "GeneRIF_BASIC" (RIF).   However, the joins take time, since we'd have to do a join a VARCHAR column, "symbol", and this is inefficient.  Simply adding a join to GeneRIF_BASIC table takes XXXX minutes, and balloons the numbers of rows to XXXX rows:
+
+```
+SELECT COUNT(*) FROM Species
+INNER JOIN InbredSet ON InbredSet.SpeciesId = Species.Id
+INNER JOIN ProbeFreeze ON ProbeFreeze.InbredSetId = InbredSet.Id
+INNER JOIN Tissue ON ProbeFreeze.TissueId = Tissue.Id
+INNER JOIN ProbeSetFreeze
+ON ProbeSetFreeze.ProbeFreezeId = ProbeFreeze.Id
+INNER JOIN ProbeSetXRef ON
+ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id
+INNER JOIN ProbeSet
+ON ProbeSet.Id = ProbeSetXRef.ProbeSetId
+LEFT JOIN Geno ON ProbeSetXRef.Locus = Geno.Name
+AND Geno.SpeciesId = Species.Id
+INNER JOIN GeneRIF_BASIC ON GeneRIF_BASIC.symbol = ProbeSet.Symbol;
+```
+
+This is very inefficient and slow as well!  One advantage we have in our infrastracture is that we have RDF+WIKI metadata in our virtuoso instance.   Fetching one query is very fast: about 0.001 seconds, so naturally, one would be tempted to query for a document for every row fetch.   This proves te be inefficient; using some quick back-of-the-envelope calculations, this would add "0.001 x 40,000,000" seconds (about 11 hours) to the indexing process.  How do we improve things?  One solution we developed earlier is to build a global cache---a python dictionary---from our RDF store.   This reduces the fetch times from a mere 0.001 to 0.00001, thereby reducing our total fetch times to: "0.00001 * 40000000" which is 6.6 minutes.  Not bad!  One other advantage we have when using RDF is the extra metadata we can add, even with a federated service, should we choose to.
+
+Building a simple global cache was still not enough to meet our indexing needs: fast indexing, and a reasonable index size.  Naively indexing our data with global cache took our indexing time all the way from 50G to around 200G in space.  And the indexing itself consumed all our RAM and caused intermittent outage on 2024-06-21 (search for "Outage for 2024-06-20 in the following link"):
+
+=> https://issues.genenetwork.org/topics/meetings/jnduli_bmunyoki Meeting notes
+
+One thing we noticed when instrumenting[0] our RAM usage was the culprit for the RAM gluttony was the indexing script.  This was simply because the demonic child processes the villain script spawned consumed around 1GB of RAM and we used the maximum cpu_count to generate these processes.  Using some back-of-the-envelope math, we settled on a cpu_count of 67, so that means, in the worst case scenario, we use 67GB of RAM.  You can see this fix commite:
+
+=> https://github.com/genenetwork/genenetwork3/commit/99d0d1200d7dcd81e27ce65ab84bab145d9ae543 feat: set 67 parallel processes to run in prod
+
+Now that we have our script tamed with RAM consumption, we experienced 2 new issues: the indexing time still took alot of time (around 7 hours) and the space footprint was unacceptable (around 200GB).  When instrumenting our current process here's what we found out:
+
+The actual indexing took 1 hour 33 minutes, and the compacting itself took around 5 hours 30 minutes and the final size of the index was 180 Gb.  We had several ideas on how to improve this:
+
+The first idea we tried out was to parallelise the compacting process.  Parallelising had some improvements in reducing our compacting time, but nothing significant.  The conclusion we could draw from this was that the compacting process is IO bound.  This is useful information because it informs the type of drive you would want to run our indexing script in, and in our case, an NVMe drive is an idea candidate because of the fast speeds it provides.
+
+The other idea we tried out was to stem words in our index and to remove stop-words from our index.  This reduced our size from 180 Gb to 152 Gb, a 15.56% reduction in size.  Consequently, our build times (with parallel compacting) was reduced to 1 hour 57 minutes.  This was a great improvement, but however, we still had a size constraint.  A rise from 50 Gb to 152 Gb was still unacceptable.  Further research with how xapian indexing pointed us to instrumenting positional data in the index.  In XAPIAN positional data allows someone to be able to phrase searches such as: "nicotine NEAR mouse" which loosely translates to "search for the term nicotine which occurs near the term mouse."  One thing we noticed in the RIF+WIKI search is that we don't need this type of search, a trade-off we were willing to make to make search faster and smaller.  Instrumenting the impact dropping positional data from RIF+WIKI data was immediate.  Our indexing times, on the NVMe drive dropped to a record high of 1 hour 9 minutes with a size of 73 Gb!
+
+
+The key learnings from adding RIF+WIKI to the index are:
+
+* Compacting is IO bound.
+* Instrument your indexing script and appropriately choose an appropriate cpu_count that fits your needs.
+* Do NOT store positional data unless you need it.
+* Consider stemming your data and removing stop-words from your data ahead of indexing.
+
+### Example Searches
+
+With RIF+WIKI search added, here are some searches you can try out in CD genenetwork instance:
+
+* wiki:nicotine AND mean:12.103..12.105
+* rif:isoneuronal AND mean:12.103..12.105
+
+### References
+
+=> https://issues.genenetwork.org/topics/engineering/instrumenting-ram-usage Instrument RAM Usage
