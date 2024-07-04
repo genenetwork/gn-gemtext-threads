@@ -3,12 +3,12 @@
 * author: bonfacem
 * reviewed-by: jnduli
 
-At the time of this writing, WIKI and/or RIF Search is extremely slow for MySQL.  As an example, searching: "WIKI=nicotine MEAN=(12.103 12.105)" causes an Nginx time-out in Genenetwork2.  This blog discusses how we improved the WIKI+RIF search using XAPIAN and some of our key learnings.
+At the time of this writing, WIKI and/or RIF Search is extremely slow for MySQL .e.g. searching: "WIKI=nicotine MEAN=(12.103 12.105)" causes an Nginx time-out in Genenetwork2.  This blog discusses how we improved the WIKI+RIF search using XAPIAN and some of our key learnings.
 
 ### TLDR; Key Learnings from Adding RIF+WIKI to the Index
 
-* Compacting is IO bound.
-* Instrument your indexing script and appropriately choose an appropriate cpu_count that fits your needs.
+* xapian-compacting is IO bound.
+* Instrument your indexing script and appropriately choose an appropriate parallel process_count that fits your needs.
 * Do NOT store positional data unless you need it.
 * Consider stemming your data and removing stop-words from your data ahead of indexing.
 
@@ -16,7 +16,7 @@ At the time of this writing, WIKI and/or RIF Search is extremely slow for MySQL.
 
 When indexing genes, we have a complex query [0] which returns 48,308,714 rows
 
-Running an "EXPLAIN" on [0] yields:
+running an "EXPLAIN" on [0] yields:
 
 ```
 1  +------+-------------+----------------+--------+-----------------------------+------------------+---------+------------------------------------------------------------+-------+-------------+
@@ -72,25 +72,25 @@ From the above we see that we have an extra "ref" on line 5 which adds extra ove
 
 Our current indexer[4] works by indexing the results from [0] in chunks of 100,000 into separate xapian databases stored in different directories.  This happens by spawning different child processes from the main indexer script.  The final step in this process is to compact all the different databases into one database.
 
-To add RIF+WIKI indices to the existing gene index, we built a global cache.  In each child process, we fetch the relevant RIF+WIKI entry from this cache and index.  One problem we ran into with this approach was that our indexing time increased, and our space consumption ballooned.  At one point we ran out of our RAM causing an intermittent outage on 2024-06-21 (search for "Outage for 2024-06-20 in the following link"):
+To add RIF+WIKI indices to the existing gene index, we built a global cache.  In each child process, we fetch the relevant RIF+WIKI entry from this cache and index.  This increased our indexing time and space consumption.  At one point we ran out of our RAM causing an intermittent outage on 2024-06-21 (search for "Outage for 2024-06-20 in the following link"):
 
 => https://issues.genenetwork.org/topics/meetings/jnduli_bmunyoki Meeting notes
 
-When troubleshooting our outage, we realized the indexing script consumed all the RAM.  This was because the child processes spawned by the index script each consumed around 3GB of RAM; with the total number of child processes and their RAM usage exceeding the system RAM.  To remedy this, we settled on a cpu_count of 67, limiting the number of spawned children and putting a cap on the total number of RAM the indexing script could consume.  You can see the fix in this commit:
+When troubleshooting our outage, we realized the indexing script consumed all the RAM.  This was because the child processes spawned by the index script each consumed around 3GB of RAM; with the total number of child processes and their RAM usage exceeding the system RAM.  To remedy this, we settled on a total_child_process count of 67, limiting the number of spawned children and putting a cap on the total number of RAM the indexing script could consume.  You can see the fix in this commit:
 
 => https://github.com/genenetwork/genenetwork3/commit/99d0d1200d7dcd81e27ce65ab84bab145d9ae543 feat: set 67 parallel processes to run in prod
 
-To try to speed our indexing speed, we attempted to parallelize our compacting.  Parallelising had some improvements in reducing our compacting time, but nothing significant.  The conclusion we could draw from this was that the compacting process is IO bound.  This is useful data because it informs the type of drive you would want to run our indexing script in, and in our case, an NVMe drive is an ideal candidate because of the fast IO speeds it has.
+To try to speed our indexing speed, we attempted to parallelize our compacting.  Parallelising had some improvements in reducing our compacting time, but nothing significant.  On a SATA drive, compacting 3 different databases which had been compacted from 50 different databases was significantly faster than compacting one database at once from 150 different databases.  The conclusion we could draw from this was that the compacting process is IO bound.  This is useful data because it informs the type of drive you would want to run our indexing script in, and in our case, an NVMe drive is an ideal candidate because of the fast IO speeds it has.
 
-To attempt to reduce the index script's space consumption and improve the script's performance, we first removed stop-words from the global cache, and stemmed words from other documents.  This reduced the space footprint to 152 Gb.  This was still unacceptable per our needs.  Further research with how xapian indexing works pointed us to positional data in the XAPIAN index.  In XAPIAN, positional data allows someone to be able to perform phrase searches such as: "nicotine NEAR mouse" which loosely translates to "search for the term nicotine which occurs near the term mouse."  One thing we noticed in the RIF+WIKI search is that we don't need this type of search, a trade-off we were willing to make to make search faster and our XAPIAN database smaller.  Instrumenting the impact of dropping positional data from RIF+WIKI data was immediate.  Our indexing times, on the NVMe drive dropped to a record high of 1 hour 9 minutes with a size of 73 Gb!  The table below summarizes our findings:
+To attempt to reduce the index script's space consumption and improve the script's performance, we first removed stop-words and most common words from the global cache, and stemmed words from other documents.  This reduced the space footprint to 152 Gb.  This was still unacceptable per our needs.  Further research with how xapian indexing works pointed us to positional data in the XAPIAN index.  In XAPIAN, positional data allows someone to be able to perform phrase searches such as: "nicotine NEAR mouse" which loosely translates to "search for the term nicotine which occurs near the term mouse."  One thing we noticed in the RIF+WIKI search is that we don't need this type of search, a trade-off we were willing to make to make search faster and our XAPIAN database smaller.  Instrumenting the impact of dropping positional data from RIF+WIKI data was immediate.  Our indexing times, on the NVMe drive dropped to a record high of 1 hour 9 minutes with a size of 73 Gb!  The table below summarizes our findings:
 
 
 ```
-|                                                | Indexing Time (min) | Space (Gb) | % Size (from G+P) | % Time |
-|----------------------------------------------------------------------------------------------------------------|
-|G+PrR (no stop-words, no-stemming, pos. data)   | 101                 | 60         | 0                 | 0      |  
-|G+P+W+R (no stop-words, no stemming, pos. data) | 429                 | 152        | 153.3             | 324.8  |
-|G+P+W+R (stop-words, stemming, no pos. data)    | 69                  | 73         | 21.6              | -31.6  |
+|                                                | Indexing Time (min) | Space (Gb) | % Inc Size (from G+P+R) | % Inc Time |
+|-------------------------------------------------------------------------------------------------------------------- -----|
+|G+P+R (no stop-words, no-stemming, pos. data)   | 101                 | 60         | 0                   | 0              |  
+|G+P+W+R (no stop-words, no stemming, pos. data) | 429                 | 152        | 153.3               | 324.8          |
+|G+P+W+R (stop-words, stemming, no pos. data)    | 69                  | 73         | 21.6                | -31.6          |
 
 Key:
 ----
