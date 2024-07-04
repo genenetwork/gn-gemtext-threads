@@ -3,156 +3,104 @@
 * author: bonfacem
 * reviewed-by: jnduli
 
-At the time of this writing, WIKI and/or RIF Search is extremely slow.  As an example, searching: "WIKI=nicotine MEAN=(12.103 12.105)" causes an Nginx time-out in Genenetwork2.  This blog discusses how we improved the WIKI+RIF search using XAPIAN and some of our key learnings.
+At the time of this writing, WIKI and/or RIF Search is extremely slow for MySQL.  As an example, searching: "WIKI=nicotine MEAN=(12.103 12.105)" causes an Nginx time-out in Genenetwork2.  This blog discusses how we improved the WIKI+RIF search using XAPIAN and some of our key learnings.
 
-
-### Adding RIF+WIKI Search to Existing Gene Index
-
-When indexing genes, we have this complex query which returns 48,308,714 rows:
-
-```
-genes_query = SQLQuery(
-    ["ProbeSet.Name AS name",
-     "ProbeSet.Symbol AS symbol",
-     "ProbeSet.description AS description",
-     "ProbeSet.Chr AS chr",
-     "ProbeSet.Mb as mb",
-     "ProbeSet.alias AS alias",
-     "ProbeSet.GenbankId AS genbankid",
-     "ProbeSet.UniGeneId AS unigeneid",
-     "ProbeSet.Probe_Target_Description AS probe_target_description",
-     "ProbeSetFreeze.Name AS dataset",
-     "ProbeSetFreeze.FullName AS dataset_fullname",
-     "Species.Name AS species",
-     "InbredSet.Name AS `group`",
-     "Tissue.Name AS tissue",
-     "ProbeSetXRef.Mean AS mean",
-     "ProbeSetXRef.LRS AS lrs",
-     "ProbeSetXRef.additive AS additive",
-     "Geno.Chr AS geno_chr",
-     "Geno.Mb as geno_mb"],
-    ["Species",
-     SQLTableClause("INNER JOIN", "InbredSet",
-                    "InbredSet.SpeciesId = Species.Id"),
-     SQLTableClause("INNER JOIN", "ProbeFreeze",
-                    "ProbeFreeze.InbredSetId = InbredSet.Id"),
-     SQLTableClause("INNER JOIN", "Tissue",
-                    "ProbeFreeze.TissueId = Tissue.Id"),
-     SQLTableClause("INNER JOIN", "ProbeSetFreeze",
-                    "ProbeSetFreeze.ProbeFreezeId = ProbeFreeze.Id"),
-     SQLTableClause("INNER JOIN", "ProbeSetXRef",
-                    "ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id"),
-     SQLTableClause("INNER JOIN", "ProbeSet",
-                    "ProbeSet.Id = ProbeSetXRef.ProbeSetId"),
-     SQLTableClause("LEFT JOIN", "Geno",
-                    "ProbeSetXRef.Locus = Geno.Name AND Geno.SpeciesId = Species.Id")],
-    Just("ProbeSetFreeze.confidentiality < 1 AND ProbeSetFreeze.public > 0"))
-```
-
-Simply doing a simple count for the above query takes 4 minutes 3.73 seconds.  The count query is:
-
-```
-SELECT COUNT(*) FROM Species
-INNER JOIN InbredSet ON InbredSet.SpeciesId = Species.Id
-INNER JOIN ProbeFreeze ON ProbeFreeze.InbredSetId = InbredSet.Id
-INNER JOIN Tissue ON ProbeFreeze.TissueId = Tissue.Id
-INNER JOIN ProbeSetFreeze
-ON ProbeSetFreeze.ProbeFreezeId = ProbeFreeze.Id
-INNER JOIN ProbeSetXRef ON
-ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id
-INNER JOIN ProbeSet
-ON ProbeSet.Id = ProbeSetXRef.ProbeSetId
-LEFT JOIN Geno ON ProbeSetXRef.Locus = Geno.Name
-AND Geno.SpeciesId = Species.Id;
-```
-
-For each row returned, we index each field I.e. description, symbol, etc as such:
-
-
-```
-index_text_without_positions = lambda text: termgenerator.index_text_without_positions(text)
-index_authors = lambda authors: termgenerator.index_text(authors, 0, "A")
-index_species = lambda species: termgenerator.index_text_without_positions(species, 0, "XS")
-index_group = lambda group: termgenerator.index_text_without_positions(group, 0, "XG")
-index_tissue = lambda tissue: termgenerator.index_text(tissue, 0, "XI")
-index_dataset = lambda dataset: termgenerator.index_text(dataset, 0, "XDS")
-index_symbol = lambda symbol: termgenerator.index_text_without_positions(symbol, 0, "XY")
-index_chr = lambda chr: termgenerator.index_text_without_positions(chr, 0, "XC")
-index_peakchr = lambda peakchr: termgenerator.index_text_without_positions(peakchr, 0, "XPC")
-
-[...]
-
-trait["mean"].bind(partial(add_mean, doc))
-trait["lrs"].bind(partial(add_peak, doc))
-trait["geno_mb"].bind(partial(add_peakmb, doc))
-trait["additive"].bind(partial(add_additive, doc))
-trait["year"].bind(partial(add_year, doc))
-
-# Index free text.
-for key in ["description", "authors", "dataset"]:
-    trait[key].bind(index_text)
-for key in ["Abstract", "Title"]:
-    trait.pop(key).bind(index_text)
-for key in ["species", "group", "inbredsetcode"]:
-    trait[key].bind(index_text_without_positions)
-for key in ["abbreviation", "Lab_code"]:
-    trait.pop(key).bind(index_text_without_positions)
-
-# Index text with prefixes.
-trait["species"].bind(index_species)
-trait["group"].bind(index_group)
-trait["authors"].bind(index_authors)
-trait["geno_chr"].bind(index_peakchr)
-trait["dataset"].bind(index_dataset)
-
-[...]
-```
-
-With the above indexing, even without RIF+WIKI indices, we take around 1 hour 15 minutes to index.  To add generif+wiki indexes, one naive solution would be to add an extra join to the relevant tables, in our case: "GeneRIF" (WIKI) and "GeneRIF_BASIC" (RIF).   However, the joins take time, since we'd have to do a join a VARCHAR column, "symbol", and this is inefficient.  Simply adding a join to GeneRIF_BASIC table takes XXXX minutes, and balloons the numbers of rows to XXXX rows:
-
-```
-SELECT COUNT(*) FROM Species
-INNER JOIN InbredSet ON InbredSet.SpeciesId = Species.Id
-INNER JOIN ProbeFreeze ON ProbeFreeze.InbredSetId = InbredSet.Id
-INNER JOIN Tissue ON ProbeFreeze.TissueId = Tissue.Id
-INNER JOIN ProbeSetFreeze
-ON ProbeSetFreeze.ProbeFreezeId = ProbeFreeze.Id
-INNER JOIN ProbeSetXRef ON
-ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id
-INNER JOIN ProbeSet
-ON ProbeSet.Id = ProbeSetXRef.ProbeSetId
-LEFT JOIN Geno ON ProbeSetXRef.Locus = Geno.Name
-AND Geno.SpeciesId = Species.Id
-INNER JOIN GeneRIF_BASIC ON GeneRIF_BASIC.symbol = ProbeSet.Symbol;
-```
-
-This is very inefficient and slow as well!  One advantage we have in our infrastracture is that we have RDF+WIKI metadata in our virtuoso instance.   Fetching one query is very fast: about 0.001 seconds, so naturally, one would be tempted to query for a document for every row fetch.   This proves te be inefficient; using some quick back-of-the-envelope calculations, this would add "0.001 x 40,000,000" seconds (about 11 hours) to the indexing process.  How do we improve things?  One solution we developed earlier is to build a global cache---a python dictionary---from our RDF store.   This reduces the fetch times from a mere 0.001 to 0.00001, thereby reducing our total fetch times to: "0.00001 * 40000000" which is 6.6 minutes.  Not bad!  One other advantage we have when using RDF is the extra metadata we can add, even with a federated service, should we choose to.
-
-Building a simple global cache was still not enough to meet our indexing needs: fast indexing, and a reasonable index size.  Naively indexing our data with global cache took our indexing time all the way from 50G to around 200G in space.  And the indexing itself consumed all our RAM and caused intermittent outage on 2024-06-21 (search for "Outage for 2024-06-20 in the following link"):
-
-=> https://issues.genenetwork.org/topics/meetings/jnduli_bmunyoki Meeting notes
-
-One thing we noticed when instrumenting[0] our RAM usage was the culprit for the RAM gluttony was the indexing script.  This was simply because the demonic child processes the villain script spawned consumed around 1GB of RAM and we used the maximum cpu_count to generate these processes.  Using some back-of-the-envelope math, we settled on a cpu_count of 67, so that means, in the worst case scenario, we use 67GB of RAM.  You can see this fix commite:
-
-=> https://github.com/genenetwork/genenetwork3/commit/99d0d1200d7dcd81e27ce65ab84bab145d9ae543 feat: set 67 parallel processes to run in prod
-
-Now that we have our script tamed with RAM consumption, we experienced 2 new issues: the indexing time still took alot of time (around 7 hours) and the space footprint was unacceptable (around 200GB).  When instrumenting our current process here's what we found out:
-
-The actual indexing took 1 hour 33 minutes, and the compacting itself took around 5 hours 30 minutes and the final size of the index was 180 Gb.  We had several ideas on how to improve this:
-
-The first idea we tried out was to parallelise the compacting process.  Parallelising had some improvements in reducing our compacting time, but nothing significant.  The conclusion we could draw from this was that the compacting process is IO bound.  This is useful information because it informs the type of drive you would want to run our indexing script in, and in our case, an NVMe drive is an idea candidate because of the fast speeds it provides.
-
-The other idea we tried out was to stem words in our index and to remove stop-words from our index.  This reduced our size from 180 Gb to 152 Gb, a 15.56% reduction in size.  Consequently, our build times (with parallel compacting) was reduced to 1 hour 57 minutes.  This was a great improvement, but however, we still had a size constraint.  A rise from 50 Gb to 152 Gb was still unacceptable.  Further research with how xapian indexing pointed us to instrumenting positional data in the index.  In XAPIAN positional data allows someone to be able to phrase searches such as: "nicotine NEAR mouse" which loosely translates to "search for the term nicotine which occurs near the term mouse."  One thing we noticed in the RIF+WIKI search is that we don't need this type of search, a trade-off we were willing to make to make search faster and smaller.  Instrumenting the impact dropping positional data from RIF+WIKI data was immediate.  Our indexing times, on the NVMe drive dropped to a record high of 1 hour 9 minutes with a size of 73 Gb!
-
-
-The key learnings from adding RIF+WIKI to the index are:
+### TLDR; Key Learnings from Adding RIF+WIKI to the Index
 
 * Compacting is IO bound.
 * Instrument your indexing script and appropriately choose an appropriate cpu_count that fits your needs.
 * Do NOT store positional data unless you need it.
 * Consider stemming your data and removing stop-words from your data ahead of indexing.
 
-### Example Searches
+### Slow MySQL Performance
+
+When indexing genes, we have a complex query [0] which returns 48,308,714 rows
+
+Running an "EXPLAIN" on [0] yields:
+
+```
+1  +------+-------------+----------------+--------+-----------------------------+------------------+---------+------------------------------------------------------------+-------+-------------+
+2  | id   | select_type | table          | type   | possible_keys               | key              | key_len | ref                                                        | rows  | Extra       |
+3  +------+-------------+----------------+--------+-----------------------------+------------------+---------+------------------------------------------------------------+-------+-------------+
+4  |    1 | SIMPLE      | ProbeSetFreeze | ALL    | PRIMARY                     | NULL             | NULL    | NULL                                                       | 931   |             |
+5  |    1 | SIMPLE      | ProbeFreeze    | eq_ref | PRIMARY                     | PRIMARY          | 2       | db_webqtl.ProbeSetFreeze.ProbeFreezeId                     | 1     | Using where |
+6  |    1 | SIMPLE      | Tissue         | eq_ref | PRIMARY                     | PRIMARY          | 2       | db_webqtl.ProbeFreeze.TissueId                             | 1     |             |
+7  |    1 | SIMPLE      | InbredSet      | eq_ref | PRIMARY                     | PRIMARY          | 2       | db_webqtl.ProbeFreeze.InbredSetId                          | 1     | Using where |
+8  |    1 | SIMPLE      | Species        | eq_ref | PRIMARY                     | PRIMARY          | 2       | db_webqtl.InbredSet.SpeciesId                              | 1     |             |
+9  |    1 | SIMPLE      | ProbeSetXRef   | ref    | ProbeSetFreezeId,ProbeSetId | ProbeSetFreezeId | 2       | db_webqtl.ProbeSetFreeze.Id                                | 27287 |             |
+10 |    1 | SIMPLE      | ProbeSet       | eq_ref | PRIMARY                     | PRIMARY          | 4       | db_webqtl.ProbeSetXRef.ProbeSetId                          | 1     |             |
+11 |    1 | SIMPLE      | Geno           | eq_ref | species_name                | species_name     | 164     | db_webqtl.InbredSet.SpeciesId,db_webqtl.ProbeSetXRef.Locus | 1     | Using where |
++------+-------------+----------------+--------+-----------------------------+------------------+---------+------------------------------------------------------------+-------+-------------+
+```
+
+From the above table, we note that we have "ref" under the "type" column in on line 9.  The "type" column describes how the rows are found from the table (I.e the join type) [2].  In this case, "ref" means a non-unique index or prefix is used to find all the rows which we can see by running "SHOW INDEXES FROM ProbeSetXRef" (note the Non-unique value of 1 for ProbeSetFreezeId):
+
+```
++--------------+------------+------------------+--------------+------------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| Table        | Non_unique | Key_name         | Seq_in_index | Column_name      | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
++--------------+------------+------------------+--------------+------------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| ProbeSetXRef |          0 | PRIMARY          |            1 | DataId           | A         |    46061750 |     NULL | NULL   |      | BTREE      |         |               |
+| ProbeSetXRef |          1 | ProbeSetFreezeId |            1 | ProbeSetFreezeId | A         |        1688 |     NULL | NULL   |      | BTREE      |         |               |
+| ProbeSetXRef |          1 | ProbeSetId       |            1 | ProbeSetId       | A         |    11515437 |     NULL | NULL   |      | BTREE      |         |               |
+| ProbeSetXRef |          1 | Locus_2          |            1 | Locus            | A         |        1806 |        5 | NULL   | YES  | BTREE      |         |               |
++--------------+------------+------------------+--------------+------------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+```
+
+We get a performance hit on the join: "INNER JOIN ProbeSetXRef ON ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id" since ProbeSetXRef.ProbeSetFreezeId is a non-unique index.  What this means to our query is that for rows scanned in the ProbeSetFreeze table, there are several rows under the ProbeSetXRef table tha will satisfy the JOIN condition.   This is analogous to nested loops in programming.
+
+In the RIF Search, we append "INNER JOIN GeneRIF_BASIC ON GeneRIF_BASIC.symbol = ProbeSet.Symbol" to [0].  Running an EXPLAIN on this new query yields:
+
+```
+1   +------+-------------+----------------+--------+---------------------------------------+--------------+---------+------------------------------------------------------------+---------+-----------------------+
+2   | id   | select_type | table          | type   | possible_keys                         | key          | key_len | ref                                                        | rows    | Extra                 |
+3   +------+-------------+----------------+--------+---------------------------------------+--------------+---------+------------------------------------------------------------+---------+-----------------------+
+4   |    1 | SIMPLE      | GeneRIF_BASIC  | index  | NULL                                  | symbol       | 777     | NULL                                                       | 1366287 | Using index           |
+5   |    1 | SIMPLE      | ProbeSet       | ref    | PRIMARY,symbol_IDX,ft_ProbeSet_Symbol | symbol_IDX   | 403     | func                                                       | 1       | Using index condition |
+6   |    1 | SIMPLE      | ProbeSetXRef   | ref    | ProbeSetFreezeId,ProbeSetId           | ProbeSetId   | 4       | db_webqtl.ProbeSet.Id                                      | 4       |                       |
+7   |    1 | SIMPLE      | ProbeSetFreeze | eq_ref | PRIMARY                               | PRIMARY      | 2       | db_webqtl.ProbeSetXRef.ProbeSetFreezeId                    | 1       |                       |
+8   |    1 | SIMPLE      | ProbeFreeze    | eq_ref | PRIMARY                               | PRIMARY      | 2       | db_webqtl.ProbeSetFreeze.ProbeFreezeId                     | 1       | Using where           |
+9   |    1 | SIMPLE      | InbredSet      | eq_ref | PRIMARY                               | PRIMARY      | 2       | db_webqtl.ProbeFreeze.InbredSetId                          | 1       | Using where           |
+10  |    1 | SIMPLE      | Tissue         | eq_ref | PRIMARY                               | PRIMARY      | 2       | db_webqtl.ProbeFreeze.TissueId                             | 1       |                       |
+11  |    1 | SIMPLE      | Species        | eq_ref | PRIMARY                               | PRIMARY      | 2       | db_webqtl.InbredSet.SpeciesId                              | 1       |                       |
+12  |    1 | SIMPLE      | Geno           | eq_ref | species_name                          | species_name | 164     | db_webqtl.InbredSet.SpeciesId,db_webqtl.ProbeSetXRef.Locus | 1       | Using where           |
+13  +------+-------------+----------------+--------+---------------------------------------+--------------+---------+------------------------------------------------------------+---------+-----------------------+
+```
+
+From the above we see that we have an extra "ref" on line 5 which adds extra overhead.  Additionally, now under the "ref" column we see "func" with a "Using index condition" under the "Extra" column.  This means that we are using some function during this join [3].  Specifically, this is because the "symbol" column in the GeneRIF_BASIC table is indexed, but the "Symbol" column in the ProbeSet table is not indexed.  Regardless, this increases the performance of the query by some orders of magnitude.
+
+### Adding RIF+WIKI Search to the Existing Gene Index
+
+Our current indexer[4] works by indexing the results from [0] in chunks of 100,000 into separate xapian databases stored in different directories.  This happens by spawning different child processes from the main indexer script.  The final step in this process is to compact all the different databases into one database.
+
+To add RIF+WIKI indices to the existing gene index, we built a global cache.  In each child process, we fetch the relevant RIF+WIKI entry from this cache and index.  One problem we ran into with this approach was that our indexing time increased, and our space consumption ballooned.  At one point we ran out of our RAM causing an intermittent outage on 2024-06-21 (search for "Outage for 2024-06-20 in the following link"):
+
+=> https://issues.genenetwork.org/topics/meetings/jnduli_bmunyoki Meeting notes
+
+When troubleshooting our outage, we realized the indexing script consumed all the RAM.  This was because the child processes spawned by the index script each consumed around 3GB of RAM; with the total number of child processes and their RAM usage exceeding the system RAM.  To remedy this, we settled on a cpu_count of 67, limiting the number of spawned children and putting a cap on the total number of RAM the indexing script could consume.  You can see the fix in this commit:
+
+=> https://github.com/genenetwork/genenetwork3/commit/99d0d1200d7dcd81e27ce65ab84bab145d9ae543 feat: set 67 parallel processes to run in prod
+
+To try to speed our indexing speed, we attempted to parallelize our compacting.  Parallelising had some improvements in reducing our compacting time, but nothing significant.  The conclusion we could draw from this was that the compacting process is IO bound.  This is useful data because it informs the type of drive you would want to run our indexing script in, and in our case, an NVMe drive is an ideal candidate because of the fast IO speeds it has.
+
+To attempt to reduce the index script's space consumption and improve the script's performance, we first removed stop-words from the global cache, and stemmed words from other documents.  This reduced the space footprint to 152 Gb.  This was still unacceptable per our needs.  Further research with how xapian indexing works pointed us to positional data in the XAPIAN index.  In XAPIAN, positional data allows someone to be able to perform phrase searches such as: "nicotine NEAR mouse" which loosely translates to "search for the term nicotine which occurs near the term mouse."  One thing we noticed in the RIF+WIKI search is that we don't need this type of search, a trade-off we were willing to make to make search faster and our XAPIAN database smaller.  Instrumenting the impact of dropping positional data from RIF+WIKI data was immediate.  Our indexing times, on the NVMe drive dropped to a record high of 1 hour 9 minutes with a size of 73 Gb!  The table below summarizes our findings:
+
+
+```
+|                                                | Indexing Time (min) | Space (Gb) | % Size (from G+P) | % Time |
+|----------------------------------------------------------------------------------------------------------------|
+|G+PrR (no stop-words, no-stemming, pos. data)   | 101                 | 60         | 0                 | 0      |  
+|G+P+W+R (no stop-words, no stemming, pos. data) | 429                 | 152        | 153.3             | 324.8  |
+|G+P+W+R (stop-words, stemming, no pos. data)    | 69                  | 73         | 21.6              | -31.6  |
+
+Key:
+----
+G: Genes
+P: Phenotypes
+W: Wiki
+R: RIF
+```
+
+### Some Example Searches
 
 With RIF+WIKI search added, here are some searches you can try out in CD genenetwork instance:
 
@@ -161,4 +109,9 @@ With RIF+WIKI search added, here are some searches you can try out in CD genenet
 
 ### References
 
-=> https://issues.genenetwork.org/topics/engineering/instrumenting-ram-usage Instrument RAM Usage
+=> https://github.com/genenetwork/genenetwork3/blob/52cd294c2f1d06dddbd6ff613b11f8bc43066038/scripts/index-genenetwork#L54-L89 [0] Gene Indexing SQL Query
+=> https://mariadb.com/kb/en/explain/ [1] MariaDB EXPLAIN
+=> https://stackoverflow.com/a/4528433 [2] What does eq_ref and ref types mean in MySQL explain?
+=> https://planet.mysql.com/entry/?id=29724 [3] The meaning of ref=func in MySQL EXPLAIN
+=> https://issues.genenetwork.org/topics/engineering/instrumenting-ram-usage [3] Instrument RAM Usage
+=> https://github.com/genenetwork/genenetwork3/blob/main/scripts/index-genenetwork#L54 index-genenetwork
