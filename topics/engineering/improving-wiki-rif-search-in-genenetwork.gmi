@@ -33,7 +33,7 @@ running an "EXPLAIN" on [0] yields:
 +------+-------------+----------------+--------+-----------------------------+------------------+---------+------------------------------------------------------------+-------+-------------+
 ```
 
-From the above table, we note that we have "ref" under the "type" column in on line 9.  The "type" column describes how the rows are found from the table (I.e the join type) [2].  In this case, "ref" means a non-unique index or prefix is used to find all the rows which we can see by running "SHOW INDEXES FROM ProbeSetXRef" (note the Non-unique value of 1 for ProbeSetFreezeId):
+From the above table, we note that we have "ref" under the "type" column in line 9.  The "type" column describes how the rows are found from the table (I.e the join type) [2].  In this case, "ref" means a non-unique index or prefix is used to find all the rows which we can see by running "SHOW INDEXES FROM ProbeSetXRef" (note the Non-unique value of 1 for ProbeSetFreezeId):
 
 ```
 +--------------+------------+------------------+--------------+------------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
