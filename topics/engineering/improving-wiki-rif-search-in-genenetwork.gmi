@@ -106,6 +106,8 @@ With RIF+WIKI search added, here are some searches you can try out in CD genenet
 
 * wiki:nicotine AND mean:12.103..12.105
 * rif:isoneuronal AND mean:12.103..12.105
+* species:mouse wiki:addiction rif:heteroneuronal mean:12.103..12.105
+* symbol:shh rif:glioma wiki:nicotine
 
 ### References
 
