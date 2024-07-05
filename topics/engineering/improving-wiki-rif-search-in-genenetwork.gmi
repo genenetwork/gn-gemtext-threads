@@ -88,9 +88,9 @@ To attempt to reduce the index script's space consumption and improve the script
 ```
 |                                                | Indexing Time (min) | Space (Gb) | % Inc Size (from G+P+R) | % Inc Time |
 |-------------------------------------------------------------------------------------------------------------------- -----|
-|G+P+R (no stop-words, no-stemming, pos. data)   | 101                 | 60         | 0                   | 0              |  
-|G+P+W+R (no stop-words, no stemming, pos. data) | 429                 | 152        | 153.3               | 324.8          |
-|G+P+W+R (stop-words, stemming, no pos. data)    | 69                  | 73         | 21.6                | -31.6          |
+|G+P+R (no stop-words, no-stemming, pos. data)   | 101                 | 60         | 0                       | 0          |  
+|G+P+W+R (no stop-words, no stemming, pos. data) | 429                 | 152        | 153.3                   | 324.8      |
+|G+P+W+R (stop-words, stemming, no pos. data)    | 69                  | 73         | 21.6                    | -31.6      |
 
 Key:
 ----
