@@ -20,13 +20,25 @@ There are five (5) main types of data in GeneNetwork
 
 ### Classical Phenotypes
 
-This is usually low-content data e.g. body weight.
+This is usually low-content data e.g. body weight, tail length, etc.
 
 This is currently saved in the `Publish*` tables in the database.
 
+This data is saved as is i.e. not log-transformed
+
 ### High Content Data
 
-Examples of this data are the mRNA assay data saved in the `ProbeSet*` database tables.
+This includes mainly molecular data such as
+* mRNA assay data
+* genetic expression data
+* probes
+* tissue type and data
+
+These data are saved in the `ProbeSet*` database tables (and other closely related tables like the `Tissue*` tables - fred added this: verify).
+
+These could be saved in the database in a log-tranformed form - verify.
+
+How do you check for log-transformation in the data?
 
 ### Genotype Data
 
