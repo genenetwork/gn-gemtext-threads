@@ -5,3 +5,12 @@
 ## Description
 
 Building the index is an expesive operation.  Hash the graph and store the metadata in xapian, and similarly in the RDF store.  The mcron-job should check whether this has changed, and if there's any difference, go ahead and re-build the index.
+
+Resolution:
+
+=> https://github.com/genenetwork/genenetwork3/pull/171 Improve Sharing Memory Across Processes.
+=> https://github.com/genenetwork/genenetwork3/pull/172 Check whether table names were stored in xapian.
+=> https://github.com/genenetwork/genenetwork3/pull/174 Wikidata index.
+=> https://github.com/genenetwork/genenetwork3/pull/175 Refactor how the generif md5 sum is calculated and stored in XAPIAN.
+
+* closed
