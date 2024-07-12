@@ -1,20 +1,42 @@
 # Meeting Notes
+## 2024-07-12
+
+Plan for this week:
+
+* @shelby use Claude Sonnet with R2R RAG engine with 1000 papers. Fix bugs.
+* @shelby final run through for paper 1 before Pjotr's review
+* @shelby and @bmunyoki review dissertation paper for Masters
+* @shelby @bmunyoki @lexm to define the problem with RDF triple stores
+* @alexm push endpoints for editting and making commits for markdown files
+* @alexm integrate the markdown parser
+* @alexm rewrite UI code using htmx
+* @bmunyoki investigate why xapian index isn't getting rebuilt
+* @bmunyoki investigate discrepancies between wiki and rif search
+* @jnduli update the generif_basic table from NCBI
+* @jnduli blog post of preference for documentation
+
+We have qa.genenetwork.com. We need to have this set up to `qa.genenetwork.com/paper1` so that we always have the system that was used for this. How?
+
+Nice to Haves
+
+* @bmunyoki Nice to have tag for paper1
+* @bmunyoki fix CI job that transforms gn tables to TTL
+
 
 ## 2024-06-24
 
 Plan for this Week:
 
-* @bmunyoki Remove boolean prefixes from search where it makes sense.
-* @bmunyoki GeneWiki + GeneRIF search in production. Mostly needs to be run in prod to see impact.
-* @jnduli Children process termination when we kill the main index-genenetwork script
-* @bmunyoki Follow up on getting virtuoso child pages in production
-* @alexm push endpoints for editting and making commits for markdown files
-* @all Reply to survey from Shelby
-* @jnduli Fix JS import orders (without messing up the rest of Genenetwork)
-* @jnduli fix search results when nothing is found
-* @jnduli test out running guix cron jobs locally
-* @Jnduli mention our indexing documentation in gn2 README
-
+* CANCELED: @bmunyoki Remove boolean prefixes from search where it makes sense.
+* DONE: @bmunyoki GeneWiki + GeneRIF search in production. Mostly needs to be run in prod to see impact.
+* DONE: @jnduli Children process termination when we kill the main index-genenetwork script
+* CANCELED: @bmunyoki Follow up on getting virtuoso child pages in production
+* IN PROGRESS @alexm push endpoints for editting and making commits for markdown files
+* DONE: @all Reply to survey from Shelby
+* DONE: @jnduli Fix JS import orders (without messing up the rest of Genenetwork)
+* DONE: @jnduli fix search results when nothing is found
+* CANCELED: @jnduli test out running guix cron jobs locally
+* NOT DONE: @Jnduli mention our indexing documentation in gn2 README
 
 Note: For qa.genenetwork.com, we chose to pause work on this until papers are done.
 
