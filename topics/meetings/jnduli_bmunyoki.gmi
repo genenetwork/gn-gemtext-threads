@@ -3,11 +3,10 @@
 
 Plan for this week:
 
-* @shelby use Claude Sonnet with R2R RAG engine with 1000 papers. Fix bugs.
+* @shelby use Claude Sonnet with R2R RAG engine with 1000 papers and fix bugs.
 * @shelby final run through for paper 1 before Pjotr's review
 * @shelby and @bmunyoki review dissertation paper for Masters
-* @shelby @bmunyoki @lexm to define the problem with RDF triple stores
-* @alexm push endpoints for editting and making commits for markdown files
+* @shelby @bmunyoki @alexm to define the problem with RDF triple stores
 * @alexm integrate the markdown parser
 * @alexm rewrite UI code using htmx
 * @bmunyoki investigate why xapian index isn't getting rebuilt
