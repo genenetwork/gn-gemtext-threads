@@ -27,15 +27,31 @@ We want to figure out why there is a discrepancy between the 2 searches above.
 Use "quest" to search for one of the symbols that don't appear in the Xapian search to get the exact document id:
 
 ```
-quest --msize=2 -s en --boolean-prefix="iden:Qgene:" "iden:"1423803_s_at:hc_m2_0606_p"" --db=/export/data/genenetwork-xapian/
+quest --msize=2 -s en --boolean-prefix="iden:Qgene:" "iden:"1423803_s_at:hc_m2_0606_p"" \
+--db=/export/data/genenetwork-xapian/
 
 Parsed Query: Query(0 * Qgene:1423803_s_at:hc_m2_0606_p)
 Exactly 1 matches
 MSet:
 9665867: [0]
-{"name": "1423803_s_at", "symbol": "Gltscr2", "description": "glioma tumor suppressor candidate region gene 2", "chr": "1", "mb": 4.687986, "dataset": "HC_M2_0606_P", "dataset_fullname": "Hippocampus Consortium M430v2 (Jun06) PDNN", "species": "mouse", "group": "BXD", "tissue": "Hippocampus mRNA", "mean": 11.749030303030299, "lrs": 11.3847971289981, "additive": -0.0650828877005346, "geno_chr": "5", "geno_mb": 137.010795}
+{
+  "name": "1423803_s_at",
+  "symbol": "Gltscr2",
+  "description": "glioma tumor suppressor candidate region gene 2",
+  "chr": "1",
+  "mb": 4.687986,
+  "dataset": "HC_M2_0606_P",
+  "dataset_fullname": "Hippocampus Consortium M430v2 (Jun06) PDNN",
+  "species": "mouse",
+  "group": "BXD",
+  "tissue": "Hippocampus mRNA",
+  "mean": 11.749030303030299,
+  "lrs": 11.3847971289981,
+  "additive": -0.0650828877005346,
+  "geno_chr": "5",
+  "geno_mb": 137.010795
+}
 ```
-
 
 From the retrieved document-id, use "xapian-delve" to inspect the terms inside the index:
 
@@ -43,14 +59,41 @@ From the retrieved document-id, use "xapian-delve" to inspect the terms inside t
 xapian-delve -r 9664240 -d /export/data/genenetwork-xapian/
 
 Data for record #9665867:
-{"name": "1423803_s_at", "symbol": "Gltscr2", "description": "glioma tumor suppressor candidate region gene 2", "chr": "1", "mb": 4.687986, "dataset": "HC_M2_0606_P", "dataset_fullname": "Hippocampus Consortium M430v2 (Jun06) PDNN", "species": "mouse", "group": "BXD", "tissue": "Hippocampus mRNA", "mean": 11.749030303030299, "lrs": 11.3847971289981, "additive": -0.0650828877005346, "geno_chr": "5", "geno_mb": 137.010795}
-Term List for record #9665867: 1423803_s_at 2 5330430h08rik 9430097c02rik Qgene:1423803_s_at:hc_m2_0606_p XC1 XDShc_m2_0606_p XGbxd XIhippocampus XImrna XPC5 XSmouse XTgene XYgltscr2 ZXDShc_m2_0606_p ZXGbxd ZXIhippocampus ZXImrna ZXSmous ZXYgltscr2 Zbc017637 Zbxd Zcandid Zgene Zglioma Zgltscr2 Zhc_m2_0606_p Zhippocampus Zmous Zmrna Zregion Zsuppressor Ztumor bc017637 bxd candidate gene glioma gltscr2 hc_m2_0606_p hippocampus mouse mrna region suppressor tumor 
+{
+  "name": "1423803_s_at",
+  "symbol": "Gltscr2",
+  "description": "glioma tumor suppressor candidate region gene 2",
+  "chr": "1",
+  "mb": 4.687986,
+  "dataset": "HC_M2_0606_P",
+  "dataset_fullname": "Hippocampus Consortium M430v2 (Jun06) PDNN",
+  "species": "mouse",
+  "group": "BXD",
+  "tissue": "Hippocampus mRNA",
+  "mean": 11.749030303030299,
+  "lrs": 11.3847971289981,
+  "additive": -0.0650828877005346,
+  "geno_chr": "5",
+  "geno_mb": 137.010795
+}
+Term List for record #9665867: 1423803_s_at 2 5330430h08rik
+9430097c02rik Qgene:1423803_s_at:hc_m2_0606_p
+XC1 XDShc_m2_0606_p XGbxd XIhippocampus XImrna XPC5
+XSmouse XTgene XYgltscr2 ZXDShc_m2_0606_p ZXGbxd
+ZXIhippocampus ZXImrna ZXSmous ZXYgltscr2 Zbc017637
+Zbxd Zcandid Zgene Zglioma Zgltscr2 Zhc_m2_0606_p
+Zhippocampus Zmous Zmrna Zregion Zsuppressor Ztumor
+bc017637 bxd candidate gene glioma gltscr2
+hc_m2_0606_p hippocampus mouse mrna
+region suppressor tumor
 ```
 
 We have no wiki (XWK) entries from the above.  When transforming to TTL files from SQL, we have symbols that exist in the GeneRIF table that do not exist in the GeneRIF_BASIC table:
 
 ```
-SELECT COUNT(symbol) FROM GeneRIF WHERE symbol NOT IN (SELECT symbol FROM GeneRIF_BASIC) GROUP BY BINARY symbol;
+SELECT COUNT(symbol) FROM GeneRIF WHERE
+symbol NOT IN (SELECT symbol FROM GeneRIF_BASIC)
+GROUP BY BINARY symbol;
 ```
 
 Consequently, this means that after transforming to TTL files, we have some missing RDF entries that map a symbol (subject) to it's real name (object).  When building the RDF cache, we thereby have some missing RIF/WIKI entries, and some entries are not indexed.  This patch fixes the aforementioned error with missing symbols:
