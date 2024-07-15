@@ -56,7 +56,7 @@ MSet:
 From the retrieved document-id, use "xapian-delve" to inspect the terms inside the index:
 
 ```
-xapian-delve -r 9664240 -d /export/data/genenetwork-xapian/
+xapian-delve -r 9665867 -d /export/data/genenetwork-xapian/
 
 Data for record #9665867:
 {
