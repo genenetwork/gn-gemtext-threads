@@ -1,20 +1,16 @@
-# Inspect Discrepancies Between XAPIAN and SQL Search.
+# Inspect Discrepancies Between Xapian and SQL Search.
 
 * assigned: bonfacem, rookie101
 
 ## Description
 
-When doing a XAPIAN search, we miss some data that is unavailable from the SQL Search.  The searches we tested:
+When doing a Xapian search, we miss some data that is available from the SQL Search.  The searches we tested:
 
-=> https://cd.genenetwork.org/search?species=mouse&group=BXD&type=Hippocampus+mRNA&dataset=HC_M2_0606_P&search_terms_or=WIKI%3Dglioma&search_terms_and=&accession_id=None&FormID=searchResulto Normal SQL search for dataset=HC_M2_0606_P species=mouse group=BXD WIKI=glioma
+=> https://cd.genenetwork.org/search?species=mouse&group=BXD&type=Hippocampus+mRNA&dataset=HC_M2_0606_P&search_terms_or=WIKI%3Dglioma&search_terms_and=&accession_id=None&FormID=searchResulto SQL search for dataset=HC_M2_0606_P species=mouse group=BXD WIKI=glioma (31 results)
 
-For the above search, we get 31 results.
+=> https://cd.genenetwork.org/gsearch?type=gene&terms=species%3Amouse+group%3Abxd+dataset%3Ahc_m2_0606_p+wiki%3Aglioma species:mouse group:bxd dataset:hc_m2_0606_p wiki:glioma (26 results)
 
-=> https://cd.genenetwork.org/gsearch?type=gene&terms=species%3Amouse+group%3Abxd+dataset%3Ahc_m2_0606_p+wiki%3Aglioma species:mouse group:bxd dataset:hc_m2_0606_p wiki:glioma
-
-For the above search, we get 26 results.
-
-We miss the following entries from the XAPIAN search:
+We miss the following entries from the Xapian search:
 
 ```
 15	1423803_s_at	Gltscr2	glioma tumor suppressor candidate region gene 2
@@ -24,21 +20,71 @@ We miss the following entries from the XAPIAN search:
 26	1430029_a_at	Sas	sarcoma amplified sequence
 ```
 
-We want to work out why the above miss in the xapian documents for the given trait.  To do that we first use quest to search for one of the symbols to get the exact doc-id:
+We want to figure out why there is a discrepancy between the 2 searches above.
+
+## Resolution
+
+Use "quest" to search for one of the symbols that don't appear in the Xapian search to get the exact document id:
 
 ```
-quest --msize=2 -s en --boolean-prefix="iden:Qgene:" \
-"iden:"1423803_s_at:hc_m2_0606_p"" --db=/export/data/genenetwork-xapian/
+quest --msize=2 -s en --boolean-prefix="iden:Qgene:" "iden:"1423803_s_at:hc_m2_0606_p"" --db=/export/data/genenetwork-xapian/
 
-Parsed Query: Query(0 * Qgene:1423803_s_at:hc_m2_0606_p)                                                                      Exactly 1 matches                                                                                                             MSet:                                                                                                                         9665867: [0]                                                                                                                  {"name": "1423803_s_at", "symbol": "Gltscr2", "description": "glioma tumor suppressor candidate region gene 2", "chr": "1", "mb": 4.687986, "dataset": "HC_M2_0606_P", "dataset_fullname": "Hippocampus Consortium M430v2 (Jun06) PDNN", "species": "mouse", "group": "BXD", "tissue": "Hippocampus mRNA", "mean": 11.749030303030299, "lrs": 11.3847971289981, "additive": -0.0650828877005346, "geno_chr": "5", "geno_mb": 137.010795}
+Parsed Query: Query(0 * Qgene:1423803_s_at:hc_m2_0606_p)
+Exactly 1 matches
+MSet:
+9665867: [0]
+{"name": "1423803_s_at", "symbol": "Gltscr2", "description": "glioma tumor suppressor candidate region gene 2", "chr": "1", "mb": 4.687986, "dataset": "HC_M2_0606_P", "dataset_fullname": "Hippocampus Consortium M430v2 (Jun06) PDNN", "species": "mouse", "group": "BXD", "tissue": "Hippocampus mRNA", "mean": 11.749030303030299, "lrs": 11.3847971289981, "additive": -0.0650828877005346, "geno_chr": "5", "geno_mb": 137.010795}
 ```
 
-Inspecting the doc-id in XAPIAN, see:
+
+From the retrieved document-id, use "xapian-delve" to inspect the terms inside the index:
 
 ```
-bonfacem@tux02 /export5/xapian-test/xapian-07-04 $ xapian-delve -r 9665867 -d /export/data/genenetwork-xapian/
+xapian-delve -r 9664240 -d /export/data/genenetwork-xapian/
 
 Data for record #9665867:
 {"name": "1423803_s_at", "symbol": "Gltscr2", "description": "glioma tumor suppressor candidate region gene 2", "chr": "1", "mb": 4.687986, "dataset": "HC_M2_0606_P", "dataset_fullname": "Hippocampus Consortium M430v2 (Jun06) PDNN", "species": "mouse", "group": "BXD", "tissue": "Hippocampus mRNA", "mean": 11.749030303030299, "lrs": 11.3847971289981, "additive": -0.0650828877005346, "geno_chr": "5", "geno_mb": 137.010795}
 Term List for record #9665867: 1423803_s_at 2 5330430h08rik 9430097c02rik Qgene:1423803_s_at:hc_m2_0606_p XC1 XDShc_m2_0606_p XGbxd XIhippocampus XImrna XPC5 XSmouse XTgene XYgltscr2 ZXDShc_m2_0606_p ZXGbxd ZXIhippocampus ZXImrna ZXSmous ZXYgltscr2 Zbc017637 Zbxd Zcandid Zgene Zglioma Zgltscr2 Zhc_m2_0606_p Zhippocampus Zmous Zmrna Zregion Zsuppressor Ztumor bc017637 bxd candidate gene glioma gltscr2 hc_m2_0606_p hippocampus mouse mrna region suppressor tumor 
 ```
+
+We have no wiki (XWK) entries from the above.  When transforming to TTL files from SQL, we have symbols that exist in the GeneRIF table that do not exist in the GeneRIF_BASIC table:
+
+```
+SELECT COUNT(symbol) FROM GeneRIF WHERE symbol NOT IN (SELECT symbol FROM GeneRIF_BASIC) GROUP BY BINARY symbol;
+```
+
+Consequently, this means that after transforming to TTL files, we have some missing RDF entries that map a symbol (subject) to it's real name (object).  When building the RDF cache, we thereby have some missing RIF/WIKI entries, and some entries are not indexed.  This patch fixes the aforementioned error with missing symbols:
+
+=> https://git.genenetwork.org/gn-transform-databases/commit/?id=d95501bd2bd41ef8cf3584118382e83cbbbe0c87 [gn-transform-databases] Add missing RIF symbols.
+
+Now these 2 queries return the same exact results:
+
+=> https://cd.genenetwork.org/search?species=mouse&group=BXD&type=Hippocampus+mRNA&dataset=HC_M2_0606_P&search_terms_or=WIKI%3Dglioma&search_terms_and=&accession_id=None&FormID=searchResulto SQL search for dataset=HC_M2_0606_P species=mouse group=BXD WIKI=glioma (31 results)
+
+=> https://cd.genenetwork.org/gsearch?type=gene&terms=species%3Amouse+group%3Abxd+dataset%3Ahc_m2_0606_p+wiki%3Aglioma species:mouse group:bxd dataset:hc_m2_0606_p wiki:glioma (31 results)
+
+However, Xapian search is case insensitive while the SQL search is case sensitive:
+
+=> https://cd.genenetwork.org/gsearch?type=gene&terms=species%3Amouse+group%3Abxd+dataset%3Ahc_m2_0606_p+wiki%3Acancer species:mouse group:bxd dataset:hc_m2_0606_p wiki:cancer (72 results)
+
+=> https://cd.genenetwork.org/search?species=mouse&group=BXD&type=Hippocampus+mRNA&dataset=HC_M2_0606_P&search_terms_or=WIKI%3Dcancer&search_terms_and=&accession_id=None&FormID=searchResulto SQL search for dataset=HC_M2_0606_P species=mouse group=BXD WIKI=cancer (70 results)
+
+=> https://cd.genenetwork.org/search?species=mouse&group=BXD&type=Hippocampus+mRNA&dataset=HC_M2_0606_P&search_terms_or=WIKI%3DCancer&search_terms_and=&accession_id=None&FormID=searchResulto SQL search for dataset=HC_M2_0606_P species=mouse group=BXD WIKI=Cancer (Note the change in the case "Cancer": 13 results)
+
+Another reason for discrepancies between search results, E.g.
+
+=> https://cd.genenetwork.org/gsearch?type=gene&terms=species%3Amouse+group%3Abxd+dataset%3Ahc_m2_0606_p+wiki%3Adiabetes species:mouse group:bxd dataset:hc_m2_0606_p wiki:diabetes (59 results)
+
+=> https://cd.genenetwork.org/search?species=mouse&group=BXD&type=Hippocampus+mRNA&dataset=HC_M2_0606_P&search_terms_or=WIKI%3Ddiabetes&search_terms_and=&accession_id=None&FormID=searchResulto SQL search for dataset=HC_M2_0606_P species=mouse group=BXD WIKI=diabetes (52 results)
+
+is that Xapian performs stemming on the search terms.  For example, in the above wiki search for "diabetes", Xapian will stem "diabetes" to "diabet" thereby matching "diabetic", "diabetes", or any other word variation of "diabetes."
+
+## Ordering of Results
+
+The ordering in the Xapian search and SQL search is different.   By default, SQL orders by Symbol where we have:
+
+```
+[...] ORDER BY ProbeSet.symbol ASC
+```
+
+However, Xapian orders search results by decreasing relevance score.  This is configurable.
