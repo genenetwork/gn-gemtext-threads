@@ -1,0 +1,11 @@
+# Guides Vs References
+
+Before coming up with docs, figure out their use. It can either be as a guide (provides solutions to problems encountered) or a reference (similar to man pages, where we provide detailed explanations).
+
+For guides:
+
+* Be as brief as possible, providing reference links for users that want to explore i.e. don't aim from completeness, but rather practicality.
+* Prefer providing code or command snippets where possible.
+* Preferable have another team member review the docs. This helps eliminate blindspots due to our current knowledge.
+* Organize the document in such a way that it starts with the most actionable steps.
+* Avoid stream of consciousness writing.
