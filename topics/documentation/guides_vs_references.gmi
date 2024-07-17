@@ -2,7 +2,7 @@
 
 Before coming up with docs, figure out their use. It can either be as a guide (provides solutions to problems encountered) or a reference (similar to man pages, where we provide detailed explanations).
 
-For guides:
+## For guides:
 
 * Be as brief as possible, providing reference links for users that want to explore i.e. don't aim from completeness, but rather practicality.
 * Prefer providing code or command snippets where possible.
@@ -10,12 +10,13 @@ For guides:
 * Organize the document in such a way that it starts with the most actionable steps.
 * Avoid stream of consciousness writing.
 
-## Example
-### Wrong
+### Example
+
+Wrong:
 
 When setting up guix OS, I couldn't get `tmux` to start, getting `tmux: invalid LC_ALL, LC_CTYPE or LANG`. Running `locale -a` failed too. It took me a while to figure out the solution for this problem, and I attempted to reinstall `glibc-locales` which didn't help. After a lot of research, I found that the root cause was that my applications were built on a different version of `glibc`. I ran `guix update` and the problem disappeared.
 
-### Correct
+Correct:
 
 `tmux` failing with `tmux: invalid LC_ALL, LC_CTYPE or LANG` could be caused by having packages build on a different version of `glibc`. Attempt:
 
