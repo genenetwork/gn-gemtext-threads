@@ -1,25 +1,55 @@
 # Meeting Notes
+## 2024-07-19
+Plan for this week:
+
+* @jgart getting genecup app to run in a guix container i.e. `gunicorn service` should then run `genecup`, similar to how gn2 and gn-uploader work.
+* @jgart enable acme certificates.
+* @bmunyoki virtuoso and xapian are up-to-date in prod
+* @bmunyoki update RIF+WIKI on SQL and RDF from gn2 website
+* @bmunyoki fix CI job for GN transformer database i.e. instead of checksums just run full job once per month
+* @bmunyoki and @shelby review dissertation for Masters
+* @alexm rewrite UI code using htmx
+* @alexm address review comments in markdown parser
+* @shelby compile ingesting 500 more papers into RAG engine
+* @shelby ingesting ageing research into the RAG engine
+* @shelby RAG engine only works with OpenAI, figure out Claude Sonnet integration
+* @shelby @bmunyoki @alexm to define the problem with RDF triple stores
+* @jnduli finish up on RIF update
+* @jnduli get up to speed on gn-auth
+
+AOB
+
+* RAG engine uses R2R for the integration. It would be great if we could integrate this into guix. @shelby will send @jgart the paper on how we use the RAG.
+
+TUXO2:
+
+* Use guix inside your own profile, not the global guix.
+* 
+
+
+
+
 ## 2024-07-12
 
 Plan for this week:
 
-* @shelby use Claude Sonnet with R2R RAG engine with 1000 papers and fix bugs.
-* @shelby final run through for paper 1 before Pjotr's review
-* @shelby and @bmunyoki review dissertation paper for Masters
+* @shelby use Claude Sonnet with R2R RAG engine with 1000 papers and fix bugs: 500 papers ingested into R2R, remaining with 500.
+* @shelby final run through for paper 1 before Pjotr's review. DONE, configurations fixed. New repo gnai that contains the results and will contain R2R stuff.
+* NOT DONE: @shelby and @bmunyoki review dissertation paper for Masters
 * @shelby @bmunyoki @alexm to define the problem with RDF triple stores
-* @alexm integrate the markdown parser
-* @alexm rewrite UI code using htmx
-* @bmunyoki investigate why xapian index isn't getting rebuilt
-* @bmunyoki investigate discrepancies between wiki and rif search
-* @jnduli update the generif_basic table from NCBI
-* @jnduli blog post of preference for documentation
+* @alexm integrate the markdown parser: DONE, patches sent to Boni
+* @alexm rewrite UI code using htmx: NOT DONE
+* @bmunyoki investigate why xapian index isn't getting rebuilt: DONE
+* @bmunyoki investigate discrepancies between wiki and rif search: DONE, get this to prod to be tested
+* @jnduli update the generif_basic table from NCBI: IN PROGRESS.
+* @jnduli blog post of preference for documentation: DONE.
 
 We have qa.genenetwork.com. We need to have this set up to `qa.genenetwork.com/paper1` so that we always have the system that was used for this. How?
 
 Nice to Haves
 
-* @bmunyoki Nice to have tag for paper1
-* @bmunyoki fix CI job that transforms gn tables to TTL
+* @bmunyoki Nice to have tag for paper1: Fix this with Boni and get done later on/iron them out then.
+* @bmunyoki fix CI job that transforms gn tables to TTL: Move this to running a cron job once per month instead of 
 
 
 ## 2024-06-24
