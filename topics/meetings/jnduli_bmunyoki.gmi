@@ -2,8 +2,8 @@
 ## 2024-07-19
 Plan for this week:
 
-* @jgart getting genecup app to run in a guix container i.e. `gunicorn service` should then run `genecup`, similar to how gn2 and gn-uploader work.
-* @jgart enable acme certificates.
+* @jgart getting `genecup` app to run in a guix container i.e. `gunicorn service` should then run `genecup`, similar to how gn2 and gn-uploader work.
+* @jgart enable acme certificates for `genecup` container.
 * @bmunyoki virtuoso and xapian are up-to-date in prod
 * @bmunyoki update RIF+WIKI on SQL and RDF from gn2 website
 * @bmunyoki fix CI job for GN transformer database i.e. instead of checksums just run full job once per month
@@ -20,13 +20,6 @@ Plan for this week:
 AOB
 
 * RAG engine uses R2R for the integration. It would be great if we could integrate this into guix. @shelby will send @jgart the paper on how we use the RAG.
-
-TUXO2:
-
-* Use guix inside your own profile, not the global guix.
-* 
-
-
 
 
 ## 2024-07-12
