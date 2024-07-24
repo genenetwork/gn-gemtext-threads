@@ -1,4 +1,18 @@
 # Meeting Notes
+## 2024-07-23
+### LLM Meeting (@shelby+@bmunyoki)
+* There's no clear way of ingesting human-readable data with context into the RAG Graph from RDF.
+* What specific graph should we ingest into the RAG Graph from RDF?   @bmunyoki suggested RIF, PubMed Metadata.  We'll figure this out.
+* @bonfacem recommended: Much better to work with SPARQL than directly with TTL files.
+* We've uploaded rdf triples, yet they loose their strength as the RAG system is not undergirded with a knowledge graph.  @bonfacem should read the following for more context and should reach out to @shelby on how to move forward with SPARQL more concretely:
+
+=> https://r2r-docs.sciphi.ai/cookbooks/knowledge-graph#r2r-knowledge-graph-configuration
+
+* We need to test the knowledge graph backend of R2R to see how feasible it is to use with the existing data (RDF).
+* Fahamu just stored the object and lost the subject+predicate
+* Loop in Alex.
+
+
 ## 2024-07-19
 Plan for this week:
 
