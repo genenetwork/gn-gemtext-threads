@@ -5,7 +5,7 @@
 * Assigned: alexm, shelbys
 * Keywords: UI, GNQA, evaluation
 * Type: immediate
-* Status: In Progress
+* Status: completed
 
 ## Description
 
@@ -13,5 +13,5 @@ We need to publish a paper on GeneNetwork Question & Answering system. To that e
 
 ## Tasks
 
-* [ ] Add a thumbs up and down for rating the answer to a question
-* [ ] Ensure to log the questions, respones, and ratings of each questions
+* [X] Add a thumbs up and down for rating the answer to a question
+* [X] Ensure to log the questions, respones, and ratings of each questions
