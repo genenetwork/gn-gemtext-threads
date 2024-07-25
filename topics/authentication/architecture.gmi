@@ -54,13 +54,14 @@ Users are granted privileges (see "Privileges" section) to act upon resources, t
 
 Examples of "types" of resources on the system:
 
-- system: The system itself
-- group: Collection of users considered a group
-- genotype: A resource representing a genotype trait
-- phenotype: A resource representing a phenotype trait
-- mrna: A resource representing a collection of mRNA Assay traits
-- inbredset-group: A resource representing an InbredSet group
+* system: The system itself
+* group: Collection of users considered a group
+* genotype: A resource representing a genotype trait
+* phenotype: A resource representing a phenotype trait
+* mrna: A resource representing a collection of mRNA Assay traits
+* inbredset-group: A resource representing an InbredSet group
 
+----
 * TODO: Figure out a better name/description for "InbredSet group" -- so far, I have "a classification/grouping of traits/datasets within a species". Another is to use the term "population".
 
 ## Users
