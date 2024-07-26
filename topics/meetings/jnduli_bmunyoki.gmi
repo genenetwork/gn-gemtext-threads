@@ -1,4 +1,22 @@
 # Meeting Notes
+## 2024-07-26
+Plan for this week:
+
+* @bmunyoki virtuoso and xapian are up-to-date in prod. Boni doesn't have root access in production, so coordination with Fred and Zach is causing delays.
+* @bmunyoki update RIF+WIKI on SQL and RDF from gn2 website
+* @bmunyoki and @shelby review dissertation for Masters
+* @bmunyoki and @jgart to review patches for `genecup` and `rshiny`.
+* @bmunyoki and @jnduli to review patches for markdown parser
+* @alexm add validation and document to markdown parser.
+* @shelby ingest ageing data to RAG
+* IN PROGRESS: @shelby RAG engine only works with OpenAI, figure out Claude Sonnet integration
+* IN PROGRESS: @jnduli get up to speed on gn-auth
+* @jgart enabling acme service in genecup and rshiny containers.
+* @jnduli and @bmunyoki to attempt to get familiar with R2R
+
+Nice to have:
+* @bmunyoki fix CI job for GN transformer database i.e. instead of checksums just run full job once per month: scheme script created that dumps the example files, next step is to create Gexp that runs this script. Bandwidth constraints.
+
 ## 2024-07-23
 ### LLM Meeting (@shelby+@bmunyoki)
 * There's no clear way of ingesting human-readable data with context into the RAG Graph from RDF.
@@ -16,20 +34,20 @@
 ## 2024-07-19
 Plan for this week:
 
-* @jgart getting `genecup` app to run in a guix container i.e. `gunicorn service` should then run `genecup`, similar to how gn2 and gn-uploader work.
-* @jgart enable acme certificates for `genecup` container.
-* @bmunyoki virtuoso and xapian are up-to-date in prod
-* @bmunyoki update RIF+WIKI on SQL and RDF from gn2 website
-* @bmunyoki fix CI job for GN transformer database i.e. instead of checksums just run full job once per month
-* @bmunyoki and @shelby review dissertation for Masters
-* @alexm rewrite UI code using htmx
-* @alexm address review comments in markdown parser
-* @shelby compile ingesting 500 more papers into RAG engine
-* @shelby ingesting ageing research into the RAG engine
-* @shelby RAG engine only works with OpenAI, figure out Claude Sonnet integration
-* @shelby @bmunyoki @alexm to define the problem with RDF triple stores
-* @jnduli finish up on RIF update
-* @jnduli get up to speed on gn-auth
+* DONE: @jgart getting `genecup` app to run in a guix container i.e. `gunicorn service` should then run `genecup`, similar to how gn2 and gn-uploader work. Patches sent to Boni, include `genecup` and `rshiny` and the container patches are tested. 
+* @jgart enable acme certificates for `genecup` container: Should just enable a single form, let's use arun's email since its what we use for all our services. Reverse proxy happens inside the container. Add a comment explaining that this shouldn't be standard python set up.
+* INPROGRESS: @bmunyoki virtuoso and xapian are up-to-date in prod:
+* NOT DONE: @bmunyoki update RIF+WIKI on SQL and RDF from gn2 website
+* INPROGRESS: @bmunyoki fix CI job for GN transformer database i.e. instead of checksums just run full job once per month: scheme script created that dumps the example files, next step is to create Gexp that runs this script. Bandwidth constraints.
+* @bmunyoki and @shelby review dissertation for Masters: @bonz needs to send updated version. Also reviewed another masters by Johannes.
+* ON HOLD: @alexm rewrite UI code using htmx
+* INPROGRESS: @alexm address review comments in markdown parser. Api endpoints are getting reimplemented. Needs to add validation and documentation and send v2 patches for review.
+* DONE: @shelby compile ingesting 500 more papers into RAG engine
+* @shelby ingesting ageing research into the RAG engine: diabetes reseach is ingested, ageing will be done later.
+* NOT DONE: @shelby RAG engine only works with OpenAI, figure out Claude Sonnet integration
+* DONE: @shelby @bmunyoki @alexm to define the problem with RDF triple stores
+* DONE: @jnduli finish up on RIF update
+* IN PROGRESS: @jnduli get up to speed on gn-auth
 
 AOB
 
