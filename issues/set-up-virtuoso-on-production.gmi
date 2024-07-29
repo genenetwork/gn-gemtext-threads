@@ -1,8 +1,8 @@
-# Set-up Virtuoso on Production
+# Set-up Virtuoso+Xapian on Production
 
 ## Tags
 
-* assigned: bonfacem
+* assigned: bonfacem, zachs, fredm
 * priority: high
 * type: ops
 * keywords: virtuoso
@@ -11,5 +11,102 @@
 
 We already have virtuoso set-up in tux02.  Right now, to be able to interact with RDF, we need to have virtuoso set-up.  This issue will unblock:
 
+* Global Search in Production
+
+* Updating RDF Endpoints:
 => https://github.com/genenetwork/genenetwork3/pull/137 Update RDF endpoints
+
+* UI/RDF Frontend
 => https://github.com/genenetwork/genenetwork2/pull/808 UI/RDF frontend
+
+
+## HOWTO: Updating Virtuoso in Production (Tux01)
+
+
+Note where the virtuoso data directory is mapped from the "production.sh" script as you will use this in the consequent steps:
+
+> --share=/export2/guix-containers/genenetwork/var/lib/virtuoso=/var/lib/virtuoso
+
+### Generating the TTL Files
+
+* Run "generate-ttl-files" to generate the TTL files:
+
+```
+time guix shell guile-dbi -m manifest.scm -- ./generate-ttl-files.scm --settings conn-dev.scm --output /export2/guix-containers/genenetwork-development/var/lib/virtuoso --documentation /tmp/doc-directory
+```
+
+=> https://git.genenetwork.org/gn-transform-databases/tree/generate-ttl-files.scm generate-ttl-files.scm
+
+* (Recommended) Alternatively, copy over the TTL files (in Tux02) to the correct shared directory in the container ("--share=/export2/guix-containers/genenetwork-development/var/lib/virtuoso=/var/lib/virtuoso"):
+
+> cp /home/bonfacem/ttl-files/*ttl /export2/guix-containers/genenetwork/var/lib/virtuoso/
+
+### Loading the TTL Files
+
+* Make sure that the virtuoso service type has the "dirs-allowed" variable set correctly:
+
+```
+(service virtuoso-service-type
+         (virtuoso-configuration
+          (server-port 7892)
+          (http-server-port 7893)
+          (dirs-allowed "/var/lib/virtuoso")))
+```
+
+* Get into isql:
+
+> guix shell virtuoso-ose -- isql 7892
+
+* Make sure that no pre-existing files exist in "DB.DBA.LOAD_LIST":
+
+> SQL> select * from DB.DBA.LOAD_LIST;
+> SQL> delete from DB.DBA.load_list;
+
+* Delete the genenetwork graph:
+
+> SQL> DELETE FROM rdf_quad WHERE g = iri_to_id('http://genenetwork.org');
+
+* Load all the TTL files (This takes some time):
+
+> SQL> ld_dir('/var/lib/virtuoso', '*.ttl', 'http://genenetwork.org');
+> SQL> rdf_loader_run();
+> SQL> CHECKPOINT;
+
+* Verify you have some RDF data by running:
+
+```
+SQL> SPARQL
+PREFIX gn: <http://genenetwork.org/id/> 
+PREFIX gnc: <http://genenetwork.org/category/> 
+PREFIX owl: <http://www.w3.org/2002/07/owl#> 
+PREFIX gnt: <http://genenetwork.org/term/> 
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#> 
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+PREFIX taxon: <http://purl.uniprot.org/taxonomy/> 
+
+SELECT * WHERE { 
+    ?s skos:member gn:Mus_musculus .
+    ?s ?p ?o .
+};
+```
+
+* Update GN3 Configurations to point to the correct Virtuoso instance:
+
+> SPARQL_ENDPOINT="http://localhost:7893/sparql"
+
+## Generating the Xapian Index
+
+* Make sure you are using the correct guix profile or that you have your PYTHONPATH pointing to the GN3 repository.
+
+* Generate the Xapian Index using "genenetwork3/scripts/create-xapian-index" against the correct output directory (The build takes around 71 minutes on an SSD Drive):
+
+> time python index-genenetwork create-xapian-index /export/data/genenetwork-xapian/ mysql://<user>:<password>@localhost/db_webqtl http://localhost:7893/sparql
+
+* After the build, you can verify that the index works by:
+
+> guix shell xapian -- xapian-delve /export/data/genenetwork-xapian/
+
+* Update GN3 configuration files to point to the right Xapian path:
+
+> XAPIAN_DB_PATH="/export/data/genenetwork-xapian/"
