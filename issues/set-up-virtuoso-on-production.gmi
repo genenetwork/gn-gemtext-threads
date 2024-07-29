@@ -27,17 +27,17 @@ Note where the virtuoso data directory is mapped from the "production.sh" script
 
 ### Generating the TTL Files
 
-* Run "generate-ttl-files" to generate the TTL files:
+=> https://git.genenetwork.org/gn-transform-databases/tree/generate-ttl-files.scm Run "generate-ttl-files" to generate the TTL files:
 
 ```
 time guix shell guile-dbi -m manifest.scm -- ./generate-ttl-files.scm --settings conn-dev.scm --output /export2/guix-containers/genenetwork-development/var/lib/virtuoso --documentation /tmp/doc-directory
 ```
 
-=> https://git.genenetwork.org/gn-transform-databases/tree/generate-ttl-files.scm generate-ttl-files.scm
+* [Recommended] Alternatively, copy over the TTL files (in Tux02) to the correct shared directory in the container:
 
-* (Recommended) Alternatively, copy over the TTL files (in Tux02) to the correct shared directory in the container ("--share=/export2/guix-containers/genenetwork-development/var/lib/virtuoso=/var/lib/virtuoso"):
-
-> cp /home/bonfacem/ttl-files/*ttl /export2/guix-containers/genenetwork/var/lib/virtuoso/
+```
+cp /home/bonfacem/ttl-files/*ttl /export2/guix-containers/genenetwork/var/lib/virtuoso/
+```
 
 ### Loading the TTL Files
 
@@ -53,23 +53,28 @@ time guix shell guile-dbi -m manifest.scm -- ./generate-ttl-files.scm --settings
 
 * Get into isql:
 
-> guix shell virtuoso-ose -- isql 7892
-
+```
+guix shell virtuoso-ose -- isql 7892
+```
 * Make sure that no pre-existing files exist in "DB.DBA.LOAD_LIST":
 
-> SQL> select * from DB.DBA.LOAD_LIST;
-> SQL> delete from DB.DBA.load_list;
-
+```
+SQL> select * from DB.DBA.LOAD_LIST;
+SQL> delete from DB.DBA.load_list;
+```
 * Delete the genenetwork graph:
 
-> SQL> DELETE FROM rdf_quad WHERE g = iri_to_id('http://genenetwork.org');
+```
+SQL> DELETE FROM rdf_quad WHERE g = iri_to_id('http://genenetwork.org');
+```
 
 * Load all the TTL files (This takes some time):
 
-> SQL> ld_dir('/var/lib/virtuoso', '*.ttl', 'http://genenetwork.org');
-> SQL> rdf_loader_run();
-> SQL> CHECKPOINT;
-
+```
+SQL> ld_dir('/var/lib/virtuoso', '*.ttl', 'http://genenetwork.org');
+SQL> rdf_loader_run();
+SQL> CHECKPOINT;
+```
 * Verify you have some RDF data by running:
 
 ```
@@ -93,18 +98,23 @@ SELECT * WHERE {
 
 > SPARQL_ENDPOINT="http://localhost:7893/sparql"
 
-## Generating the Xapian Index
+## HOWTO: Generating the Xapian Index
 
 * Make sure you are using the correct guix profile or that you have your PYTHONPATH pointing to the GN3 repository.
 
 * Generate the Xapian Index using "genenetwork3/scripts/create-xapian-index" against the correct output directory (The build takes around 71 minutes on an SSD Drive):
 
-> time python index-genenetwork create-xapian-index /export/data/genenetwork-xapian/ mysql://<user>:<password>@localhost/db_webqtl http://localhost:7893/sparql
-
+```
+time python index-genenetwork create-xapian-index \
+/export/data/genenetwork-xapian/ \
+mysql://<user>:<password>@localhost/db_webqtl \
+http://localhost:7893/sparql
+```
 * After the build, you can verify that the index works by:
 
-> guix shell xapian -- xapian-delve /export/data/genenetwork-xapian/
-
+```
+guix shell xapian -- xapian-delve /export/data/genenetwork-xapian/
+```
 * Update GN3 configuration files to point to the right Xapian path:
 
 > XAPIAN_DB_PATH="/export/data/genenetwork-xapian/"
