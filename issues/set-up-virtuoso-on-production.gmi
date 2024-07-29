@@ -36,7 +36,7 @@ time guix shell guile-dbi -m manifest.scm -- \
 --documentation /tmp/doc-directory
 ```
 
-* [Recommended] Alternatively, copy over the TTL files (in Tux02) to the correct shared directory in the container:
+* [Recommended] Alternatively, copy over the TTL files (in Tux01) to the correct shared directory in the container:
 
 ```
 cp /home/bonfacem/ttl-files/*ttl /export2/guix-containers/genenetwork/var/lib/virtuoso/
