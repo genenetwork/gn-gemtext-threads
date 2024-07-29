@@ -30,7 +30,10 @@ Note where the virtuoso data directory is mapped from the "production.sh" script
 => https://git.genenetwork.org/gn-transform-databases/tree/generate-ttl-files.scm Run "generate-ttl-files" to generate the TTL files:
 
 ```
-time guix shell guile-dbi -m manifest.scm -- ./generate-ttl-files.scm --settings conn-dev.scm --output /export2/guix-containers/genenetwork-development/var/lib/virtuoso --documentation /tmp/doc-directory
+time guix shell guile-dbi -m manifest.scm -- \
+./generate-ttl-files.scm --settings conn-dev.scm --output \
+/export2/guix-containers/genenetwork-development/var/lib/virtuoso \
+--documentation /tmp/doc-directory
 ```
 
 * [Recommended] Alternatively, copy over the TTL files (in Tux02) to the correct shared directory in the container:
@@ -56,7 +59,7 @@ cp /home/bonfacem/ttl-files/*ttl /export2/guix-containers/genenetwork/var/lib/vi
 ```
 guix shell virtuoso-ose -- isql 7892
 ```
-* Make sure that no pre-existing files exist in "DB.DBA.LOAD_LIST":
+* Make sure that no pre-existing TTL files exist in "DB.DBA.LOAD_LIST":
 
 ```
 SQL> select * from DB.DBA.LOAD_LIST;
@@ -100,7 +103,7 @@ SELECT * WHERE {
 
 ## HOWTO: Generating the Xapian Index
 
-* Make sure you are using the correct guix profile or that you have your PYTHONPATH pointing to the GN3 repository.
+* Make sure you are using the correct guix profile or that you have the "PYTHONPATH" pointing to the GN3 repository.
 
 * Generate the Xapian Index using "genenetwork3/scripts/create-xapian-index" against the correct output directory (The build takes around 71 minutes on an SSD Drive):
 
