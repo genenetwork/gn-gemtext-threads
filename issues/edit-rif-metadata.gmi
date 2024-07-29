@@ -1,0 +1,14 @@
+# Edit RIF Metadata in GN2
+
+## Tags
+
+* assigned: bonfacem, jnduli
+* priority: high
+* status: in-progress
+
+### Tasks
+
+* [ ] Share expected API for editing RIF Metadata
+* [ ] Implement API in GN3 (SQL+RDF Updates)
+* [ ] UI Work in GN2
+* [ ] Integrate gn-auth
