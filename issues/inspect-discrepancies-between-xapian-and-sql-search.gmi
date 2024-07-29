@@ -131,3 +131,5 @@ The ordering in the Xapian search and SQL search is different.   By default, SQL
 ```
 
 However, Xapian orders search results by decreasing relevance score.  This is configurable.
+
+* closed

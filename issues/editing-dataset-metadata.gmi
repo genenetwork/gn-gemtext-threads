@@ -5,7 +5,7 @@
 * assigned: bonfacem
 * priority: high
 * type: editing
-* status: in-progress
+* status: stalled
 * keywords: metadata editing
 
 ## Description

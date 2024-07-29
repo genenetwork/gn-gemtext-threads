@@ -1,7 +1,7 @@
 # Remove overrides to bootstrap classes in bootstrap-custom.css
 
 * assigned: zachs, bonfacem, alexm
-
+* status: stalled
 
 We have a "bootstrap-custom.css" in GeneNetwork.  Consider this snippet:
 

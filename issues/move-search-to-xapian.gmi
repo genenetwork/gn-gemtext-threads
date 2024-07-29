@@ -18,3 +18,5 @@ As a work around---to make search work with Python3.10, an inefficient hack was 
 => https://github.com/genenetwork/genenetwork2/pull/805/commits/9a6ddf9f1560b3bc1611f50bf2b94f0dc44652a2 Replace escape with conn.escape_string
 
 To get rid of this inheritance, I propose rewriting the search functionality in a more straightforward and functional manner.  In doing so, we can also transition to Xapian search, a faster and more efficient search system.
+
+* closed

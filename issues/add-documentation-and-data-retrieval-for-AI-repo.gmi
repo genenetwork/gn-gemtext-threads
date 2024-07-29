@@ -6,7 +6,6 @@
 * priority: high
 * type: ui
 * keywords: phenotypes
-* status: stalled
 
 ## Description
 
@@ -15,3 +14,4 @@
 * Share alternate way of getting sparql json-ld data from public endpoint outside isql.
 * Share json-ld gotchas.
 
+* closed

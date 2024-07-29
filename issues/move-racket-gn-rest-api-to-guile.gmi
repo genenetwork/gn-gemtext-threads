@@ -6,7 +6,7 @@
 * priority: medium
 * type: API, metadata
 * keywords: API
-* status: open
+* status: stalled
 
 ## Description
 
