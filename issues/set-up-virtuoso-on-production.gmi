@@ -13,10 +13,8 @@ We already have virtuoso set-up in tux02.  Right now, to be able to interact wit
 
 * Global Search in Production
 
-* Updating RDF Endpoints:
 => https://github.com/genenetwork/genenetwork3/pull/137 Update RDF endpoints
 
-* UI/RDF Frontend
 => https://github.com/genenetwork/genenetwork2/pull/808 UI/RDF frontend
 
 
