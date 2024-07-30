@@ -8,7 +8,97 @@
 
 ### Tasks
 
-* [ ] Share expected API for editing RIF Metadata
-* [ ] Implement API in GN3 (SQL+RDF Updates)
-* [ ] UI Work in GN2
-* [ ] Integrate gn-auth
+* [ ] Update GeneRIF metadata to contain the VersionId. 
+* [ ] Update GeneRIF metadata to add a dct:identifier for each comment (for the GeneRIF table this is the table id since this is the only way to group comments historically). 
+* [ ] Update GeneRIF metadata to add a "initial" for each comment. 
+
+* [ ] Get wiki-entry: Get's the latest wiki entry from RDF: 
+,----
+| GET /wiki/<comment-id>
+`----
+
+```
+{
+    "symbol": "XXXX",
+    "reason": "XXXX",
+    "species": "XXXX",
+    "pmid": ["XXXX", "XXXX"], // Optional
+    "web-url": "XXXX" // Optional
+    "wiki-entry": "XXXX",
+    "e-mail": "XXXX",
+    "user-code": "XXXX", // Optional
+    "category": ["XXXX", "XXXX"], // Enumeration
+    "version": "XXXX",
+    "initial": "XXXX", // Optional user or project code or your initials.
+}
+```
+
+* [ ] Get wiki-entry history: Get's the previous versions of the comment from RDF: 
+
+,----
+| GET /wiki/<comment-id>/history
+`----
+
+```
+[{
+    "symbol": "XXXX",
+    "reason": "XXXX",
+    "species": "XXXX",
+    "pmid": ["XXXX", "XXXX"], // Optional
+    "web-url": "XXXX" // Optional
+    "wiki-entry": "XXXX",
+    "e-mail": "XXXX",
+    "user-code": "XXXX", // Optional
+    "category": ["XXXX", "XXXX"], // Enumeration
+    "version": "XXXX",
+    "initial": "XXXX", // Optional user or project code or your initials.
+}]
+```
+
+* [ ] Editing data:  An edit will insert a new comment (SQL+RDF) that has the same comment identifier. 
+
+,----
+| POST /wiki/<comment-id>/edit
+`----
+
+
+```
+{
+    "symbol": "XXXX",
+    "reason": "XXXX",
+    "species": "XXXX",
+    "pmid": ["XXXX", "XXXX"], // Optional
+    "web-url": "XXXX" // Optional
+    "wiki-entry": "XXXX",
+    "e-mail": "XXXX",
+    "user-code": "XXXX", // Optional
+    "category": ["XXXX", "XXXX"], // Enumeration
+    "version": "XXXX",
+    "initial": "XXXX", // Optional user or project code or your initials.
+}
+```
+
+* [ ] Add new comment -- Inserts (RDF+SQL) a new gene-entry for the symbol. 
+
+,----
+| POST /wiki/add
+`----
+
+
+```
+{
+    "symbol": "XXXX",
+    "species": "XXXX",
+    "pmid": ["XXXX", "XXXX"], // Optional
+    "web-url": "XXXX" // Optional
+    "wiki-entry": "XXXX",
+    "e-mail": "XXXX",
+    "user-code": "XXXX", // Optional
+    "category": ["XXXX", "XXXX"], // Enumeration
+    "version": "XXXX",
+    "initial": "XXXX", // Optional user or project code or your initials.
+}
+```
+
+* [ ] UI Work 
+* [ ] Weave in Auth
