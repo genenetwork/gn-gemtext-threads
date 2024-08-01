@@ -41,7 +41,7 @@ Setting up mariadb in a Guix container is the preferred and easier method. But, 
 ```
 $ sudo $(./containers/db-container.sh)
 ```
-Then, enter the container using guix container exec and set the root password to a blank.
+By default, mariadb allows passwordless login for root only on the local machine. So, enter the container using guix container exec and set the root password to a blank.
 ```
 $ mysql -u root
 MariaDB [(none)]> SET PASSWORD = PASSWORD("");
