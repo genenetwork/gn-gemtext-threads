@@ -1,14 +1,29 @@
 # Meeting Notes
+## 2024-08-02
+
+* @bmunyoki code work to edit Rif + WIki SQL n RDF data
+* @bmunyoki group paper on dissertation to targer Arxiv
+* @bmunyoki fix case insensitivity in Xapian search
+* @jnduli review Alex patches
+* @shelby figure out Claude Sonnet stuff
+* @shelby edit paper with @pjtor
+* @shelby planning session for next work and tasks for Priscilla.
+* @shelby use RAGAS to test R2R with the new papers (follow up on the ingestion of papers tasks)
+* @shelby and @boni to discuss R2R and interfacing with Virtuoso
+* IN PROGRESS: @jnduli get up to speed on gn-auth
+* @alex have an instance of gn-guile running on production
+
 ## 2024-07-26
 Plan for this week:
 
-* @bmunyoki virtuoso and xapian are up-to-date in prod. Boni doesn't have root access in production, so coordination with Fred and Zach is causing delays.
-* @bmunyoki update RIF+WIKI on SQL and RDF from gn2 website
-* @bmunyoki and @shelby review dissertation for Masters
-* @bmunyoki and @jgart to review patches for `genecup` and `rshiny`.
+* NOT DONE, needs a meeting: @bmunyoki virtuoso and xapian are up-to-date in prod. Boni doesn't have root access in production, so coordination with Fred and Zach is causing delays.
+* Apis design DONE, actual CODE incomplete: @bmunyoki update RIF+WIKI on SQL and RDF from gn2 website
+* DONE: @bmunyoki and @shelby review dissertation for Masters
+* DONE, needs to review new changes: @bmunyoki and @jgart to review patches for `genecup` and `rshiny`.
 * @bmunyoki and @jnduli to review patches for markdown parser
-* @alexm add validation and document to markdown parser.
-* @shelby ingest ageing data to RAG
+* DONE, patches sent. @alexm add validation and document to markdown parser.
+* DONE: @shelby ingest ageing data to RAG, 10% left to complete.
+* DONE: @shelby do another round for editting on the AI paper
 * IN PROGRESS: @shelby RAG engine only works with OpenAI, figure out Claude Sonnet integration
 * IN PROGRESS: @jnduli get up to speed on gn-auth
 * @jgart enabling acme service in genecup and rshiny containers.
