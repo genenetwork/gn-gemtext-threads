@@ -2,7 +2,7 @@
 ## 2024-08-02
 
 * @bmunyoki code work to edit Rif + WIki SQL n RDF data
-* @bmunyoki group paper on dissertation to targer Arxiv
+* @bmunyoki group paper on dissertation to target Arxiv
 * @bmunyoki fix case insensitivity in Xapian search
 * @jnduli review Alex patches
 * @shelby figure out Claude Sonnet stuff
@@ -12,6 +12,7 @@
 * @shelby and @boni to discuss R2R and interfacing with Virtuoso
 * IN PROGRESS: @jnduli get up to speed on gn-auth
 * @alex have an instance of gn-guile running on production
+* @jgart getting genecup and rshiny containers to run as normal users instead of root users. May use libvirts APIs; or podman/docker as normal user; or rewriting the services as guix home services.
 
 ## 2024-07-26
 Plan for this week:
