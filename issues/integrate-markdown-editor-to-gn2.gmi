@@ -1,3 +1,4 @@
+
 # GN Markdown Editor Integration
 
 ## Tags
@@ -5,16 +6,18 @@
 * assigned: alexm
 * status: in progress
 * priority: high
+* tags: markdown, integration, guile
 
 ## Notes
-This is a to-do list to integrate the GN Markdown editor into GN2.
-To see the implementation, see:
 
-=> https://github.com/Alexanderlacuna/geditor
+This is a to-do list to integrate the GN Markdown editor into GN2.
+To see the implementation, visit:
+
+=> [https://github.com/Alexanderlacuna/geditor](https://github.com/Alexanderlacuna/geditor)
 
 ## Tasks
 
-* [x] Implement APIs to fetch file for edit
+* [x] Implement APIs to fetch files for editing
 * [x] Add verification for the repository
 * [x] Implement API to edit and commit changes
 * [x] Replace JS with HTMX
@@ -22,9 +25,95 @@ To see the implementation, see:
 * [ ] Package dependencies
 * [x] Handle errors
 * [ ] Review by users
-* [ ] Integrate auth to the system.
+* [ ] Integrate authentication into the system
 
-Related issues:
 
-=> https://issues.genenetwork.org/issues/implement-gn-markdown-editor-in-guile
-=> https://issues.genenetwork.org/issues/implement-gn-markdown-editor
+## API Documentation
+
+This APi endpoints are implemented in guile See repo:
+
+=> https://git.genenetwork.org/gn-guile/
+
+The main endpoints are: `/edit` and `/commit`
+
+### Edit (GET)
+
+This is a `GET` request to retrieve file content. Make sure you pass a valid `file_path` as `search_query` (the path should be relative to the repository).
+
+**Edit Request Example:**
+
+```bash
+curl -G -d "filepath=test.md" -d "param2=value2" localhost:8091/edit
+```
+
+In case of a successful response, the expected result is:
+
+```json
+{
+"path": "<file_path>",
+"content": "Test for new user\n test 2 for line\n test 3 for new line\n ## real markdown two test\n",
+"hash": "<commit_sha>"
+}
+```
+
+In case of an error, the expected response is:
+
+```json
+{
+"error": "<error_type>",
+"msg": "<error_reason>"
+}
+```
+
+### Commit (POST)
+
+**Endpoint:**
+
+```
+localhost:8091/commit
+```
+
+It expects the following data in JSON format:
+
+* `content` (the data you want to commit to the file)
+* `prev_commit` (required for integrity)
+* `filename` (file path to the file you are modifying)
+* `username` (identifier for the user, in our case from auth)
+* `email` (identifier email from the user, in our case from auth)
+* `commit_message`
+
+If the request succeeds, the response should be:
+
+```json
+{
+"status": "201",
+"message": "Committed file successfully",
+"content": "Test for new user\n test 2 for line\n test 3 for new line\n ## real markdown two test\n",
+"commit_sha": "47df3b7f13a935d50cc8b40e98ca9e513cba104c",
+"commit_message": "commit by genetics"
+}
+```
+
+If there are no changes to the file:
+
+```json
+{
+"status": "200",
+"message": "Nothing to commit, working tree clean",
+"commit_sha": "ecd96f27c45301279150fbda411544687db1aa45"
+}
+```
+
+If the request fails, the expected results are:
+
+```json
+{
+"error": "<error_type>",
+"msg": "Commits do not match. Please pull in the latest changes for the current commit *ecd96f27c45301279150fbda411544687db1aa45* and previous commits."
+}
+```
+
+## Related Issues
+
+=> [https://issues.genenetwork.org/issues/implement-gn-markdown-editor-in-guile](https://issues.genenetwork.org/issues/implement-gn-markdown-editor-in-guile)
+=> [https://issues.genenetwork.org/issues/implement-gn-markdown-editor](https://issues.genenetwork.org/issues/implement-gn-markdown-editor)
