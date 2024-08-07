@@ -12,7 +12,7 @@ touch .git/hooks/pre-commit
 # Step 2: Make the hook executable
 chmod +x .git/hooks/pre-commit
 
-# Step 3: Copy the following contents to the .git/hooks/pre-commit:
+# Step 3: Copy the following to .git/hooks/pre-commit
 
 #!/bin/sh
 
