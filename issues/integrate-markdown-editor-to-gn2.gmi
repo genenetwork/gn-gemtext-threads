@@ -7,20 +7,20 @@
 * priority: high
 
 ## Notes
-This is a to-do list to integrate the GN Markdown editor into GN2.  
+This is a to-do list to integrate the GN Markdown editor into GN2.
 To see the implementation, see:
 
 => https://github.com/Alexanderlacuna/geditor
 
 ## Tasks
 
-* [ ] Implement APIs to fetch file for edit
-* [ ] Add verification for the repository
-* [ ] Implement API to edit and commit changes
-* [ ] Replace JS with HTMX
-* [ ] Support external links and image rendering
+* [x] Implement APIs to fetch file for edit
+* [x] Add verification for the repository
+* [x] Implement API to edit and commit changes
+* [x] Replace JS with HTMX
+* [x] Support external links and image rendering
 * [ ] Package dependencies
-* [ ] Handle errors
+* [x] Handle errors
 * [ ] Review by users
 * [ ] Integrate auth to the system.
 
