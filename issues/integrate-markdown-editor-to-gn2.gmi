@@ -43,10 +43,12 @@ This is a `GET` request to retrieve file content. Make sure you pass a valid `fi
 **Edit Request Example:**
 
 ```bash
-curl -G -d "filepath=test.md" -d "param2=value2" localhost:8091/edit
+
+curl -G -d "file_path=test.md"  localhost:8091/edit
 ```
 
 In case of a successful response, the expected result is:
+
 
 ```json
 {
@@ -73,9 +75,25 @@ In case of an error, the expected response is:
 localhost:8091/commit
 ```
 
+
+```bash
+
+curl -X POST http://127.0.0.1:8091/commit \
+-H 'Content-Type: application/json' \
+-d '{
+"content": "make test commit",
+"filename": "test.md",
+"email": "test@gmail.com",
+"username": "test",
+"commit_message": "init commit",
+"prev_commit": "7cbfc40d98b49a64e98e7cd562f373053d0325bd"
+}'
+
+```
+
 It expects the following data in JSON format:
 
-* `content` (the data you want to commit to the file)
+* `content` (the data you want to commit to the file, *valid markdown*)
 * `prev_commit` (required for integrity)
 * `filename` (file path to the file you are modifying)
 * `username` (identifier for the user, in our case from auth)
