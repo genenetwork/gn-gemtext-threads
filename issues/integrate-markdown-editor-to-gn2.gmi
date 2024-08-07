@@ -11,9 +11,9 @@
 ## Notes
 
 This is a to-do list to integrate the GN Markdown editor into GN2.
-To see the implementation, visit:
+To see the implementation, see:
 
-=> [https://github.com/Alexanderlacuna/geditor](https://github.com/Alexanderlacuna/geditor)
+=> https://git.genenetwork.org/gn-guile/
 
 ## Tasks
 
