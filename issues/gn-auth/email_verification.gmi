@@ -17,3 +17,5 @@ SMTP_PORT = 25 (not 587, which is what we first tried)
 SMTP_TIMEOUT = 200 # seconds
 
 Not sure about username/password yet. We tried UNKNOWN/UNKNOWN and my own (Zach's) username/password
+
+Note that this host is only visible on the internal network of UTHSC. It won't work for tux02.
