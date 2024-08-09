@@ -121,3 +121,9 @@ guix shell xapian -- xapian-delve /export/data/genenetwork-xapian/
 * Update GN3 configuration files to point to the right Xapian path:
 
 > XAPIAN_DB_PATH="/export/data/genenetwork-xapian/"
+
+## Resolution
+
+@fredm updated virtuoso; and @zachs updated the xapian index in production.
+
+* closed
