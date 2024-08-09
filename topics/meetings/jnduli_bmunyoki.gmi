@@ -1,18 +1,56 @@
 # Meeting Notes
+## 2024-08-09
+
+* @shelby figure out Claude Sonnet stuff: NOT DONE, main focus was on the paper
+* @shelby planning session for next work and tasks for Priscilla.
+* @shelby format output for ingested paper so that we can test the RAG engine
+* @shelby run RAGAs against the queries already in the system to perform comparison with new papers
+* @bmunyoki implementation code work to edit Rif + WIki SQL n RDF data
+* @bmunyoki @shelby group paper on dissertation to target Arxiv
+* @bmunyoki and @alex help Alex deploy gn-guile code on tux02
+* @bmunyoki review UI code editor work
+* @alex address comments in UI work
+* @felix @fred push RQTL bundles to uploader
+* @felix look for means to fix metadata challenge ie. trouble associating data we upload and metadata that provides descriptions. The metadata doesn't meeting requirements.
+* @felix figure out how to fix large data uploads ie. most data sets are large e.g. 45GB. Uploader cannot handle these large files.
+* @felix @jnduli programming learning: started building a web server to learn backend using Flask.
+* @felix (@bmunyoki / @alex) learning emacs so that he figures out how to track times
+* @jnduli fix group creation bug in gn-auth
+* @jnduli edit rif metadata using gn3
+* @jnduli update documentation for gn-auth setup
+* @jnduli investigate more bugs related to gn-auth
+
+Note: When setting up sync between @jnduli and @felix, add @bmunyoki too.
+
+
 ## 2024-08-02
 
-* @bmunyoki code work to edit Rif + WIki SQL n RDF data
-* @bmunyoki group paper on dissertation to target Arxiv
-* @bmunyoki fix case insensitivity in Xapian search
-* @jnduli review Alex patches
-* @shelby figure out Claude Sonnet stuff
-* @shelby edit paper with @pjtor
+* DONE: @bmunyoki virtuos and xapian updated in prod
+* @bmunyoki code work to edit Rif + WIki SQL n RDF data: WIP, we have desired API, but we need to implement code.
+* NOT DONE: @bmunyoki group paper on dissertation to target Arxiv
+* DONE: @bmunyoki fix case insensitivity in Xapian search
+* DONE: @jnduli review Alex patches
+* DONE: @bmunyoki: updated gn2 and gn3 on git.genetwork server. Shared QA code with @shelby on a special branch.
+* @bmunyoki @jnduli: fixed minor bug on xapian reflected with stemming.
+* @shelby figure out Claude Sonnet stuff: NOT DONE, main focus was on the paper
+* IN PROGRESS: @shelby edit paper with @pjtor
 * @shelby planning session for next work and tasks for Priscilla.
 * @shelby use RAGAS to test R2R with the new papers (follow up on the ingestion of papers tasks)
-* @shelby and @boni to discuss R2R and interfacing with Virtuoso
-* IN PROGRESS: @jnduli get up to speed on gn-auth
-* @alex have an instance of gn-guile running on production
-* @jgart getting genecup and rshiny containers to run as normal users instead of root users. May use libvirts APIs; or podman/docker as normal user; or rewriting the services as guix home services.
+* @shelby and @boni to discuss R2R and interfacing with Virtuoso: deprioritized, we'll figure out interfacing with R2R. Implementation to happen later.
+* DONE: @jnduli get up to speed on gn-auth
+* @alex have an instance of gn-guile running on production: Code in prod, but needs to liase with Boni to get this working.
+* @jgart getting genecup and rshiny containers to run as normal users instead of root users. May use libvirts APIs; or podman/docker as normal user; or rewriting the services as guix home services: system container doesn't have work around this, there's no work around. Because guix by default needs root to run as a system container. We also need sudo since at root level we define our system containers in a systemd that needs to be run as root. Why systemd? Systemd no one needs to run this.
+
+### Meeting with Sevila on Masters Papers
+
+- mainly stylistic changes provided.
+- provide an email explaining how long ethical review took, so that he follows up on unexpected delays.
+- met up with Dr Betsy, once done with defences in October (hopefully), and Boni may get his degree before graduation next year, to facilitate Boni applying for PhD.
+
+### Guix Root Container
+
+- With docker, to prevent the need for sudo, we usually create a docker group, and add users that need to run this to this group. Can this ahppen in guix?
+- Guix has a guix group. Why haven't we done this??? @jgart and @boni
 
 ## 2024-07-26
 Plan for this week:
