@@ -1,4 +1,22 @@
 # Meeting Notes
+
+## 2024-08-13
+### Markdown Editor (bmunyoki+alexm)
+
+* @alexm @bonfacem Tested the Markdown Editor locally and it works fine.  Only issue is that someone can make edits without logging in.
+* API end-points to be only exposed locally.
+* @alexm: Fix minor bug for when showing the diff.  Have a back arrow.
+* @bonfacem, @alexm: Deploy gn-guile; make sure it's only exposed locally.
+* [blocking] @alexm having issues setting up gn-auth.  @jnduli to help out to set up gn-auth and work out any quirks.  @alexm to make sure you can't make edits without being logged in.
+* @bmunyoki to set merge ge-editor UI work once basic auth is figured out.
+* [nice-to-have] @alexm work on packaging: "diff2html-ui.min.js", "diff.min.js", "marked.min.js", "index.umd.js", "diff2html.min.js".
+* [nice-to-have] @alexm to check-out djlint for linting jinja templates.
+* @bonfacem share pre-commit hooks for setting up djlint and auto-pep8.
+* [nice-to-have] @alexm to checkout:
+
+> djlint gn2/wqflask/templates/gn_editor.htmll --profile=jinja --reformat --format-css --format-js
+=> https://www.djlint.com/ dj Lint; Lint & Format HTML Templates
+
 ## 2024-08-09
 
 * @shelby figure out Claude Sonnet stuff: NOT DONE, main focus was on the paper
