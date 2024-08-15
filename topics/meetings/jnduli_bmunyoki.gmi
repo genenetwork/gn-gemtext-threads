@@ -1,5 +1,15 @@
 # Meeting Notes
 
+## 2024-08-15
+### RTF Editing (bmunyoki+alexm)
+
+In our static content, we don't really store RTF; instead we store, HTML.  As an example compare these 2 documements and note their difference:
+
+=> https://github.com/bitfocus/rtf2text/blob/master/sample.rtf => [Proper RTF] sample.rtf
+=> https://github.com/genenetwork/gn-docs/blob/master/general/datasets/Br_u_1203_rr/acknowledgment.rtf => [GN] acknowledgement.rtf
+
+* TODO @alexm Rename all the *rtf to *html during transform to make things clearer.  Send @bonfacem PR.
+
 ## 2024-08-13
 ### Markdown Editor (bmunyoki+alexm)
 
@@ -43,7 +53,7 @@ Note: When setting up sync between @jnduli and @felix, add @bmunyoki too.
 
 ## 2024-08-02
 
-* DONE: @bmunyoki virtuos and xapian updated in prod
+* DONE: @bmunyoki virtuoso and xapian updated in prod
 * @bmunyoki code work to edit Rif + WIki SQL n RDF data: WIP, we have desired API, but we need to implement code.
 * NOT DONE: @bmunyoki group paper on dissertation to target Arxiv
 * DONE: @bmunyoki fix case insensitivity in Xapian search
