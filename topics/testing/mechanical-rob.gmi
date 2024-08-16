@@ -1,9 +1,67 @@
 # Mechanical Rob
 
-We need to run Mechanical Rob tests as part of our continuous integration tests.
+## Tags
 
-The Mechanical Rob CI tests are functioning again now. To see how to run Mechanical Rob, see the CI job definition in the genenetwork-machines repo.
+* type: documentation, docs
+* assigned:
+* priority:
+* status: open
+* keywords: tests, testing, mechanical-rob
 
-=> genenetwork-machines/src/branch/main/genenetwork-development.scm
+## What is Mechanical Rob?
 
-The invocation procedure is bound to change as the many environment variables in genenetwork2 are cleared up.
+Mechanical Rob is our name for what could be considered our integration tests.
+
+The idea is that we observe how Prof. Robert Williams (Rob) (and other scientists) use(s) GeneNetwork and create a "mechanical" facsimile of that. The purpose is to ensure that the system works correctly with each and every commit in any of our various repositories.
+
+If any commit causes any part of the Mechanical Rob system to raise an error, then we know, immediately, that something is broken, and the culprit can get onto fixing that with haste.
+
+## Show Me Some Code!!!
+
+Nice! I like your enthusiasm.
+
+You can find the
+=> https://github.com/genenetwork/genenetwork2/tree/testing/test/requests Mechanical Rob code here
+within the genenetwork2 repository.
+
+You can also see how it is triggered in the gn-machines repository in
+=> https://git.genenetwork.org/gn-machines/tree/genenetwork-development.scm this module.
+Search for "genenetwork2-mechanical-rob" within that module and you should find how the system is triggered.
+
+## How About Running it Locally
+
+All the above is nice and all, but sometimes you just want to run the checks locally.
+
+In that case, you can run Mechanical Rob locally by following the steps below:
+(note that these steps are mostly the same ones to run GN2 locally).
+
+
+1. Get a guix shell for GN2 development:
+```
+$ cd genenetwork2/
+$ guix shell --container --network \
+        --expose=</path/to/directory/with/genotypes> \
+        --expose=</path/to/local/genenetwork3> \
+        --expose=</path/to/setting/file> \
+        --file=guix.scm bash
+```
+The last `bash` is to ensure we install the Bourne-Again Shell whic we use to launch the application. The `</path/to/local/genenetwork3>` can be omitted if you do not need the latest code in GN3 to be included in your running GN2.
+
+2. Set up the appropriate environment variables:
+```
+[env]$ export HOME=</path/to/home/directory>
+[env]$ export GN2_SETTINGS=</path/to/settings/file>
+[env]$ export SERVER_PORT=5003
+[env]$ export GN2_PROFILE="${GUIX_ENVIRONMENT}"
+[env]$ export GN3_PYTHONPATH=</path/to/local/genenetwor3> # Only needed if you need to test GN3 updates
+```
+
+3. Run the mechanical-rob tests
+```
+[env]$ bash bin/genenetwork2 gn2/default_settings.py -c \
+        test/requests/test-website.py \
+        --all "http://localhost:${SERVER_PORT}"
+```
+Of course, here we are assuming that `SERVER_PORT` has the value of the port on which GN2 is running.
+
+
