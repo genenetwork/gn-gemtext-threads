@@ -13,8 +13,18 @@ We will track precompute steps here. We will have:
 Trait archives will have steps for
 
 * [X] step p1: list-traits-to-compute
-* [+] step p2: gemma-lmm9-loco-output: Compute standard GEMMA lmm9 LOCO vector with gemma-wrapper
-* [ ] step p3: gemma-to-lmdb: create a clean vector
+* [X] step p2: gemma-lmm9-loco-output: Compute standard GEMMA lmm9 LOCO vector with gemma-wrapper
+* [X] step p3: gemma-to-lmdb: create a clean vector
+
+Start precompute
+
+* [ ] Fetch traits on tux04
+* [ ] Set up runner on tux04 and others
+* [ ] Run on Octopus
+
+Work on published data
+
+* [ ] Fetch traits
 
 The DB itself can be updated from these
 
@@ -22,6 +32,7 @@ The DB itself can be updated from these
 
 Later
 
+* [ ] Rqtl2: Compute Rqtl2 vector
 * [ ] bulklmm: Compute bulklmm vector
 
 Interestingly this work coincides with Arun's work on CWL. Rather than trying to write a workflow in bash, we'll use ccwl and accompanying tools to scale up the effort.
