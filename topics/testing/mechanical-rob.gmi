@@ -3,8 +3,8 @@
 ## Tags
 
 * type: documentation, docs
-* assigned:
-* priority:
+* assigned: bonfacem, rookie101, fredm
+* priority: medium
 * status: open
 * keywords: tests, testing, mechanical-rob
 
