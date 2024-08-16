@@ -66,3 +66,9 @@ The last `bash` is to ensure we install the Bourne-Again Shell whic we use to la
 Of course, here we are assuming that `SERVER_PORT` has the value of the port on which GN2 is running.
 
 
+## Possible Improvements
+
+Look into using geckodriver to help with the mechanical-rob tests.
+`geckodriver` comes with the
+=> https://icecatbrowser.org/index.html GNU IceCat browser
+which is present as a package in GNU Guix.
