@@ -43,6 +43,7 @@ $ guix shell --container --network \
         --expose=</path/to/directory/with/genotypes> \
         --expose=</path/to/local/genenetwork3> \
         --expose=</path/to/setting/file> \
+        --expose=</path/to/secrets/file> \
         --file=guix.scm bash
 ```
 The last `bash` is to ensure we install the Bourne-Again Shell whic we use to launch the application. The `</path/to/local/genenetwork3>` can be omitted if you do not need the latest code in GN3 to be included in your running GN2.
