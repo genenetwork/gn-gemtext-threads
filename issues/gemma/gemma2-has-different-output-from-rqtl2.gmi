@@ -5,7 +5,7 @@
 * assigned: pjotrp, davea
 * priority: high
 * type: bug, enhancement
-* status: unclear
+* status: closed
 * keywords: database, gemma, reaper, rqtl2
 
 # Description
@@ -74,3 +74,7 @@ Warning messages:
 ```
 
 The first warning matches above. If data is missing it may be filtered out. We'll have to check for that. The third warning I am not sure about. Probably a ranking of markers.
+
+# Conclusion
+
+It turned out that R/qtl was running HK - so it was a QTL mapping rather than an LMM.
