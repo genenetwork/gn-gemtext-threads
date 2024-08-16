@@ -29,5 +29,3 @@ choose as that is what people will try)
 
 => https://genenetwork.org/search-syntax search syntax
 
-I.e. update the text please with all forms so people don't have to
-guess/look elsewhere.
