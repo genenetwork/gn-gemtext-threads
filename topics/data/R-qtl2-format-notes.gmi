@@ -1,4 +1,4 @@
-# R/qtl2 Format Notes
+# R/qtl2 and GEMMA Format Notes
 
 This document is mostly to help other non-biologists figure out their way around the format(s) of the R/qtl2 files. It mostly deals with the meaning/significance of the various fields.
 
@@ -12,6 +12,39 @@ and
 
 We are going to consider the "non-transposed" form here, for ease of documentation: simply flip the meanings as appropriate for the transposed files.
 
+To convert between formats we should probably use python as that is what can use as 'esperanto'.
+
+## Control files
+
+Both GN and R/qtl2 have control files. For GN it basically describes the individuals (genometypes) and looks like:
+
+```js
+{
+        "mat": "C57BL/6J",
+        "pat": "DBA/2J",
+        "f1s": ["B6D2F1", "D2B6F1"],
+        "genofile" : [{
+                "title" : "WGS-based (Mar2022)",
+                "location" : "BXD.8.geno",
+                "sample_list" : ["BXD1", "BXD2", "BXD5", "BXD6", "BXD8", "BXD9", "BXD11", "BXD12", "BXD13", "BXD14", "BXD15", "BXD16", "BXD18", "BXD19", "BXD20", "BXD21", "BXD22", "BXD23", "BXD24", "BXD24a", "BXD25", "BXD27", "BXD28", "BXD29", "BXD30", "BXD31", "BXD32", "BXD33", "BXD34", "BXD35", "BXD36", "BXD37", "BXD38", "BXD39", "BXD40", "BXD41", "BXD42", "BXD43", "BXD44",
+ ...]}]}
+```
+
+In gn-guile this gets parsed in gn/data/genotype.scm to fetch the individuals that match the genotype and phenotype layouts.
+
+## pheno files and phenotypes
+
+The standard GEMMA input files are not very good for trouble shooting. R/qtl2 has at least the individual or genometype ID for every line:
+
+```
+id,bolting_days,seed_weight,seed_area,ttl_seedspfruit,branches,height,pc_seeds_aborted,fruit_length
+MAGIC.1,15.33,17.15,0.64,45.11,10.5,NA,0,14.95
+MAGIC.2,22,22.71,0.75,49.11,4.33,42.33,1.09,13.27
+MAGIC.3,23,21.03,0.68,57,4.67,50,0,13.9
+```
+
+This is a good standard and can match with the control files.
+
 ## geno files
 
 > The genotype data file is a matrix of individuals × markers. The first column is the individual IDs; the first row is the marker names.
@@ -21,10 +54,6 @@ For GeneNetwork, this means that the first column contains the Sample names (pre
 ## gmap and pmap files
 
 The first column of the gmap/pmap file contains genetic marker values. There are no Individuals/samples (or strains) here.
-
-## pheno files
-
-The first column is the list of individuals (samples/strains) whereas the first column is the list of phenotypes.
 
 ## phenocovar files
 

@@ -1,0 +1,112 @@
+# Permutations
+
+Currently we use gemma-wrapper to compute the significance level - by shuffling the phenotype vector 1000x.
+As this is a lengthy procedure we have not incorporated it into the GN web service. The new bulklmm may work
+in certain cases (genotypes have to be complete, for one).
+
+Because of many changes gemma-wrapper is not working for permutations. I have a few steps to take care of:
+
+* [ ] read R/qtl2 format for phenotype
+
+# R/qtl2 and GEMMA formats
+
+See
+
+=> data/R-qtl2-format-notes
+
+# One-offs
+
+## Phenotypes
+
+For a study Dave handed me phenotype and covariate files for the BXD. Phenotypes look like:
+
+```
+
+Record ID,21526,21527,21528,21529,21530,21531,21532,21537,24398,24401,24402,24403,24404,24405,24406,24407,24408,24412,27513,27514,27515,27516,
+27517
+BXD1,18.5,161.5,6.5,1919.450806,3307.318848,0.8655,1.752,23.07,0.5,161.5,18.5,6.5,1919.450806,3307.318848,0.8655,1.752,0.5,32,1.5,1.75,2.25,1.
+25,50
+BXD100,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x
+BXD101,20.6,176.199997,4.4,2546.293945,4574.802734,1.729,3.245,25.172001,0.6,176.199997,20.6,4.4,2546.294189,4574.802734,1.7286,3.2446,0.6,32,
+1.875,2.375,2.75,1.75,38
+BXD102,18.785,159.582993,6.167,1745.671997,4241.505859,0.771,2.216,22.796667,0.25,159.583328,18.785,6.166667,1745.672485,4241.506348,0.770667,
+2.216242,0.25,28.08333,1.5,2,2.875,1.5,28.5
+...
+```
+
+which is close to the R/qtl2 format. GEMMA meanwile expects a tab delimited file where x=NA. You can pass in the column number with the -n switch. One thing GEMMA lacks it the first ID which has to align with the genotype file. The BIMBAM geno format, again, does not contain the IDs. See
+
+=> http://www.xzlab.org/software/GEMMAmanual.pdf
+
+What we need to do is create and use R/qtl2 format files because they can be error checked on IDs and convert those, again, to BIMBAM for use by GEMMA. In the past I wrote Python converters for gemma2lib:
+
+=> https://github.com/genetics-statistics/gemma2lib
+
+I kinda abandoned the project, but you can see a lot of functionality, e.g.
+
+=> https://github.com/genetics-statistics/gemma2lib/blob/master/gemma2/format/bimbam.py
+
+We also have bioruby-table as a generic command line tool
+
+=> https://github.com/pjotrp/bioruby-table
+
+which is an amazingly flexible tool and can probably do the same. I kinda abandoned that project too. You know, bioinformatics is a graveyard of projects :/
+
+OK, let's try. The first step is to convert the phenotype file to something GEMMA can use. We have to make sure that the individuals align with the genotype file(!). So, because we work with GN's GEMMA files, the steps are:
+
+* [X] Read the JSON layout file - 'sample_list' is essentially the header of the BIMBAM geno file
+* [X] Use the R/qtl2-style phenotype file to write a correct GEMMA pheno file (multi column)
+* [ ] Compare results with GN pheno output
+
+Running GEMMA by hand it complained
+
+```
+## number of total individuals = 235
+## number of analyzed individuals = 26
+## number of covariates = 1
+## number of phenotypes = 1
+## number of total SNPs/var        =    21056
+## number of analyzed SNPs         =    21056
+Calculating Relatedness Matrix ...
+rsm10000000001, X, Y, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0.5, 0, 1, 0, 1, 0.5, 0, 1, 0, 0, 0, 1, 1, 0, 0.5, 1, 1, 0.5, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0.5, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0.5, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0.5, 0, 0, 0.5, 0, 1, 0, 1, 0, 0, 1, 0.5, 0, 1, 0, 0.5, 1, 1, 1, 1, 0.5, 0, 0, 0.5, 1, 0.5, 0.5, 0.5, 1, 0.5, 1, 0.5, 0.5, 0, 0, 0, 0.5, 1, 0.5, 0, 0, 0.5, 0, 0, 1, 0, 0.5, 1, 0.5, 0.5, 0.5, 1, 0.5, 0.5, 0.5
+237 != 235
+WARNING: Columns in geno file do not match # individuals in phenotypes
+ERROR: Enforce failed for not enough genotype fields for marker in src/gemma_io.cpp at line 1470 in BimbamKin
+```
+
+GEMMA on production is fine. So, I counted BXDs. For comparison, GN's pheno outputs 241 BXDs. Daves pheno file has 241 BXDs (good). But when using my script we get 235 BXDs. Ah, apparently they are different from what we use on GN because GN does not use the parents and the F1s for GEMMA. So, my script should complain when a match is not made. Turns out the JSON file only contains 235 'mappable' BXDs and refers to BXD.8 which is from Apr 26, 2023. The header says `BXD_experimental_DGA_7_Dec_2021` and GN says WGS March 2022. So which one is it? I'll just go with latest, but genotype naming is problematic and the headers are not updated.
+
+> MOTTO: Always complain when there are problems!
+
+Luckily GEMMA complained, but the script should have also complained. The JSON file with 235 genometypes is not representing the actual 237 genometypes. We'll work on that in the next section.
+
+Meanwhile let's add this code to gemma-wrapper. The code can be found here:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/rqtl2-pheno-to-gemma.py
+
+## Genotypes
+
+The pheno script now errors with
+
+```
+ERROR: sets differ {'BXD065xBXD102F1', 'C57BL/6J', 'DBA/2J', 'BXD077xBXD065F1', 'D2B6F1', 'B6D2F1'}
+```
+
+Since these are parents and F1s, and are all NAs in Dave's phenotypes, they are easy to remove. So, now we have 235 samples in the phenotype file and 237 genometypes in the genotype file (according to GEMMA). A quick check shows that BXD.geno has 236 genometypes. Same for the bimbam on production. We now have 3 values: 235, 236 and 237. Question is why these do not overlap.
+
+### Genotype probabilities for GEMMA
+
+Another problem on production is that we are not using the standard GEMMA values. So GEMMA complains with
+
+```
+WARNING: The maximum genotype value is not 2.0 - this is not the BIMBAM standard and will skew l_lme and effect sizes
+```
+
+This explains why we divide the effect size by 2 in the GN production code. Maybe it is a better idea to fix then geno files!
+
+* [ ] Generate BIMBAM file from GENO .geno files
+* [ ] Check bimbam files on production
+
+## Covariates
+
+- [ ] Try covariates Dave
