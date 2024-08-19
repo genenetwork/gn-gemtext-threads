@@ -1,4 +1,11 @@
-# FAQs
+# GN-AUTH FAQ
+
+## Tags
+
+* type: docs, documentation
+* status: ongoing, open
+* keywords: authentication, authorisation, docs, documentation
+* author: @jnduli
 
 ## Quick configuration for local development
 
@@ -47,3 +54,7 @@ FLASK_DEBUG=1 AUTHLIB_INSECURE_TRANSPORT=1 OAUTHLIB_INSECURE_TRANSPORT=1 \
 ```
 
 This will update your clients list to have all the related urls we want.
+
+## 500 Server Error: INTERNAL SERVER ERROR
+
+When you see the error: `500 Server Error: INTERNAL SERVER ERROR for url: http://localhost:8081/auth/token`, restart the gn2 server.
