@@ -104,8 +104,48 @@ WARNING: The maximum genotype value is not 2.0 - this is not the BIMBAM standard
 
 This explains why we divide the effect size by 2 in the GN production code. Maybe it is a better idea to fix then geno files!
 
-* [ ] Generate BIMBAM file from GENO .geno files
-* [ ] Check bimbam files on production
+* [X] Generate BIMBAM file from GENO .geno files (via R/qtl2)
+* [X] Check bimbam files on production
+
+So we need to convert .geno files as they are the current source of genotypes in GN and contain the sample names that we need to align with pheno files. For this we'll output two files - one JSON file with metadata and sample names and the actual BIMBAM file GEMMA requires. I notice that I actually never had the need to parse a geno file! Zach wrote a tool `gn2/maintenance/convert_geno_to_bimbam.py` that also writes the GN JSON file and I'll take some ideas from that. We'll also need to convert to R/qtl2 as that is what Dave can use and then on to BIMBAM. So, let's add that code to gemma-wrapper again.
+
+This is another tool at
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/gn-geno-to-gemma.py
+
+where the generated JSON file helps create the pheno file. We ended up with 237 genometypes/samples to match the genotype file and all of Dave's samples matched. Also, now I was able to run GEMMA successfully and passed in the pheno column number with
+
+```
+gemma -gk -g BXD-test.txt -p BXD_pheno_Dave-GEMMA.txt -n 5
+gemma -lmm 9 -g BXD-test.txt -p BXD_pheno_Dave-GEMMA.txt -k output/result.cXX.txt -n 5
+```
+
+the pheno file can include the sample names as long as there are no spaces in them. For marker rs3718618 we get values -9  0 X Y 0.317 7.930689e+02  1.779940e+02  1.000000e+05  7.532662e-05. The last value translates to
+
+```
+-Math.log10(7.532662e-05) => 4.123051519468808
+```
+
+and that matches GN's run of GEMMA w.o. LOCO.
+
+The next step is to make the -n switch run with LOCO on gemma-wrapper.
+
+```
+./bin/gemma-wrapper --loco --json --  -gk -g BXD-test.txt -p BXD_pheno_Dave-GEMMA.txt -n 5 -a BXD.8_snps.txt > K.json
+./bin/gemma-wrapper --keep --force --json --loco --input K.json -- -lmm 9 -g BXD-test.txt -p BXD_pheno_Dave-GEMMA.txt -n 5 -a BXD.8_snps.txt > GWA.json
+```
+
+Checking the output we get
+
+```
+-Math.log10(3.191755e-05) => 4.495970452606926
+```
+
+and that matches Dave's output for LOCO and marker rs3718618. All good, so far. Next step permute.
+
+## Permute
+
+Now we have gemma-wrapper working we need to fix it to work with the latest type of files.
 
 ## Covariates
 
