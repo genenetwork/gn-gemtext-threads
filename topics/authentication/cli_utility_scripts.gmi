@@ -7,7 +7,7 @@ another.
 To get a list of the available scripts/flask commands that can be run, do:
 
 ```sh
-FLASK_APP="main.py" flask --help
+FLASK_APP="gn_auth/wsgi.py" flask --help
 ```
 
 With that, you should get a list of commands, which as of 2023-05-26 are:
@@ -25,20 +25,20 @@ Commands:
   shell                Run a shell in the app context.
 ```
 
-*NB*: You can simply do `export FLASK_APP="main.py"` at the beginning of your
+*NB*: You can simply do `export FLASK_APP="gn_auth/wsgi.py"` at the beginning of your
 shell session and then just run the commands without prepending with the
-`FLASK_APP="main.py"` declaration.
+`FLASK_APP="gn_auth/wsgi.py"` declaration.
 
 ## Registering/Setting a User as System Administrator
 
 You can register an new user and set them as the system administrator with:
 ```sh
-FLASK_APP="main.py" flask register-admin
+FLASK_APP="gn_auth/wsgi.py" flask register-admin
 ```
 
 A typical session might go something like:
 ```sh
-$ FLASK_APP="main.py" flask register-admin
+$ FLASK_APP="gn_auth/wsgi.py" flask register-admin
 Enter the user's name: CLI SysAdmin
 Enter the administrator's email: someadmin@gmail.com
 Enter password: 
@@ -57,7 +57,7 @@ changing "/home/frederick/genenetwork/gn3_files/db/auth.db" to the path to your 
 If a user already exists in your system, and you want to make that user system admin, you could do it with:
 
 ```sh
-FLASK_APP="main.py" flask assign-system-admin 5b15ef01-a9d7-4ee4-9a38-fe9dd1d871b8
+FLASK_APP="gn_auth/wsgi.py" flask assign-system-admin 5b15ef01-a9d7-4ee4-9a38-fe9dd1d871b8
 ```
 
 You can retrieve the user ID from the (SQLite) database, with something like:
@@ -80,7 +80,7 @@ group in the new auth system.
 This can be run using flask with
 
 ```sh
-FLASK_APP="main.py" flask make-data-public
+FLASK_APP="gn_auth/wsgi.py" flask make-data-public
 ```
 
 which will use the application's configuration settings for the
@@ -104,13 +104,13 @@ python3 -m scripts.migrate_existing_data \
 ## List Available Routes
 
 ```sh
-FLASK_APP="main.py" flask routes
+FLASK_APP="gn_auth/wsgi.py" flask routes
 ```
 
 ## Drop Into a Python Shell
 
 ```sh
-FLASK_APP="main.py" flask shell
+FLASK_APP="gn_auth/wsgi.py" flask shell
 ```
 
 ## Development Scripts
@@ -121,7 +121,7 @@ run in a production environment.
 ### Setting up a Sample User for Development
 
 ```sh
-FLASK_APP="main.py" flask init-dev-users
+FLASK_APP="gn_auth/wsgi.py" flask init-dev-users
 ```
 
 That will initialise your development database with a development user with the
@@ -134,5 +134,5 @@ following details:
 ### Setting up Sample OAuth2 Client for Development
 
 ```sh
-FLASK_APP="main.py" flask init-dev-clients
+FLASK_APP="gn_auth/wsgi.py" flask init-dev-clients
 ```

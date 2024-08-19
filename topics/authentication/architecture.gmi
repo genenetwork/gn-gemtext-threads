@@ -73,7 +73,7 @@ Since GeneNetwork is a shared system (i.e. many different users (can) use the sy
 The authorisation system therefore needs to be aware of users, and what privileges they have to act upon any particular system.
 
 * TODO: Maybe flesh out the statement below some more. It seems a tad technical, so maybe separate it from the high-level overview suitable for users?
-This is also where the authentication system comes in: The authentication part of the system, allows the user to identify themselves at login, and from there, they can simply use the token they receive to identif themselves.
+This is also where the authentication system comes in: The authentication part of the system, allows the user to identify themselves at login, and from there, they can simply use the token they receive to identify themselves.
 
 ## Roles
 
