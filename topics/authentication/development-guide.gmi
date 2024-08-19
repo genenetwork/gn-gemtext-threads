@@ -1,0 +1,49 @@
+# FAQs
+
+## Quick configuration for local development
+
+Save a `local_settings.conf` file that has the contents:
+
+```
+SQL_URI = "mysql://user:password@localhost/db_name" # mysql uri
+AUTH_DB = "/absolute/path/to/auth.db/" # path to sqlite db file
+GN_AUTH_SECRETS = "/absolute/path/to/secrets/secrets.conf"
+```
+
+The `GN_AUTH_SECRETS` path has two functions:
+
+* It contains the `SECRET_KEY` we use in our application
+* The folder containing this file is used to store our jwks.
+
+An example is:
+
+```
+SECRET_KEY = "qQIrgiK29kXZU6v8D09y4uw_sk8I4cqgNZniYUrRoUk"
+```
+
+## Quick set up cli commands
+
+```
+export FLASK_DEBUG=1 AUTHLIB_INSECURE_TRANSPORT=1 OAUTHLIB_INSECURE_TRANSPORT=1 FLASK_APP=gn_auth/wsgi
+export GN_AUTH_CONF=/absolute/path/to/local_settings.conf
+flask init-dev-clients --client-uri "http://localhost:port"
+flask init-dev-users
+flask assign-system-admin 0ad1917c-57da-46dc-b79e-c81c91e5b928
+```
+
+## Handling verification for users in local development
+
+* Run flask init_dev_users, which will create a verified local user.
+* Run `UPDATE users set verified=1` on the sqlite3 auth database.
+
+## Errors related to unsupported clients/redirect URIs for client
+
+Rerun
+
+```
+FLASK_DEBUG=1 AUTHLIB_INSECURE_TRANSPORT=1 OAUTHLIB_INSECURE_TRANSPORT=1 \
+  GN_AUTH_CONF=/absolute/path/to/local_settings.conf FLASK_APP=gn_auth/wsgi \
+  flask init-dev-clients --client-uri "http://localhost:port_you_use_for_gn2"
+```
+
+This will update your clients list to have all the related urls we want.
