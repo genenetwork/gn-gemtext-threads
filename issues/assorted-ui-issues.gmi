@@ -1,0 +1,36 @@
+# Various UI issues raised by Rob (8/19/2024)
+
+# Tags
+
+* assigned: zsloan
+* keywords: user-interface
+* priority: medium
+* open
+
+## Tasks
+
+* [X] Fix collection encoding issue
+
+* [ ] Don't import empty collections (like the Default Collection)
+
+* [ ] Update/Creation dates aren't listed for collections
+
+* [ ] Remove in-between ticks for Effect Size Plot (from mapping page) so it's just -1/0/1
+
+* [ ] Also make Effect Size Plot more narrow
+
+* [ ] Prevent X/Y-aix summary text from extending beyond the graph width
+
+* [ ] Longer tick markers as well
+
+* [ ] Remove triangle for phenotype mapping
+
+* [ ] Remove ProbeSetPosition from mapping for traits with no position
+
+* [ ] Make Haplotype legend image thicker + change text to Haplotypes (Mat, Pat, Het, Unknown)
+
+* [ ] Change "Sequence Site" in legend to "Gene Location"
+
+* [ ] When adding genotype marker as covariate (for scatter-plot, maybe also mapping), change description to Position instead of "undefined"
+
+* [ ] Check Add Covariation colorbox popup on Apple laptop (it shows up weird for Rob, but normal for me)
