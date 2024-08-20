@@ -1,5 +1,34 @@
 # Meeting Notes
 
+## 2024-08-20
+
+Integrating GNQA to GN2 website and how it will work?
+
+1. Have the context information displayed to the right of the GN2 xapian search page
+2. When someone clicks the context info page, it opens the search from GNQA which has all the references.
+3. Cache queries since many searches are the same.
+
+Problems:
+
+1. search has xapian specific terminology. How do we handle this? Remove xapian prefixes and provide the key words to search.
+2. how do we handle cache expiry?
+    - no expiry for now.
+    - store them in a database table.
+    - every quarter year, the search can be updated.
+    - group:bxd, species: mouse -> bxd mouse
+      mouse bxd: -> when caching the ordering for the seach terms shouldn't matter much.
+
+Game Plan:
+
+1. Production the code relating to LLM search. Get the code for LLMs merged into main branch. 
+2. UI changes to show the search context from LLM.
+3. Figuring out caching:
+    - database table structure
+    - cache expiry (use 1 month for now)
+    - modify LLM search to pick from cache if it exists.
+4. Have another qa branch that fixes all errors since we had the freeze.
+5. Only logged in users will have access to this functionality.
+
 ## 2024-08-16
 * @jnduli Fix failing unit tests on GN-Auth.
 * @jnduli Exploring Mechanical Rob for Integration Tests.  GN-Auth should be as stable as possible.
