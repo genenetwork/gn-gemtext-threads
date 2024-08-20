@@ -1,0 +1,62 @@
+# Permission Hooks System Design
+## Status: Draft
+
+## Objective
+
+We want to achieve:
+
+- Default permissions for users that come from `.edu` domains.
+- Support for visitors to the website.
+
+This should be dynamic and easily maintenable.
+
+## Design
+
+### Events
+
+* Use middleware to plug into the various aspects of a requests life cycle. We'll plug into `after_request` for providing default permissions.
+* Create a hook which contains: the event to handle, what part of the life cycle the hook plugs into and the actual functions to call,
+* Events can be identified using their `request.base_url` parameter.
+* Each hook registers itself to the global set of hooks (TODO: Figure out how to automatically handle the registration).
+
+
+```
+@app.after_request
+def handle_hooks():
+  for hook in hooks:
+    if hook.lifecycle == "after_request" and hook.can_handle():
+      hook.run()
+
+
+Hooks = [RegistrationHook, ...]
+
+
+class RegistrationHook:
+
+  def can_handle(self):
+    request.base_url == "register"
+
+  def lifecyle:
+    return "after_request"
+
+  def run(self):
+    ...
+```
+
+### Privilege Hooks
+
+* After login/registration, use the email to get extra privileges assigned to a user. We use `login` too to ensure that all users have the most up-to-date roles and privileges.
+* This means that any user gets assigned these privileges and normal workflows can happen.
+
+### Storage
+
+* Create a new role that contains the default privileges we want to assign to users depending on their domain.
+* This role will link up with the privileges to be assigned to said user.
+* Example privileges we may want to add to users in the `.edu` domain:
+  * group:resource:edit-resource
+  * system:inbreadset:apply-case-attribute-edit
+  * system:inbreadset:edit-case-attribute
+  * system:inbreadset:view-case-attribute
+* Create an extra table that provides a link between some `email identifier` and the role we'd like to pre-assign. We can use python regex for the email identifier e.g. `*.edu$` or `*.utsch.edu`.
+* This will be the table used by the Registration Hook.
+* This also allows us to edit roles/privileges without code releases.
