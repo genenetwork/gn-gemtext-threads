@@ -134,15 +134,14 @@ If the request fails, the expected results are:
 
 ## Related Issues
 
-=> [https://issues.genenetwork.org/issues/implement-gn-markdown-editor-in-guile](https://issues.genenetwork.org/issues/implement-gn-markdown-editor-in-guile)
-=> [https://issues.genenetwork.org/issues/implement-gn-markdown-editor](https://issues.genenetwork.org/issues/implement-gn-markdown-editor)
-
+=> https://issues.genenetwork.org/issues/implement-gn-markdown-editor-in-guile
+=> https://issues.genenetwork.org/issues/implement-gn-markdown-editor
 
 ## Notes on Gn-Editor UI
 
 Here is the link to the PR for integrating the GN-Editor, including screenshots:
 
-=> [https://github.com/genenetwork/genenetwork2/pull/854](https://github.com/genenetwork/genenetwork2/pull/854)
+=> https://github.com/genenetwork/genenetwork2/pull/854
 
 Genenetwork2 consumes the endpoint for the GN-Editor. Authentication is required to prevent access by malicious users and bots.
 
