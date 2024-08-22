@@ -22,7 +22,7 @@
     "species": "XXXX",
     "pubmed_ids": ["XXXX", "XXXX"], // Optional
     "web_url": "XXXX" // Optional
-    "comments": "XXXX",
+    "comment": "XXXX",
     "email": "XXXX",
     "categories": ["XXXX", "XXXX"], // Enumeration
     "version": "XXXX",
