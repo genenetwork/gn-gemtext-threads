@@ -6,17 +6,17 @@
 * priority: high
 * status: in-progress
 
-### Tasks
+## Tasks
 
-* [ ] Update GeneRIF metadata to contain the VersionId. 
-* [ ] Update GeneRIF metadata to add a dct:identifier for each comment (for the GeneRIF table this is the table id since this is the only way to group comments historically). 
-* [ ] Update GeneRIF metadata to add a "initial" for each comment. 
-* [ ] Get wiki-entry: Get's the latest wiki entry from RDF: 
+### Get EndPoints
 
-> GET /wiki/<comment-id>
+### UI
+* [ ] API: Get WIKI/RIF by symbol from rdf.
+
+> GET /wiki/<symbol>
 
 ```
-{
+[{
     "symbol": "XXXX",
     "reason": "XXXX",
     "species": "XXXX",
@@ -27,10 +27,41 @@
     "categories": ["XXXX", "XXXX"], // Enumeration
     "version": "XXXX",
     "initial": "XXXX", // Optional user or project code or your initials.
-}
+}]
 ```
 
-* [ ] Get wiki-entry history: Get's the previous versions of the comment from RDF: 
+* [ ] UI: Modify traits page to have "GN2 (GeneWiki)"
+* [ ] UI: Integrate with API
+
+### Editing
+
+* [ ] API: Edit comment by id in mysql/rdf: modifies GeneRIF and GeneRIFXRef tables.
+* [ ] API: Modify edit comments by id to include RDF changes.
+
+> POST /wiki/<comment-id>/edit
+
+```
+{
+    "symbol": "XXXX",
+    "reason": "XXXX",
+    "species": "XXXX",
+    "pub_ids": ["XXXX", "XXXX"], // Optional
+    "web_url": "XXXX" // Optional
+    "comment": "XXXX",
+    "email": "XXXX",
+    "categories": ["XXXX", "XXXX"], // Enumeration
+    "initial": "XXXX", // Optional user or project code or your initials.
+}
+```
+* [ ] UI: Add buttons that edit various relevant sections.
+* [ ] UI: Edit page needs to fetch categories from GeneCategory tabl.  When comment write fails, alert with error.  When comment write success, update the comment on the page, and alert with success.
+* [ ] API: Modify edit comments by id to include RDF changes.
+* [ ] GN auth integration
+
+### History
+
+* [ ] API: End-point to fetch all the historical data
+* [ ] UI: Page that contains history for how comments changes.
 
 > GET /wiki/<comment-id>/history
 
@@ -49,40 +80,7 @@
 }]
 ```
 
-* [ ] Editing data:  An edit will insert a new comment (SQL+RDF) that has the same comment identifier. 
+### Ops
 
-> POST /wiki/<comment-id>/edit
-
-```
-{
-    "symbol": "XXXX",
-    "reason": "XXXX",
-    "species": "XXXX",
-    "pub_ids": ["XXXX", "XXXX"], // Optional
-    "web_url": "XXXX" // Optional
-    "comment": "XXXX",
-    "email": "XXXX",
-    "categories": ["XXXX", "XXXX"], // Enumeration
-    "initial": "XXXX", // Optional user or project code or your initials.
-}
-```
-
-* [ ] Add new comment -- Inserts (RDF+SQL) a new gene-entry for the symbol. 
-
-> POST /wiki/add
-
-```
-{
-    "symbol": "XXXX",
-    "species": "XXXX",
-    "pubmed_ids": ["XXXX", "XXXX"], // Optional
-    "web_url": "XXXX" // Optional
-    "comment": "XXXX",
-    "email": "XXXX",
-    "categories": ["XXXX", "XXXX"], // Enumeration
-    "initial": "XXXX", // Optional user or project code or your initials.
-}
-```
-
-* [ ] UI Work 
-* [ ] Weave in Auth
+* [ ] RDF synchronization with SQL (gn-machines).
+* [ ] Update RDF in tux01 and tux02.
