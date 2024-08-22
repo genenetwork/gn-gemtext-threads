@@ -22,10 +22,11 @@ To see the implementation, see:
 * [x] Implement API to edit and commit changes
 * [x] Replace JS with HTMX
 * [x] Support external links and image rendering
-* [ ] Package dependencies
+* [x] Package dependencies
+* [x] show diff for files
 * [x] Handle errors
 * [ ] Review by users
-* [ ] Integrate authentication into the system
+* [x] Integrate authentication into the system
 
 
 ## API Documentation
@@ -135,3 +136,39 @@ If the request fails, the expected results are:
 
 => [https://issues.genenetwork.org/issues/implement-gn-markdown-editor-in-guile](https://issues.genenetwork.org/issues/implement-gn-markdown-editor-in-guile)
 => [https://issues.genenetwork.org/issues/implement-gn-markdown-editor](https://issues.genenetwork.org/issues/implement-gn-markdown-editor)
+
+
+## Notes on Gn-Editor UI
+
+Here is the link to the PR for integrating the GN-Editor, including screenshots:
+
+=> [https://github.com/genenetwork/genenetwork2/pull/854](https://github.com/genenetwork/genenetwork2/pull/854)
+
+Genenetwork2 consumes the endpoint for the GN-Editor. Authentication is required to prevent access by malicious users and bots.
+
+The main endpoint to fetch and edit a file is:
+
+```
+genenetwork.org/editor/edit?file-path=<relative file path>
+```
+
+This loads the editor with the content for editing.
+
+### Modifying Editor Settings
+
+You can modify editor settings, such as font size and keyboard bindings. To do this, navigate to:
+
+```
+genenetwork.org/editor/settings
+```
+
+Be sure to save your changes for them to take effect.
+
+### Showing Diff for Editor
+
+The editor also provides a diff functionality to show you the changes made to the file. Use the "Diff" button in the navigation to view these changes.
+
+### Committing Changes
+
+To commit your changes, use the "Commit" button. A commit message is required in the text area for the commit to be processed.
+
