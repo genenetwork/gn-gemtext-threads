@@ -8,9 +8,7 @@
 
 ## Tasks
 
-### Get EndPoints
-
-### UI
+### Viewing
 * [ ] API: Get WIKI/RIF by symbol from rdf.
 
 > GET /wiki/<symbol>
@@ -20,7 +18,7 @@
     "symbol": "XXXX",
     "reason": "XXXX",
     "species": "XXXX",
-    "pubmed_ids": ["XXXX", "XXXX"], // Optional
+    "pubmed_ids": ["XXXX", "XXXX"], // empty array when non-existent
     "web_url": "XXXX" // Optional
     "comment": "XXXX",
     "email": "XXXX",
@@ -45,7 +43,7 @@
     "symbol": "XXXX",
     "reason": "XXXX",
     "species": "XXXX",
-    "pub_ids": ["XXXX", "XXXX"], // Optional
+    "pubmed_ids": ["XXXX", "XXXX"], // Optional
     "web_url": "XXXX" // Optional
     "comment": "XXXX",
     "email": "XXXX",
