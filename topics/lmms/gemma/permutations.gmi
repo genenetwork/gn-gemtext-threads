@@ -148,9 +148,9 @@ and that matches Dave's output for LOCO and marker rs3718618. All good, so far. 
 Now we have gemma-wrapper working we need to fix it to work with the latest type of files.
 
 * [X] randomize phenotypes using -n switch
-* [ ] Permute gemma and collect results
-* [ ] Unseed randomizer or make it an option
-* [ ] Fix tmpdir
+* [X] Permute gemma and collect results
+* [X] Unseed randomizer or make it an option
+* [X] Fix tmpdir
 * [X] Show final score
 * [ ] Compare small and large BXD set
 
@@ -214,6 +214,71 @@ The 100 run shows
 ```
 
 Not too far off!
+
+The command was
+
+```
+./bin/gemma-wrapper --debug --no-parallel --keep --force --json --loco --input K.json --permutate 100 --permute-phenotype BXD_pheno_Dave-GEMMA.txt -- -lmm 9 -g BXD-test.txt -n 5 -a BXD.8_snps.txt
+```
+
+It is fun to see that when I did a second run the
+
+```
+[100, ["95 percentile (significant) ", 0.0002998286, 3.5], ["67 percentile (suggestive)  ", 0.01167864, 1.9]]
+```
+
+significance value was 3.5. Still, our hit is whopper.
+
+## Run permutations in parallel
+
+Next I introduced and fixed parallel support for permutations, now we can run gemma LOCO with decent speed - about 1 permutation per 3s! That is one trait in an hour on my machine.
+
+=> https://github.com/genetics-statistics/gemma-wrapper/commit/a8d3922a21c7807a9f20cf9ffb62d8b16f18c591
+
+Now we can run 1000 permutations in an hour, rerunning above we get
+
+```
+["95 percentile (significant) ", 0.0006983356, 3.2]
+["67 percentile (suggestive)  ", 0.01200505, 1.9]
+```
+
+which proves that 100 permutations is not enough. It is a bit crazy to think that 5% of randomized phenotypes will get a LOD score of 3.2 or higher!
+
+Down the line I can use Arun's CWL implementation to fire this on a cluster. Coming...
+
+## Reduce genotypes for permutations
+
+In the next phase we need to check if shuffling the full set of BXDs makes sense for computing permutations. Since I wrote a script for this exercise to transform BIMBAM genotypes I can reuse that:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/a8d3922a21c7807a9f20cf9ffb62d8b16f18c591/bin/gn-geno-to-gemma.py#L31
+
+If we check the sample names we can write a reduced genotype matrix. Use that to compute the GRM. Next permute with the smaller BXD sample set and genotypes.
+
+Instead of modifying above script I decided to add another one
+
+```
+bimbam-filter.py --json BXD.geno.json --sample-file BXD_pheno_Dave-GEMMA-samples.txt BXD_geno.txt > BXD_geno-samples.txt
+```
+
+which takes as inputs the json file from gn-geno-to-gemma and the GEMMA input file. This is not to mix targets and keeping the code simple. Now create the GRM with
+
+```
+./bin/gemma-wrapper --loco --json --  -gk -g BXD_geno-samples.txt -p BXD_pheno_Dave-GEMMA-samples.txt -n 5 -a BXD.8_snps.txt > K-samples.json
+./bin/gemma-wrapper --keep --force --json --loco --input K-samples.json -- -lmm 9 -g BXD_geno-samples.txt -p BXD_pheno_Dave-GEMMA-samples.txt -n 5 -a BXD.8_snps.txt > GWA-samples.json
+```
+
+Now the hit got reduced:
+
+```
+-Math.log10(1.111411e-04)
+=> 3.9541253091741235
+```
+
+and with 1000 permutations
+
+```
+./bin/gemma-wrapper --debug --parallel --keep --force --json --loco --input K-samples.json --permutate 1000 --permute-phenotype BXD_pheno_Dave-GEMMA-samples.txt -- -lmm 9 -g BXD_geno-samples.txt -n 5 -a BXD.8_snps.txt
+```
 
 ## Covariates
 
