@@ -278,7 +278,78 @@ and with 1000 permutations
 
 ```
 ./bin/gemma-wrapper --debug --parallel --keep --force --json --loco --input K-samples.json --permutate 1000 --permute-phenotype BXD_pheno_Dave-GEMMA-samples.txt -- -lmm 9 -g BXD_geno-samples.txt -n 5 -a BXD.8_snps.txt
+["95 percentile (significant) ", 0.0004184217, 3.4]
+["67 percentile (suggestive)  ", 0.006213012, 2.2]
 ```
+
+we are still significant. Though the question is now why results differ so much, compared to using the full BXD genotypes.
+
+## Why do we have a difference with the full BXD genotypes?
+
+GEMMA strips out the missing phenotypes in a list. Only the actual phenotypes are used. We need to check how the GRM is used and what genotypes are used by GEMMA. For the GRM the small genotype file compares vs the large:
+
+```
+Samples           small    large
+BXD1  <->  BXD1   0.248    0.253
+BXD24 <->  BXD24  0.255    0.248
+BXD1  <->  BXD24 -0.040   -0.045
+BXD1  <->  BXD29  0.010    0.009
+```
+
+You can see there is a small difference in the computation of K even though it looks pretty close. This is logical because with the full BXD set all genotypes are used. With a smaller BXD set only those genotypes are used. We expect a difference in values, but not much of a difference in magnitude (shift). The only way to prove that K impacts the outcome is to take the larger matrix and reduce it to the smaller one using those values. I feel another script coming ;)
+
+Above numbers are without LOCO. With LOCO on CHR18
+
+```
+Samples            small    large
+BXD1  <->  BXD1    0.254    0.248
+BXD1  <->  BXD24  -0.037    -0.042
+```
+
+again a small shift. OK, let's try computing with a reduced matrix and compare results for rs3718618. Example:
+
+```
+gemma -gk -g BXD-test.txt -p BXD_pheno_Dave-GEMMA.txt -n 5 -a BXD.8_snps.txt -o full-bxd
+gemma -lmm 9 -k output/full-bxd.cXX.txt -g BXD-test.txt -p BXD_pheno_Dave-GEMMA.txt -n 5 -a BXD.8_snps.txt -o full-bxd
+```
+
+we get three outcomes where full-bxd is the full set,
+```
+output/full-bxd.assoc.txt:18              rs3718618 7.532662e-05
+output/full-reduced-bxd.assoc.txt:18      rs3718618 2.336439e-04
+output/small-bxd.assoc.txt:18             rs3718618 2.338226e-04
+```
+
+even without LOCO you can see a huge jump for the full BXD kinship matrix, just looking at our hit rs3718618:
+
+```
+-Math.log10(7.532662e-05)
+=> 4.123051519468808
+-Math.log10(2.338226e-04)
+=> 3.631113514641496
+```
+
+With LOCO the difference may be even greater.
+
+So, which one to use? Truth is that the GRM is a blunt instrument. Essentially every combination of two samples/strains/genometypes gets compressed into a single number that gives a distance between the genomes. This number represents a hierarchy of relationships computed in differences in DNA (haplotypes) between those individuals. The more DNA variation is represented in the calculation, the more 'fine tuned' this GRM matrix becomes. Instinctively the larger matrix, or full BXD population, is a better estimate of distance between the individuals than just using a subset of DNA.
+
+So, I still underwrite using the full BXD for computing the GRM. To run GEMMA, I have just proven we can use the reduced GRM which will be quite a bit faster too, as the results are the same. For permutations we *should* use the reduced form of the full BXD GRM as it does not make sense to shuffle phenotypes against BXDs we don't use. So I need to recompute that.
+
+## Recomputing significance with the reduced GRM matrix
+
+- [ ] Recomute significance with reduced GRM
+
+I can reuse the script I wrote for the previous section.
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/grm-filter.py
+
+TBC
+
+## Dealing with epoch
+
+Rob pointed out that the GRM does not necessarily represent epoch and that may influence the significance level. I.e. we should check for that.
+
+- [ ] Deal with epoch
 
 ## Covariates
 
