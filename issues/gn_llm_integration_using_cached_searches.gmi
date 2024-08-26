@@ -2,7 +2,7 @@
 
 ## Tags
 
-* assigned: jnduli, alexm
+* assigned: jnduli, alexm, bmunyoki
 * keywords: llm, genenetwork2
 * type: enhancement
 * status: open
@@ -11,12 +11,20 @@
 
 We'd like to include LLM searches integrated into our GN searches, when someone attempts a Xapian search e.g. when I search for `wiki:rif group:mouse nicotine`, we'd do a corresponding search for `rif mouse nicotine` on LLMs, and show the results on the main page.
 
+Another example:
+
+xapian search: rif:glioma species:human group:gtex_v8
+llm search: glioma human gtex_v8
+
 
 This can be phased out into
 
 - [ ] UI integration, where we modify the search page to include a dummy content box
 - [ ] LLM search integration, where we perform a search and modify UI to show the results. This can either be async (i.e. the search results page waits for the LLM search results) or sync (i.e. we load the search results page after we've got the LLM results)
-- [ ] Cache design and integration
+  - [ ] create a copy branch for the gnqa-api branch
+  - [ ] create a PR containing all the branches
+  - [ ] how much would it take to get the qa_*** branch merged into main??
+- [ ] Cache design and integration: we already have some cache using redis (gn search history), so we may use this for the moment.
+
 
 Let's use flag: `LLM_SEARCH_ENABLED` to enable/disable this feature during development to make sure we don't release this before it's ready.
-
