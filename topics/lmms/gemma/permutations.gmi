@@ -343,13 +343,23 @@ I can reuse the script I wrote for the previous section.
 
 => https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/grm-filter.py
 
-TBC
+So, the idea is to rerun permutations with the small set, but with the reduced GRM from the full BXD population. That ought to be straightforward by using the new matrix as an input for GWA. Only problem is that LOCO generates a GRM for every chromosome, so we need to make gemma-wrapper aware about the matrix reduction. As the reduction is fast we can do it for every run of gemma-wrapper and destroy it automatically with tmpdir. So:
+
+- [X] Compute the full GRM for every LOCO (if not cached) - already part of gemma-wrapper
+- [ ] Run through GRMs and reduce them in tmpdir
+- [ ] Plug new GRM name into computations - which really updates the JSON file that is input for GWA
+
+The interesting bit is that GEMMA requires input of phenotypes, but does not use them to compute the GRM.
+
+WIP
 
 ## Dealing with epoch
 
-Rob pointed out that the GRM does not necessarily represent epoch and that may influence the significance level. I.e. we should check for that.
+Rob pointed out that the GRM does not necessarily represent epoch and that may influence the significance level. I.e. we should check for that. I agree that the GRM distances are not precise enough (blunt instrument) to capture a few variants that appeared in a new epoch of mice. I.e., the mice from the 90s may be different from the mice today in a few DNA variants that won't be reflected in the GRM.
 
 - [ ] Deal with epoch
+
+We have two or more possible solutions to deal with hierarchy in the population.
 
 ## Covariates
 
