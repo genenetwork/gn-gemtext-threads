@@ -1,0 +1,22 @@
+# GN2 Integration with LLM search using cached results
+
+## Tags
+
+* assigned: jnduli, alexm
+* keywords: llm, genenetwork2
+* type: enhancement
+* status: open
+
+## Description
+
+We'd like to include LLM searches integrated into our GN searches, when someone attempts a Xapian search e.g. when I search for `wiki:rif group:mouse nicotine`, we'd do a corresponding search for `rif mouse nicotine` on LLMs, and show the results on the main page.
+
+
+This can be phased out into
+
+- [ ] UI integration, where we modify the search page to include a dummy content box
+- [ ] LLM search integration, where we perform a search and modify UI to show the results. This can either be async (i.e. the search results page waits for the LLM search results) or sync (i.e. we load the search results page after we've got the LLM results)
+- [ ] Cache design and integration
+
+Let's use flag: `LLM_SEARCH_ENABLED` to enable/disable this feature during development to make sure we don't release this before it's ready.
+
