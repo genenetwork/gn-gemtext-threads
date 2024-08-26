@@ -1,5 +1,24 @@
 # Meeting Notes
 
+# 2024-08-23
+* @shelby re-ingest data and run RAGAs against the queries already in the system to perform comparison with new papers.
+* @shelby figure out Claude Sonnet stuff.
+* IN PROGRESS: @felix @fred push RQTL bundles to uploader, also includes metadata.
+* IN PROGESS: @felix look for means to fix metadata challenge ie. trouble associating data we upload and metadata that provides descriptions.
+* @bmunyoki API: Get all RIF metadata by symbols from rdf.
+* @bmunyoki UI: Modify traits page to have "GN2 (GeneWiki)"
+* @bmunyoki UI: Integrate with API
+* @bmunyoki Replicate GN1 WIKI+RIF in GN2.
+* @bmunyoki and @alex help Alex deploy gn-guile code on tux02.
+* @bmunyoki @jnduli review gn2 UI change for markdown editor
+* @bmunyoki create template for bio paper
+* @alex sync with Boni to set up gn-guile
+* @alex @bmunyoki @jnduli sync to plan out work for llm integration
+* @jnduli edit WIKI+RIF 
+* @jnduli set up gn-uploader locally and improve docs
+* @jnduli complete design doc for hooks system for gn-auth
+* @felix to document email threads on gemtext
+
 ## 2024-08-22
 
 => https://issues.genenetwork.org/issues/edit-rif-metadata APIs for wiki editting and broke down wiki-editting task to sub-projects.
@@ -42,16 +61,27 @@ Game Plan:
 * @felix look for means to fix metadata challenge ie. trouble associating data we upload and metadata that provides descriptions.
 * @felix @jnduli programming learning: started building a web server to learn backend using Flask.
 * @felix @jnduli Read Shelby's paper and provide feedback by the end of Saturday.
-* @shelby figure out Claude Sonnet stuff.
-* @bmunyoki implementation code work to edit Rif + WIki SQL n RDF data.
+
+## 2024-08-16
+* DONE: @jnduli Fix failing unit tests on GN-Auth.
+* NOT DONE: @jnduli Exploring Mechanical Rob for Integration Tests. GN-Auth should be as stable as possible.
+* NOT DONE: @jnduli Research e-mail patch workflow and propose a sane workflow for GN through an engineering blog post.
+* DONE: @jnduli Help @alexm with auth work.
+* IN PROGRESS: @felix @fred push RQTL bundles to uploader, also includes metadata.
+* IN PROGRESS: @felix look for means to fix metadata challenge ie. trouble associating data we upload and metadata that provides descriptions.
+* DONE: @felix @jnduli programming learning: started building a web server to learn backend using Flask. Learning html and css and will share the progress with this.
+* DONE: @felix ~@jnduli~ Read Shelby's paper and provide feedback by the end of Saturday.
+* DONE: @felix tested the time tracker script.
+* IN PROGRESS: @bmunyoki implementation code work to edit Rif + WIki SQL n RDF data. We'll break this down.
 * @bmunyoki and @alex help Alex deploy gn-guile code on tux02.
-* @bmunyoki Replicate GN1 WIKI+RIF in GN2.
+* NOT DONE: @bmunyoki Replicate GN1 WIKI+RIF in GN2.
 * @shelby @bonfacem @alex Integrate QNQA Search to global search.
+* @shelby handling edits with the current open paper
 
 Nice To Have:
-* @felix figure out how to fix large data uploads ie. most data sets are large e.g. 45GB. Uploader cannot handle these large files.
-* @felix Try out John's time tracking tool and provide feedback.
-* @shelby run RAGAs against the queries already in the system to perform comparison with new papers.
+* DEPRIORITIZED: @felix figure out how to fix large data uploads ie. most data sets are large e.g. 45GB. Uploader cannot handle these large files.
+* DONE: @felix Try out John's time tracking tool and provide feedback.
+* @shelby run RAGAs against the queries already in the system to perform comparison with new papers: re-ingesting, now at 1500 papers.
 * @bmunyoki Send out emails to the culprit on failing tests in CI/CD.
 
 ## 2024-08-15
