@@ -1,0 +1,220 @@
+# Configuring Nginx on the Host System
+
+## Tags
+
+* type: doc, docs, documentation
+* keywords: deploy, deployment, deploying, nginx, guix, guix container, guix system container
+* status: in progress
+
+## Introduction
+
+We deploy the GeneNetwork system within GNU Guix system containers. All the configurations and HTTPS certificates are handled from within the container, thus all the host has to do is to pass the traffic on to the system container.
+
+This document shows you how to set up the host container to forward all the necessary traffic so that you do not run into all the problems that we did when figuring this stuff out :-).
+
+## Ports and Domains
+
+In your system container, there are certain ports that are defined for various traffic. The most important ones, and the ones we will deal with, are for HTTP and HTTPS. The ideas should translate for most other ports.
+
+For the examples is this document, we will assume the following ports are defined in the Guix system container:
+* HTTP on port 9080
+* HTTPS on port 9081
+
+## HTTPS Traffic
+
+### Nginx --with-stream_ssl_preread_module
+
+We handle all the necessary traffic details (e.g. SSL/TLS termination, etc.) within the container, and only need the host to forward the traffic.
+
+In order to achieve this, your Nginx will need to be compiled with the
+=> https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html Nginx Stream SSL Preread Module.
+
+Now, because we are awesome, we include
+=> https://git.genenetwork.org/gn-machines/tree/nginx-preread.scm a definition for nginx compiled with the module.
+Simply install it on your host by doing something like:
+
+```
+$ git clone https://git.genenetwork.org/gn-machines
+$ cd gn-machines
+$ ./nginx-preread-deploy.sh
+```
+
+That will install the nginx under "/usr/local/sbin/nginx".
+
+Now, we comment out, or delete any/all lines loading any nginx modules for any previously existing nginx. Comment out/delete the following line in your "/etc/nginx/nginx.conf" file if it exists:
+
+```
+include /etc/nginx/modules-enabled/*.conf;
+```
+
+This is necessary since the nginx we installed from guix comes with all the modules we need, and even if not, it would not successfully use the hosts modules anyhow. You'd need to modify the nginx config for yourself to add any missing modules for the nginx from guix — how to do that is outside the scope of this document, but should not be particularly difficult.
+
+Set up your init system to use the nginx from guix. Assuming systemd, you need to have something like the following in your "/etc/systemd/system/nginx.service" unit file:
+
+```
+[Unit]
+Description=nginx web server (from Guix, not the host)
+After=network.target
+
+[Service]
+Type=forking
+PIDFile=/run/nginx.pid
+ExecStartPre=/usr/local/sbin/nginx -q -t -c /etc/nginx/nginx.conf -e /var/log/nginx/error.log
+ExecStart=/usr/local/sbin/nginx -c /etc/nginx/nginx.conf -p /var/run/nginx -e /var/log/nginx/error.log
+ExecReload=/usr/local/sbin/nginx -c /etc/nginx/nginx.conf -s reload -e /var/log/nginx/error.log
+ExecStop=-/sbin/start-stop-daemon --quiet --stop --retry QUIT/5 --pidfile /run/nginx.pid
+TimeoutStopSec=5
+KillMode=mixed
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Awesome. Now enable the unit file:
+
+```
+$ sudo systemctl enable nginx.service
+```
+
+### Forwarding the HTTPS Traffic
+
+Now that we have nginx in place, we can forward HTTPS traffic for all the domains we want. In "/etc/nginx/nginx.conf" we add:
+
+```
+# Forward some HTTPS connections into existing guix containers
+stream {
+    upstream my-container {
+        # This is our Guix system container
+        server 127.0.0.1:9081;
+    }
+
+    upstream host-https {
+        # Forward any https traffic for any previously existing domains on the
+        # host itself.
+        server 127.0.0.1:6443;
+    }
+
+    map $ssl_preread_server_name $upstream {
+        yourdomain1.genenetwork.org my-container;
+        yourdomain2.genenetwork.org my-container;
+        default host-https;
+    }
+
+    server {
+        listen 443;
+        proxy_pass $upstream;
+        ssl_preread on;
+    }
+}
+```
+
+## HTTP Traffic
+
+You will need to pass the HTTP traffic on to the container in order to enable HTTP-dependent traffic (e.g. setting up the SSL certificates using the ACME protocol) is successfully handled.
+
+You have 2 options to do this:
+* Add a separate server block in `/etc/nginx/site-available/` (or other configured directory)
+* Add the server block directly in `/etc/nginx/nginx.conf` (or your main nginx config file, if it's not the standard one mentioned here).
+
+The configuration to add is as follows:
+
+```
+server {
+    ## Forward HTTP traffic to container
+    ## Without this, the HTTP calls will fall through to the defaults in
+    ## /etc/nginx/sites-enabled/ leading to http-dependent traffic, like
+    ## that of the ACME client, failing.
+    server_name yourdomain1.genenetwork.org yourdomain2.genenetwork.org …;
+    listen 80;
+    location / {
+        proxy_pass http://127.0.0.1:9080;
+        proxy_set_header Host $host;
+    }
+}
+```
+
+** Do please replace the "yourdomain*" parts in the example above as appropriate for your scenario. The ellipsis (…) indicate optional extra domains you might need to configure.
+
+Without this, the `Run ACME Client` below will fail
+
+## Run ACME Client
+
+Now that all traffic is set up, and you can reach your sites using both HTTP and HTTPS (you have tested your sites, right? right?) we can now request the SSL certificates from Let's Encrypt so that we no longer see the "Self-signed Certificate" warning.
+
+You need to get into your system container to do this. The steps are a follows:
+
+=> https://git.genenetwork.org/gn-machines/tree/README.org#n61 Figure out which process is your container
+=> https://git.genenetwork.org/gn-machines/tree/README.org#n55 Get a shell into the container
+=> https://guix-forge.systemreboot.net/manual/dev/en/#section-acme-service Run "/usr/bin/acme renew" to get your initial SSL certificates from Let's Encrypt.
+
+At this point, the traffic portion of the configuration is done.
+
+## Sample "/etc/nginx/nginx.conf"
+
+```
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+# include /etc/nginx/modules-enabled/*.conf;
+
+access_log /var/log/nginx/access.log;
+error_log /var/log/nginx/error.log error;
+
+events {
+    worker_connections 768;
+    # multi_accept on;
+}
+
+stream {
+    upstream my-container {
+        # This is our Guix system container
+        server 127.0.0.1:9081;
+    }
+
+    upstream host-https {
+        # Forward any https traffic for any previously existing domains on the
+        # host itself.
+        server 127.0.0.1:6443;
+    }
+
+    map $ssl_preread_server_name $upstream {
+        yourdomain1.genenetwork.org my-container;
+        yourdomain2.genenetwork.org my-container;
+        default host-https;
+    }
+
+    server {
+        listen 443;
+        proxy_pass $upstream;
+        ssl_preread on;
+    }
+}
+
+http {
+    ##
+    # Basic Settings
+    ##
+    
+    ⋮
+    
+    include /etc/nginx/conf.d/*.conf;
+    server {
+        ## Forward HTTP traffic to container
+        ## Without this, the HTTP calls will fall through to the defaults in
+        ## /etc/nginx/sites-enabled/ leading to http-dependent traffic, like
+        ## that of the ACME client, failing.
+        server_name yourdomain1.genenetwork.org yourdomain2.genenetwork.org …;
+        listen 80;
+        location / {
+            proxy_pass http://127.0.0.1:9080;
+            proxy_set_header Host $host;
+        }
+    }
+    include /etc/nginx/sites-enabled/*;
+    
+    ⋮
+}
+
+⋮
+
+```
