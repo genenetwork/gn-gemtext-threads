@@ -351,6 +351,8 @@ So, the idea is to rerun permutations with the small set, but with the reduced G
 
 The interesting bit is that GEMMA requires input of phenotypes, but does not use them to compute the GRM.
 
+After giving it some thought we want GRM reduction to work in production GN because of the speed benefit. That means modifying gemma-wrapper to take a list of genometypes as input - and we'll output that with GN. It is a good idea anyhow because it can give us some improved error feedback down the line.
+
 WIP
 
 ## Dealing with epoch
