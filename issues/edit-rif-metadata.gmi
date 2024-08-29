@@ -52,7 +52,7 @@
 }
 ```
 * [ ] UI: Add buttons that edit various relevant sections.
-* [ ] UI: Edit page needs to fetch categories from GeneCategory tabl.  When comment write fails, alert with error.  When comment write success, update the comment on the page, and alert with success.
+* [ ] UI: Edit page needs to fetch categories from GeneCategory table.  When comment write fails, alert with error.  When comment write success, update the comment on the page, and alert with success.
 * [ ] API: Modify edit comments by id to include RDF changes.
 * [ ] GN auth integration
 
