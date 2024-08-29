@@ -78,6 +78,10 @@
 }]
 ```
 
+### Misc ToDos:
+
+* [ ] Review performance of query used in 72d9a24e8e65 [Genenetwork3]
+
 ### Ops
 
 * [ ] RDF synchronization with SQL (gn-machines).
