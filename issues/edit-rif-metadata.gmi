@@ -9,7 +9,7 @@
 ## Tasks
 
 ### Viewing
-* [ ] API: Get WIKI/RIF by symbol from rdf.
+* [X] API: Get WIKI/RIF by symbol from rdf.
 
 > GET /wiki/<symbol>
 
@@ -28,8 +28,8 @@
 }]
 ```
 
-* [ ] UI: Modify traits page to have "GN2 (GeneWiki)"
-* [ ] UI: Integrate with API
+* [X] UI: Modify traits page to have "GN2 (GeneWiki)"
+* [X] UI: Integrate with API
 
 ### Editing
 
@@ -82,3 +82,4 @@
 
 * [ ] RDF synchronization with SQL (gn-machines).
 * [ ] Update RDF in tux01 and tux02.
+* [ ] UI: Add "edit" button after testing.
