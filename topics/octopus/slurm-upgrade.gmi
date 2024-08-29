@@ -1,0 +1,88 @@
+# How to upgrade slurm on octopus
+
+This document closely mirrors the official upgrade guide. The official upgrade guide is very thorough. Please refer to it and update this document if something is not clear.
+=> https://slurm.schedmd.com/upgrades.html Official slurm upgrade guide
+
+## Preparation
+
+It is possible to upgrade slurm in-place without upsetting running jobs. But, for our small cluster, we don't mind a little downtime. So, it is simpler if we schedule some downtime with other users and make sure there are no running jobs.
+
+slurm can only be upgraded safely in small version increments. For example, it is safe to upgrade version 18.08 to 19.05 or 20.02, but not to 20.11 or later. This compatibility information is in the RELEASE_NOTES file of the slurm git repo with the git tag corresponding to the version checked out. Any configuration file changes are also outlined in this file.
+=> https://github.com/SchedMD/slurm/ slurm git repository
+
+## Backup
+
+Stop the slurmdbd, slurmctld and slurmd services.
+```
+# systemctl stop slurmdbd slurmctld slurmd
+```
+Backup the slurm StateSaveLocation (/var/spool/slurmd/ctld in our case) and the slurm configuration directory.
+```
+# cp -av /var/spool/slurmd/ctld /somewhere/safe/
+# cp -av /etc/slurm /somewhere/safe/
+```
+Backup the slurmdbd MySQL database. Enter the password when prompted. The password is specified in StoragePass of /etc/slurm/slurmdbd.conf.
+```
+$ mysqldump -u slurm -p --databases slurm_acct_db > /somewhere/safe/slurm_acct_db.sql
+```
+
+## Upgrade slurm on octopus01 (the head node)
+
+Clone the gn-machines git repo.
+```
+$ git clone https://git.genenetwork.org/gn-machines
+```
+Edit slurm.scm to build the version of slurm you are upgrading to. Ensure it builds successfully using
+```
+$ guix build -f slurm.scm
+```
+Upgrade slurm.
+```
+# ./slurm-head-deploy.sh
+```
+Make any configuration file changes outlined in RELEASE_NOTES. Next, run the slurmdbd daemon, wait for it to start up successfully and then exit with Ctrl+C. During upgrades, slurmdbd may take extra time to update the database. This may cause systemd to timeout and kill slurmdbd. So, we do it this way, instead of simply starting the slurmdbd systemd service.
+```
+# sudo -u slurm slurmdbd -D
+```
+Reload the new systemd configuration files. Then, start the slurmdbd, slurmctld and slurmd services one at a time ensuring that each starts up correctly before proceeding on to the next.
+```
+# systemctl daemon-reload
+# systemctl start slurmdbd
+# systemctl start slurmctld
+# systemctl start slurmd
+```
+
+## Upgrade slurm on the worker nodes
+
+Repeat the steps below on every worker node.
+
+Stop the slurmd service.
+```
+# systemctl stop slurmd
+```
+Upgrade slurm, passing slurm-worker-deploy.sh the slurm store path obtained from building slurm using guix build on octopus01. Recall that you cannot invoke guix build on the worker nodes.
+```
+# ./slurm-worker-deploy.sh /gnu/store/...-slurm
+```
+Copy over any configuration file changes from octopus01. Then, reload the new systemd configuration files and start slurmd.
+```
+# systemctl daemon-reload
+# systemctl start slurmd
+```
+
+## Tip: Running the same command on all worker nodes
+
+It is a lot of typing to run the same command on all worker nodes. You could make this a little less cumbersome with the following bash for loop.
+```
+for node in octopus02 octopus03 octopus05 octopus06 octopus07 octopus08 octopus09 octopus10 octopus11 tux06 tux07 tux08 tux09;
+do
+    ssh $node your command
+done
+```
+You can even do this for sudo commands using the -S flag of sudo that makes it read the password from stdin. Assuming your password is in the pass password manager, the bash for loop would then look like:
+```
+for node in octopus02 octopus03 octopus05 octopus06 octopus07 octopus08 octopus09 octopus10 octopus11 tux06 tux07 tux08 tux09;
+do
+    pass octopus | ssh $node sudo -S your command
+done
+```
