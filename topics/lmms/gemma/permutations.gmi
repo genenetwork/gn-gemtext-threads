@@ -351,7 +351,61 @@ So, the idea is to rerun permutations with the small set, but with the reduced G
 
 The interesting bit is that GEMMA requires input of phenotypes, but does not use them to compute the GRM.
 
-After giving it some thought we want GRM reduction to work in production GN because of the speed benefit. That means modifying gemma-wrapper to take a list of genometypes as input - and we'll output that with GN. It is a good idea anyhow because it can give us some improved error feedback down the line.
+After giving it some thought we want GRM reduction to work in production GN because of the speed benefit. That means modifying gemma-wrapper to take a list of samples/genometypes as input - and we'll output that with GN. It is a good idea anyhow because it can give us some improved error feedback down the line.
+
+We'll use the --input switch to gemma-wrapper by providing the full list of genometypes that are used to compute the GRM and the 'reduced' list of genometypes that are used to reduce the GRM and compute GWA after.
+So the first step is to create this JSON input file. We already created the "gn-geno-to-gemma" output that has a full list of samples as parsed from the GN .geno file. Now we need a script to generate the reduced samples JSON and merge that to "gn-geno-to-gemma-reduced" by addind a "samples-reduced" vector.
+
+The rqtl2-pheno-to-gemma.py script I wrote above already takes the "gn-geno-to-gemma" JSON. It now adds to the JSON:
+
+```
+  "samples-column": 2,
+  "samples-reduced": {
+    "BXD1": 18.5,
+    "BXD24": 27.510204,
+    "BXD29": 17.204,
+    "BXD43": 21.825397,
+    "BXD44": 23.454,
+    "BXD60": 22.604,
+    "BXD63": 19.171,
+    "BXD65": 21.607,
+    "BXD66": 17.056999,
+    "BXD70": 17.962999,
+    "BXD73b": 20.231001,
+    "BXD75": 19.952999,
+    "BXD78": 19.514,
+    "BXD83": 18.031,
+    "BXD87": 18.258715,
+    "BXD89": 18.365,
+    "BXD90": 20.489796,
+    "BXD101": 20.6,
+    "BXD102": 18.785,
+    "BXD113": 24.52,
+    "BXD124": 21.762142,
+    "BXD128a": 18.952,
+    "BXD154": 20.143,
+    "BXD161": 15.623,
+    "BXD210": 23.771999,
+    "BXD214": 19.533117
+  },
+  "numsamples-reduced": 26
+```
+
+which is kinda cool because now I can reduce and write the pheno file in one go. Implementation:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/rqtl2-pheno-to-gemma.py
+
+OK, we are going to input the resulting JSON file into gemma-wrapper. At the GRM stage we ignore the reduction but we need to add these details to the outgoing JSON. So the following commands can run:
+
+```
+./bin/gemma-wrapper --loco --json --input BXD_pheno_Dave-GEMMA.txt.json -- -gk -g BXD-test.txt -p BXD_pheno_Dave-GEMMA.txt -n 5 -a BXD.8_snps.txt > K.json
+```
+
+where K.json has a json["input"] which essentially is above structure.
+
+```
+./bin/gemma-wrapper --keep --force --json --loco --input K.json -- -lmm 9 -g BXD-test.txt -p BXD_pheno_Dave-GEMMA.txt -n 5 -a BXD.8_snps.txt > GWA.json
+```
 
 WIP
 
