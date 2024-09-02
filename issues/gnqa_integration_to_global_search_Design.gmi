@@ -30,6 +30,12 @@ For caching, we will use SQLite3 since it is already implemented for search hist
 *Statistical Estimation:*  
 We calculated that this caching solution would require approximately 79MB annually for an estimated 20 users, each querying the system 5 times a day.
 
+Why average request size per user and how we determined this?
+The average request size was an upper bound calculation for documents returned from the Fahamu API.
+
+why we're assuming 20 users making 5 requests per day?
+
+We’re assuming 20 users making 5 requests per day to estimate typical usage of GN2 services
 ### Error Handling
 * Handle cases where users are not logged in, as GNQA requires authentication.
 * Handle scenarios where there is no response from Fahamu.
