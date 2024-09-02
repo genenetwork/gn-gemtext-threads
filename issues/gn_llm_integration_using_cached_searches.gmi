@@ -21,10 +21,23 @@ This can be phased out into
 
 * [ ] 1. UI integration, where we modify the search page to include a dummy content box
 * [ ] 2. LLM search integration, where we perform a search and modify UI to show the results. This can either be async (i.e. the search results page waits for the LLM search results) or sync (i.e. we load the search results page after we've got the LLM results)
-* [ ] 2.1 create a copy branch for the gnqa-api branch
-* [ ] 2.2 create a PR containing all the branches
+* [x] 2.1 create a copy branch for the gnqa-api branch
+* [x] 2.2 create a PR containing all the branches
 * [ ] 2.3 how much would it take to get the qa_*** branch merged into main??
-* [ ] 3. Cache design and integration: we already have some cache using redis (gn search history), so we may use this for the moment.
+* [ ] 3. Cache design and integration: we already have some
+
+cache using redis (gn search history), so we may use this for the moment.
 
 
 Let's use flag: `LLM_SEARCH_ENABLED` to enable/disable this feature during development to make sure we don't release this before it's ready.
+
+
+## Notes
+
+The branch for  merging to gn2:
+
+https://github.com/genenetwork/genenetwork2/pull/863
+
+The branch for merging to gn3:
+
+https://github.com/genenetwork/genenetwork3/pull/188
