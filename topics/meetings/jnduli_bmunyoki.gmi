@@ -1,5 +1,23 @@
 # Meeting Notes
 
+# 2024-09-02 (Sync with @flisso+@bonfacem)
+
+## Case-Attributes
+
+* @bmunyoki understood case attributes by reverse-engineering the relevant tables from GeneNetwork's database.
+
+* One source of confusion for @bmunyoki is that we have the same "CaseAttribute.Name" that applies to different strains.  Example Query:
+
+```
+SELECT * FROM CaseAttribute JOIN CaseAttributeXRef ON CaseAttribute.CaseAttributeId = CaseAttributeXRef.CaseAttributeId WHERE CaseAttribute.Name = "Sex"\G
+```
+
+* @rob wants fine-grained access control with case attributes.
+
+* @flisso, case-attributes are GN invention.  Case Attributes are extra metadata about a given dataset beyond the phenotype measurements.  E.g.  We can have the phenotype: "Central nervous system"; whereby we collect the values, and SE.  However, we can also collect extra metadata like "Body Weight", "Sex", "Status", etc, and in GN terminology, that extra metadata is called Case Attributes.
+
+* @bmunyoki.  Most of the confusion around case-attributes is because of how we store case-attributes.  We don't have unique identifiers for case-attributes.
+
 # 2024-08-30
 
 * @bmunyoki Replicate GN1 WIKI+RIF in GN2.
