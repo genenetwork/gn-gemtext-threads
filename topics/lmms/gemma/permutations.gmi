@@ -407,7 +407,18 @@ where K.json has a json["input"] which essentially is above structure.
 ./bin/gemma-wrapper --keep --force --json --loco --input K.json -- -lmm 9 -g BXD-test.txt -p BXD_pheno_Dave-GEMMA.txt -n 5 -a BXD.8_snps.txt > GWA.json
 ```
 
-WIP
+Now I have to deal with phenotype files as they are rewritten. We should still cater for `-p` for GEMMA. We already have `--permute-phenotypes filen` for gemma-wrapper. Now we are adding `--phenotypes` to gemma-wrapper which replaces both!
+Note that we can use -p if --phenotypes is NOT defined. Problem is we have a few paths now:
+
+* [X] Check phenotypes are directly passed into GEMMA with -p switch
+* [ ] Check phenotypes are passed in as a file
+* [ ] Check phenotypes are coming in using the JSON file
+
+Fixed the first one with
+
+=> https://github.com/genetics-statistics/gemma-wrapper/commit/2b7570a7f0ba0d1080c730b208823c0622dd8f2c
+
+though that does not do caching (yet).
 
 ## Dealing with epoch
 
