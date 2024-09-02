@@ -1,23 +1,41 @@
 # Meeting Notes
 
+# 2024-08-30
+
+* @bmunyoki Replicate GN1 WIKI+RIF in GN2.
+* IN PROGRESS: @bmunyoki and @alex help Alex deploy gn-guile code on tux02, run this in a tmux session.
+* IN PROGRESS: @bmunyoki api for history for all tasks
+* @bmunyoki UI layer for RDF history
+* @bmunyoki modify edit api to also write to RIF
+* @bmunyoki build system container for gn-guile and write documentation for creating containers
+* NOT DONE: @jnduli complete design doc for hooks system for gn-auth
+* @alexm @jnduli create branches to testing for LLM in GN2 and GN3
+* @alexm @jnduli integrate LLM in GN2 and GN3
+* @jnduli add auth layer to edit rifs functionality
+* @bmunyoki @felix sync on case attributes and document
+
+## nice to haves
+
+* nice_to_have: @bmunyoki experiment and document updating gn-bioinformatics set up packages (to support rshiny)
+
 # 2024-08-23
 * @shelby re-ingest data and run RAGAs against the queries already in the system to perform comparison with new papers.
 * @shelby figure out Claude Sonnet stuff.
 * IN PROGRESS: @felix @fred push RQTL bundles to uploader, also includes metadata.
 * IN PROGESS: @felix look for means to fix metadata challenge ie. trouble associating data we upload and metadata that provides descriptions.
-* @bmunyoki API: Get all RIF metadata by symbols from rdf.
-* @bmunyoki UI: Modify traits page to have "GN2 (GeneWiki)"
-* @bmunyoki UI: Integrate with API
-* @bmunyoki Replicate GN1 WIKI+RIF in GN2.
-* @bmunyoki and @alex help Alex deploy gn-guile code on tux02.
-* @bmunyoki @jnduli review gn2 UI change for markdown editor
-* @bmunyoki create template for bio paper
-* @alex sync with Boni to set up gn-guile
-* @alex @bmunyoki @jnduli sync to plan out work for llm integration
-* @jnduli edit WIKI+RIF 
-* @jnduli set up gn-uploader locally and improve docs
-* @jnduli complete design doc for hooks system for gn-auth
-* @felix to document email threads on gemtext
+* DONE: @bmunyoki API: Get all RIF metadata by symbols from rdf.
+* NOT DONE: @bmunyoki UI: Modify traits page to have "GN2 (GeneWiki)", to be picked after RDF is updated in tux02
+* DONE: @bmunyoki UI: Integrate with API
+* NOT DONE: @bmunyoki Replicate GN1 WIKI+RIF in GN2.
+* IN PROGRESS: @bmunyoki and @alex help Alex deploy gn-guile code on tux02.
+* DONE: @bmunyoki @jnduli review gn2 UI change for markdown editor
+* NOT DONE: @bmunyoki create template for bio paper
+* DONE: @alex sync with Boni to set up gn-guile
+* DONE: @alex @bmunyoki @jnduli sync to plan out work for llm integration
+* DONE: @jnduli edit WIKI+RIF 
+* NOT DONE: @jnduli set up gn-uploader locally and improve docs
+* NOT DONE: @jnduli complete design doc for hooks system for gn-auth
+* DONE: @felix to document email threads on gemtext
 
 ## 2024-08-22
 
