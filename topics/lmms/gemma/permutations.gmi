@@ -411,14 +411,14 @@ Now I have to deal with phenotype files as they are rewritten. We should still c
 Note that we can use -p if --phenotypes is NOT defined. Problem is we have a few paths now:
 
 * [X] Check phenotypes are directly passed into GEMMA with -p switch
-* [ ] Check phenotypes are passed in as a file
+* [ ] Check phenotypes are passed in as a file with --phenotypes switch
 * [ ] Check phenotypes are coming in using the JSON file
 
 Fixed the first one with
 
 => https://github.com/genetics-statistics/gemma-wrapper/commit/2b7570a7f0ba0d1080c730b208823c0622dd8f2c
 
-though that does not do caching (yet).
+though that does not do caching (yet). Next stop doing LOCO I notice xz is phenomenally slow. Turns out it was not xz, but when using `tar -C` we switch into the path and somehow xz kept growing its output.
 
 ## Dealing with epoch
 
@@ -431,3 +431,7 @@ We have two or more possible solutions to deal with hierarchy in the population.
 ## Covariates
 
 * [ ] Try covariates Dave
+
+## Later
+
+* [ ] Fix running of -p switch when assoc cache exists (bug)
