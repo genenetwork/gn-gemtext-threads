@@ -1,0 +1,11 @@
+# Add Case Attributes to RDF
+
+## Tags
+
+* assigned: bonfacem
+* priority: high
+* status: open
+
+## Description
+
+Add case attributes and their metadata into RDF.
