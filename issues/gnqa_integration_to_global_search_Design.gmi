@@ -59,4 +59,5 @@ It is possible to generate potential questions based on the user's search and re
 * [ ] For "See more," render the entire GNQA page with the query, answer, references, and PubMed data.
 * [ ] Implement parsing for Xapian queries to normal queries.
 * [ ] Implement error handling.
+* [ ] reimplement how gnqa uses GN-AUTH in  gn3.
 * [ ] Query Fahamu to generate possible questions based on certain keywords.
