@@ -1,5 +1,26 @@
 # Meeting Notes
 
+# 2024-09-06
+
+* IN PROGRESS: @bmunyoki Replicate GN1 WIKI+RIF in GN2.
+* @bmunyoki update server to include latest code changes
+* @bmunyoki modify edit api to also write to RIF
+* @bmunyoki build system container for gn-guile and write documentation for creating containers
+* @bmunyoki @flisso update case attributes to capture hierarchy info
+* @bmunyoki prepare presentation for RIF work to GN learning team (goal is to present on Wednesday next week)
+* @bmunyoki update tux01 with recent RIF modifications
+* @jnduli @bmunyoki fetch ncbi metadata and display them in GN2
+* NOT DONE: @jnduli complete design doc for hooks system for gn-auth
+* IN PROGRESS: @alexm @jnduli integrate LLM in GN2 and GN3
+* IN PROGRESS: @jnduli add auth layer to edit rifs functionality
+* @flisso generate genotype file on Medaka fish dataset
+* IN PROGRESS: @flisso code reviews for gemma-wrapper with @pjotr
+* @flisso update gemtext documentation
+* @flisso help Masters students with their proposal defences
+* @priscilla add more papers to LLM
+* @priscilla @flisso @bmunyoki @jnduli set up GN ecosystem and review UI PRs
+
+
 # 2024-09-02 (Sync with @flisso+@bonfacem)
 
 ## Case-Attributes
@@ -20,17 +41,19 @@ SELECT * FROM CaseAttribute JOIN CaseAttributeXRef ON CaseAttribute.CaseAttribut
 
 # 2024-08-30
 
-* @bmunyoki Replicate GN1 WIKI+RIF in GN2.
-* IN PROGRESS: @bmunyoki and @alex help Alex deploy gn-guile code on tux02, run this in a tmux session.
-* IN PROGRESS: @bmunyoki api for history for all tasks
-* @bmunyoki UI layer for RDF history
+* IN PROGRESS: @bmunyoki Replicate GN1 WIKI+RIF in GN2.
+* DONE: @bmunyoki and @alex help Alex deploy gn-guile code on tux02, run this in a tmux session.
+* DONE: @bmunyoki api for history for all tasks
+* DONE: @bmunyoki UI layer for RDF history
 * @bmunyoki modify edit api to also write to RIF
 * @bmunyoki build system container for gn-guile and write documentation for creating containers
 * NOT DONE: @jnduli complete design doc for hooks system for gn-auth
-* @alexm @jnduli create branches to testing for LLM in GN2 and GN3
-* @alexm @jnduli integrate LLM in GN2 and GN3
-* @jnduli add auth layer to edit rifs functionality
-* @bmunyoki @felix sync on case attributes and document
+* DONE: @alexm @jnduli create branches to testing for LLM in GN2 and GN3
+* IN PROGRESS: @alexm @jnduli integrate LLM in GN2 and GN3
+* IN PROGRESS: @jnduli add auth layer to edit rifs functionality
+* DONE: @bmunyoki @felix sync on case attributes and document
+* DONE: @flisso managed to upload <TODO> dataset to production
+
 
 ## nice to haves
 
