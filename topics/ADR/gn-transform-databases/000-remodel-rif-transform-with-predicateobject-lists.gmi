@@ -1,0 +1,70 @@
+# [ADR/gn-transform-databases] Remodel GeneRIF Metadata Using predicateObject Lists
+
+* author: bonfacem
+* status: proposed
+* reviewed-by: pjotr, jnduli
+
+## Context
+
+In RDF 1.1 Turtle, you have to use a Qname as the subject.  As such, you cannot have a string literal forming the string.  In simpler terms, this is not possible:
+
+```
+"Unique expression signature of a system that includes the subiculum, layer 6 in cortex ventral and lateral to dorsal striatum, and the endopiriform nucleus. Expression in cerebellum is apparently limited to Bergemann glia ABA" dct:created "2007-08-31T13:00:47"^^xsd:datetime .
+```
+
+As of "397745b554e0", a work-around was to manually create a unique identifier for each comment for the GeneRIF table.  This was done by creating a unique identifier that combines GeneRIF.Id with GeneRIF.VersionId.  One challenge with this is that we create some coupling with MySQL's unique generation of the GeneRIF.Id column.  Here's an example of snipped turtle entries:
+
+```
+gn:wiki-352-0 rdfs:comment "Ubiquitously expressed. Hypomorphic vibrator allele shows degeneration of interneurons and tremor and juvenile lethality; modified by CAST alleles of Nxf1. Knockout has hepatic steatosis and hypoglycemia." .
+gn:wiki-352-0 rdf:type gnc:GNWikiEntry .
+gn:wiki-352-0 gnt:symbol gn:symbolPitpna .
+gn:wiki-352-0 dct:created "2006-03-10T15:39:29"^^xsd:datetime .
+gn:wiki-352-0 gnt:belongsToSpecies gn:Mus_musculus .
+gn:wiki-352-0 dct:hasVersion "0"^^xsd:int .
+gn:wiki-352-0 dct:identifier "352"^^xsd:int .
+gn:wiki-352-0 gnt:initial "BAH" .
+gn:wiki-352-0 foaf:mbox "XXX@XXX.XXX" .
+gn:wiki-352-0 dct:references ( pubmed:9182797 pubmed:12788952 pubmed:14517553 ) .
+gn:wiki-352-0 gnt:belongsToCategory ( "Cellular distribution" "Development and aging" "Expression patterns: mature cells, tissues" "Genetic variation and alleles" "Health and disease associations" "Interactions: mRNA, proteins, other molecules" ) .
+```
+
+## Decision
+
+We want to avoid manually generating a unique identifier for each WIKI comment.  We should instead have that UID be a blank node reference that we don't care about and use predicateObjectLists as an idiom for representing string literals that can't be subjects.
+
+=> https://www.w3.org/TR/turtle/#grammar-production-predicateObjectList Prodicate Object Lists
+
+The above transform (gn:wiki-352-0) would now be represented as:
+
+```
+[ rdfs:comment '''Ubiquitously expressed. Hypomorphic vibrator allele shows degeneration of interneurons and tremor and juvenile lethality; modified by CAST alleles of Nxf1. Knockout has hepatic steatosis and hypoglycemia.'''@en]  rdf:type gnc:GNWikiEntry ;
+	gnt:belongsToSpecies gn:Mus_musculus ;
+	dct:created "2006-03-10 12:39:29"^^xsd:datetime ;
+	dct:references ( pubmed:9182797 pubmed:12788952 pubmed:14517553 ) ;
+	foaf:mbox <XXX@XXX.XXX> ;
+	dct:identifier "352"^^xsd:integer ;
+	dct:hasVersion "0"^^xsd:integer ;
+	gnt:initial "BAH" ;
+	gnt:belongsToCategory ( "Cellular distribution" "Development and aging" "Expression patterns: mature cells, tissues" "Genetic variation and alleles" "Health and disease associations" "Interactions: mRNA, proteins, other molecules" ) ;
+	gnt:symbol gn:symbolPitpna .
+```
+
+The above can be loosely translated as:
+
+```
+_:comment rdfs:comment '''Ubiquitously expressed. Hypomorphic vibrator allele shows degeneration of interneurons and tremor and juvenile lethality; modified by CAST alleles of Nxf1. Knockout has hepatic steatosis and hypoglycemia.'''@en] .
+_:comment rdf:type gnc:GNWikiEntry .
+_:comment dct:created "2006-03-10 12:39:29"^^xsd:datetime .
+_:comment dct:references ( pubmed:9182797 pubmed:12788952 pubmed:14517553 ) .
+_:comment foaf:mbox <bah@ucsd.edu> .
+_:comment dct:identifier "352"^^xsd:integer .
+_:comment dct:hasVersion "0"^^xsd:integer .
+_:comment gnt:initial "BAH" .
+_:comment gnt:belongsToCategory ( "Cellular distribution" "Development and aging" "Expression patterns: mature cells, tissues" "Genetic variation and alleles" "Health and disease associations" "Interactions: mRNA, proteins, other molecules" ) .
+_:comment gnt:symbol gn:symbolPitpna .
+```
+
+## Consequences
+
+* The XAPIAN index script will have to be updated, and re-indexing done, both on Tux01 and Tux02.
+* Reduction in size of the final output, and faster transform time because using PredicateObjectLists output more terse RDF.
