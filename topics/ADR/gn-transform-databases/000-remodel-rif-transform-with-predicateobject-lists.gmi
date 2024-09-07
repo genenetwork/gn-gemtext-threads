@@ -32,7 +32,7 @@ gn:wiki-352-0 gnt:belongsToCategory ( "Cellular distribution" "Development and a
 
 We want to avoid manually generating a unique identifier for each WIKI comment.  We should instead have that UID be a blank node reference that we don't care about and use predicateObjectLists as an idiom for representing string literals that can't be subjects.
 
-=> https://www.w3.org/TR/turtle/#grammar-production-predicateObjectList Prodicate Object Lists
+=> https://www.w3.org/TR/turtle/#grammar-production-predicateObjectList Predicate Object Lists
 
 The above transform (gn:wiki-352-0) would now be represented as:
 
@@ -66,5 +66,5 @@ _:comment gnt:symbol gn:symbolPitpna .
 
 ## Consequences
 
-* The XAPIAN index script will have to be updated, and re-indexing done, both on Tux01 and Tux02.
+* Update SPARQL in tux02, tux01 in lockstep with updating GN3/GN2 and the XAPIAN index.
 * Reduction in size of the final output, and faster transform time because using PredicateObjectLists output more terse RDF.

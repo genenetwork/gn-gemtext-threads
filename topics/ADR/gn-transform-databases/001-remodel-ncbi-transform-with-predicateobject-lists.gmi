@@ -94,5 +94,5 @@ Beyond that, we intentionally use a sequence to store a list of pubmed reference
 ## Consequences
 
 * De-duplication of comments during the transform while retaining the integrity of the RIF metadata.
-* The indexing script will have to be updated.
 * Because of the terseness, less work during the I/O heavy operation.
+* Update SPARQL in tux02, tux01 in lockstep with updating GN3/GN2 and the XAPIAN index.
