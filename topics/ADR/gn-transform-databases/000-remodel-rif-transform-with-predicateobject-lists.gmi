@@ -12,7 +12,7 @@ In RDF 1.1 Turtle, you have to use a Qname as the subject.  As such, you cannot 
 "Unique expression signature of a system that includes the subiculum, layer 6 in cortex ventral and lateral to dorsal striatum, and the endopiriform nucleus. Expression in cerebellum is apparently limited to Bergemann glia ABA" dct:created "2007-08-31T13:00:47"^^xsd:datetime .
 ```
 
-As of commit "397745b554e0", a work-around was to manually create a unique identifier for each comment for the GeneRIF table.  This was done by creating a unique identifier that combines GeneRIF.Id with GeneRIF.VersionId.  One challenge with this is that we create some coupling with MySQL's unique generation of the GeneRIF.Id column.  Here's an example of snipped turtle entries:
+As of commit "397745b554e0", a work-around was to manually create a unique identifier for each comment for the GeneRIF table.  This identifier was created by combining GeneRIF.Id with GeneRIF.VersionId.  One challenge with this is that we create some coupling with MySQL's unique generation of the GeneRIF.Id column.  Here's an example of snipped turtle entries:
 
 ```
 gn:wiki-352-0 rdfs:comment "Ubiquitously expressed. Hypomorphic vibrator allele shows degeneration of interneurons and tremor and juvenile lethality; modified by CAST alleles of Nxf1. Knockout has hepatic steatosis and hypoglycemia." .
