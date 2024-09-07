@@ -1,7 +1,7 @@
 # [ADR/gn-guile] Extend Markdown Editor to push to Git Bare Repo
 
 * author: bonfacem
-* status: proposed
+* status: accepted
 * reviewed-by: alexm, jnduli
 
 ## Context
