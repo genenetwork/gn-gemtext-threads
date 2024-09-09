@@ -9,7 +9,7 @@
 
 ## Introduction
 
-Case-attributes are metadata for samples.  They are include: sex, age, etc of the various individuals and exist separately from "normal" traits mainly because they're non-numeric.  From the GN2 traits page, they are shown as extra columns under the "Reviews and Edit Data" section.
+Case-attributes metadata for samples.  They are include: sex, age, etc of the various individuals and exist separately from "normal" traits mainly because they're non-numeric.  From the GN2 traits page, they are shown as extra columns under the "Reviews and Edit Data" section.
 
 Case-attributes are determined at the group-level.  E.g. for BXD, case attributes would apply at the level of each sample, across all BXD data.  Every strain has a unique attribute and it's fixed, not variable.
 
