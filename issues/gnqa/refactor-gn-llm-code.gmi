@@ -5,7 +5,7 @@
 * assigned:alexm,shelby
 * keywords:refactoring,llm,tests
 * type: enchancements
-* status: in progress
+* status: completed, closed
 
 
 ## Description
