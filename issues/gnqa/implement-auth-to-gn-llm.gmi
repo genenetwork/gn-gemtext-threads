@@ -6,7 +6,7 @@
 * keywords: llm, auth
 * type: feature
 * priority: high
-* status: done, completed
+* status: done, completed, closed
 
 ## Description
 
