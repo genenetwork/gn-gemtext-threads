@@ -23,7 +23,7 @@ Currently, both labels and values are set at the group level:
 => https://github.com/genenetwork/genenetwork1/blob/0f170f0b748a4e10eaf8538f6bcbf88b573ce8e7/web/webqtl/showTrait/DataEditingPage.py Case-Attributes on GeneNetwork1
 is a good starting point to help with understanding how case-attributes were implemented and how they worked.
 
-Critical bug existed where editing one case-attributed affected all case-attributes defined for a group.
+Critical bug existed where editing one case-attribute affected all case-attributes defined for a group.
 
 Case attributes can have the following data-types:
 
@@ -33,7 +33,7 @@ Case attributes can have the following data-types:
 
 ## HOWTO
 
-Example SQL query to fetch all case-attribute data:
+Example SQL query to fetch case-attribute data:
 
 ```
 SELECT
@@ -84,8 +84,8 @@ mysql> describe CaseAttributeXRefNew;
 
 ## Tasks
 
-* @bmunyoki: Model case-attributes correctly in GN3.  CRUP operations with the correct authorization.  People who can edit sample data should not be ablet to edit case-attributes because case-attributes are defined at the group level; and editing case-attributes at the group-level will affect other samples.
-* @bmunyoki, @zachs: Implement case-attributes editing in GN3 that correctly models case-attributes at the group-level.
+* @bmunyoki: Model case-attributes correctly in RDF.
+* @bmunyoki, @zachs: Implement case-attributes editing in GN3 that correctly models case-attributes at the group-level. CRUD operations with the correct authorization.  People who can edit sample data should not be able to edit case-attributes because case-attributes are defined at the group level; and editing case-attributes at the group-level will affect other samples.
 * @rob: Confirm to team whether "N" and "SE" are case-attributes.  @bmunyoki AFAICT, no.
 
 
@@ -98,7 +98,7 @@ Possible set of privileges subject to discussion:
 
 Given groups are not directly linked to any auth resource, we may introduce some level of indirection.  Addy a new resource type that handles groups may solve this.
 
-## SeeAlso
+## See Also
 
 => https://matrix.to/#/!EhYjlMbZHbGPjmAFbh:matrix.org/$myIoafLp_dIONnyNvEI0k2xf3Y8-LyiI_mkP2vBN08o?via=matrix.org Discussion on Case-Attributes Editing in Matrix
 => https://matrix.to/#/!EhYjlMbZHbGPjmAFbh:matrix.org/$P6SNnpY-nAZsDr3VZlRi05m6MT32lXBsCl-BYLh-YLM?via=matrix.org More Discussion on Matrix
