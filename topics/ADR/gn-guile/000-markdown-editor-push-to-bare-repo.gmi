@@ -1,4 +1,4 @@
-# [ADR/gn-guile] Extend Markdown Editor to push to Git Bare Repo
+# [ADR-000/gn-guile] Extend Markdown Editor to push to Git Bare Repo
 
 * author: bonfacem
 * status: accepted

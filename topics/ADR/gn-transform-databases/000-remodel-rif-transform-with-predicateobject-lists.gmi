@@ -1,4 +1,4 @@
-# [ADR/gn-transform-databases] Remodel GeneRIF Metadata Using predicateObject Lists
+# [ADR-000/gn-transform-databases] Remodel GeneRIF Metadata Using predicateObject Lists
 
 * author: bonfacem
 * status: proposed

@@ -1,4 +1,4 @@
-# [ADR/gn-transform-databases] Remodel GeneRIF_BASIC (NCBI Rifs) Metadata Using predicateObject Lists
+# [ADR-001/gn-transform-databases] Remodel GeneRIF_BASIC (NCBI Rifs) Metadata Using predicateObject Lists
 
 * author: bonfacem
 * status: proposed
