@@ -1,0 +1,80 @@
+# Haley-Knott Regression Mapping Error
+
+## Tags
+
+* type: bug
+* status: closed, completed
+* priority: high
+* assigned: fredm
+* keywords: gn2, genenetwork2, genenetwork 2, mapping, haley-knott
+
+## Description
+
+To run the mapping:
+
+* Do a search
+* Click on any trait in the results
+* On the trait page, expand the "Mapping Tools" section
+* Select the "Haley-Knott Regression" option under "Mapping Tools"
+* Click "Compute"
+
+On running the mapping as above, we got the following error:
+
+```
+      GeneNetwork 2.11-rc2  https://gn2-fred.genenetwork.org/run_mapping ( 6:14AM UTC Sep 11, 2024) 
+Traceback (most recent call last):
+  File "/gnu/store/hgcvlkn4bjl0f9wqiakpk5w66brbfxk6-profile/lib/python3.10/site-packages/flask/app.py", line 1523, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/gnu/store/hgcvlkn4bjl0f9wqiakpk5w66brbfxk6-profile/lib/python3.10/site-packages/flask/app.py", line 1509, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/gnu/store/hgcvlkn4bjl0f9wqiakpk5w66brbfxk6-profile/lib/python3.10/site-packages/gn2/wqflask/views.py", line 1004, in mapping_results_page
+    gn1_template_vars = display_mapping_results.DisplayMappingResults(
+  File "/gnu/store/hgcvlkn4bjl0f9wqiakpk5w66brbfxk6-profile/lib/python3.10/site-packages/gn2/wqflask/marker_regression/display_mapping_results.py", line 651, in __init__
+    self.perm_filename = self.drawPermutationHistogram()
+  File "/gnu/store/hgcvlkn4bjl0f9wqiakpk5w66brbfxk6-profile/lib/python3.10/site-packages/gn2/wqflask/marker_regression/display_mapping_results.py", line 3056, in drawPermutationHistogram
+    Plot.plotBar(myCanvas, perm_output, XLabel=self.LRS_LOD,
+  File "/gnu/store/hgcvlkn4bjl0f9wqiakpk5w66brbfxk6-profile/lib/python3.10/site-packages/gn2/utility/Plot.py", line 184, in plotBar
+    scaleFont = ImageFont.truetype(font=COUR_FILE, size=11)
+  File "/gnu/store/hgcvlkn4bjl0f9wqiakpk5w66brbfxk6-profile/lib/python3.10/site-packages/PIL/ImageFont.py", line 959, in truetype
+    return freetype(font)
+  File "/gnu/store/hgcvlkn4bjl0f9wqiakpk5w66brbfxk6-profile/lib/python3.10/site-packages/PIL/ImageFont.py", line 956, in freetype
+    return FreeTypeFont(font, size, index, encoding, layout_engine)
+  File "/gnu/store/hgcvlkn4bjl0f9wqiakpk5w66brbfxk6-profile/lib/python3.10/site-packages/PIL/ImageFont.py", line 247, in __init__
+    self.font = core.getfont(
+OSError: cannot open resource
+```
+
+### Hypothesis
+
+My hypothesis is that the use of relative paths[fn:1] is the cause of the failure.
+
+When running the application with the working directory being the root of the GeneNetwork2 repository, use of the relative paths works well. Unfortunately, that assumption breaks quickly if the application is ever run outside of the root of the GN2 repo.
+
+Verification:
+
+*Question*: Does the application run on root of GN2 repository/package?
+
+* Log out the path of the font file and use the results to answer the question
+* https://github.com/genenetwork/genenetwork2/commit/ca8018a61f2e014b4aee4da2cbd00d7b591b2f6a
+* https://github.com/genenetwork/genenetwork2/commit/01d56903ba01a91841d199fe393f9b307a7596a2
+
+*Answer*: No! The application does not run with the working directory on the root of the GN2 repository/package, as evidenced by this snippet from the logs:
+
+```
+2024-09-11 07:41:13 [2024-09-11 07:41:13 +0000] [494] [DEBUG] POST /run_mapping
+2024-09-11 07:41:18 [2024-09-11 07:41:18 +0000] [494] [DEBUG] Font file path: /gn2/wqflask/static/fonts/courbd.ttf
+2024-09-11 07:41:18 DEBUG:gn2.wqflask:Font file path: /gn2/wqflask/static/fonts/courbd.ttf
+2024-09-11 07:41:18 [2024-09-11 07:41:18 +0000] [494] [ERROR] https://gn2-fred.genenetwork.org/run_mapping ( 7:41AM UTC Sep 11, 2024)
+2024-09-11 07:41:18 Traceback (most recent call last):
+```
+
+We see from this that the application seems to be running with the working directory being "/" rather than the root for the application's package files.
+
+### Fixes
+
+* https://github.com/genenetwork/genenetwork2/commit/d001c1e7cae8f69435545b8715038b1d0fc1ee62
+* https://git.genenetwork.org/guix-bioinformatics/commit/?id=7a1bf5bc1c3de67f01eabd23e1ddc0150f81b22b
+
+# Footnotes
+
+[fn:1] https://github.com/genenetwork/genenetwork2/blob/50fc0b4bc4106164745afc7e1099bb150f6e635f/gn2/utility/Plot.py#L44-L46
