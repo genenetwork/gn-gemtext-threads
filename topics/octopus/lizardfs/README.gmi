@@ -95,6 +95,15 @@ $ mfsmount /path/to/unused/mount -o mfsmeta
 For more information see the lizardfs documentation online
 => https://lizardfs-docs.readthedocs.io/en/latest/adminguide/advanced_configuration.html#trash-directory lizardfs documentation for the trash directory
 
+## Start lizardfs-mount (lizardfs reader daemon) after a system reboot
+
+```
+sudo bash
+systemctl daemon-reload
+systemctl restart lizardfs-mount
+systemctl status lizardfs-mount
+```
+
 ## Gotchas
 
 It should be noted that any goal using erasure_coding is incredibly slow to write to, and defining goals like this should be avoided. Although it does decrease the amount of space each file takes up in the pool, the trade-off when it is mistakenly used for data or folders which will be written to outweighs the benefits.
