@@ -86,14 +86,14 @@ Other commands can be found with `man lizardfs-admin`.
 
 ## Deleted files
 
-Lizardfs also keeps deleted files, by default for 30 days. If you need to recover deleted files (or delete them permanently) then the metadata directory can be mounted with:
+Lizardfs also keeps deleted files, by default for 30 days in `/mnt/lizardfs-meta/trash`. If you need to recover deleted files (or delete them permanently) then the metadata directory can be mounted with:
 
 ```
 $ mfsmount /path/to/unused/mount -o mfsmeta
 ```
 
 For more information see the lizardfs documentation online
-=> https://dev.lizardfs.com/docs/adminguide/advanced_configuration.html#trash-directory lizardfs documentation for the trash directory
+=> https://lizardfs-docs.readthedocs.io/en/latest/adminguide/advanced_configuration.html#trash-directory lizardfs documentation for the trash directory
 
 ## Gotchas
 
