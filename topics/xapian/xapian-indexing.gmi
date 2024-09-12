@@ -36,8 +36,8 @@ and load up data by:
 ```
 > isql
 > # subsquent commands run in isql prompt
-> # preferable have this folder be in the virtuoso database folder
-> ld_dir ('/path/to/folder/with/ttls', '*.ttl', 'http://genenetwork.org');
+> # this folder is relative to the folder virtuoso was started from
+> ld_dir ('path/to/folder/with/ttls', '*.ttl', 'http://genenetwork.org');
 > rdf_loader_run();
 ```
 
