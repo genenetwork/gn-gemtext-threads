@@ -10,6 +10,7 @@
 * @bmunyoki update tux02/01 with recent RIF modifications
 * @bmunyoki Add test cases for RDF
 * @alex Update links for static content to use self-hosted git repo
+* @flisso Upload C Elegans Dataset.  Note: MIKK one has some issues, so work is paused for now.
 
 Nice to have:
 * @bmunyoki build system container for gn-guile and write documentation for creating containers
