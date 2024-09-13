@@ -442,8 +442,7 @@ and, of course, as this reduced file is generated it not available yet. That was
 ./bin/gemma-wrapper:230:in `block in <main>': Do not use the GEMMA -p switch with gemma-wrapper if you are using JSON phenotypes!
 ```
 
-Hmm. This is a bit harder. The call to GWAS takes a kinship matrix and it gets reduced with every permutation. That is probably OK because it runs quickly, but I'll need to remove the -p switch... TBC
-
+Hmm. This is a bit harder. The call to GWAS takes a kinship matrix and it gets reduced with every permutation. That is probably OK because it runs quickly, but I'll need to remove the -p switch... OK. Done that and permutations are running in a second for 28 BXD!
 
 ## Dealing with epoch
 
