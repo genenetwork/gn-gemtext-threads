@@ -152,7 +152,7 @@ Now we have gemma-wrapper working we need to fix it to work with the latest type
 * [X] Unseed randomizer or make it an option
 * [X] Fix tmpdir
 * [X] Show final score
-* [ ] Compare small and large BXD set
+* [X] Compare small and large BXD set
 
 For the first one, the --permutate-phenotype switch takes the input pheno file. Because we pick a column with gemma we can randomize all input lines together. So, in the above example, we shuffle BXD_pheno_Dave-GEMMA.txt. Interestingly it looks like we are already shuffling by line in gemma-wrapper.
 
@@ -346,8 +346,8 @@ I can reuse the script I wrote for the previous section.
 So, the idea is to rerun permutations with the small set, but with the reduced GRM from the full BXD population. That ought to be straightforward by using the new matrix as an input for GWA. Only problem is that LOCO generates a GRM for every chromosome, so we need to make gemma-wrapper aware about the matrix reduction. As the reduction is fast we can do it for every run of gemma-wrapper and destroy it automatically with tmpdir. So:
 
 * [X] Compute the full GRM for every LOCO (if not cached) - already part of gemma-wrapper
-* [ ] Run through GRMs and reduce them in tmpdir
-* [ ] Plug new GRM name into computations - which really updates the JSON file that is input for GWA
+* [X] Run through GRMs and reduce them in tmpdir
+* [X] Plug new GRM name into computations - which really updates the JSON file that is input for GWA
 
 The interesting bit is that GEMMA requires input of phenotypes, but does not use them to compute the GRM.
 
@@ -411,8 +411,8 @@ Now I have to deal with phenotype files as they are rewritten. We should still c
 Note that we can use -p if --phenotypes is NOT defined. Problem is we have a few paths now:
 
 * [X] Check phenotypes are directly passed into GEMMA with -p switch
-* [ ] Check phenotypes are passed in as a file with --phenotypes switch
-* [ ] Check phenotypes are coming in using the JSON file
+* [X] Check phenotypes are passed in as a file with --phenotypes switch
+* [X] Check phenotypes are coming in using the JSON file
 
 Fixed the first one with
 
