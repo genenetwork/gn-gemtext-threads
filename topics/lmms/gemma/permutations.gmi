@@ -420,6 +420,31 @@ Fixed the first one with
 
 though that does not do caching (yet). Next stop doing LOCO I notice xz is phenomenally slow. Turns out it was not xz, but when using `tar -C` we switch into the path and somehow xz kept growing its output.
 
+At this point David told me that we don't have to do epoch or covariates. So it is just the traits. After getting side-tracked by a slow running python program for haplotype assessment we start up again.
+
+So, now we can pass in a trait using JSON. This is probably not a great idea when you have a million values, but for our purposes it will do. K.json contains the reduced samples. Next GWA is run on that. I had to fix minor niggles and get `parallel' to give more useful debug info.
+
+Next write the pheno file and pass it in!
+
+```
+./bin/gemma-wrapper  --debug --verbose --force  --loco --json --lmdb --input K.json -- -g test/data/input/BXD_geno.txt.gz  -a test/data/input/BXD_snps.txt  -lmm 9 -maf 0.1 -n 2 -debug
+```
+
+note the '-n 2' switch to get the second generated column in the phenotype file. We had our first successful run! To run permutations I get:
+
+```
+./bin/gemma-wrapper:722:in `<main>': You should supply --permute-phenotypes with gemma-wrapper --permutate (RuntimeError)
+```
+
+and, of course, as this reduced file is generated it not available yet. That was an easy fix/hack. Next I got
+
+```
+./bin/gemma-wrapper:230:in `block in <main>': Do not use the GEMMA -p switch with gemma-wrapper if you are using JSON phenotypes!
+```
+
+Hmm. This is a bit harder. The call to GWAS takes a kinship matrix and it gets reduced with every permutation. That is probably OK because it runs quickly, but I'll need to remove the -p switch... TBC
+
+
 ## Dealing with epoch
 
 Rob pointed out that the GRM does not necessarily represent epoch and that may influence the significance level. I.e. we should check for that. I agree that the GRM distances are not precise enough (blunt instrument) to capture a few variants that appeared in a new epoch of mice. I.e., the mice from the 90s may be different from the mice today in a few DNA variants that won't be reflected in the GRM.
