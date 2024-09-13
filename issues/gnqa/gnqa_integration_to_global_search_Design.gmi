@@ -52,12 +52,23 @@ It is possible to generate potential questions based on the user's search and re
 
 ## Tasks
 
-* [ ] Initiate a background task from HTMX to Fahamu once the search page loads.
-* [ ] Query Fahamu for data.
-* [ ] Cache results from Fahamu.
-* [ ] Render the UI page with the query and answer.
-* [ ] For "See more," render the entire GNQA page with the query, answer, references, and PubMed data.
-* [ ] Implement parsing for Xapian queries to normal queries.
-* [ ] Implement error handling.
+* [x] Initiate a background task from HTMX to Fahamu once the search page loads.
+* [x] Query Fahamu for data.
+* [x] Cache results from Fahamu.
+* [x] Render the UI page with the query and answer.
+* [x] For "See more," render the entire GNQA page with the query, answer, references, and PubMed data.
+* [x] Implement parsing for Xapian queries to normal queries.
+* [x] Implement error handling.
 * [ ] reimplement how gnqa uses GN-AUTH in  gn3.
-* [ ] Query Fahamu to generate possible questions based on certain keywords.
+* [x] Query Fahamu to generate possible questions based on certain keywords.
+
+
+## Notes
+From  the latest Fahamu API docs, they have implemented a way to include subquestions by setting `amplify=True` for the POST request. We also have our own implementation for parsing text to extract questions.
+
+## PRs Merged Related to This
+
+=> https://github.com/genenetwork/genenetwork2/pull/868
+=> https://github.com/genenetwork/genenetwork2/pull/862
+=> https://github.com/genenetwork/genenetwork2/pull/867
+=> https://github.com/genenetwork/genenetwork3/pull/191
