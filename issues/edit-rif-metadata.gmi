@@ -58,8 +58,8 @@
 
 ### History
 
-* [ ] API: End-point to fetch all the historical data
-* [ ] UI: Page that contains history for how comments changes.
+* [X] API: End-point to fetch all the historical data
+* [X] UI: Page that contains history for how comments changes.
 
 > GET /wiki/<comment-id>/history
 
