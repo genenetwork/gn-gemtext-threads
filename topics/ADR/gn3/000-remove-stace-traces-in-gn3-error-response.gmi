@@ -1,7 +1,7 @@
 # [ADR-001/gn3] Remove Stack Traces in GN3
 
 * author: bonfacem
-* status: proposed
+* status: rejected
 * reviewed-by: jnduli, zach, pjotr, fredm
 
 ## Context
@@ -38,7 +38,7 @@ def internal_server_error(pnf):
 
 ## Decision
 
-Stacke traces have the potential to allow malicious actors compromise our system by providing more context.  As such, we should send a useful description of what went wrong; and log our stack traces in our logs, and send an appropriate error status code.  We can use the logs to troubleshoot our system.
+Stack traces have the potential to allow malicious actors compromise our system by providing more context.  As such, we should send a useful description of what went wrong; and log our stack traces in our logs, and send an appropriate error status code.  We can use the logs to troubleshoot our system.
 
 ## Consequences
 
