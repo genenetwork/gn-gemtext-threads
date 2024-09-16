@@ -5,7 +5,7 @@
 * assigned: aruni, fredm
 * priority: high
 * type: bug
-* status: open
+* status: closed
 * keywords: global search, gn2, genenetwork2
 
 ## Description
@@ -15,3 +15,7 @@ assume the request will always be successful. This is not always the case, as ca
 => https://test3.genenetwork.org/gsearch?type=gene&terms=Priscilla here (as of 2024-03-04T11:25+03:00UTC).
 
 Possible errors should be checked for and handled before attempting to read and/or process expected data.
+
+## Closing Comments
+
+This issue is closed as obsoleted. The issue is really old (>=7 months). Closing it for now. To be reopened if the issue happens again.

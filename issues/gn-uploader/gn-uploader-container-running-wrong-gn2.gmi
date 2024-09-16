@@ -3,7 +3,7 @@
 ## Tags
 
 * assigned: fredm, aruni
-* status: open
+* status: closed, completed
 * priority: high
 * type: bug
 * keywords: guix, gn-uploader

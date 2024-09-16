@@ -2,7 +2,7 @@
 
 ## Tags
 
-* status: open
+* status: closed, completed
 * assigned: fredm
 * priority: medium
 * type: feature request, feature-request

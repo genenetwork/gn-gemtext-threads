@@ -5,7 +5,7 @@
 * type: bug
 * priority: critical
 * assigned: zachs, zsloan, fredm
-* status: open
+* status: closed, completed
 * keywords: genenetwork2, account management, user, registration
 
 ## Description

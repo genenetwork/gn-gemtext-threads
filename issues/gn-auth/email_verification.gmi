@@ -2,7 +2,7 @@
 
 ## Tags
 
-* status: open
+* status: closed, completed
 * priority: medium
 * type: enhancement
 * assigned: fredm, zsloan

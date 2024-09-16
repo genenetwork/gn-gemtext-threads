@@ -3,7 +3,7 @@
 ## Tags
 
 * assigned: fredm, acenteno
-* status: open
+* status: closed, completed
 * type: feature request
 * priority: medium
 * keywords: quality control, QC, R/qtl2 bundle

@@ -3,7 +3,7 @@
 ## Tags
 
 * assigned: fredm
-* status: open
+* status: closed
 * type: bug
 * priority: high
 * keywords: error handling
