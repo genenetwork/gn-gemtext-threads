@@ -1,0 +1,32 @@
+# Feature Request: Create Test Accounts
+
+## Tags
+
+* assigned: fredm, alex
+* status: open
+* type: feature request, feature-request
+* priority: medium
+* keywords: gn-auth, auth, test accounts
+
+## Description
+
+From the requests on Matrix:
+
+@alexm
+```
+fredmanglis
+: Can we create a generic, verified email for CD to make it easier for people to test our services that requires login?
+```
+
+and from @pjotrp
+
+```
+yes, please. Let it expire after a few weeks, or something, if possible. So we can hand out test accounts.
+```
+
+We, thus, want to have a feature that allows the system administrator, or some other user with the appropriate privileges, to create a bunch of test accounts that have the following properties:
+
+* The accounts are pre-verified
+* The accounts are temporary and are deleted after a set amount of time
+
+This feature will need a corresponding UI, say on GN2 to enable the users with the appropriate privileges create the accounts easily.
