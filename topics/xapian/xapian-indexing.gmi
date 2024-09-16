@@ -39,6 +39,7 @@ and load up data by:
 > # this folder is relative to the folder virtuoso was started from
 > ld_dir ('path/to/folder/with/ttls', '*.ttl', 'http://genenetwork.org');
 > rdf_loader_run();
+> checkpoint;
 ```
 
 Ping @bmunyoki for the ttl folder backups.
