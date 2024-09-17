@@ -1,0 +1,22 @@
+# Redirect Users to the Correct URL on Login for GN2
+
+## Tags
+
+* assigned: alexm
+* priority: medium
+* status: in progress
+* keywords: gn-auth, auth, redirect, login
+* type: feature-request
+
+## Description
+
+The goal is to redirect users to login for services that
+require authentication and then after
+the page they were trying to access before logging in, rather than sending them to the homepage.
+Additionally, display the message "You are required to log in"
+on the current page instead of on the homepage.
+
+## Tasks
+
+* [ ] Redirect users to the login page if they are not logged in.
+* [ ] Implement a redirect to the correct resource after users log in.
