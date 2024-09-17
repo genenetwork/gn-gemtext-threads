@@ -1,0 +1,13 @@
+# The * Search for Genotypes Not Working
+
+## Tags
+
+* type: bug
+* priority: medium
+* status: open
+* assigned: zsloan
+* keywords: bug, search
+
+## Description
+
+Currently * searches for genotypes return no results, even when data exists.
