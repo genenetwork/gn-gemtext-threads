@@ -43,3 +43,7 @@ Stack traces have the potential to allow malicious actors compromise our system 
 ## Consequences
 
 * Lockstep update in GN2 UI on how we handle GN3 errors.
+
+## Notes
+
+ADR rejected.  Currently, having stack traces are a convenient feature for situations where bugs are being reported to us by others.  It's not always easy to reproduce the issue in question and check logs (since they wouldn't show up in production and would need to de reproduced locally); therefore having stack traces available in such situations can be very useful.  To also get rid of the stack traces, then we'd have to link each trace in the logs with the request that caused it, so during troubleshooting, we can correlate and endpoint to an error and it's trace.
