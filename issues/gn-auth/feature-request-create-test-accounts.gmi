@@ -30,3 +30,22 @@ We, thus, want to have a feature that allows the system administrator, or some o
 * The accounts are temporary and are deleted after a set amount of time
 
 This feature will need a corresponding UI, say on GN2 to enable the users with the appropriate privileges create the accounts easily.
+
+### Implementation Considerations
+
+Only system-admin level users will be able to create the test accounts
+
+We'll probably need to track the plain-text passwords for these accounts, probably.
+
+Information to collect might include:
+* Start of test period (automatic on test account creation: mandatory)
+* End of test period (Entered at creation time: mandatory)
+* A pattern of sorts to follow when creating the accounts — this brings up the question, is there a specific domain (e.g. …@uthsc.edu, …@genenetwork.org etc.) that these test accounts should use?
+* Extra details on event/conference necessitating creation of the test account(s) (optional)
+
+
+Interaction with the rest of the system that we need to consider and handle are:
+* Assign public-read for all public data: mostly easy.
+* Forgot Password: If such users request a password change, what happens? Password changes requires emails to be sent out with a time-sensitive token. The emails in the test accounts are not meant to be actual existing emails and thus cannot reliably receive such emails. This needs to be considered. Probably just prevent users from changing their passwords.
+* What group to assign to these test accounts? I'm thinking probably a new group that is also temporary - deleted when users are deleted.
+* What happens to any data uploaded by these accounts? They should probably not upload data meant to be permanent. All their data might need to be deleted along with the temporary accounts.
