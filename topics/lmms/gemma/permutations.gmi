@@ -474,6 +474,23 @@ The good news is for a peak we have we find that it is statistically significant
 ["67 percentile (suggestive)  ", 0.009975183, 2.0]
 ```
 
+Even though it was low permutations there was actually a real bug. It turns out I only picked the values from the X chromosome (ugh!). It looks different now.
+
+For the peaks of
+
+=> https://genenetwork.org/show_trait?trait_id=21526&dataset=BXDPublish
+
+after 1000 permutations (I tried a few times) the significance threshold with MAF 0.05 ends up at approx.
+
+["95 percentile (significant) ", 1.434302e-05, 4.8]
+["67 percentile (suggestive)  ", 0.0001620244, 3.8]
+
+If it is it means that for this trait BXD_21526 the peaks on chr 14 at LOD 3.5 are not significant, but close to suggestive (aligning with Dave's findings and comments). It is interesting to see the numbers quickly stabilize by 100 permutations (see attached). Now, this is before correcting for epoch effects and other covariates. And I took the data from Dave as is (the distribution looks fairly normal). Also there is a problem with MAF I have to look into:
+
+GEMMA in GN2 shows the same result when setting MAF to 0.05 or 0.1 (you can try that). The GN2 GEMMA code for LOCO does pass in -maf (though I see that non-LOCO does not - ugh again). I need to run GEMMA to see if the output should differ and I'll need to see the GN2 logs to understand what is happening. Maybe it just says that the hits are haplotype driven - and that kinda makes sense because there is a range of them.
+
+That leads me to think that we only need to check for epoch when we have a single *low* MAF hit, say 0.01 for 28 mice. As we actively filter on MAF right now we won't likely see an epoch hit.
+
 ## Dealing with epoch
 
 Rob pointed out that the GRM does not necessarily represent epoch and that may influence the significance level. I.e. we should check for that. I agree that the GRM distances are not precise enough (blunt instrument) to capture a few variants that appeared in a new epoch of mice. I.e., the mice from the 90s may be different from the mice today in a few DNA variants that won't be reflected in the GRM.
@@ -488,4 +505,9 @@ We have two or more possible solutions to deal with hierarchy in the population.
 
 ## Later
 
+* [ ] Fix non-use of MAF in GN for non-LOCO
 * [ ] Fix running of -p switch when assoc cache exists (bug)
+
+Quantile-Based Permutation Thresholds for Quantitative Trait Loci Hotspots
+https://academic.oup.com/genetics/article/191/4/1355/5935078
+by Karl, Ritsert et al. 2012
