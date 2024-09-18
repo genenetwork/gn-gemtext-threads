@@ -21,7 +21,7 @@
 
 * [X] Prevent X/Y-aix summary text from extending beyond the graph width
 
-* [ ] Longer tick markers as well
+* [X] Longer tick markers as well
 
 * [X] Remove triangle for phenotype mapping
 
@@ -31,6 +31,6 @@
 
 * [X] Change "Sequence Site" in legend to "Gene Location"
 
-* [ ] When adding genotype marker as covariate (for scatter-plot, maybe also mapping), change description to Position instead of "undefined"
+* [X] When adding genotype marker as covariate (for scatter-plot, maybe also mapping), change description to Position instead of "undefined"
 
 * [ ] Check Add Covariation colorbox popup on Apple laptop (it shows up weird for Rob, but normal for me)
