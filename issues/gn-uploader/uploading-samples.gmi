@@ -1,0 +1,42 @@
+# Uploading Samples
+
+## Tags
+
+* status: open
+* assigned: fredm
+* interested: acenteno, zachs, flisso
+* priority: high
+* type: feature-request
+* keywords: gn-uploader, uploader, samples, strains
+
+## Description
+
+This will track the various notes regarding the upload of samples onto GeneNetwork.
+
+### Sample Lists
+
+From the email thread(s) with @zachs, @flisso and @acenteno
+
+```
+When there's a new set of individuals, it generally needs to be added as a new group. In the absence of genotype data, a "dummy" .geno file currently needs to be generated* in order to define the sample list (if you look at the list of .geno files in genotype_files/genotype you'll find some really small files that just have either a single marker or a bunch of fake markers calls "Marker1, Marker2, etc" - these are solely just used to get the samplelist from the columns). So in theory such a file could be generated as a part of the upload process in the absence of genotypes
+```
+
+We note, however, that the as @zachs mentions
+
+```
+This is really goofy and should probably change. I've brought up the idea of just replacing these with JSON files containing group metadata (including samplelist), but we've never actually gone through with making any change to this. I already did something sorta similar to this with the existing JSON files (in genotype_files/genotype), but those are currently only used in situations where there are either multiple genotype files, or a genotype file only contains a subset of samples/strains from a group (so the JSON file tells mapping to only use those samples/strains).
+```
+
+We need to explore whether such a change might need updates to the GN2/GN3 code to ensure code that depends on these dummy files can also use the new format JSON files too.
+
+### Curation
+
+```
+But any time new samples are involved, there probably needs to be some explicit confirmation by a curator like Rob (since we want to avoid a situation where a sample/strain just has a typo or somethin and we treat it like a new sample/strain).
+```
+
+also
+
+```
+When there's a mix of existing individuals, I think it's usually the case that it's the same group (that is being expanded with new individuals), but anything that involves adding new samples should probably involve some sort of direct/explicit confirmation from a curator like Rob or something.
+```
