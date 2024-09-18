@@ -427,7 +427,7 @@ So, now we can pass in a trait using JSON. This is probably not a great idea whe
 Next write the pheno file and pass it in!
 
 ```
-./bin/gemma-wrapper  --debug --verbose --force  --loco --json --lmdb --input K.json -- -g test/data/input/BXD_geno.txt.gz  -a test/data/input/BXD_snps.txt  -lmm 9 -maf 0.1 -n 2 -debug
+./bin/gemma-wrapper  --debug --verbose --force  --loco --json --lmdb --input K.json -- -g test/data/input/BXD_geno.txt.gz  -a test/data/input/BXD_snps.txt  -lmm 9 -maf 0.05 -n 2 -debug
 ```
 
 note the '-n 2' switch to get the second generated column in the phenotype file. We had our first successful run! To run permutations I get:
@@ -442,7 +442,37 @@ and, of course, as this reduced file is generated it not available yet. That was
 ./bin/gemma-wrapper:230:in `block in <main>': Do not use the GEMMA -p switch with gemma-wrapper if you are using JSON phenotypes!
 ```
 
-Hmm. This is a bit harder. The call to GWAS takes a kinship matrix and it gets reduced with every permutation. That is probably OK because it runs quickly, but I'll need to remove the -p switch... OK. Done that and permutations are running in a second for 28 BXD!
+Hmm. This is a bit harder. The call to GWAS takes a kinship matrix and it gets reduced with every permutation. That is probably OK because it runs quickly, but I'll need to remove the -p switch... OK. Done that and permutations are running in a second for 28 BXD! That implies computing significance in the web service comes into view - especially if we use a cluster on the backend.
+
+It is interesting to see that 60% of time is spent in the kernel - which means still heavy IO on GEMMA's end - even with the reduced data:
+
+```
+%Cpu0  : 39.1 us, 51.0 sy
+%Cpu1  : 34.0 us, 54.8 sy
+%Cpu2  : 35.8 us, 54.5 sy
+%Cpu3  : 37.5 us, 49.8 sy
+%Cpu4  : 36.0 us, 53.3 sy
+%Cpu5  : 29.5 us, 57.9 sy
+%Cpu6  : 42.7 us, 44.7 sy
+%Cpu7  : 35.9 us, 52.2 sy
+%Cpu8  : 27.0 us, 60.7 sy
+%Cpu9  : 24.5 us, 63.2 sy
+%Cpu10 : 29.8 us, 58.9 sy
+%Cpu11 : 25.3 us, 62.7 sy
+%Cpu12 : 28.1 us, 58.9 sy
+%Cpu13 : 34.2 us, 52.8 sy
+%Cpu14 : 34.6 us, 52.2 sy
+%Cpu15 : 37.5 us, 51.8 sy
+```
+
+There is room for more optimization.
+
+The good news is for a peak we have we find that it is statistically significant:
+
+```
+["95 percentile (significant) ", 0.0004945423, 3.3]
+["67 percentile (suggestive)  ", 0.009975183, 2.0]
+```
 
 ## Dealing with epoch
 
