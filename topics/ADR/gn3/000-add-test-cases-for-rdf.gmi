@@ -10,7 +10,7 @@ We have no way of ensuring the integrity of our SPARQL queries in GN3.  As such,
 
 ## Decision
 
-In Virtuoso, we load all our data to a default named graph: <http://genenetwork.org>.  For SPARQL/RDF tests, we should upload test ttl files to a test named graph: <http://test.genenetwork.org>, and run our end-to-end API tests against that named graph.
+In Virtuoso, we load all our data to a default named graph: <http://genenetwork.org>.  For SPARQL/RDF tests, we should upload test ttl files to a test named graph: <http://cd-test.genenetwork.org>, and run our RDF unit tests against that named graph.
 
 ## Consequences
 
