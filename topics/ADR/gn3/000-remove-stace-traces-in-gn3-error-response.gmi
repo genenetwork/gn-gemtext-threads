@@ -1,4 +1,4 @@
-# [ADR-001/gn3] Remove Stack Traces in GN3
+# [gn3/ADR-001] Remove Stack Traces in GN3
 
 * author: bonfacem
 * status: rejected
