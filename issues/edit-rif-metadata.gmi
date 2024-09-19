@@ -51,10 +51,10 @@
     "initial": "XXXX", // Optional user or project code or your initials.
 }
 ```
-* [ ] UI: Add buttons that edit various relevant sections.
-* [ ] UI: Edit page needs to fetch categories from GeneCategory table.  When comment write fails, alert with error.  When comment write success, update the comment on the page, and alert with success.
-* [ ] API: Modify edit comments by id to include RDF changes.
-* [ ] GN auth integration
+* [X] UI: Add buttons that edit various relevant sections.
+* [X] UI: Edit page needs to fetch categories from GeneCategory table.  When comment write fails, alert with error.  When comment write success, update the comment on the page, and alert with success.
+* [X] API: Modify edit comments by id to include RDF changes.
+* [X] GN auth integration
 
 ### History
 
