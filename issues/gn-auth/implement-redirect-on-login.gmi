@@ -5,7 +5,7 @@
 * assigned: alexm
 * priority: medium
 * status: in progress
-* keywords: gn-auth, auth, redirect, login
+* keywords: gn-auth, auth, redirect, login, completed
 * type: feature-request
 
 ## Description
@@ -18,5 +18,9 @@ on the current page instead of on the homepage.
 
 ## Tasks
 
-* [ ] Redirect users to the login page if they are not logged in.
-* [ ] Implement a redirect to the correct resource after users log in.
+* [x] Redirect users to the login page if they are not logged in.
+* [x] Implement a redirect to the correct resource after users log in.
+
+## Notes
+See this PR for commits that fixes this:
+=> https://github.com/genenetwork/genenetwork2/pull/875
