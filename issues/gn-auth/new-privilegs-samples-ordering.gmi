@@ -1,0 +1,32 @@
+# New Privileges: Samples Ordering
+
+## Tags
+
+* status: open
+* assigned: fredm
+* interested: @zachs, @jnduli, @flisso
+* priority: medium
+* type: feature-request, feature request
+* keywords: gn-auth, auth, privileges, samples, ordering
+
+## Description
+
+From the email thread:
+
+```
+Regarding the order of samples, it can basically be whatever we decide it is. It just needs to stay consistent (like if there are multiple genotype files). It only really affects how it's displayed, and any other genotype files we use for mapping needs to share the same order.
+```
+
+Since this has nothing to do with the data analysis, this could be considered a system-level privilege. I propose
+
+```
+system:species:samples:ordering
+```
+
+or something similar.
+
+This can be added into some sort of generic GN2 curator role (as opposed to a data curator role).
+
+This allows us to have users that are "data curators" that we can offload some of the data curation work to (e.g. @flisso, @suheeta etc.).
+
+We would then, restrict the UI and display "curation" to users like @acenteno, @robw and @zachs. This second set of users would thus have both the "data curation" roles, and still have the "UI curation" roles.
