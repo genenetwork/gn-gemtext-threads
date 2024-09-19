@@ -29,6 +29,15 @@ This is really goofy and should probably change. I've brought up the idea of jus
 
 We need to explore whether such a change might need updates to the GN2/GN3 code to ensure code that depends on these dummy files can also use the new format JSON files too.
 
+Regarding the order of the samples, from the email thread:
+
+```
+Regarding the order of samples, it can basically be whatever we decide it is. It just needs to stay consistent (like if there are multiple genotype files). It only really affects how it's displayed, and any other genotype files we use for mapping needs to share the same order.
+```
+
+The ordering of the samples has no bearing on the analysis of the data, i.e. it does not affect the results of computations.
+
+
 ### Curation
 
 ```
