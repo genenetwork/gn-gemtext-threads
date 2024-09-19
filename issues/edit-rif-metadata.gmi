@@ -33,8 +33,8 @@
 
 ### Editing
 
-* [ ] API: Edit comment by id in mysql/rdf: modifies GeneRIF and GeneRIFXRef tables.
-* [ ] API: Modify edit comments by id to include RDF changes.
+* [X] API: Edit comment by id in mysql/rdf: modifies GeneRIF and GeneRIFXRef tables.
+* [X] API: Modify edit comments by id to include RDF changes.
 
 > POST /wiki/<comment-id>/edit
 
@@ -80,7 +80,7 @@
 
 ### Misc ToDos:
 
-* [ ] Review performance of query used in 72d9a24e8e65 [Genenetwork3]
+* [X] Review performance of query used in 72d9a24e8e65 [Genenetwork3]
 
 ### Ops
 
