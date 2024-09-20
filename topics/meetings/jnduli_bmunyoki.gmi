@@ -1,16 +1,31 @@
 # Meeting Notes
 
-# 2024-09-13
-* @jnduli @bmunyoki fetch ncbi metadata and display them in GN2
-* @jnduli @bmunyoki add auth layer to edit rifs functionality
-* @jnduli complete design doc for hooks system for gn-auth
-* @jnduli @alex bug fixes for LLM integration
+# 2024-09-20
 * @priscilla @flisso @bmunyoki @jnduli set up GN ecosystem and review UI PRs
-* @bmunyoki modify edit api to also write to RIF
+* @priscilla continue to upload more papers.
 * @bmunyoki update tux02/01 with recent RIF modifications
-* @bmunyoki Add test cases for RDF
-* @alex Update links for static content to use self-hosted git repo
-* @flisso Upload C Elegans Dataset.  Note: MIKK one has some issues, so work is paused for now.
+* @jnduli Finish up experiments on hook system.
+* @alex @bonfacem investigate the dumped static files for encoding issues.
+* @flisso: Continue work on uploading datasets: C Elegans and MIKK.
+* @flisso: Do code reviews on Sarthak's script.
+* @bmunyoki NCBI Metadata - Modelling and Display.
+* @bmunyoki update tux02/01 with recent RIF modifications.
+
+# 2024-09-13
+* NOT DONE: @jnduli @bmunyoki fetch ncbi metadata and display them in GN2
+* DONE: @jnduli @bmunyoki add auth layer to edit rifs functionality
+* DONE: @jnduli complete design doc for hooks system for gn-auth.  NOTE: More experimentation with this.
+* DONE: @jnduli @alex bug fixes for LLM integration.
+* DONE: @priscilla added more papers to the LLM ~ 250 papers.
+* NOT DONE: @priscilla @flisso @bmunyoki @jnduli set up GN ecosystem and review UI PRs
+* DONE: @bmunyoki modify edit api to also write to RIF
+* NOT DONE: @bmunyoki update tux02/01 with recent RIF modifications
+* DONE: @bmunyoki Add test cases for RDF
+* DONE: @alex Bug fix for session expiry.
+* DONE: @alex Update links for static content to use self-hosted git repo.
+* IN PROGRESS: @flisso Upload C Elegans Dataset.  Nb: MIKK one has some issues, so work is paused for now. NOTE: Waiting for annotation and phenotype file for the C Elegans Dataset.
+* DONE @flisso: Reviewed  gemma wrapper scripts.
+
 
 Nice to have:
 * @bmunyoki build system container for gn-guile and write documentation for creating containers
