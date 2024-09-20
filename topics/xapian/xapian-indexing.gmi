@@ -21,26 +21,9 @@ It is important to note that the performance bottlenecks identified in this docu
 
 ## Local Development
 
-You'll set up virtuoso locally. Here are guix specific instructions:
+For local development, see:
 
-```
-> guix install virtuoso-ose # or any other means to install virtuoso
-> cd /path/to/virtuoso/database/folder
-> cp $HOME/.guix-profile/var/lib/virtuoso/db/virtuoso.ini ./virtuoso.ini
-> # modify the virtuoso.ini file to save files to the folder you'd prefer
-> virtuoso-t +foreground +wait +debug
-```
-
-and load up data by:
-
-```
-> isql
-> # subsquent commands run in isql prompt
-> # this folder is relative to the folder virtuoso was started from
-> ld_dir ('path/to/folder/with/ttls', '*.ttl', 'http://genenetwork.org');
-> rdf_loader_run();
-> checkpoint;
-```
+=> https://issues.genenetwork.org/topics/database/working-with-virtuoso-locally Working with Virtuoso for Local Development
 
 Ping @bmunyoki for the ttl folder backups.
 
