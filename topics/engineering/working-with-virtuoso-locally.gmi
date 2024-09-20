@@ -13,14 +13,6 @@ cp $HOME/.guix-profile/var/lib/virtuoso/db/virtuoso.ini ./virtuoso.ini
 virtuoso-t +foreground +wait +debug
 ```
 
-In the virtuoso.ini file, update the following field.   Here are example entries:
-
-```
-DirsAllowed			= ., /gnu/store/60xg4nj45p6bicinf5fc9xnc92nbsdx4-virtuoso-ose-7.2.11/share/virtuoso/vad, /usr/share/proj
-```
-
-"DirsAllowed" allows you to view the directory where you'll load your TTL files, and allows you to use "ld_dir" within isql.
-
 ## Common Virtuoso Operations
 
 Use isql to load up data:
