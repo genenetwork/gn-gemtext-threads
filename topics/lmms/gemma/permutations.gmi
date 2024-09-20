@@ -491,6 +491,70 @@ GEMMA in GN2 shows the same result when setting MAF to 0.05 or 0.1 (you can try 
 
 That leads me to think that we only need to check for epoch when we have a single *low* MAF hit, say 0.01 for 28 mice. As we actively filter on MAF right now we won't likely see an epoch hit.
 
+## Protocol for permutations
+
+First we run GEMMA just without LOCO using default settings that GN uses
+
+```
+# Convert the GN geno file to BIMBAM geno file
+./bin/gn-geno-to-gemma.py BXD.geno > BXD.geno.txt
+# Match pheno file
+./bin/rqtl2-pheno-to-gemma.py BXD_pheno_Dave.csv --json BXD.geno.json > BXD_pheno_matched.txt
+  Wrote GEMMA pheno 237 from 237 with genometypes (rows) and 24 collections (cols)!
+gemma -gk -g BXD.geno.txt -p BXD_pheno_matched.txt -n 5
+gemma -lmm 9 -g BXD.geno.txt -p BXD_pheno_matched.txt -k output/result.cXX.txt -n
+```
+
+If that works we can move to a full LOCO
+
+
+```
+./bin/gemma-wrapper --loco --json -- -gk -g BXD.geno.txt -p BXD_pheno_matched.txt -n 5 -a BXD.8_snps.txt > K.json
+./bin/gemma-wrapper --debug --verbose --force --loco --json --lmdb --input K.json -- -g BXD.geno.txt -a test/data/input/BXD_snps.txt -lmm 9 -maf 0.05 -p BXD_pheno_matched.txt
+```
+
+```sh
+# Convert the traits file to something GEMMA can use - adding the trait number and output BXD_pheno_Dave.csv.json
+./bin/rqtl2-pheno-to-gemma.py BXD_pheno_Dave.csv --json BXD.geno.json -n 5 > BXD_pheno_matched-5.txt
+```
+
+If you inspect the JSON file you should see
+
+```
+jq < BXD_pheno_Dave.csv.json
+  "samples-column": 4,
+  "trait": "21529",
+  "samples-reduced": {
+    "BXD1": 1919.450806,
+    "BXD101": 2546.293945,
+    "BXD102": 1745.671997,
+```
+
+At this point we have a reduced sample set, a BIMBAM file and a phenotype file GEMMA can use!
+
+```
+./bin/gemma-wrapper --loco --json --input BXD_pheno_Dave.csv.json -- -gk -g BXD.geno.txt -p BXD_pheno_matched.txt -n 5 -a BXD.8_snps.txt > K.json
+```
+
+Note that at this step we actually do not create a reduced GRM. That happens in the next mapping stage.
+
+```
+./bin/gemma-wrapper --debug --verbose --force --loco --json --lmdb --input K.json -- -g BXD.geno.txt  -a test/data/input/BXD_snps.txt -lmm 9 -maf 0.05
+```
+
+Note the use of '-n' switch. We should change that.
+
+```
+./bin/gemma-values.py /tmp/test/8599834ee474b9da9ff39cc4954d662518a6b5c8.mdb
+```
+
+Look for rs3718618 at 69216071 and I am currently getting the wrong result and it is not clear why that is:
+
+```
+18,69216071,?,0.462,10.8099,93.3936,0.0,0.8097,0.09
+```
+
+
 ## Dealing with epoch
 
 Rob pointed out that the GRM does not necessarily represent epoch and that may influence the significance level. I.e. we should check for that. I agree that the GRM distances are not precise enough (blunt instrument) to capture a few variants that appeared in a new epoch of mice. I.e., the mice from the 90s may be different from the mice today in a few DNA variants that won't be reflected in the GRM.

@@ -15,7 +15,7 @@ When running trait BXD_21526 results differ significantly.
 => https://genenetwork.org/show_trait?trait_id=21526&dataset=BXDPublish
 => https://genenetwork.org/show_trait?trait_id=21529&dataset=BXDPublish
 
-So I confirm I am getting the same results as Dave in GN for GEMMA.
+So I confirm I am getting the same results as Dave in GN for GEMMA (see Conclusion below).
 
 # Tasks
 
