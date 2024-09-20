@@ -1,7 +1,7 @@
 # [gn-transform-databases/ADR-000] Remodel GeneRIF Metadata Using predicateObject Lists
 
 * author: bonfacem
-* status: proposed
+* status: rejected
 * reviewed-by: pjotr, jnduli
 
 ## Context
@@ -68,3 +68,7 @@ _:comment gnt:symbol gn:symbolPitpna .
 
 * Update SPARQL in tux02, tux01 in lockstep with updating GN3/GN2 and the XAPIAN index.
 * Reduction in size of the final output, and faster transform time because using PredicateObjectLists output more terse RDF.
+
+## Rejection Rationale
+
+This proposal was rejected because relying on blank-nodes as an identifier is opaque and not human-readable.  We want to use human readable identifiers where possible.
