@@ -1,7 +1,7 @@
 # [gn-transform-databases/ADR-001] Remodel GeneRIF_BASIC (NCBI Rifs) Metadata Using predicateObject Lists
 
 * author: bonfacem
-* status: proposed
+* status: rejected
 * reviewed-by: pjotr, jnduli
 
 ## Context
@@ -96,3 +96,7 @@ Beyond that, we intentionally use a sequence to store a list of pubmed reference
 * De-duplication of comments during the transform while retaining the integrity of the RIF metadata.
 * Because of the terseness, less work during the I/O heavy operation.
 * Update SPARQL in tux02, tux01 in lockstep with updating GN3/GN2 and the XAPIAN index.
+
+## Rejection Rationale
+
+This proposal was rejected because relying on blank-nodes as an identifier is opaque and not human-readable.  We want to use human readable identifiers where possible.
