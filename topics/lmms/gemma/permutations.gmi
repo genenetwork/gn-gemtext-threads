@@ -502,27 +502,68 @@ First we run GEMMA just without LOCO using default settings that GN uses
 ./bin/rqtl2-pheno-to-gemma.py BXD_pheno_Dave.csv --json BXD.geno.json > BXD_pheno_matched.txt
   Wrote GEMMA pheno 237 from 237 with genometypes (rows) and 24 collections (cols)!
 gemma -gk -g BXD.geno.txt -p BXD_pheno_matched.txt -n 5
-gemma -lmm 9 -g BXD.geno.txt -p BXD_pheno_matched.txt -k output/result.cXX.txt -n
+gemma -lmm 9 -g BXD.geno.txt -p BXD_pheno_matched.txt -k output/result.cXX.txt -n 5
 ```
 
-If that works we can move to a full LOCO
+So far the output is correct.
+
+```
+-Math.log10(7.532460e-05)
+=> 4.123063165904243
+```
+
+Try with gemma-wrapper
+
+```
+./bin/gemma-wrapper --json -- -gk -g BXD.geno.txt -p BXD_pheno_matched.txt -n 5 -a BXD.8_snps.txt > K.json
+cp output/bab43175329bd14d485e582b7ad890cf0ec28915.cXX.txt /tmp
+```
+
+Works, but the following failed without the -n switch:
+
+```
+./bin/gemma-wrapper --debug --verbose --force --json --lmdb --input K.json -- -g BXD.geno.txt -a BXD.8_snps.txt -lmm 9 -p BXD_pheno_matched.txt -n 5
+```
+
+and worked with. That is logical, if you see output like
+
+```
+19      rs30886715      46903165        0       X       Y       0.536   0.000000e+00    0.000000e+00    1.000000e-05    1.000000e+00
+19      rs6376540       46905638        0       X       Y       0.536   0.000000e+00    0.000000e+00    1.000000e-05    1.000000e+00
+19      rs50610897      47412184        0       X       Y       0.538   0.000000e+00    0.000000e+00    1.000000e-05    1.000000e+00
+```
+
+It means the phenotype column that was parsed has empty values. In this case the BXD strain names. GEMMA should show a meaningful error.
+
+Now that works we can move to a full LOCO
 
 
 ```
 ./bin/gemma-wrapper --loco --json -- -gk -g BXD.geno.txt -p BXD_pheno_matched.txt -n 5 -a BXD.8_snps.txt > K.json
-./bin/gemma-wrapper --debug --verbose --force --loco --json --lmdb --input K.json -- -g BXD.geno.txt -a test/data/input/BXD_snps.txt -lmm 9 -maf 0.05 -p BXD_pheno_matched.txt
+./bin/gemma-wrapper --debug --verbose --force --loco --json --lmdb --input K.json -- -g BXD.geno.txt -a test/data/input/BXD_snps.txt -lmm 9 -maf 0.05 -p BXD_pheno_matched.txt -n 5
 ```
 
+and we get
+
+```
+18,69216071,rs3718618,0.635,-195.5784,82.1243,100000.0,0.0,4.5
+18,69825784,rs50446650,0.635,-195.5784,82.1243,100000.0,0.0,4.5
+18,68189477,rs29539715,0.596,-189.7332,79.7479,100000.0,0.0,4.49
+```
+
+When we converted BXD.geno to its BIMBAM BXD.geno.txt we also got a BXD.geno.json file which contains a list of the individuals/genometypes that were used in the genotype file.
+
+Now we reduce the traits file to something GEMMA can use for permutations - adding the trait number and output BXD_pheno_Dave.csv.json
+
 ```sh
-# Convert the traits file to something GEMMA can use - adding the trait number and output BXD_pheno_Dave.csv.json
 ./bin/rqtl2-pheno-to-gemma.py BXD_pheno_Dave.csv --json BXD.geno.json -n 5 > BXD_pheno_matched-5.txt
 ```
 
-If you inspect the JSON file you should see
+The matched file should be identical to the earlier BXD_pheno_matched.txt file. Meanwhile, if you inspect the JSON file you should see
 
 ```
 jq < BXD_pheno_Dave.csv.json
-  "samples-column": 4,
+  "samples-column": 5,
   "trait": "21529",
   "samples-reduced": {
     "BXD1": 1919.450806,
@@ -530,13 +571,15 @@ jq < BXD_pheno_Dave.csv.json
     "BXD102": 1745.671997,
 ```
 
+So far we are OK!
+
 At this point we have a reduced sample set, a BIMBAM file and a phenotype file GEMMA can use!
 
 ```
-./bin/gemma-wrapper --loco --json --input BXD_pheno_Dave.csv.json -- -gk -g BXD.geno.txt -p BXD_pheno_matched.txt -n 5 -a BXD.8_snps.txt > K.json
+./bin/gemma-wrapper --loco --json --input BXD_pheno_Dave.csv.json -- -gk -g BXD.geno.txt -p BXD_pheno_matched.txt -a BXD.8_snps.txt -n 5 > K.json
 ```
 
-Note that at this step we actually do not create a reduced GRM. That happens in the next mapping stage.
+Note that at this step we actually create a full GRM. Reducing happens in the next mapping stage.
 
 ```
 ./bin/gemma-wrapper --debug --verbose --force --loco --json --lmdb --input K.json -- -g BXD.geno.txt  -a test/data/input/BXD_snps.txt -lmm 9 -maf 0.05
@@ -545,14 +588,28 @@ Note that at this step we actually do not create a reduced GRM. That happens in 
 Note the use of '-n' switch. We should change that.
 
 ```
-./bin/gemma-values.py /tmp/test/8599834ee474b9da9ff39cc4954d662518a6b5c8.mdb
+./bin/gemma-values.py /tmp/test/8599834ee474b9da9ff39cc4954d662518a6b5c8.mdb --sort
 ```
 
-Look for rs3718618 at 69216071 and I am currently getting the wrong result and it is not clear why that is:
+Look for rs3718618 at 69216071 and I am currently getting the wrong result for trait 21529 and it is not clear why that is:
 
 ```
+chr,pos,marker,af,beta,se,l_mle,l_lrt,-logP
+16,88032783,?,0.538,-134.1339,75.7837,0.0,0.0009,3.02
+16,88038734,?,0.538,-134.1339,75.7837,0.0,0.0009,3.02
+(...)
 18,69216071,?,0.462,10.8099,93.3936,0.0,0.8097,0.09
 ```
+
+When running GEMMA on genenetwork.org we get a peak for LOCO at that position for rs3718618. I note that the non-LOCO version at 4.1 vs 4.5 for LOCO has a higher peak. We should compute the significance for both!
+
+Now, when I run the non-LOCO version by hand I get
+
+```
+-Math.log10(7.532460e-05)
+=> 4.123063165904243
+```
+
 
 
 ## Dealing with epoch
@@ -571,6 +628,7 @@ We have two or more possible solutions to deal with hierarchy in the population.
 
 * [ ] Fix non-use of MAF in GN for non-LOCO
 * [ ] Fix running of -p switch when assoc cache exists (bug)
+* [ ] Compare significance for non-LOCO
 
 Quantile-Based Permutation Thresholds for Quantitative Trait Loci Hotspots
 https://academic.oup.com/genetics/article/191/4/1355/5935078
