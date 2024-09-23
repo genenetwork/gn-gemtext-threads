@@ -1,0 +1,40 @@
+# Genotypes, Assemblies, Markers and GeneNetwork
+
+## Tags
+
+* type: documentation, docs, doc
+* keywords: genotype, assembly, markers, data, database, genenetwork, uploader
+
+## Markers
+
+```
+The marker is the SNP…
+
+— Rob (Paraphrased)
+```
+
+SNPs (Single Nucleotide Polymorphisms) are specific locations of interest within the genome, where the pair of nucleotides can take different forms.
+
+A SNP and its immediate neighbourhood (a number of megabase pairs before and after the SNP) form a sequence that is effectively the marker, e.g. for mouse (Mus musculus) you could have the following sequence from the GRCm38 genome assembly (mm10):
+
+```
+GAGATAAAGATGGGTCCCTTGGCACAGGACTGGCCCACATTTCCaatataaattacaacaattttttttaaatttttaaaCAAAACAAGCATCTCACACAC/TTGAAAAAGAAGATGCATTCAAAGAAAATAGATGTTTCAATGTATTTAAGATAATCAAGAGATAACCATGACCATATCATGAGGAAACTTAAGAATTGGCA
+```
+
+where the position with `C/T` represents the SNP of interest and thus the marker.
+
+You can search this on the UCSC Genome Browser, specifically the 
+=> https://genome.ucsc.edu/cgi-bin/hgBlat BLAT search
+to get the name of the marker, and some extra details regarding it.
+
+## Genome Assemblies
+
+The genome assembly used will "determine" the position of the marker on the genome — newer assemblies will (generally) give a better position accounting for more of the issues discovered in older assemblies.
+
+With most of the newer assemblies, the positions do not shift very drastically.
+
+## GeneNetwork
+
+Currently (September 2024), GeneNetwork uses the GRCm38 (mm10) assembly for mice.
+
+Unfortunately, since the system was built for mice, the tables (e.g. Geno table) do not account for the fact that you could have markers (and other data) from species other than Mus musculus. You thus have the Geno table with fields like `Mb_mm8`, `Chr_mm8` which are very mouse-specific.
