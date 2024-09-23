@@ -4,7 +4,7 @@
 
 * Assigned: alexm
 * Keywords: base, HTML, JavaScript, cleanup
-* type: Refactoring 
+* type: Refactoring
 * Status: In progress
 
 ## Description
@@ -19,5 +19,5 @@ The base file should contain no custom JavaScript since it is inherited in almos
 
 ## Notes
 
-See the PR that seeks to fix this:  
+See the PR that seeks to fix this:
 => https://github.com/genenetwork/genenetwork2/pull/877
