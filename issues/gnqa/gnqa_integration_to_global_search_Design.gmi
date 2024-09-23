@@ -4,7 +4,7 @@
 * assigned: jnduli, alexm
 * keywords: llm, genenetwork2
 * type: feature
-* status: in-progress
+* status: complete
 
 ## Description
 This document outlines the design proposal for integrating GNQA into the Global Search feature.
@@ -59,7 +59,7 @@ It is possible to generate potential questions based on the user's search and re
 * [x] For "See more," render the entire GNQA page with the query, answer, references, and PubMed data.
 * [x] Implement parsing for Xapian queries to normal queries.
 * [x] Implement error handling.
-* [ ] reimplement how gnqa uses GN-AUTH in  gn3.
+* [x] reimplement how gnqa uses GN-AUTH in  gn3.
 * [x] Query Fahamu to generate possible questions based on certain keywords.
 
 
