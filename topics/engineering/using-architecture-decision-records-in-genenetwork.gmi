@@ -1,7 +1,7 @@
 # Using Architecture Decision Records at GeneNetwork
 
 * author: bonfacem
-* reviewed-by: fredm
+* reviewed-by: fredm, jnduli
 
 > One of the hardest things to track during the life of a project is the motivation behind certain decisions.  A new person coming on to a project may be perplexed, baffled, delighted, or infuriated by some past decision.
 > -- Michael Nygard
@@ -50,4 +50,7 @@ Here are some examples of Genenetwork specific ADRs:
 
 ### References
 
-[0] Gough, J., Bryant, D., & Auburn, M.  (2022).  Mastering API Architecture: Design, Operate, and Evolve API-based Systems.  O'Reilly Media, Incorporated.
+=> https://www.oreilly.com/library/view/mastering-api-architecture/9781492090625/ [0] Gough, J., Bryant, D., & Auburn, M.  (2022).  Mastering API Architecture: Design, Operate, and Evolve API-based Systems.  O'Reilly Media, Incorporated.
+=> https://adr.github.io/ [1] Architectural Decision Records.  Homepage of the ADR GitHub organization
+=> https://docs.aws.amazon.com/prescriptive-guidance/latest/architectural-decision-records/adr-process.html [2] Amazon's ADR process
+=> https://cloud.google.com/architecture/architecture-decision-records [3] Google Cloud Center Architecture Decision Records Overview
