@@ -43,7 +43,7 @@ Decisions.
 Consequences.
 ```
 
-Here are some examples of recently created ADRs:
+Here are some examples of Genenetwork specific ADRs:
 
 => https://issues.genenetwork.org/topics/ADR/gn3/000-add-test-cases-for-rdf [gn3/ADR-000] Add RDF Test Case
 => https://issues.genenetwork.org/topics/ADR/gn3/000-remove-stace-traces-in-gn3-error-response [gn3/ADR-001] Remove Stack Traces in GN3
