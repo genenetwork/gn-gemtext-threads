@@ -1,0 +1,53 @@
+# Using Architecture Decision Records at GeneNetwork
+
+* author: bonfacem
+* reviewed-by: fredm
+
+> One of the hardest things to track during the life of a project is the motivation behind certain decisions.  A new person coming on to a project my be perplexed, baffled, delighted, or infuriated by some past decision.
+> -- Michael Nygard
+
+When building or maintaining software, there's often moments when we ask, "What were they thinking?"  This happens when we are trying to figure out why something was done a certain way, leading to speculation, humor, or criticism[0].  Given the constraints we face when writing code, it's important to make sure that important decisions are well-documented and transparent.  Architecture Decision Records (ADRs) are one such tool.  They provide a structured way to capture the reasoning behind key decisions.
+
+ADRs consist 4 key sections [0]:
+
+* Status: An ADR begins with a proposed status.  After discussions, it will be accepted or rejected.  It is also possible for a decision to be superseded by a newer ADR later on.
+* Context: The context section outlines the situation or problem, providing the background and constraints relevant to the decision.  This section is meant to frame the issue concisely, not as a lengthy blog post or detailed explanation.
+* Decision: This section clearly defines the chosen approach and the specific actions that will be taken to address the issue.
+* Consequences: This part lays out the impact or outcomes of the decision, detailing the expected results and potential trade-offs.
+
+Optionally, when an ADR is rejected, you can add a section:
+
+* Rejection Rationale: Briefly provides some context for why the ADR was rejected.
+
+At GeneNetwork, we manage ADRs within our issue tracker, organizing them under the path "/topics/ADR/<project-name>/XXX-name.gmi".  The "XXX" represents a three-digit number, allowing for an easy, chronological order of the proposals as they are created.
+
+Here is a template for a typical ADR in Genenetwork:
+
+```
+# [<project>/ADR-<XXX>] Title
+
+* author: author-name
+* status: proposed
+* reviewed-by: A, B, C
+
+## Context
+
+Some context.
+
+## Decision
+
+Decisions.
+
+## Consequences
+
+Consequences.
+```
+
+Here are some examples of recently created ADRs:
+
+=> https://issues.genenetwork.org/topics/ADR/gn3/000-add-test-cases-for-rdf [gn3/ADR-000] Add RDF Test Case
+=> https://issues.genenetwork.org/topics/ADR/gn3/000-remove-stace-traces-in-gn3-error-response [gn3/ADR-001] Remove Stack Traces in GN3
+
+### References
+
+[0] Gough, J., Bryant, D., & Auburn, M.  (2022).  Mastering API Architecture: Design, Operate, and Evolve API-based Systems.  O'Reilly Media, Incorporated.
