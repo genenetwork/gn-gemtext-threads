@@ -4,7 +4,7 @@
 * assigned: alexm, zac
 * keywords: global search, design, HTML
 * type: enhancement
-* status: In progress 
+* status: In progress
 
 ## Description
 Rob suggested we model the global search on the NCBI PubMed interface. We should remove the `?` button, which seems to be confusing for users, and have a  better  user guide.
