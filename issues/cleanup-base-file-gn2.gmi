@@ -15,9 +15,16 @@ The base file should contain no custom JavaScript since it is inherited in almos
 
 * [] Remove global search code from the base file and move it to the index page
 * [] Fix formatting and linting issues in the base file (e.g., tags)
+* []  Inherit from index page for all gn2 templates
 
 
 ## Notes
 
 See the PR that seeks to fix this:
 => https://github.com/genenetwork/genenetwork2/pull/877
+
+## Notes 26/09/2024
+
+It was agreed that global search should be a feature for all pages,
+As such all files need to inherit from the global search which
+defines the global search.
