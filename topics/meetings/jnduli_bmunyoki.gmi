@@ -1,15 +1,30 @@
 # Meeting Notes
 
-# 2024-09-20
-* @priscilla @flisso @bmunyoki @jnduli set up GN ecosystem and review UI PRs
+# 2024-09-27
+
+* @jnduli @bonfacem @alex Look at base files refactor and merge work.
 * @priscilla continue to upload more papers.
-* @bmunyoki update tux02/01 with recent RIF modifications
-* @jnduli Finish up experiments on hook system.
-* @alex @bonfacem investigate the dumped static files for encoding issues.
-* @flisso: Continue work on uploading datasets: C Elegans and MIKK.
-* @flisso: Do code reviews on Sarthak's script.
-* @bmunyoki NCBI Metadata - Modelling and Display.
-* @bmunyoki update tux02/01 with recent RIF modifications.
+* @priscilla @flisso Set up GN3.  Goal is to be able to query some APIs in cURL.
+* @jnduli Improve hook systems for gn-auth.
+* @jnduli @bonfacem @alex Push most recent changes to production.  Figure out what needs doing.
+* @alex Close down remaining issues on issue tracker.
+* @alex investigate the dumped static files for encoding issues.
+* @bonfacem NCBI Metadata - Modelling and Display.
+* @bonfacem Fix broken CD tests.
+* @flisso Continue work on uploading datasets: C Elegans and MIKK.
+* @flisso @jnduli help @flisso with SQL.
+
+# 2024-09-20
+* NOT DONE: @priscilla @flisso @bmunyoki @jnduli set up GN ecosystem and review UI PRs
+* DONE: @priscilla continue to upload more papers. NOTE: Shared access to drive to @bmunyoki.  We are at 800 papers.
+* DONE: @bmunyoki update tux02/01 with recent RIF modifications
+* DONE: @jnduli Finish up experiments on hook system.  NOTE: Patches got merged.  Needs to make some things more concrete.
+* NOT DONE: @alex @bonfacem investigate the dumped static files for encoding issues.
+* DONE: Refactoring base files for GN2.
+* IN PROGRESS: @flisso: Continue work on uploading datasets: C Elegans and MIKK.  Note: Waiting for the original MIKK genotype file from the Medaka team.  C Elegans yet to process the annotation file---some info is missing.
+* NOT DONE: @flisso: Do code reviews on Sarthak's script.
+* NOT DONE: @bmunyoki NCBI Metadata - Modelling and Display.
+* DONE: @bmunyoki update tux02/01 with recent RIF modifications.  NOTE: CD tests are broken and need to be fixed.
 
 # 2024-09-13
 * NOT DONE: @jnduli @bmunyoki fetch ncbi metadata and display them in GN2
