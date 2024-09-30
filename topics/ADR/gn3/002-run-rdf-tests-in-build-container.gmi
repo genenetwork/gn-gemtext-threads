@@ -16,7 +16,7 @@ SPARQL_CRUD_AUTH_URI="http://localhost:8890/sparql-graph-crud-auth"
 FAHAMU_AUTH_TOKEN="XXXXXX"
 ```
 
-This extra bootstrapping when running tests needs care, and locks tests to CD or special configuration when running locally.  This leads to a fragile tests that cause CD to break.  Moreover, to add tests to CD, we would have to add extra g-exp to gn-machines.
+This extra bootstrapping when running tests needs care, and locks tests to CD or special configuration when running locally.  This leads to fragile tests that cause CD to break.  Moreover, to add tests to CD, we would have to add extra g-exp to gn-machines.
 
 This ADR is related to:
 
