@@ -24,7 +24,7 @@ This ADR is related to:
 
 ## Decision
 
-Move tests to the test build phase of building the genenetwork3 package.
+Move tests to the test build phase of building the genenetwork3 package.  These tests are added in the ".guix/genenetwork3-all-tests.scm" file instead of the main "genenetwork3" package definition in guix-bioinformatics.  This way, we have all our "light" tests I.e. unit tests running in guix-bioinformatics, while having all our heavier tests, in this case, RDF tests, running in CD.
 
 ## Consequences
 
