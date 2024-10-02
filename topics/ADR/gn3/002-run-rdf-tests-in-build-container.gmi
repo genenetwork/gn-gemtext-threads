@@ -1,7 +1,7 @@
 # [gn3/ADR-002] Move RDF Test Cases to Build Container
 
 * author: bonfacem
-* status: proposed
+* status: accepted
 * reviewed-by: jnduli
 
 ## Context
