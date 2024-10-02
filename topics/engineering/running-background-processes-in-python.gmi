@@ -1,0 +1,68 @@
+# Running Background Processes in Python using Popen
+
+* author: bonfacem
+* reviewed-by: jnduli
+
+Recently, I needed to write test fixtures in Python to run RDF tests against a Virtuoso instance running in the background.  The correct command to run virtuoso in the background is:
+
+```
+# Replace <init-file> with the correct path to your virtuoso ini file
+virtuoso-t +wait +no-checkpoint +configfile <init-file>
+```
+
+The complete snippet for the aforementioned fixture is outlined below:
+
+```
+ 1         # Here we intentionally ignore the "+foreground" option to
+ 2         # allow virtuoso to run in the background.
+ 3         with subprocess.Popen(
+ 4             [
+ 5                 "virtuoso-t",
+ 6                 "+wait",
+ 7                 "+no-checkpoint",
+ 8                 "+configfile",
+ 9                 init_file,
+10             ],
+11             stdout=subprocess.DEVNULL,
+12             stderr=subprocess.DEVNULL,
+13         ) as pid:
+14             pid.wait()
+15 	    [...]
+16             yield response
+17             [...]
+18             for pid_ in get_process_id(init_file):
+19                 psutil.Process(pid_).kill()
+```
+
+Using "subprocess.Popen"(L3-L13), we spawn the Virtuoso process in the background.  However, after the tests finished, the Virtuoso process remained running in the background, leading to failures in subsequent tests.  To handle this, we had to manually kill it(L18-L19).  This approach is clanky because we expected the Virtuoso process to terminate when the parent process ended.  Calling "pid.terminate()" didn’t work since Virtuoso was spawned under a different PID without a parent.
+
+To clean this up, we spawn Virtuoso in the foreground in a shell:
+
+```
+ 1         command = f"virtuoso-t +foreground +wait +no-checkpoint +configfile {init_file}"
+ 2         with subprocess.Popen(
+ 3             command,
+ 4             shell=True,
+ 5             stdout=subprocess.PIPE,
+ 6             stderr=subprocess.STDOUT,
+ 7             text=True,
+ 8         ) as pid:
+ 9             while pid.stdout.readable():
+10                 line = pid.stdout.readline()
+11                 if not line:
+12                     raise RuntimeError("Something went wrong running virtuoso")
+13                 # virtuoso is ready for connections
+14                 if "server online at" in line.lower():
+15                     break
+16             [...]
+17             yield response
+18             [...]
+19             pid.terminate()
+```
+
+In this version, by running Virtuoso in a shell, we can use the "+foreground" option(L1), allowing the process to run in a non-blocking way interactively.  This approach also simplifies termination by way of "pid.terminate()"(L19) instead of hunting for PIDs.
+
+## References
+
+=> https://peps.python.org/pep-3143/#correct-daemon-behaviour [0] PEP 3143 Correct daemon behaviour
+=> https://stackoverflow.com/a/10661488 [1] Why does shell=True eat my subprocess.Popen stdout?
