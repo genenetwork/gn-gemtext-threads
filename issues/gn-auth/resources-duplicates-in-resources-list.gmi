@@ -1,0 +1,24 @@
+# Resources: Duplicates in Resources List
+
+## Tags
+
+* type: bug
+* status: open
+* priority: medium
+* assigned: fredm, zachs, zsloan
+* keywords: gn-auth, auth, authorisation, resources
+
+## Reproduce
+
+* Go to https://genenetwork.org/
+* Sign in to the system
+* Click on "Profile" at the top to go to your profile page
+* Click on "Resources" on your profile page to see the resources you have access to
+
+## Expected
+
+Each resource appears on the list only one time
+
+## Actual
+
+Some resources appear more than once on the list
