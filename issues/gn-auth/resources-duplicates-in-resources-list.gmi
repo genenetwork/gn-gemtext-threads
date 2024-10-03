@@ -3,7 +3,7 @@
 ## Tags
 
 * type: bug
-* status: open
+* status: closed
 * priority: medium
 * assigned: fredm, zachs, zsloan
 * keywords: gn-auth, auth, authorisation, resources
@@ -22,3 +22,8 @@ Each resource appears on the list only one time
 ## Actual
 
 Some resources appear more than once on the list
+
+
+## Fix
+
+=> https://git.genenetwork.org/gn-auth/commit/?id=00f863b3dcb76f5fdca8e139e903e2f7edb861fc
