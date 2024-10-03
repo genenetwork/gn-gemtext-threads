@@ -3,7 +3,7 @@
 * author: bonfacem
 * reviewed-by: jnduli
 
-Recently, I needed to write test fixtures in Python to run RDF tests against a Virtuoso instance running in the background.  The correct command to run virtuoso in the background is:
+Recently, I needed to write test fixtures in Python to run RDF tests against a Virtuoso[0] instance running in the background.  The correct command to run virtuoso in the background is:
 
 ```
 # Replace <init-file> with the correct path to your virtuoso ini file
@@ -63,6 +63,6 @@ To clean this up, we spawn Virtuoso in the foreground in a shell:
 In this version, by running Virtuoso in a shell, we can use the "+foreground" option(L1), allowing the process to run in a non-blocking way interactively.  This approach also simplifies termination by way of "pid.terminate()"(L19) instead of hunting for PIDs.
 
 ## References
-
-=> https://peps.python.org/pep-3143/#correct-daemon-behaviour [0] PEP 3143 Correct daemon behaviour
-=> https://stackoverflow.com/a/10661488 [1] Why does shell=True eat my subprocess.Popen stdout?
+=> https://virtuoso.openlinksw.com/ [0] Virtuoso
+=> https://peps.python.org/pep-3143/#correct-daemon-behaviour [1] PEP 3143 Correct daemon behaviour
+=> https://stackoverflow.com/a/10661488 [2] Why does shell=True eat my subprocess.Popen stdout?
