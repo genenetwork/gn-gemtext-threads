@@ -1,18 +1,30 @@
 # Meeting Notes
 
+# 2024-10-04
+* @priscilla @bonfacem Setting up GN3.  @priscilla try out API endpoints that don't require auth.
+* @jnduli Harden hook system for gn-auth.
+* @jnduli Remove gn-auth code from GN3.
+* @jnduli Finish UI changes for RIF editing.
+* @alex Work on R/Qtl.
+* @alex @bonfacem Work on properly containerizing gn-guile.
+* @bonfacem API/Display of NCBI Rif metadata.
+* @bonfacem @alex RIF Indexing for RIF page in Xapian.
+* @flisso Push data to production.  Commence work on Arabidopsis data and HS Rats data.
+
 # 2024-09-27
 
-* @jnduli @bonfacem @alex Look at base files refactor and merge work.
-* @priscilla continue to upload more papers.
-* @priscilla @flisso Set up GN3.  Goal is to be able to query some APIs in cURL.
-* @jnduli Improve hook systems for gn-auth.
-* @jnduli @bonfacem @alex Push most recent changes to production.  Figure out what needs doing.
-* @alex Close down remaining issues on issue tracker.
-* @alex investigate the dumped static files for encoding issues.
-* @bonfacem NCBI Metadata - Modelling and Display.
-* @bonfacem Fix broken CD tests.
-* @flisso Continue work on uploading datasets: C Elegans and MIKK.
-* @flisso @jnduli help @flisso with SQL.
+* DONE: @jnduli @bonfacem @alex Look at base files refactor and merge work.
+* DONE: @priscilla continue to upload more papers. NOTE: Uploaded an extra 200 papers.
+* NOT DONE: @priscilla @flisso Set up GN3.  Goal is to be able to query some APIs in cURL.
+* IN PROGRESS: @jnduli Improve hook systems for gn-auth. NOTE: Still figuring out a cleaner implementation for some things.
+* IN PROGRESS: @jnduli Trying to remove auth code GN3 code.  NOTE: Idea, though unsure about safety.  @fred to review work and make sure things are safe.
+* DONE: @jnduli @bonfacem @alex Push most recent changes to production.  Figure out what needs doing.  NOTE: @Zach is in charge of deployment.  @fredm is working on the production container.
+* DONE: @alex Close down remaining issues on issue tracker.  NOTE: Merged work on cleaning up base files.  Few more minor modifications to the UI.
+* NOT DONE: @alex investigate the dumped static files for encoding issues.
+* IN PROGRESS: @bonfacem NCBI Metadata - Modelling and Display.  NOTE: Done with the modelling.  Almost done with API/UI work.
+* DONE: @bonfacem Fix broken CD tests.  NOTE: We have tests running inside the guix build phase.
+* IN-PROGRESS: @flisso Continue work on uploading datasets: C Elegans and MIKK.  NOTE: Managed to create data files that need to be upleaded to the testing gn2 stage server.
+* NOT DONE: @flisso @jnduli help @flisso with SQL.
 
 # 2024-09-20
 * NOT DONE: @priscilla @flisso @bmunyoki @jnduli set up GN ecosystem and review UI PRs
