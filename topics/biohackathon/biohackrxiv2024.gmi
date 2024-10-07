@@ -1,0 +1,7 @@
+# BioHackRxiv
+
+We have a hacking week in Barcelona to work on BioHackRXiv.
+
+# Tasks
+
+* [ ] ORCIDs for authors in PDF
