@@ -973,15 +973,18 @@ and at 40% haplotype injection we get
 
 All looks interesting, but does not help.
 
-Also when we halve the number of SNPs the results are similar:
+Also when we halve the number of SNPs the results are similar too.
 
 ```
 ["95 percentile (significant) ", 6.026549e-06, 5.2]
 ["67 percentile (suggestive)  ", 8.571557e-05, 4.1]
 ```
 
-Even though the threshold is high, it is kind of interesting to see that no matter what you do you end up similar levels. After a meeting with Rob and Saunak the latter pointed out that these numbers are not completely surprising. For LMMs we need to use an adaptation - i.e. shuffle the trait values after rotation and transformation and then reverse that procedure. The good news is that BulkLMM contains that method and thresholds will be lower.
+Even though the threshold is high, it is kind of interesting to see that no matter what you do you end up similar levels. After a meeting with Rob and Saunak the latter pointed out that these numbers are not completely surprising. For LMMs we need to use an adaptation - i.e. shuffle the trait values after rotation and transformation and then reverse that procedure. There is only the assumption of normality that Churchill does not require. The good news is that BulkLMM contains that method and thresholds will be lower. The bad news is that I'll have to adapt it because it does not handle missing data.
 
+Oh yes, rereading the Churchill paper from 1994 I now realise he also suggests an at marker significance method that will end lower - we saw that already in an earlier comparison. Saunak, however, says that we *should* do experiment-wide.
+
+## BulkLMM
 
 * [ ] Run bulklmm
 
