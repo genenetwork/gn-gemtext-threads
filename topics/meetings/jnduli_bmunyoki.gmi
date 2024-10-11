@@ -1,17 +1,37 @@
 # Meeting Notes
 
-# 2024-10-04
-* @priscilla @bonfacem Setting up GN3.  @priscilla try out API endpoints that don't require auth.
+## 2024-10-11
+* @priscilla @flisso: Try out API endpoints that don't require auth.
 * @jnduli Harden hook system for gn-auth.
 * @jnduli Remove gn-auth code from GN3.
-* @jnduli Finish UI changes for RIF editing.
-* @alex Work on R/Qtl.
-* @alex @bonfacem Work on properly containerizing gn-guile.
-* @bonfacem API/Display of NCBI Rif metadata.
-* @bonfacem @alex RIF Indexing for RIF page in Xapian.
-* @flisso Push data to production.  Commence work on Arabidopsis data and HS Rats data.
+* @jnduli @bonfacem Finish up RIF Editing project.
+* @jnduli @alexm Create issue on describing the monitoring system.
+* @jnduli @alexm Create issue on prompt engineering in GN to improve what we already have.
+* @alex Work on R/Qtl.  NOTE: @jnduli/@bonfacem help out with this.
+* @alex: Review @bmunyoki's work on RIF/Indexing.
+* @flisso: Make sure we have C Elegans dataset and MIKK genotypes to production.
+* @flisso: Make sure we have HS Rats in testing stage.
+* @flisso: Make progress in learning back-end coding WRT GN.
+* @shelbys: Modify existing Grant write-up for pangenomes.
+* @shelbys: Finish getting all the R2R scores from the first study.
+* @bonfacem RIF Indexing for RIF page in Xapian.
+* @bonfacem Work on properly containerizing gn-guile.
 
-# 2024-09-27
+## 2024-10-04
+* IN PROGRESS: @priscilla @bonfacem Setting up GN3.  @priscilla try out API endpoints that don't require auth. NOTE: @priscilla Able to set up guix as a package manager.  Trouble with Guix set-up with GN3.  @bonfacem good opportunity to improve docs in GN3.
+* IN PROGRESS: @jnduli Harden hook system for gn-auth.
+* IN PROGRESS: @jnduli Remove gn-auth code from GN3.
+* DONE: @jnduli Finish UI changes for RIF editing.  NOTE: Demo done in GN Learning team.
+* IN PROGRESS: @alex Work on R/Qtl.  NOTE: Met with Karl Brohman/PJ.  Been reading the docs.  Will track this issue in GN.
+* NOT DONE: @alex @bonfacem Work on properly containerizing gn-guile.
+* DONE: @bonfacem API/Display of NCBI Rif metadata.
+* IN PROGRESS: @bonfacem @alex RIF Indexing for RIF page in Xapian.
+* IN PROGRESS: @flisso Push data to production.  Commence work on Arabidopsis data and HS Rats data.  NOTE: C-Elegans pushed in process of being pushed to testing server, then later production.  WIP with HS Rats data in collab with Palmer.
+* DONE: @flisso: Learning how to use SQL WRT C Elegans data.
+* IN PROGRESS: @shelbys Re-formatting grant to use pangenomes.  Waiting for Garisson for feedback.
+* DONE: @shelbys Got the R2R for the human generated questions.  TODO: Run this for GPT 4.0 model.
+
+## 2024-09-27
 
 * DONE: @jnduli @bonfacem @alex Look at base files refactor and merge work.
 * DONE: @priscilla continue to upload more papers. NOTE: Uploaded an extra 200 papers.
@@ -26,7 +46,7 @@
 * IN-PROGRESS: @flisso Continue work on uploading datasets: C Elegans and MIKK.  NOTE: Managed to create data files that need to be upleaded to the testing gn2 stage server.
 * NOT DONE: @flisso @jnduli help @flisso with SQL.
 
-# 2024-09-20
+## 2024-09-20
 * NOT DONE: @priscilla @flisso @bmunyoki @jnduli set up GN ecosystem and review UI PRs
 * DONE: @priscilla continue to upload more papers. NOTE: Shared access to drive to @bmunyoki.  We are at 800 papers.
 * DONE: @bmunyoki update tux02/01 with recent RIF modifications
@@ -38,7 +58,7 @@
 * NOT DONE: @bmunyoki NCBI Metadata - Modelling and Display.
 * DONE: @bmunyoki update tux02/01 with recent RIF modifications.  NOTE: CD tests are broken and need to be fixed.
 
-# 2024-09-13
+## 2024-09-13
 * NOT DONE: @jnduli @bmunyoki fetch ncbi metadata and display them in GN2
 * DONE: @jnduli @bmunyoki add auth layer to edit rifs functionality
 * DONE: @jnduli complete design doc for hooks system for gn-auth.  NOTE: More experimentation with this.
@@ -57,7 +77,7 @@
 Nice to have:
 * @bmunyoki build system container for gn-guile and write documentation for creating containers
 
-# 2024-09-06
+## 2024-09-06
 
 * DONE: @bmunyoki Replicate GN1 WIKI+RIF in GN2.
 * DONE: @bmunyoki update server to include latest code changes
@@ -78,9 +98,9 @@ Nice to have:
 * NOT DONE: @priscilla @flisso @bmunyoki @jnduli set up GN ecosystem and review UI PRs
 
 
-# 2024-09-02 (Sync with @flisso+@bonfacem)
+## 2024-09-02 (Sync with @flisso+@bonfacem)
 
-## Case-Attributes
+### Case-Attributes
 
 * @bmunyoki understood case attributes by reverse-engineering the relevant tables from GeneNetwork's database.
 
@@ -96,7 +116,7 @@ SELECT * FROM CaseAttribute JOIN CaseAttributeXRef ON CaseAttribute.CaseAttribut
 
 * @bmunyoki.  Most of the confusion around case-attributes is because of how we store case-attributes.  We don't have unique identifiers for case-attributes.
 
-# 2024-08-30
+## 2024-08-30
 
 * IN PROGRESS: @bmunyoki Replicate GN1 WIKI+RIF in GN2.
 * DONE: @bmunyoki and @alex help Alex deploy gn-guile code on tux02, run this in a tmux session.
@@ -112,11 +132,11 @@ SELECT * FROM CaseAttribute JOIN CaseAttributeXRef ON CaseAttribute.CaseAttribut
 * DONE: @flisso managed to upload <TODO> dataset to production
 
 
-## nice to haves
+### nice to haves
 
 * nice_to_have: @bmunyoki experiment and document updating gn-bioinformatics set up packages (to support rshiny)
 
-# 2024-08-23
+## 2024-08-23
 * @shelby re-ingest data and run RAGAs against the queries already in the system to perform comparison with new papers.
 * @shelby figure out Claude Sonnet stuff.
 * IN PROGRESS: @felix @fred push RQTL bundles to uploader, also includes metadata.
