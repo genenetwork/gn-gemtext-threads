@@ -35,6 +35,7 @@ This component involves creating a monitoring system to track the state of the e
 
 ## Deep Dive
 
+
 ### Running the External Script
 The RQTL implementation is in R, and we need a strategy for executing this script as an external process. This can be subdivided into several key steps:
 
@@ -64,8 +65,9 @@ This will involve:
 ## Additional UI Considerations
 We need to rethink where to output the external process logs in the UI. Currently, we can add flags to the URL to enable this functionality, e.g., `URL/page&flags&console=1`.
 Also the design suggestion is to out the results in a terminal emulator for
-example xterm
-See more: https://xtermjs.org/
+example xterm ,See more: https://xtermjs.org/, A current implementation already exists
+for gn3 see
+=> https://github.com/genenetwork/genenetwork2/blob/abe324888fc3942d4b3469ec8d1ce2c7dcbd8a93/gn2/wqflask/templates/wgcna_setup.html#L89
 
 ### Current Design Suggestions:
 #### With HTMX, offer a split screen
@@ -73,6 +75,8 @@ This will include an output page and a monitoring system page.
 
 #### Popup button for preview
 A button that allows users to preview and hide the console output.
+
+
 
 ## Long-Term Goals
 We aim to run computations on clusters rather than locally. This project will serve as a pioneer for that approach.
