@@ -63,6 +63,9 @@ This will involve:
 
 ## Additional UI Considerations
 We need to rethink where to output the external process logs in the UI. Currently, we can add flags to the URL to enable this functionality, e.g., `URL/page&flags&console=1`.
+Also the design suggestion is to out the results in a terminal emulator for
+example xterm
+See more: https://xtermjs.org/
 
 ### Current Design Suggestions:
 #### With HTMX, offer a split screen
