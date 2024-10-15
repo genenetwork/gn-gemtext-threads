@@ -18,11 +18,14 @@ The current RQTL implementation requires enhancements. The core functionality re
 
 ## High-Level Design
 This is divided into two major components:
-* Refactor the RQTL API
-* Implement a console view to track the external process
+* RQTL Api
 
-### Refactor the RQTL API
-This component involves rewriting the current API to replace file transfers between GN2 and GN3 with JSON data. We will also implement tests and enhance error handling.
+* Monitoring system for the rqtl script
+
+### RQTL Api 
+This component serves as the entry point to the gn3 rqtl system and  involves rewriting the current API to replace file transfers between GN2 and GN3 with JSON data.
+We will also implement tests and enhance error handling.
+
 
 **Subtasks:**
 
@@ -30,8 +33,11 @@ This component involves rewriting the current API to replace file transfers betw
 - [ ] Add unit tests for this module
 - [ ] Implement better error handling for the API
 
-### Implement a Console View to Track the External Process
+###  Monitoring system for the  rqtl script
+
 This component involves creating a monitoring system to track the state of the external process and output relevant information to the user.
+
+
 
 ## Deep Dive
 
