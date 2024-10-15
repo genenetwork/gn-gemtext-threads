@@ -1,0 +1,90 @@
+# RQTL Implementation for GeneNetwork Design Proposal
+
+## Tags
+
+* Assigned: alexm,
+* Keywords: RQTL, GeneNetwork2, Design
+* Type: Enhancements,
+* Status: In Progress
+
+
+
+## Description
+
+This document outlines the design proposal for the re-implementation of the RQTL feature in GeneNetwork providing also  a console view to track the external process.
+
+### Problem Definition
+The current RQTL implementation requires enhancements. The core functionality remains the same: making API calls from GeneNetwork 3 (GN3). The system needs a cleaner architecture for future use, emphasizing improved error handling and a clear separation of concerns between GeneNetwork 2 (GN2) and GN3. This will involve eliminating file transfers between GN2 and GN3. Additionally, a console should be provided to users for tracking the progress of ongoing tasks.
+
+## High-Level Design
+This is divided into two major components:
+* Refactor the RQTL API
+* Implement a console view to track the external process
+
+### Refactor the RQTL API
+This component involves rewriting the current API to replace file transfers between GN2 and GN3 with JSON data. We will also implement tests and enhance error handling.
+
+**Subtasks:**
+
+- [ ] Rewrite the RQTL API endpoints
+- [ ] Add unit tests for this module
+- [ ] Implement better error handling for the API
+
+### Implement a Console View to Track the External Process
+This component involves creating a monitoring system to track the state of the external process and output relevant information to the user.
+
+## Deep Dive
+
+### Running the External Script
+The RQTL implementation is in R, and we need a strategy for executing this script as an external process. This can be subdivided into several key steps:
+
+- **Task Queue Integration**: 
+  - We will utilize a task queue system (currently implemented in GN3) to manage script execution.
+
+- **Job Submission**: 
+  - Each API call will create a new job in the task queue, which will handle the execution of the R script.
+
+- **Script Execution**: 
+  - This stage involves executing the R script in a controlled environment, ensuring all necessary dependencies are loaded.
+
+- **Monitoring and Logging**: 
+  - The system will have monitoring tools to track the status of each job. Users will receive real-time updates on job progress and logs for the current task.
+
+- **Result Retrieval**: 
+  - Once the R script completes (either successfully or with an error), results will be returned to the API call.
+
+- **Error Handling**: 
+  - Better error handling will be implemented to manage potential issues during script execution. This includes capturing errors from the R script and providing meaningful feedback to users through the application.
+
+### Additional Error Handling Considerations
+This will involve:
+* API error handling
+* Error handling within the R script
+
+## Additional UI Considerations
+We need to rethink where to output the external process logs in the UI. Currently, we can add flags to the URL to enable this functionality, e.g., `URL/page&flags&console=1`.
+
+### Current Design Suggestions:
+#### With HTMX, offer a split screen
+This will include an output page and a monitoring system page.
+
+#### Popup button for preview
+A button that allows users to preview and hide the console output.
+
+## Long-Term Goals
+We aim to run computations on clusters rather than locally. This project will serve as a pioneer for that approach.
+
+## Related Issues
+=> https://issues.genenetwork.org/topics/lmms/rqtl2/using-rqtl2
+
+### Tasks
+- [ ] Rewrite the RQTL API endpoints
+- [ ] Add unit tests for this module
+- [ ] Implement state-of-the-art error handling
+- [ ] Make improvements to the current R script if possible
+- [ ] Task queue integration (refer to the Deep Dive section)
+- [ ] Implement a monitoring and logging system for job execution (refer to the deep dive section)
+- [ ] Fetch results from running jobs and display them to the user
+- [ ] Implement a console preview UI for user feedback
+- [ ] Refactor the GN2 UI
+- [ ] Run this computation on clusters    
