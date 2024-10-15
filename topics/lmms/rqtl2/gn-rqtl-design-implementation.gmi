@@ -23,15 +23,16 @@ This is divided into two major components:
 * Monitoring system for the rqtl script
 
 ### RQTL Api 
-This component serves as the entry point to the gn3 rqtl system and  involves
-rewriting the current API to replace file transfers between GN2 and GN3 with JSON data
-We will also implement tests and enhance error handling.
+This component serves as the entry point to the gn3 rqtl system and can be subdivided into
+data validation and preprocessing stage, data computation stage, output processing stage.
+In the component the task mainly   involves rewriting the current API to replace file transfers between GN2 and GN3 with JSON data We will also implement tests and enhance error handling.
 
 
 **Subtasks:**
 
 - [ ] Rewrite the RQTL API endpoints
-- [ ] add validation for data submitted by user
+- [ ] add validation and preprocessing  for data submitted from the 
+- [ ]  Processing output from  the external script
 - [ ] Add unit tests for this module
 - [ ] Implement better error handling for the API
 
@@ -93,14 +94,25 @@ We aim to run computations on clusters rather than locally. This project will se
 => https://issues.genenetwork.org/topics/lmms/rqtl2/using-rqtl2
 
 ### Tasks
-- [ ] Rewrite the RQTL API endpoints
-- [ ] Minor: validation for data from the client
-- [ ] Add unit tests for the rqtl api module
+* stage 1 * 
+
+- [ ] Implement  the RQTL API endpoints
+- [ ] validation  and preprocessing for data from the client
 - [ ] Implement state-of-the-art error handling
+- [ ] Add unit tests for the rqtl api module
 - [ ] Make improvements to the current R script if possible
+
+* stage 2 *
+
 - [ ] Task queue integration (refer to the Deep Dive section)
-- [ ] Implement a monitoring and logging system for job execution (refer to the deep dive section)
-- [ ] Fetch results from running jobs and display them to the user
+- [ ] Implement a monitoring and logging system for job execution (refer to the deep dive section
+- [ ] Fetch results from running jobs
+- [ ]  Processing output from  the external script
+
+* stage 3 *
 - [ ] Implement a console preview UI for user feedback
 - [ ] Refactor the GN2 UI
+
+* stage 4 *
+
 - [ ] Run this computation on clusters    
