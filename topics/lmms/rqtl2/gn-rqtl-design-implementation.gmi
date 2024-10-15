@@ -23,13 +23,15 @@ This is divided into two major components:
 * Monitoring system for the rqtl script
 
 ### RQTL Api 
-This component serves as the entry point to the gn3 rqtl system and  involves rewriting the current API to replace file transfers between GN2 and GN3 with JSON data.
+This component serves as the entry point to the gn3 rqtl system and  involves
+rewriting the current API to replace file transfers between GN2 and GN3 with JSON data
 We will also implement tests and enhance error handling.
 
 
 **Subtasks:**
 
 - [ ] Rewrite the RQTL API endpoints
+- [ ] add validation for data submitted by user
 - [ ] Add unit tests for this module
 - [ ] Implement better error handling for the API
 
@@ -92,7 +94,8 @@ We aim to run computations on clusters rather than locally. This project will se
 
 ### Tasks
 - [ ] Rewrite the RQTL API endpoints
-- [ ] Add unit tests for this module
+- [ ] Minor: validation for data from the client
+- [ ] Add unit tests for the rqtl api module
 - [ ] Implement state-of-the-art error handling
 - [ ] Make improvements to the current R script if possible
 - [ ] Task queue integration (refer to the Deep Dive section)
