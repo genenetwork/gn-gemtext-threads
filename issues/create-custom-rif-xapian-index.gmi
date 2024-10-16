@@ -1,0 +1,16 @@
+# Create Custom RIF XAPIAN Index
+
+## Tags
+
+* assigned: bonfacem
+* priority: medium
+* status: in-progress
+* deadline: 2024-10-18 Fri
+
+## Description
+
+Given the GN Wiki search page:
+
+=> https://cd.genenetwork.org/genewiki GeneWiki Entries Search
+
+We only search by symbol.  Add custom XAPIAN index to perform more powerful search.
