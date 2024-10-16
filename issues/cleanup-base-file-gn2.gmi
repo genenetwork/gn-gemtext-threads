@@ -5,7 +5,7 @@
 * Assigned: alexm
 * Keywords: base, HTML, JavaScript, cleanup
 * type: Refactoring
-* Status: In progress
+* Status: closed, completed, done 
 
 ## Description
 
@@ -13,9 +13,9 @@ The base file should contain no custom JavaScript since it is inherited in almos
 
 ## Tasks
 
-* [] Remove global search code from the base file and move it to the index page
-* [] Fix formatting and linting issues in the base file (e.g., tags)
-* []  Inherit from index page for all gn2 templates
+* [x] Remove global search code from the base file and move it to the index page
+* [x] Fix formatting and linting issues in the base file (e.g., tags)
+* [x]  Inherit from index page for all gn2 templates
 
 
 ## Notes
