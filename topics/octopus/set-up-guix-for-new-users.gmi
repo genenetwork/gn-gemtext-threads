@@ -17,6 +17,10 @@ But, you'd normally want to make this more convenient. So, add ~/.config/guix/cu
 GUIX_PROFILE=~/.config/guix/current
 . $GUIX_PROFILE/etc/profile
 ```
+Thereafter, you may run any guix command simply as
+```
+$ guix ...
+```
 
 ## Pulling from a different channels.scm
 
