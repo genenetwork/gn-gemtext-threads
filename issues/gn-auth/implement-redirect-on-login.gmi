@@ -5,7 +5,7 @@
 * assigned: alexm
 * priority: medium
 * status: in progress
-* keywords: gn-auth, auth, redirect, login, completed, closed
+* keywords: gn-auth, auth, redirect, login, completed, closed, done
 * type: feature-request
 
 ## Description
