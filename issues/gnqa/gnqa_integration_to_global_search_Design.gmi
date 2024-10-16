@@ -4,7 +4,7 @@
 * assigned: jnduli, alexm
 * keywords: llm, genenetwork2
 * type: feature
-* status: complete
+* status: complete, closed, done 
 
 ## Description
 This document outlines the design proposal for integrating GNQA into the Global Search feature.
