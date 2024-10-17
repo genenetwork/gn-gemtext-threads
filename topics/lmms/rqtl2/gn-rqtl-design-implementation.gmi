@@ -71,11 +71,13 @@ In this step, we need to retrieve the results outputted from the script in a spe
 
 **Subtasks:**
 
-- [ ] Rewrite the RQTL API endpoints
-- [ ] add validation and preprocessing  for data submitted from the 
-- [ ]  Processing output from  the external script
-- [ ] Add unit tests for this module
-- [ ] Implement better error handling for the API
+- [ ] add the rqtl api endpoint (10%)
+- [ ] Input Data validation (15%)
+- [ ] Input data  processing  (20%)
+- [ ] Passing data to r-script for the computation (40%)
+- [ ] output data processing  (80%)
+ -[ ] add unittests for this module (100%)
+
 
 ###  Monitoring system for the  rqtl script
 
