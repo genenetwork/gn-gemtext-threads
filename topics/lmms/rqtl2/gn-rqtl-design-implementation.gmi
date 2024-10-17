@@ -43,10 +43,22 @@ We will address these challenges and add  enhancements by:
 
 
 ## High-Level Design
-This is divided into two major components:
-* RQTL Api
+This is divided into three major components:
 
+* GN3 RQTL-2 Script implementation
+* RQTL Api
 * Monitoring system for the rqtl script
+
+
+### GN3 RQTL-2 Script implementation
+We currently have an rqtl script written in rqtl https://github.com/genenetwork/genenetwork3/blob/main/scripts/rqtl_wrapper.R
+There is a newer rqtl implementation (rqtl-2) which is
+a ) is a reimplementation of the QTL analysis software R/qtl, to better handle high-dimensional data and complex cross designs.
+To see the difference between the two:
+=> oWe aim to implement a seperate script using this while maintaining the  one
+eimplemented using rqtl1.
+(TODO) This probably needs to be split to a new issue(with enough knowledge) , to capture
+each computation step .
 
 ### RQTL Api
 
