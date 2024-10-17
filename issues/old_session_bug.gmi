@@ -2,7 +2,7 @@
 
 ## Tags
 
-* status: open
+* status: closed
 * priority: medium
 * type: bug
 * assigned: zsloan, fredm
