@@ -4,7 +4,7 @@
 
 * type: bug
 * priority: medium
-* status: open
+* status: closed
 * assigned: zsloan
 * keywords: bug, search
 
