@@ -82,7 +82,8 @@ In this step, we need to retrieve the results outputted from the script in a spe
 ###  Monitoring system for the  rqtl script
 
 This component involves creating a monitoring system to track the state of the external process and output relevant information to the user.
-
+We need a way to determine the status for the current job for example
+QUEUED, STARTED, INPROGRESS, COMPLETED
 
 
 ## Deep Dive
@@ -91,8 +92,13 @@ This component involves creating a monitoring system to track the state of the e
 ### Running the External Script
 The RQTL implementation is in R, and we need a strategy for executing this script as an external process. This can be subdivided into several key steps:
 
-- **Task Queue Integration**: 
-  - We will utilize a task queue system (currently implemented in GN3) to manage script execution.
+- **Task Queue Integration**:
+
+  - We will utilize a task queue system ,
+  We already have an implementation in gn3
+  to  manage script execution
+
+- https://github.com/genenetwork/genenetwork3/blob/0820295202c2fe747c05b93ce0f1c5a604442f69/gn3/commands.py#L101
 
 - **Job Submission**: 
   - Each API call will create a new job in the task queue, which will handle the execution of the R script.
