@@ -14,7 +14,30 @@
 This document outlines the design proposal for the re-implementation of the RQTL feature in GeneNetwork providing also  a console view to track the external process.
 
 ### Problem Definition
-The current RQTL implementation requires enhancements. The core functionality remains the same: making API calls from GeneNetwork 3 (GN3). The system needs a cleaner architecture for future use, emphasizing improved error handling and a clear separation of concerns between GeneNetwork 2 (GN2) and GN3. This will involve eliminating file transfers between GN2 and GN3. Additionally, a console should be provided to users for tracking the progress of ongoing tasks.
+
+The current RQTL implementation faces the following challenges:
+
+- Lack of adequate error handling for the API and scripts.
+
+- Insufficient separation of concerns between GN2 and GN3.
+
+- The system requires a cleaner architecture for future use.
+
+- lack way for user to track the progress of the r-qtl script being executed
+
+We will address these challenges and add  enhancements by:
+
+
+- Rewriting the R script using r-qtl2 instead of r-qtl.
+
+- Improving the overall design and architecture of the system.
+
+- Establishing clear separation of concerns between GN2 and GN3, eliminating file path transfers between the two.
+
+- Implementing better error handling for both the API and the RQTL script.
+
+- Piping stdout from the script to the browser through a console for real-time monitoring.
+
 
 ## High-Level Design
 This is divided into two major components:
