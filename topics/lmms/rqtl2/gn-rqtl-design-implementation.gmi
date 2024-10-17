@@ -1,4 +1,4 @@
-# RQTL Implementation for GeneNetwork Design Proposal
+># RQTL Implementation for GeneNetwork Design Proposal
 
 ## Tags
 
@@ -21,22 +21,25 @@ The current RQTL implementation faces the following challenges:
 
 - Insufficient separation of concerns between GN2 and GN3.
 
-- The system requires a cleaner architecture for future use.
-
 - lack way for user to track the progress of the r-qtl script being executed
+
+- There is lack of a clear way in which the r-qtl script is executed
 
 We will address these challenges and add  enhancements by:
 
-
 - Rewriting the R script using r-qtl2 instead of r-qtl.
-
-- Improving the overall design and architecture of the system.
 
 - Establishing clear separation of concerns between GN2 and GN3, eliminating file path transfers between the two.
 
 - Implementing better error handling for both the API and the RQTL script.
 
+- run the script as  a  job in a task queue
+
 - Piping stdout from the script to the browser through a console for real-time monitoring.
+
+- Improving the overall design and architecture of the system.
+
+-  The system requires a cleaner architecture for future use.
 
 
 ## High-Level Design
@@ -45,10 +48,25 @@ This is divided into two major components:
 
 * Monitoring system for the rqtl script
 
-### RQTL Api 
-This component serves as the entry point to the gn3 rqtl system and can be subdivided into
-data validation and preprocessing stage, data computation stage, output processing stage.
-In the component the task mainly   involves rewriting the current API to replace file transfers between GN2 and GN3 with JSON data We will also implement tests and enhance error handling.
+### RQTL Api
+
+
+This component will serve as the entry point for running RQTL in GN3. At this stage, we need to improve the overall architecture and error handling. This process will be divided into the following steps:
+
+-  Data Validation
+In this step, we must validate that all required data to run RQTL is provided in the JSON format. This includes the mapping method, genotype file, phenotype file, etc. Please refer to the r-qtl2 documentation for an overview on the requirements :
+=> https://rqtl.org/
+
+-  Data Preprocessing
+During this stage, we will transform the data into a format that R can understand. This includes converting boolean values to the appropriate representations, preparing the RQTL command with all required values, and adding defaults where necessary.
+
+-  Data Computation
+In this stage, we will pass the RQTL script command to the task queue to run as a job.
+
+-   Output Data Processing
+In this step, we need to retrieve the results outputted from the script in a specified format, such as JSON or CSV. This may include outputs like RQTL pair scans and generated diagrams. Please refer to the documentation for an overview:
+=> https://rqtl.org/
+
 
 
 **Subtasks:**
