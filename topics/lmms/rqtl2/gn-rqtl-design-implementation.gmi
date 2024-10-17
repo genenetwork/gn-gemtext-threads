@@ -107,7 +107,23 @@ The RQTL implementation is in R, and we need a strategy for executing this scrip
   - This stage involves executing the R script in a controlled environment, ensuring all necessary dependencies are loaded.
 
 - **Monitoring and Logging**: 
-  - The system will have monitoring tools to track the status of each job. Users will receive real-time updates on job progress and logs for the current task.
+
+- The system will include monitoring tools to track the status of each job. Users will receive real-time updates on job progress and logs for the current task.
+
+In this stage, we can have different states for the current job, such as QUEUED, IN PROGRESS, and COMPLETED. 
+
+We need to output to the user which stage of computation we are currently on during the script
+execution.
+
+- During the QUEUED state, the standard output (stdout) should display the  command being executed along with all its arguments. 
+
+- During the STARTED stage, the stdout should notify the user that execution has begun. 
+
+- In the IN PROGRESS stage, we need to fetch logs from the script being executed at each computation step. Please refer to this documentation for an overview of the different computation:
+=> https://rqtl.org/
+
+- During the DONE step, the system should output the results from the R/qtl script to the user.
+
 
 - **Result Retrieval**: 
   - Once the R script completes (either successfully or with an error), results will be returned to the API call.
