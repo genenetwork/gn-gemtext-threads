@@ -5,6 +5,7 @@
 * assigned: zsloan
 * priority: high
 * type: search
+* status: closed
 * keywords: xapian, gn2, gn3
 
 ## Description
