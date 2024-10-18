@@ -75,14 +75,14 @@ Copy over any configuration file changes from octopus01. Then, reload the new sy
 
 It is a lot of typing to run the same command on all worker nodes. You could make this a little less cumbersome with the following bash for loop.
 ```
-for node in octopus02 octopus03 octopus05 octopus06 octopus07 octopus08 octopus09 octopus10 octopus11 tux06 tux07 tux08 tux09;
+for node in octopus02 octopus03 octopus05 octopus06 octopus07 octopus08 octopus09 octopus10 octopus11 tux05 tux06 tux07 tux08 tux09;
 do
     ssh $node your command
 done
 ```
 You can even do this for sudo commands using the -S flag of sudo that makes it read the password from stdin. Assuming your password is in the pass password manager, the bash for loop would then look like:
 ```
-for node in octopus02 octopus03 octopus05 octopus06 octopus07 octopus08 octopus09 octopus10 octopus11 tux06 tux07 tux08 tux09;
+for node in octopus02 octopus03 octopus05 octopus06 octopus07 octopus08 octopus09 octopus10 octopus11 tux05 tux06 tux07 tux08 tux09;
 do
     pass octopus | ssh $node sudo -S your command
 done
