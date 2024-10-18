@@ -26,7 +26,7 @@ The last backup on 'tux02' is from October 2022 - after I did a reinstall. That 
 
 According to sheepdog the drops are happening to 'space' and 'epysode', but 'tux02' is missing:
 
-=> https://rabbit.genenetwork.org/sheepdog/index.html
+=> http://sheepdog.genenetwork.org/sheepdog/status.html
 
 ## Mariadb
 
