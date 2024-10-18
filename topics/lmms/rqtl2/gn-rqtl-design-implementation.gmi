@@ -11,7 +11,7 @@
 
 ## Description
 
-This document outlines the design proposal for the re-implementation of the RQTL feature in GeneNetwork providing also  a console view to track the external process.
+This document outlines the design proposal for the re-implementation of the RQTL feature in GeneNetwork providing also  a console view to track the  stdout from the external process.
 
 ### Problem Definition
 
@@ -39,7 +39,6 @@ We will address these challenges and add  enhancements by:
 
 - Improving the overall design and architecture of the system.
 
--  The system requires a cleaner architecture for future use.
 
 
 ## High-Level Design
@@ -53,12 +52,13 @@ This is divided into three major components:
 ### GN3 RQTL-2 Script implementation
 We currently have an rqtl script written in rqtl https://github.com/genenetwork/genenetwork3/blob/main/scripts/rqtl_wrapper.R
 There is a newer rqtl implementation (rqtl-2) which is
-a ) is a reimplementation of the QTL analysis software R/qtl, to better handle high-dimensional data and complex cross designs.
-To see the difference between the two:
-=> oWe aim to implement a seperate script using this while maintaining the  one
-eimplemented using rqtl1.
+a reimplementation of the QTL analysis software R/qtl, to better handle high-dimensional data and complex cross designs.
+To see the difference between the two see documentation:
+=> https://kbroman.org/qtl2/assets/vignettes/rqtl_diff.html
+We aim to implement a seperate script using this while maintaining the  one
+implemented using rqtl1 (rqtl) .
 (TODO) This probably needs to be split to a new issue(with enough knowledge) , to capture
-each computation step .
+each computation step  in the r script.
 
 ### RQTL Api
 
@@ -76,7 +76,7 @@ During this stage, we will transform the data into a format that R can understan
 In this stage, we will pass the RQTL script command to the task queue to run as a job.
 
 -   Output Data Processing
-In this step, we need to retrieve the results outputted from the script in a specified format, such as JSON or CSV. This may include outputs like RQTL pair scans and generated diagrams. Please refer to the documentation for an overview:
+In this step, we need to retrieve the results outputted from the script in a specified format, such as JSON or CSV and process the data. This may include outputs like RQTL pair scans and generated diagrams. Please refer to the documentation for an overview:
 => https://rqtl.org/
 
 
@@ -95,7 +95,7 @@ In this step, we need to retrieve the results outputted from the script in a spe
 
 This component involves creating a monitoring system to track the state of the external process and output relevant information to the user.
 We need a way to determine the status for the current job for example
-QUEUED, STARTED, INPROGRESS, COMPLETED
+QUEUED, STARTED, INPROGRESS, COMPLETED (see deep dive for more on this)
 
 
 ## Deep Dive
@@ -127,11 +127,12 @@ In this stage, we can have different states for the current job, such as QUEUED,
 We need to output to the user which stage of computation we are currently on during the script
 execution.
 
-- During the QUEUED state, the standard output (stdout) should display the  command being executed along with all its arguments. 
+- During the QUEUED state, the standard output (stdout) should display the  command to be executed along with all its arguments. 
 
 - During the STARTED stage, the stdout should notify the user that execution has begun. 
 
-- In the IN PROGRESS stage, we need to fetch logs from the script being executed at each computation step. Please refer to this documentation for an overview of the different computation:
+- In the IN PROGRESS stage, we need to fetch logs from the script being executed at each computation step. Please refer to this documentation for an overview of the different computations we
+shall have :
 => https://rqtl.org/
 
 - During the DONE step, the system should output the results from the R/qtl script to the user.
@@ -149,18 +150,20 @@ This will involve:
 * Error handling within the R script
 
 ## Additional UI Considerations
-We need to rethink where to output the external process logs in the UI. Currently, we can add flags to the URL to enable this functionality, e.g., `URL/page&flags&console=1`.
-Also the design suggestion is to out the results in a terminal emulator for
+We need to rethink where to output the external process stdout  in the UI. Currently, we can add flags to the URL to enable this functionality, e.g., `URL/page&flags&console=1`.
+Also the design suggestion is to output the results in a terminal emulator for
 example xterm ,See more: https://xtermjs.org/, A current implementation already exists
 for gn3 see
 => https://github.com/genenetwork/genenetwork2/blob/abe324888fc3942d4b3469ec8d1ce2c7dcbd8a93/gn2/wqflask/templates/wgcna_setup.html#L89
 
-### Current Design Suggestions:
+###  Design Suggestions:
 #### With HTMX, offer a split screen
 This will include an output page and a monitoring system page.
 
 #### Popup button for preview
 A button that allows users to preview and hide the console output.
+
+
 
 
 
@@ -171,7 +174,11 @@ We aim to run computations on clusters rather than locally. This project will se
 => https://issues.genenetwork.org/topics/lmms/rqtl2/using-rqtl2
 
 ### Tasks
-* stage 1 * 
+
+* stage 1  (20%) * 
+ - [ ] implement the rqtl script using rqtl2
+ 
+* stage 2  (40%) * 
 
 - [ ] Implement  the RQTL API endpoints
 - [ ] validation  and preprocessing for data from the client
@@ -179,17 +186,17 @@ We aim to run computations on clusters rather than locally. This project will se
 - [ ] Add unit tests for the rqtl api module
 - [ ] Make improvements to the current R script if possible
 
-* stage 2 *
+* stage 3  (60%)*
 
 - [ ] Task queue integration (refer to the Deep Dive section)
 - [ ] Implement a monitoring and logging system for job execution (refer to the deep dive section
 - [ ] Fetch results from running jobs
 - [ ]  Processing output from  the external script
 
-* stage 3 *
+* stage 4  (80%) *
 - [ ] Implement a console preview UI for user feedback
 - [ ] Refactor the GN2 UI
 
-* stage 4 *
+* stage 5  (100%) * 
 
 - [ ] Run this computation on clusters    
