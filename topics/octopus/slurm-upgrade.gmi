@@ -14,7 +14,7 @@ slurm can only be upgraded safely in small version increments. For example, it i
 
 Stop the slurmdbd, slurmctld and slurmd services.
 ```
-# systemctl stop slurmdbd slurmctld slurmd
+# systemctl stop slurmdbd slurmctld slurmd slurmrestd
 ```
 Backup the slurm StateSaveLocation (/var/spool/slurmd/ctld in our case) and the slurm configuration directory.
 ```
@@ -50,6 +50,7 @@ Reload the new systemd configuration files. Then, start the slurmdbd, slurmctld 
 # systemctl start slurmdbd
 # systemctl start slurmctld
 # systemctl start slurmd
+# systemctl start slurmrestd
 ```
 
 ## Upgrade slurm on the worker nodes
