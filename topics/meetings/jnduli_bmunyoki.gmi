@@ -1,21 +1,38 @@
 # Meeting Notes
 
-## 2024-10-11
-* @priscilla @flisso: Try out API endpoints that don't require auth.
-* @jnduli Harden hook system for gn-auth.
+## 2024-10-18
+* @priscilla @flisso: Set up mariadb and virtuoso to test out some GN3 endpoints.
+* @priscilla @flisso @bmunyoki: Improve docs while hacking on the above.
 * @jnduli Remove gn-auth code from GN3.
-* @jnduli @bonfacem Finish up RIF Editing project.
-* @jnduli @alexm Create issue on describing the monitoring system.
-* @jnduli @alexm Create issue on prompt engineering in GN to improve what we already have.
-* @alex Work on R/Qtl.  NOTE: @jnduli/@bonfacem help out with this.
-* @alex: Review @bmunyoki's work on RIF/Indexing.
-* @flisso: Make sure we have C Elegans dataset and MIKK genotypes to production.
-* @flisso: Make sure we have HS Rats in testing stage.
-* @flisso: Make progress in learning back-end coding WRT GN.
+* @jnduli Resolve current issue with broken auth in gn-qa.
+* @jnduli @alexm Work on the R/Qtl design doc.
+* @flisso MIKK genotyping.
+* @flisso Make sure we have C Elegans and HS Rats dataset to testing, and have the genotyping pipeline working.
 * @shelbys: Modify existing Grant write-up for pangenomes.
-* @shelbys: Finish getting all the R2R scores from the first study.
+* @shelbys @bonfacem: Getting RDF into R2R.
 * @bonfacem RIF Indexing for RIF page in Xapian.
 * @bonfacem Work on properly containerizing gn-guile.
+
+## 2024-10-11
+* WIP @priscilla @flisso: Try out API endpoints that don't require auth.  NOTE: Priscilla got to set-up guix channels for gn3.  Felix ran into problems.  Priscilla set up the MySQL in her Ubuntu system.
+* NOT DONE: @jnduli Harden hook system for gn-auth.
+* WIP: @jnduli Remove gn-auth code from GN3.  NOTE: Sent latest patches to Fred.  Running issue, some patches may have caused gn-qa to fail.
+* DONE: @jnduli @bonfacem Finish up RIF Editing project.
+* NOT DONE: @jnduli @alexm Create issue on describing the monitoring system. 
+* NOT DONE: @jnduli @alexm Create issue on prompt engineering in GN to improve what we already have.
+* WIP: @alex Work on R/Qtl.  NOTE: @jnduli/@bonfacem help out with this.  NOTE: Finished writing the design doc for gn-qa.
+* DONE: Looked at documentation for R/Qtl.
+* NOT DONE: @alex: Review @bmunyoki's work on RIF/Indexing.
+* WIP: @flisso: Make sure we have C Elegans dataset and MIKK genotypes to production.   NOTE: Issues with data entry scripts.  Fred/Zach working to set up test environment.
+* WIP: @flisso: MIKK genotyping.  NOTE: Still testing the pipeline.  Halfway there.
+* NOT DONE: @flisso: Make sure we have HS Rats in testing stage.
+* WIP: @flisso: Make progress in learning back-end coding WRT GN.  NOTE: Issue setting up GN3.
+* WIP: @shelbys: Modify existing Grant write-up for pangenomes.  NOTE: Reviewed by Pj and Eric.  More mods based of feedback.  Paper got accepted by BioArxiv.  Added some docs to R2R evaluation code.
+* DONE: @shelbys: Finish getting all the R2R scores from the first study. NOTE: Got scores for all the scores from first papers using R2R instead of Fahamu.
+* NOT DONE: @bonfacem RIF Indexing for RIF page in Xapian.
+* WIP: @bonfacem Work on properly containerizing gn-guile.
+* DONE: @bonfacem Fix the gn-transform-database in CI.  Sent patches to Arun for review.
+* DONE: @bonfacem Fixed broken utf-8 characters in gn-gemtext.
 
 ## 2024-10-04
 * IN PROGRESS: @priscilla @bonfacem Setting up GN3.  @priscilla try out API endpoints that don't require auth. NOTE: @priscilla Able to set up guix as a package manager.  Trouble with Guix set-up with GN3.  @bonfacem good opportunity to improve docs in GN3.
