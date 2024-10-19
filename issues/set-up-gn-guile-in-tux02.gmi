@@ -5,7 +5,7 @@
 * assigned: bonfacem
 * priority: high
 * status: in-progress
-* deadline: 2024-10-18 Fri
+* deadline: 2024-10-22 Tue
 
 ## Tasks
 
