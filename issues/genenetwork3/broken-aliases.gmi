@@ -7,14 +7,21 @@
 * priority: high
 * assigned: fredm
 * interested: pjotrp
-* keywords: gn3, genenetwork3, aliases, aliases server
+* keywords: aliases, aliases server
 
-## Reproduce
+
+## Repository
+
+=> https://github.com/genenetwork/gn3
+
+## Bug Report
+
+### Actual
 
 * Go to https://genenetwork.org/gn3/gene/aliases2/Shh,Brca2
 * Not that an exception is raised, with a "404 Not Found" message
 
-## Expected
+### Expected
 
 * We expected a list of aliases to be returned for the given symbols as is done in https://fallback.genenetwork.org/gn3/gene/aliases2/Shh,Brca2
 
