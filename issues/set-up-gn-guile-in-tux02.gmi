@@ -5,11 +5,11 @@
 * assigned: bonfacem
 * priority: high
 * status: in-progress
-* deadline: 2024-10-22 Tue
+* deadline: 2024-10-23 Wed
 
 ## Tasks
 
-* [ ] Create gn-guile container.
+* [-] Create gn-guile container.
 * [X] Merge gn2 UI PR.
 => https://github.com/genenetwork/genenetwork2/pull/854 Feature/gn editor UI
-* [ ] Test out auth editing in CD.
+* [-] Test out auth editing in CD.
