@@ -1,0 +1,8 @@
+# Replace Neo4J with Virtuoso
+
+## Tags
+
+* assigned: bonfacem, soloshelby
+* deadline: 2024-10-25 Fri
+
+Currently, the RAG ingests TTL files into Neo4J.  Replace this with Virtuoso.
