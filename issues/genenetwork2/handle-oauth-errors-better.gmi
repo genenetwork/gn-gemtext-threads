@@ -1,0 +1,17 @@
+# Handle OAuth Errors Better
+
+## Tags
+
+* type: bug
+* status: open
+* priority: high
+* assigned: fredm
+* interested: zachs, robw
+* keywords: gn2, genenetwork2, ui, user interface, oauth, oauth errors
+
+## Description
+
+When a session expires, for whatever reason, a notification is displayed to the user as shown in the image below:
+=> ./session_expiry_oauth_error.png
+
+The message is a little jarring to the end user. Make it gentler, and probably more informative, so the user is not as surprised.
