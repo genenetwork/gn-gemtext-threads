@@ -62,10 +62,10 @@ This service is to be used for uploading data to GeneNetwork. It is currently in
 #### Links
 
 => https://git.genenetwork.org/gn-uploader/ Repository
-* ??? gn-auth on production
-* ??? gn-auth on old production
-* ??? gn-auth on CI/CD
-=> https://staging-uploader.genenetwork.org/ gn-auth on staging
+* ??? gn-uploader on production
+* ??? gn-uploader on old production
+* ??? gn-uploader on CI/CD
+=> https://staging-uploader.genenetwork.org/ gn-uploader on staging
 
 ### Aliases Server
 
