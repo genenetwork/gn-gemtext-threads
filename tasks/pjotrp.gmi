@@ -12,21 +12,29 @@ The tasks here should probably be broken out into appropriately tagged issues, w
 
 => https://issues.genenetwork.org
 
+Generally work applies to NIH/R073237482 and other grants.
+
 # Current
 
 ## Systems
 
-- [X] mount NFS bacchus on octopus
-- [ ] drop tux02 backups on balg01
-- [ ] reintroduce borg-borg
+* [ ] make sure production is up to scratch
+* [ ] backup tux04
+* [ ] add drives to Octopus 1U01HG013760
+* [ ] add Ceph for distributed network storage 1U01HG013760
+* [ ] drop tux02 backups on balg01
+* [ ] reintroduce borg-borg
 
 ## Ongoing tasks (current/urgent)
 
 * [ ] Precompute
 * [+] Set up stable GeneNetwork server instance with new hardware (see below)
 => /topics/systems/fire-up-genenetwork-system-container.gmi
+* [ ] Check email setup tux04
 * [+] Julia as part of GN3 deployment
 => /topics/deploy/julia.gmi
+* [ ] Work on pangenome genotyping 1U01HG013760
+* [+] Moni builds 1U01HG013760
 
 # Tasks
 
@@ -61,7 +69,7 @@ Longer term
 
 Later
 
-* [ ] Mempang25
+* [ ] Mempang25 1U01HG013760
   + [ ] Invites
   + [ ] Payments
   + [ ] Rooms
@@ -94,6 +102,7 @@ Later
 
 ### Done
 
+* [X] mount NFS bacchus on octopus
 * [X] Guix project server
 * [X] Build junior team
 * [X] Complete Octopus setup with Erik, Andrea and Efraim - adding all machines
