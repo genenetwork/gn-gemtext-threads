@@ -5,7 +5,7 @@
 * type: documentation
 * keywords: documentation, docs, doc, services, genenetwork services
 
-## GeneNetwork Services
+## GeneNetwork Core Services
 
 GeneNetwork is composed of a number of different services. This document attempts to document all the services that make up GeneNetwork and document what links give access to the services.
 
@@ -80,3 +80,22 @@ This is currently a project in racket, but we should probably pull in the featur
 => https://fallback.genenetwork.org/facilities/ markdown-editing-server on old production
 => https://cd.genenetwork.org/facilities/ markdown-editing-server on CI/CD
 => https://staging.genenetwork.org/facilities/ markdown-editing-server on staging
+
+## Support Services
+
+These are other services that support the development and maintenance of the core services.
+
+### Issue Tracker
+
+We use a text-based issue tracker that is accessible via
+=> https://issues.genenetwork.org/
+
+The repository for this service is at
+=> https://github.com/genenetwork/gn-gemtext-threads/
+
+### Repositories Server
+
+This is where a lot of the genenetwork repositories live. You can access it at
+=> https://git.genenetwork.org/
+
+### …
