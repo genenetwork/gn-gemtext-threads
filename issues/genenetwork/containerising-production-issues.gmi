@@ -23,4 +23,5 @@ The link above documents the various services that make up the GeneNetwork servi
 
 ## Issues
 
-=> ./markdown-editing-service-not-deployed.gmi
+=> ./markdown-editing-service-not-deployed
+=> ./umhet3-samples-timing-slow
