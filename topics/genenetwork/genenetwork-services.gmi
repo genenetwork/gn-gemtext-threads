@@ -33,6 +33,16 @@ This is the main API server for GeneNetwork.
 => https://cd.genenetwork.org/api3/ GN3 on CI/CD
 => https://staging.genenetwork.org/api3/ GN3 on staging
 
+### Sparql Service
+
+#### Links
+
+=> https://github.com/genenetwork/genenetwork3 Repository
+=> https://sparql.genenetwork.org/sparql/ sparql-service on production
+=> ??? sparql-service on old production
+=> ??? sparql-service on CI/CD
+=> ??? sparql-service on staging
+
 ### GN-Auth
 
 This is the authorisation server for the GeneNetwork system.
