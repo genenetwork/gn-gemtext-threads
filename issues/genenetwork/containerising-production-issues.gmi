@@ -23,5 +23,7 @@ The link above documents the various services that make up the GeneNetwork servi
 
 ## Issues
 
+* [ ] Move user directories to a large partition
+* [ ] Link TMPDIR in container to a directory on a large partition
 => ./markdown-editing-service-not-deployed
 => ./umhet3-samples-timing-slow
