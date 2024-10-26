@@ -1,0 +1,26 @@
+# Containerising Production: Issues
+
+## Tags
+
+* type: bug
+* status: open
+* assigned: fredm
+* priority: critical
+* keywords: production, container, tux04
+* interested: alexk, aruni, bonfacem, fredm, pjotrp, soloshelby, zsloan, jnduli
+
+## Description
+
+We have recently got production into a container and deployed it: It has come up, however, that there are services that are useful to get a full-featured GeneNetwork system running that are not part of the container.
+
+This is, therefore, a meta-issue, tracking all issues that relate to the deployment of the disparate services that make up GeneNetwork.
+
+## Documentation
+
+=> https://issues.genenetwork.org/topics/genenetwork/genenetwork-services
+
+The link above documents the various services that make up the GeneNetwork service.
+
+## Issues
+
+=> ./markdown-editing-service-not-deployed.gmi
