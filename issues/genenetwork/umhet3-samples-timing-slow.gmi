@@ -13,6 +13,7 @@
 
 In email from @robw:
 
+```
 > >    Not sure why. Am I testing the wrong way?
 > >    Are we using memory and RAM in the same way on the two machines?
 > >    Here are data on the loading time improvement for Tux2:
@@ -66,5 +67,6 @@ In email from @robw:
 > >    on Tux02
 >
 > Fred, take a note.
+```
 
 Figure out what this is about and fix it.
