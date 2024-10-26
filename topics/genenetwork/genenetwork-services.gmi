@@ -108,4 +108,10 @@ The repository for this service is at
 This is where a lot of the genenetwork repositories live. You can access it at
 => https://git.genenetwork.org/
 
+### Continuous Integration Service
+
+…
+
+=> https://ci.genenetwork.org/
+
 ### …
