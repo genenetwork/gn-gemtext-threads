@@ -33,3 +33,5 @@ What to now?
 * Support for AVX (?)
 * Possibility to drop to low level C programming (?+prescheme+C?)
 * High level -- PN -- glue (?+Guile?)
+
+Current candidates for ? are Nim and Rust. Neither has a really nice matrix interface - though Nim's is probably what I prefer and it is close to python. Chicken may work too when I get fed with mentioned two languages.
