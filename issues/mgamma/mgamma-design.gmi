@@ -7,3 +7,18 @@ We have a lot of experience running and hacking the GEMMA tool in GeneNetwork.or
 GEMMA proves to give great GWA results and has a decent speed for a single threaded implementation - even though the matrix calls to openblas use multiple threads. The source code base of GEMMA, however, proves hard to build on. This is why we are creating a next generation tool that has a focus on *performance and hackability*.
 
 After several attempts using R, D, Julia, python, Ruby we have in 2023 settled on Guile+C+Zig. Guile provides a REPL and great hackabability. C+Zig we'll use for performance. The other languages are all great, but we think we can work faster in this setup.
+
+Well, it is the end of 2024 and we have ditched that effort. Who said life was easy! The guile interface proved problematic - and Zig went out of favour because of its bootstrap story which prevents it becoming part of Guix, Debian etc. Also I discovered new tensor MPUs support f64 - so we may want to support vector and matrix computations on these cores.
+
+To write a gemma replacement I am now favouring to chunk up existing gemma and make sure its components can talk with alternative implementations. We may use a propagated network approach. Critical is to keep the data in RAM, so it may need some message passing interface with memory that can be shared. The chunking into CELLs (read propagator network PN) is a requirement because we kept tripping over state in GEMMA. So a PN should make sure we can run two implementations of the same CELL and compare outcomes for testing. Also it will allow us to test AVX, tensor and (say) MKL or CUDA implementations down the line. Also it should allow us to start using new functionality on GN faster. It would also be fun to have an implementation run on the RISC-V manycore.
+
+So, what do we want out of our languages:
+
+* Nice matrix interface (Julia)
+* Support for AVX (Julia)
+* Possibility to drop to low level C programming (Julia+prescheme+C?)
+* High level -- PN -- glue (Julia+Guile?)
+
+Julia looks like a great candidate, even though it has notable downsides including the big 'server' blob deployment and the garbage collector (the latter also being a strength, mind). Alternatives could be Rust and Prescheme which have no such concerns, but lack the nice matrix notation.
+
+The approach will be to start with Julia and reimplementing GEMMA functions so they can be called from Julia and/or guile.
