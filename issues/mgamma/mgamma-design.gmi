@@ -22,3 +22,5 @@ So, what do we want out of our languages:
 Julia looks like a great candidate, even though it has notable downsides including the big 'server' blob deployment and the garbage collector (the latter also being a strength, mind). Alternatives could be Rust and Prescheme which have no such concerns, but lack the nice matrix notation.
 
 The approach will be to start with Julia and reimplementing GEMMA functions so they can be called from Julia and/or guile.
+
+Oh, I just found out that Julia, like zig, is no longer up-to-date on Debian. And the Guix version is 2 years old. That is really bad. If these languages don't get supported on major distros it is a dead end!
