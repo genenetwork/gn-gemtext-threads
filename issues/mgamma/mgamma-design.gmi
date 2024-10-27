@@ -24,3 +24,12 @@ Julia looks like a great candidate, even though it has notable downsides includi
 The approach will be to start with Julia and reimplementing GEMMA functions so they can be called from Julia and/or guile.
 
 Oh, I just found out that Julia, like zig, is no longer up-to-date on Debian. And the Guix version is 2 years old. That is really bad. If these languages don't get supported on major distros it is a dead end!
+
+=> https://mastodon.social/@pjotrprins/113379842047170785
+
+What to now?
+
+* Nice matrix interface (?)
+* Support for AVX (?)
+* Possibility to drop to low level C programming (?+prescheme+C?)
+* High level -- PN -- glue (?+Guile?)
