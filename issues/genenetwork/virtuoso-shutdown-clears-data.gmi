@@ -23,3 +23,7 @@ The bulk loader also disables checkpointing and the scheduler, which also need t
 ```
 
 That needs to be handled.
+
+## Fixes
+
+=> https://github.com/genenetwork/gn-gemtext-threads/commit/8211c1e49498ba2f3b578ed5b11b15c52299aa08 Document how to restart checkpointing and the scheduler after bulk loading
