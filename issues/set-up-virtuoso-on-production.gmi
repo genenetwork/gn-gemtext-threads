@@ -77,6 +77,8 @@ SQL> DELETE FROM rdf_quad WHERE g = iri_to_id('http://genenetwork.org');
 SQL> ld_dir('/var/lib/virtuoso', '*.ttl', 'http://genenetwork.org');
 SQL> rdf_loader_run();
 SQL> CHECKPOINT;
+SQL> checkpoint_interval(60);
+SQL> scheduler_interval(10);
 ```
 * Verify you have some RDF data by running:
 
