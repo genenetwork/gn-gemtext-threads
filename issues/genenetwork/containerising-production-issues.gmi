@@ -27,3 +27,4 @@ The link above documents the various services that make up the GeneNetwork servi
 * [ ] Link TMPDIR in container to a directory on a large partition
 => ./markdown-editing-service-not-deployed
 => ./umhet3-samples-timing-slow
+=> ./setup-mailing-on-tux04 [ ] Setting up email service on Tux04
