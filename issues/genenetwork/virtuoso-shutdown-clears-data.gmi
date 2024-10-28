@@ -1,0 +1,25 @@
+# Virtuoso: Shutdown Clears Data
+
+## Tags
+
+* type: bug
+* status: open
+* assigned: fredm
+* priority: critical
+* interested: bonfacem, pjotrp, zsloan
+* keywords: production, container, tux04, virtuoso
+
+## Description
+
+It seems that virtuoso has the bad habit of clearing data whenever it is stopped/restarted.
+
+This issue will track the work necessary to get the service behaving correctly.
+
+According to the documentation on
+=> https://vos.openlinksw.com/owiki/wiki/VOS/VirtBulkRDFLoader the bulk loading process
+
+```
+The bulk loader also disables checkpointing and the scheduler, which also need to be re-enabled post bulk load
+```
+
+That needs to be handled.
