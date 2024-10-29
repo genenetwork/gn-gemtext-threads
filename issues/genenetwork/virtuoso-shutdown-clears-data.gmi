@@ -93,3 +93,5 @@ We see that there are multiple db files, each created when virtuoso was restarte
 ## Fixes
 
 => https://github.com/genenetwork/gn-gemtext-threads/commit/8211c1e49498ba2f3b578ed5b11b15c52299aa08 Document how to restart checkpointing and the scheduler after bulk loading
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=2dc335ca84ea7f26c6977e6b432f3420b113f0aa Add configs for scheduler and checkpointing
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=7d793603189f9d41c8ee87f8bb4c876440a1fce2 Set up virtuoso database configurations
