@@ -3,9 +3,9 @@
 ## Tags
 
 * type: bug
-* status: open
 * assigned: fredm
 * priority: critical
+* status: closed, completed
 * interested: bonfacem, pjotrp, zsloan
 * keywords: production, container, tux04, virtuoso
 
@@ -95,3 +95,4 @@ We see that there are multiple db files, each created when virtuoso was restarte
 => https://github.com/genenetwork/gn-gemtext-threads/commit/8211c1e49498ba2f3b578ed5b11b15c52299aa08 Document how to restart checkpointing and the scheduler after bulk loading
 => https://git.genenetwork.org/guix-bioinformatics/commit/?id=2dc335ca84ea7f26c6977e6b432f3420b113f0aa Add configs for scheduler and checkpointing
 => https://git.genenetwork.org/guix-bioinformatics/commit/?id=7d793603189f9d41c8ee87f8bb4c876440a1fce2 Set up virtuoso database configurations
+=> https://git.genenetwork.org/gn-machines/commit/?id=46a1c4c8d01198799e6ac3b99998dca40d2c7094 Explicitly name virtuoso database files.
