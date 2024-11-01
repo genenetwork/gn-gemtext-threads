@@ -3,9 +3,9 @@
 ## Tags
 
 * type: bug
-* status: open
 * assigned: fredm
 * priority: critical
+* status: closed, completed
 * keywords: production, container, tux04
 * interested: alexk, aruni, bonfacem, fredm, pjotrp, zsloan
 
@@ -14,4 +14,11 @@
 The Markdown Editing service is not working on production.
 
 * Link: https://genenetwork.org/facilities/
-* Repository: ???
+* Repository: https://git.genenetwork.org/gn-guile
+
+Currently, the code is being run directly on the host, rather than inside the container.
+
+Some important things to note:
+
+* The service requires access to a checkout of https://github.com/genenetwork/gn-docs
+* Currently, the service is hard-coded to use a specific port: we should probably fix that.
