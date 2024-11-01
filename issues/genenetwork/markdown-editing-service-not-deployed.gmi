@@ -3,9 +3,9 @@
 ## Tags
 
 * type: bug
+* status: open
 * assigned: fredm
 * priority: critical
-* status: closed, completed
 * keywords: production, container, tux04
 * interested: alexk, aruni, bonfacem, fredm, pjotrp, zsloan
 
@@ -22,3 +22,9 @@ Some important things to note:
 
 * The service requires access to a checkout of https://github.com/genenetwork/gn-docs
 * Currently, the service is hard-coded to use a specific port: we should probably fix that.
+
+## Reopened: 2024-11-01
+
+While the service was deployed, the edit functionality is not working right, specifically, pushing the edits upstream to the remote seems to fail.
+
+If you do an edit and refresh the page, it will show up in the system, but it will not proceed to be pushed up to the remote.
