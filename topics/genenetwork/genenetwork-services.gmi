@@ -85,7 +85,7 @@ This is currently a project in racket, but we should probably pull in the featur
 
 #### Links
 
-* ??? Repository
+=> https://git.genenetwork.org/gn-guile/ Repository
 => https://genenetwork.org/facilities/ markdown-editing-server on production
 => https://fallback.genenetwork.org/facilities/ markdown-editing-server on old production
 => https://cd.genenetwork.org/facilities/ markdown-editing-server on CI/CD
