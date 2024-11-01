@@ -35,6 +35,11 @@ This is the main API server for GeneNetwork.
 
 ### Sparql Service
 
+The SparQL service is served from a Virtuoso-OSE service.
+
+=> https://issues.genenetwork.org/topics/deploy/our-virtuoso-instances We have notes on our virtuoso instances here.
+
+
 #### Links
 
 => https://github.com/genenetwork/genenetwork3 Repository
