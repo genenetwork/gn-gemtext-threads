@@ -1,0 +1,27 @@
+# Python Requests Error in Container
+
+## Tags
+
+* type: bug
+* status: open
+* assigned: fredm
+* priority: critical
+* interested: alexk, aruni, bonfacem, pjotrp, zsloan
+* keywords: production, container, tux04, python, requests
+
+## Description
+
+Building the container with the
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=eb7beb340a9731775e8ad177e47b70dba2f2a84f upgraded guix definition
+leads to python's requests library failing.
+
+```
+2024-10-30 16:04:13 OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/ssl/certs/ca-certificates.crt
+```
+
+If you login to the container itself, however, you find that the file `/etc/ssl/certs/ca-certificates.crt` actually exists and has content.
+
+Possible fixes suggested are to set up correct envvars for the requests library, such as `REQUESTS_CA_BUNDLE`
+
+See
+=> https://requests.readthedocs.io/en/latest/user/advanced/#ssl-cert-verification
