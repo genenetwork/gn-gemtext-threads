@@ -28,3 +28,7 @@ Some important things to note:
 While the service was deployed, the edit functionality is not working right, specifically, pushing the edits upstream to the remote seems to fail.
 
 If you do an edit and refresh the page, it will show up in the system, but it will not proceed to be pushed up to the remote.
+
+Set `CGIT_REPO_PATH="https://git.genenetwork.org/gn-guile"` which seems to allow the commit to work, but we do not actually get the changes pushed to the remote in any useful sense.
+
+It seems to me, that we need to configure the environment in such a way that it will be able to push the changes to remote.
