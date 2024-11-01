@@ -29,3 +29,4 @@ The link above documents the various services that make up the GeneNetwork servi
 => ./umhet3-samples-timing-slow [ ] Figure out and fix UM-HET3 Samples mappings on Tux04
 => ./setup-mailing-on-tux04 [x] Setting up email service on Tux04
 => ./virtuoso-shutdown-clears-data [x] Virtuoso seems to lose data on restart
+=> ./handle-tmp-dirs-in-container [ ] Handle temporary directories in the container

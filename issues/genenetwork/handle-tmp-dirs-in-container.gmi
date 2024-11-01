@@ -1,0 +1,18 @@
+# Handle Temporary Directories in the Container
+
+## Tags
+
+* status: open
+* type: feature
+* assigned: fredm
+* priority: critical
+* keywords: production, container, tux04
+* interested: alexk, aruni, bonfacem, pjotrp, zsloan
+
+## Description
+
+The container's temporary directories should be in a large partition on the host to avoid a scenario where the writes fill up one of the smaller drives.
+
+Currently, we use the `/tmp` directory by default, but we should look into transitioning away from that — `/tmp` is world readable and world writable and therefore needs careful consideration to keep safe.
+
+Thankfully, we are running our systems within a container, and can bind the container's `/tmp` directory to a non-world-accessible directory, keeping things at least contained.
