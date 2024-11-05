@@ -166,3 +166,9 @@ Adding nss-certs and setting the `REQUESTS_CA_BUNDLE` fixes things. We'll need t
 
 ### Fixes
 
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=fec68c4ca87eeca4eb9e69e71fc27e0eae4dd728
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=c3bb784c8c70857904ef97ecd7d36ec98772413d
+The two commits above add nss-certs package to all the flask apps, which make use of the python-requests library, which requires a valid CA certificates bundle in each application's environment.
+
+=> https://git.genenetwork.org/gn-machines/commit/?h=production-container&id=04506c4496e5ca8b3bc38e28ed70945a145fb036
+The commit above defines the "REQUESTS_CA_BUNDLE" environment variable for all the flask applications that make use of python's requests library.

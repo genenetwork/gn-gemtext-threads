@@ -3,9 +3,9 @@
 ## Tags
 
 * type: bug
-* status: open
 * assigned: fredm
 * priority: critical
+* status: closed, completed
 * keywords: production, container, tux04
 * interested: alexk, aruni, bonfacem, fredm, pjotrp, soloshelby, zsloan, jnduli
 
@@ -29,5 +29,5 @@ The link above documents the various services that make up the GeneNetwork servi
 => ./umhet3-samples-timing-slow [ ] Figure out and fix UM-HET3 Samples mappings on Tux04
 => ./setup-mailing-on-tux04 [x] Setting up email service on Tux04
 => ./virtuoso-shutdown-clears-data [x] Virtuoso seems to lose data on restart
-=> ./python-requests-error-in-container [ ] Fix python's requests library certificates error
+=> ./python-requests-error-in-container [x] Fix python's requests library certificates error
 => ./cannot-connect-to-mariadb [ ] GN3 cannot connect to mariadb server
