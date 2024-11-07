@@ -3,9 +3,9 @@
 ## Tags
 
 * type: bug
-* status: open
 * assigned: fredm
 * priority: critical
+* status: closed, completed, fixed
 * interested: alexk, aruni, bonfacem, pjotrp, zsloan
 * keywords: production, container, tux04, python, requests
 
