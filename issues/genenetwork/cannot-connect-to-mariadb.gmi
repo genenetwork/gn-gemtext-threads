@@ -27,7 +27,9 @@ GeneNetwork3 is failing to connect to mariadb with the error:
 
 We have previously defined the default socket file[^1][^2] as "/run/mysqld/mysqld.sock".
 
-### Troubleshooting Log
+## Troubleshooting Logs
+
+### 2024-11-05
 
 I attempted to just bind `/run/mysqld/mysqld.sock` to `/tmp/mysql.sock` by adding the following mapping in GN3's `gunicorn-app` definition:
 
@@ -68,9 +70,30 @@ I tried:
 
 but that did not work either.
 
+### 2024-11-07
+
+Start digging into how GNU Guix services are defined[^5] to try and understand why the file mapping attempt did not work.
+
+=> http://git.savannah.gnu.org/cgit/guix.git/tree/gnu/system/file-systems.scm?id=2394a7f5fbf60dd6adc0a870366adb57166b6d8b#n575
+Looking at the code linked above specifically at lines 575 to 588, and 166, it seems, to me, that the mappings attempt should have worked.
+
+Try it again, taking care to verify that the paths are correct, with:
+
+```
+(file-system-mapping
+ (source (mixed-text-file "my.cnf"
+                          (string-append "[client-server]\n"
+                                         "socket=/run/mysqld/mysqld.sock")))
+ (target "/etc/my.cnf"))
+```
+
+Try rebuilding on tux04: started getting `Segmentation fault` errors out of the blue for many guix commands 🤦🏿.
+Try building container on local dev machine: this took a long time - quit and continue later.
+
 ### Footnotes
 
 [^1] Lines 47 to 49 of https://git.genenetwork.org/gn-machines/tree/production.scm?id=46a1c4c8d01198799e6ac3b99998dca40d2c7094#n47
 [^2] Guix's mysql-service-type configurations https://guix.gnu.org/manual/en/html_node/Database-Services.html#index-mysql_002dconfiguration
 [^3] https://mariadb.com/kb/en/server-system-variables/#socket
 [^4] https://git.savannah.gnu.org/cgit/guix.git/tree/gnu/services/databases.scm?id=4c56d0cccdc44e12484b26332715f54768738c5f#n576
+[^5] https://guix.gnu.org/manual/en/html_node/Defining-Services.html
