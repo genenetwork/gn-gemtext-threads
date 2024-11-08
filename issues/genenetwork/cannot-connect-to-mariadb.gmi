@@ -90,10 +90,29 @@ Try it again, taking care to verify that the paths are correct, with:
 Try rebuilding on tux04: started getting `Segmentation fault` errors out of the blue for many guix commands 🤦🏿.
 Try building container on local dev machine: this took a long time - quit and continue later.
 
+### 2024-11-08
+
+After guix broke, causing the `Segmentation fault` errors above, I did some troubleshooting and was able to finally fix that by pinning guix to version b0b988c41c9e0e591274495a1b2d6f27fcdae15a as shown in the troubleshooting transcript[^6].
+
+Now the fixes I did to make python requests work with the newer guix (defined in guix-bioinformatics[^7]) seem to be leading to failures in the older guix version.
+
+Let me attempt rebasing to reorder the commits, to make the python requests commit come last, to more easily do a `git reset` before rebuilding the container — not successful.
+=> https://git.genenetwork.org/gn-machines/commit/?h=production-container&id=610049b2bfa32cae5d3f992b95aac711290efa2a Manually "undo" the changes in a new commit,
+
+then rebuild the container. This exposes a bug in gn-auth.
+
+=> https://git.genenetwork.org/gn-auth/commit/?id=4c21d0e43cf0de1084d0e0a243e441c6e72236eb Fix that.
+
+and update the `public-jwks-uri` value for the client in the admin dashboard, and voila!!! Now the system works.
+
+
+
 ### Footnotes
 
-[^1] Lines 47 to 49 of https://git.genenetwork.org/gn-machines/tree/production.scm?id=46a1c4c8d01198799e6ac3b99998dca40d2c7094#n47
-[^2] Guix's mysql-service-type configurations https://guix.gnu.org/manual/en/html_node/Database-Services.html#index-mysql_002dconfiguration
-[^3] https://mariadb.com/kb/en/server-system-variables/#socket
-[^4] https://git.savannah.gnu.org/cgit/guix.git/tree/gnu/services/databases.scm?id=4c56d0cccdc44e12484b26332715f54768738c5f#n576
-[^5] https://guix.gnu.org/manual/en/html_node/Defining-Services.html
+=> https://git.genenetwork.org/gn-machines/tree/production.scm?id=46a1c4c8d01198799e6ac3b99998dca40d2c7094#n47 [^1] Lines 47 to 49 of production.scm
+=> https://guix.gnu.org/manual/en/html_node/Database-Services.html#index-mysql_002dconfiguration [^2] Guix's mysql-service-type configurations
+=> https://mariadb.com/kb/en/server-system-variables/#socket [^3] MariaDB configuration variables: socket
+=> https://git.savannah.gnu.org/cgit/guix.git/tree/gnu/services/databases.scm?id=4c56d0cccdc44e12484b26332715f54768738c5f#n576 [^4] Guix: mysql-service-type configuration code
+=> https://guix.gnu.org/manual/en/html_node/Defining-Services.html [^5] Guix documentation: Defining Services
+=> https://github.com/genenetwork/gn-gemtext-threads/blob/d785b06643b5e5a2470fd0da075dcf77bda82d16/miscellaneous/broken-guix-on-tux04-20241108.org [^6] Broken guix on tux04: Troubleshooting transcript
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=eb7beb340a9731775e8ad177e47b70dba2f2a84f [^7] guix-bioinformatics: Upgrade guix channel to 2394a7f
