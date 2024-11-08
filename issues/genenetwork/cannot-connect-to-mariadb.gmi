@@ -105,6 +105,9 @@ then rebuild the container. This exposes a bug in gn-auth.
 
 and update the `public-jwks-uri` value for the client in the admin dashboard, and voila!!! Now the system works.
 
+Attempt pulling guix "2394a7f5fbf60dd6adc0a870366adb57166b6d8b" into a profile locally: went through without a hitch
+
+Upgrade guix daemon, and restart it. Delete profile and run `guix gc`, then try pulling guix "2394a7f5fbf60dd6adc0a870366adb57166b6d8b" again. It also went through without a problem. This eliminates the daemon being the culprit: Running `sudo -i guix pull --list-generations` on both tux04 and my local dev machine gives both daemon commits as `2a6d96425eea57dc6dd48a2bec16743046e32e06`.
 
 
 ### Footnotes
