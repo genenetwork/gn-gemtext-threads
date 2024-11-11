@@ -1,17 +1,30 @@
 # Meeting Notes
 
+## 2024-10-08
+* @bonfacem RIF Indexing for RIF page in Xapian.
+* @bonfacem: Test the production container locally and provide @fredm some feedback.
+* @shelbys @bonfacem: Getting RDF into R2R.
+* @flisso: Follow up with the Medaka team on verification of genotype sample names.
+* @flisso: Figure out how to add C Elegans data in staging.
+* @flisso: Set up virtuoso.  @bonfacem shall share notes on this.
+* @flisso: Write PhD concept note.
+* @shelbys: Be able to test things on lambda01 for LLM tests.
+* @alexm @jnduli: R/Qtl script.
+
 ## 2024-10-18
-* @priscilla @flisso: Set up mariadb and virtuoso to test out some GN3 endpoints.
-* @priscilla @flisso @bmunyoki: Improve docs while hacking on the above.
+* IN-PROGRESS: @priscilla @flisso: Set up mariadb and virtuoso to test out some GN3 endpoints. NOTE: Mariadb set-up
+* NOT DONE: @priscilla @flisso @bmunyoki: Improve docs while hacking on the above.
 * @jnduli Remove gn-auth code from GN3.
 * @jnduli Resolve current issue with broken auth in gn-qa.
-* @jnduli @alexm Work on the R/Qtl design doc.
-* @flisso MIKK genotyping.
-* @flisso Make sure we have C Elegans and HS Rats dataset to testing, and have the genotyping pipeline working.
-* @shelbys: Modify existing Grant write-up for pangenomes.
-* @shelbys @bonfacem: Getting RDF into R2R.
-* @bonfacem RIF Indexing for RIF page in Xapian.
-* @bonfacem Work on properly containerizing gn-guile.
+* DONE: @jnduli @alexm Work on the R/Qtl design doc.
+* IN-PROGRESS: @alexm: R/Qtl script.  NOTE: Reviewed by @jnduli.
+* DONE: @flisso MIKK genotyping.  NOTE: Verification pending from Medaka team.
+* DONE: @flisso Make sure we have C Elegans and HS Rats dataset to testing, and have the genotyping pipeline working.  NOTE: Issues with tux02 staging server.
+* DONE: @shelbys: Modify existing Grant write-up for pangenomes.  NOTES: Some more edits to be done.
+* NOT DONE: @shelbys @bonfacem: Getting RDF into R2R.
+* NOT DONE: @bonfacem RIF Indexing for RIF page in Xapian.
+* DONE: @bonfacem Work on properly containerizing gn-guile.  NOTE: Send in patches to @alexm, @aruni, and @fredm to review later today.
+* DONE: @bonfacem: Fix the virtuoso CI job in CD: NOTE: I'm awaiting feedback from @arun/@fredm.
 
 ## 2024-10-11
 * WIP @priscilla @flisso: Try out API endpoints that don't require auth.  NOTE: Priscilla got to set-up guix channels for gn3.  Felix ran into problems.  Priscilla set up the MySQL in her Ubuntu system.
