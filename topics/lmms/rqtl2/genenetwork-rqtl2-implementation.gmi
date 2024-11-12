@@ -66,5 +66,6 @@ Rscript rqtl2_wrapper.R --input_file [file_path] --directory [workspace_dir] --o
 
 ```
 ## Related issues:
-=> ./using/rqtl2.gmi
-=> ./gn-rqtl-design-implementation.gmi
+https://issues.genenetwork.org/topics/lmms/rqtl2/using-rqtl2
+=> ./using-rqtl2
+=> ./gn-rqtl-design-implementation
