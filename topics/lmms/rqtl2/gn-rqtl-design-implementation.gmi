@@ -1,4 +1,4 @@
-># RQTL Implementation for GeneNetwork Design Proposal
+# RQTL Implementation for GeneNetwork Design Proposal
 
 ## Tags
 
@@ -175,8 +175,9 @@ We aim to run computations on clusters rather than locally. This project will se
 
 ### Tasks
 
-* stage 1  (20%) * 
- - [ ] implement the rqtl script using rqtl2
+* stage 1  (20%) *
+
+ - [x] implement the rqtl script using rqtl2
  
 * stage 2  (40%) * 
 
