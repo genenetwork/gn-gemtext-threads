@@ -18,11 +18,11 @@ Generally work applies to NIH/R073237482 and other grants.
 
 ## Systems
 
-* [ ] make sure production is up to scratch
+* [ ] make sure production is up to scratch (see stable below)
 * [ ] backup tux04
-* [ ] add drives to Octopus 1U01HG013760
 * [ ] add Ceph for distributed network storage 1U01HG013760
 * [ ] drop tux02 backups on balg01
+* [ ] drop backups NL
 * [ ] reintroduce borg-borg
 
 ## Ongoing tasks (current/urgent)
@@ -85,8 +85,9 @@ Later
 
 ### Set up stable server instance with new hardware
 
-* [ ] R/qtl2 with Karl
-* [ ] Set up opensmtpd as a service
+* [ ] ssh-shell access for git markdown
+* [ ] R/qtl2 with Karl and Alex
+* [+] Set up opensmtpd as a service
   + [ ] Add package dependency
   + [X] Test on open port 25
   + [ ] Add public-inbox (Arun)
@@ -102,7 +103,8 @@ Later
 
 ### Done
 
-* [X] mount NFS bacchus on octopus
+* [X] add drives to Octopus 1U01HG013760
+* [X] mount NFS bacchus on octopus 1U01HG013760
 * [X] Guix project server
 * [X] Build junior team
 * [X] Complete Octopus setup with Erik, Andrea and Efraim - adding all machines
