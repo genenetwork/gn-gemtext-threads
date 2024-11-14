@@ -6,14 +6,14 @@
 * type: system administration
 * priority: high
 * keywords: systems
-* status: unclear
+* status: closed
 
 ## Tasks
 
 * [X] Make tux02e visible from outside
-* [ ] Network switch 10Gbs - add hosts
-* [ ] Add disks to tux01 and tux02 - need to reboot
-* [ ] Set up E-mail relay for tux01 and tux02 smtp.uthsc.edu, port 25
+* [X] Network switch 10Gbs - add hosts
+* [X] Add disks to tux01 and tux02 - need to reboot
+* [X] Set up E-mail relay for tux01 and tux02 smtp.uthsc.edu, port 25
 
 => tux02-production.gmi setup new production machine
 => decommission-machines.gmi Decommission machines
