@@ -1,21 +1,32 @@
 # Meeting Notes
 
-## 2024-10-08
-* @bonfacem RIF Indexing for RIF page in Xapian.
-* @bonfacem: Test the production container locally and provide @fredm some feedback.
-* @shelbys @bonfacem: Getting RDF into R2R.
-* @flisso: Follow up with the Medaka team on verification of genotype sample names.
-* @flisso: Figure out how to add C Elegans data in staging.
+## 2024-10-15
+* @flisso: Follow up with the Medaka team on verification of genotype sample names
+* @flisso: Understand uploader scripts and help improve then.
 * @flisso: Set up virtuoso.  @bonfacem shall share notes on this.
 * @flisso: Write PhD concept note.
+* @alexm @jnduli: R/Qtl script.
+* @bonfacem: Test the production container locally and provide @fredm some feedback.
+* @bonfacem: Wrap-up re-writing gn-guile to be part of genenetwork-webservices.
+* @bonfacem: Start dataset metadata editing work.
+
+## 2024-10-08
+* NOT DONE: @bonfacem RIF Indexing for RIF page in Xapian.
+* IN PROGRESS: @bonfacem: Test the production container locally and provide @fredm some feedback.
+* IN PROGRESS: @bonfacem: Re-writing gn-guile to be part of genenetwork-webservices.
+* NOT DONE: @shelbys @bonfacem: Getting RDF into R2R.
+* NOT DONE: @flisso: Follow up with the Medaka team on verification of genotype sample names.  NOTE: Medaka team are yet to respond.
+* IN PROGRESS: @flisso: Figure out how to add C Elegans data in staging. NOTE: Got access to staging server.  Ran example tests.  Still working on some errors.
+* NOT DONE: @flisso: Set up virtuoso.  @bonfacem shall share notes on this.
+* NOT DONE: @flisso: Write PhD concept note. NOTE: Doing some lit review.
 * @shelbys: Be able to test things on lambda01 for LLM tests.
 * @alexm @jnduli: R/Qtl script.
 
 ## 2024-10-18
 * IN-PROGRESS: @priscilla @flisso: Set up mariadb and virtuoso to test out some GN3 endpoints. NOTE: Mariadb set-up
 * NOT DONE: @priscilla @flisso @bmunyoki: Improve docs while hacking on the above.
-* @jnduli Remove gn-auth code from GN3.
-* @jnduli Resolve current issue with broken auth in gn-qa.
+* DONE: @jnduli Remove gn-auth code from GN3.
+* DONE: @jnduli Resolve current issue with broken auth in gn-qa.
 * DONE: @jnduli @alexm Work on the R/Qtl design doc.
 * IN-PROGRESS: @alexm: R/Qtl script.  NOTE: Reviewed by @jnduli.
 * DONE: @flisso MIKK genotyping.  NOTE: Verification pending from Medaka team.
