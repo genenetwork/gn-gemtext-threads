@@ -1,0 +1,60 @@
+# gn-guile Configurations
+
+## Tags
+
+* type: bug
+* assigned:
+* priority: high
+* status: open
+* keywords: gn-guile, markdown editing
+* interested: alexk, bonfacem, fredm, pjotrp
+
+## Description
+
+=> https://git.genenetwork.org/gn-guile/ The gn-guile service
+is used to enable markdown editing in GeneNetwork.
+
+There are configuration that are needed to get the system to work as expected:
+
+* CURRENT_REPO_PATH: The local path to the cloned repository
+* CGIT_REPO_PATH: path to the bare repo (according to docs [gn-guile-docs])
+
+With these settings, we should be able to make changes to make edits. These edits, however, do not get pushed upstream.
+
+Looking at the code
+=> https://git.genenetwork.org/gn-guile/tree/web/webserver.scm?id=4623225b0adb0846a4c2e879a33b31884d2e5f05#n212
+we see both the settings above being used, and we can further have a look at
+=> https://git.genenetwork.org/gn-guile/tree/web/view/markdown.scm?id=4623225b0adb0846a4c2e879a33b31884d2e5f05#n78 the definition of git-invoke.
+
+With the above, we could, hypothetically, do a command like:
+
+```
+git -C ${CURRENT_REPO_PATH} push ${REMOTE_REPO_URI} master
+```
+
+where REMOTE_REPO_URI can be something like "appuser@git.genenetwork.org:/home/git/public/gn-guile"
+
+That means we change the (git-invoke …) call seen previously to something like:
+
+```
+(git-invoke +current-repo-path+ "push" +remote-repo-url+ "master")
+```
+
+and make sure that the "+remote-repo-url+" value is something along the URI above.
+
+### Gotchas
+
+We need to fetch and rebase with every push, to avoid conflicts. That means we'll need a sequence such as the following:
+
+```
+(git-invoke +current-repo-path+ "fetch" +remote-repo-url+ "master")
+(git-invoke +current-repo-path+ "rebase" "origin/master")
+(git-invoke +current-repo-path+ "push" +remote-repo-url+ "master")
+```
+
+The tests above work with a normal user. We'll be running this code within a container, so we do need to expose a specific private ssh key for the user to use to push to remote. This also means that the corresponding public key should be registered with the repository server.
+
+## References
+
+* [gn-guile-docs] https://git.genenetwork.org/gn-guile/tree/doc/git-markdown-editor.md?id=4623225b0adb0846a4c2e879a33b31884d2e5f05
+
