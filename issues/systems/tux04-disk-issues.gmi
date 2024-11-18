@@ -1,4 +1,4 @@
-# Tux04 disk issues
+# Tux04/Tux05 disk issues
 
 We are facing some disk issues with Tux04:
 
@@ -6,6 +6,10 @@ We are facing some disk issues with Tux04:
 May 02 20:57:42 tux04 kernel: Buffer I/O error on device sdf1, logical block 859240457
 ```
 
+and the same happened to tux05 (same batch). Basically the controllers report no issues. Just to be sure we added
+a copy of the boot partition.
+
+=> topics/system/linux/add-boot-partition
 
 # Tags
 
@@ -52,6 +56,8 @@ Download megacli from
 => https://hwraid.le-vert.net/wiki/DebianPackages
 
 ```
+apt-get update
+apt-get install megacli
 megacli -LDInfo -L5 -a0
 
 ```
