@@ -14,7 +14,7 @@
 * [ ] Trait vectors for Johannes
 * [ ] !!Organize pluto, update Julia and add apps to GN menu Jupyter notebooks
 * [ ] !!Xusheng jumpshiny services
-* [ ] Slurm on production for GEMMA speedup
+* [ ] Slurm+ravanan on production for GEMMA speedup
 * [ ] Embed R/qtl2 (Alex)
 * [ ] Hoot in GN2 (Andrew)
 * [ ] tux02 certbot failing (manual now)
@@ -22,8 +22,11 @@
 
 ## Octopus:
 
-* [ ] Fix Tux05 badblocks on /dev/sdb2   1050624  47925247 46874624 22.4G Linux filesystem
+* [X] Fix Tux05 badblocks on /dev/sdb2   1050624  47925247 46874624 22.4G Linux filesystem
+  - see add-boot-partition
+* [X] Copy linux partition on tux04, tux05, tux02
 * [ ] !!Ceph on Tuxes
+* [ ] Centralized user management system
 * [ ] Monitor nodes
 * [ ] Check machines so they talk with each other over fiber
 

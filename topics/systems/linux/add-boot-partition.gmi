@@ -1,0 +1,52 @@
+# Add (2nd) boot and other partitions
+
+As we handle machines remotely it is often useful to have a secondary boot partition that can be used from grub.
+
+Basically, create a similar sized boot partition on a different disk and copy the running one over with:
+
+```
+parted -a optimal /dev/sdb
+(parted) p
+Model: NVMe CT4000P3SSD8 (scsi)
+Disk /dev/sdb: 4001GB
+Sector size (logical/physical): 512B/512B
+Partition Table: gpt
+Disk Flags:
+
+Number  Start   End     Size    File system  Name  Flags
+ 1      32.0GB  4001GB  3969GB  ext4         bulk
+
+(parted) rm 1
+mklabel gpt
+mkpart fat23 1 1GB
+set 1 esp on
+align-check optimal 1
+mkpart ext4 1GB 32GB
+mkpart swap 32GB 48GB
+set 2 boot on # other flags are raid, swap, lvm
+set 3 swap on
+mkpart scratch 48GB 512GB
+mkpart ceph 512GB -1
+```
+
+We also took the opportunity to create a new scratch partition (for moving things around) and a ceph partition (for testing).
+Resulting in
+
+```
+Number  Start   End     Size    File system  Name     Flags
+ 1      1049kB  1000MB  999MB                fat23    boot, esp
+ 2      1000MB  24.0GB  23.0GB               ext4     boot, esp
+ 3      24.0GB  32.0GB  8001MB               swap     swap
+ 4      32.0GB  512GB   480GB   ext4         scratch
+ 5      512GB   4001GB  3489GB               ceph
+```
+
+Now we have the drive ready we can copy the existing boot partitions and make sure you don't get it wrong and the target partitiong is larger.
+Here the original boot disk is /dev/sda (894Gb). We copy that to the new disk /dev/sdb (3.64Tb)
+
+```
+root@tux05:/home/wrk# dd if=/dev/sda1 of=/dev/sdb1
+root@tux05:/home/wrk# dd if=/dev/sda2 of=/dev/sdb2
+```
+
+Next, test mount the dirs and reboot.
