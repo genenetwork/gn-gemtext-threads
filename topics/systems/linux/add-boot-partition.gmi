@@ -49,4 +49,4 @@ root@tux05:/home/wrk# dd if=/dev/sda1 of=/dev/sdb1
 root@tux05:/home/wrk# dd if=/dev/sda2 of=/dev/sdb2
 ```
 
-Next, test mount the dirs and reboot.
+Next, test mount the dirs and reboot. You make want to run e2fsck and resize2fs on the new partitions (or their equivalent if you use xfs or something).
