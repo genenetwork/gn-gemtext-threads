@@ -15,7 +15,7 @@ GeneNetwork.org retains a number of apps. Currently they are managed by shepherd
 Current apps managed by shepherd on tux02 are
 
 * [ ] genecup (hao)
-* [ ] bnw (rob)
+* [ ] bnw (yan cui and rob)
 * [ ] genome-browser (defunct)
 * [ ] hrdp-project (hao?)
 * [ ] pluto (saunak)
