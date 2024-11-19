@@ -11,6 +11,7 @@
 
 ## GN
 
+* [ ] Transfer nervenet.org to dnsimple
 * [ ] Trait vectors for Johannes
 * [ ] !!Organize pluto, update Julia and add apps to GN menu Jupyter notebooks
 * [ ] !!Xusheng jumpshiny services
@@ -24,7 +25,7 @@
 
 * [X] Fix Tux05 badblocks on /dev/sdb2   1050624  47925247 46874624 22.4G Linux filesystem
   - see add-boot-partition
-* [X] Copy linux partition on tux04, tux05, tux02
+* [+] Copy linux partition on tux04, tux05, tux02 and test reboot
 * [ ] !!Ceph on Tuxes
 * [ ] Centralized user management system
 * [ ] Monitor nodes
