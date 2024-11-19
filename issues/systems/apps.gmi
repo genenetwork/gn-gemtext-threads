@@ -1,0 +1,28 @@
+# Apps
+
+GeneNetwork.org retains a number of apps. Currently they are managed by shepherd as `guix shell` services, but we should really move them to system containers.
+
+# Tags
+
+* assigned: pjotrp
+* type: enhancement
+* status: in progress
+* priority: medium
+* keywords: system, sheepdog, shepherd
+
+# List of apps
+
+Current apps managed by shepherd on tux02 are
+
+* [ ] genecup
+* [ ] bnw
+* [ ] genome-browser
+* [ ] hrdp-project
+* [ ] pluto
+* [ ] power
+* [ ] rn6app
+* [ ] root
+* [ ] singlecell
+* [ ] xusheng app
+
+To fix them we need to validate the sheepdog monitor and make sure they are working in either shepherd, or as a system container.

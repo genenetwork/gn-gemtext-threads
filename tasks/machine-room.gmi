@@ -15,6 +15,7 @@
 * [ ] Trait vectors for Johannes
 * [ ] !!Organize pluto, update Julia and add apps to GN menu Jupyter notebooks
 * [ ] !!Xusheng jumpshiny services
+* [ ] Fix apps and create system containers for herd services - see issues/systems/apps
 * [ ] Slurm+ravanan on production for GEMMA speedup
 * [ ] Embed R/qtl2 (Alex)
 * [ ] Hoot in GN2 (Andrew)
