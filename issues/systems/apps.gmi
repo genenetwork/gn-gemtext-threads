@@ -10,19 +10,69 @@ GeneNetwork.org retains a number of apps. Currently they are managed by shepherd
 * priority: medium
 * keywords: system, sheepdog, shepherd
 
+# Tasks
+
+* [ ] Get services running
+* [ ] Move guix shell into containers
+* [ ] Make sure the container starts up on reboot and/or migrate to a new host
+
 # List of apps
 
 Current apps managed by shepherd on tux02 are
 
-* [ ] genecup (hao)
-* [ ] bnw (yan cui and rob)
+* [+] genecup [shell] (hao)
+* [X] bnw [container] (yan cui and rob)
 * [ ] genome-browser (defunct)
 * [ ] hrdp-project (hao?)
-* [ ] pluto (saunak)
+* [+] pluto (saunak)
 * [ ] power (dave)
-* [ ] rn6app (?)
 * [ ] root?
+* [+] Longevity explorer [container] (dave)
 * [ ] singlecell (dave)
 * [ ] jumpshiny app (xusheng)
+* [+] hegp (pjotr)
+* [-] rn6app (hao - remove)
 
-To fix them we need to validate the sheepdog monitor and make sure they are working in either shepherd, or as a system container.
+To fix them we need to validate the sheepdog monitor and make sure they are working in either shepherd (+), or as a system container (X).
+
+# Info
+
+## BNW
+
+The app is already a Guix system container! To make it part of the startup I had to move it away from shepherd (which runs in userland) and:
+
+```
+/home/shepherd/guix-profiles/bnw/bin/guix system container /home/shepherd/guix-bioinformatics/gn/services/bnw-container.scm --share=/home/shepherd/logs/bnw-server=/var/log --network
+ln -s /gnu/store/0hnfb9ynnxsig3yyprwxmg5h6c9g8mry-run-container /usr/local/bin/bnw-app-container
+```
+
+systemd service:
+
+```
+root@tux02:/etc/systemd/system# cat bnw-app-container.service
+[Unit]
+Description = Run genenetwork BNW app container
+[Service]
+ExecStart = /usr/local/bin/bnw-app-container
+[Install]
+WantedBy = multi-user.target
+```
+
+We need to make sure the garbace collector does not destroy the container, add the --root switch
+
+```
+/home/shepherd/guix-profiles/bnw/bin/guix system container /home/shepherd/guix-bioinformatics/gn/services/bnw-container.scm --share=/home/shepherd/logs/bnw-server=/var/log --network --root=/usr/local/bin/bnw-app-container
+```
+
+Check with
+
+```
+root@tux02:/home/shepherd# /home/shepherd/guix-profiles/bnw/bin/guix gc --list-roots |grep bnw
+  /usr/local/bin/bnw-app-container
+```
+
+## jumpshiny
+
+jgart@balg01:~/gn-machines$ guix system container --network -L . -L ../guix-bioinformatics/ -L ../guix-past/modules/ --substitute-urls='https:
+//ci.guix.gnu.org https://bordeaux.guix.gnu.org https://cuirass.genenetwork.org' test-r-container.scm -L ../guix-forge/guix/
+/gnu/store/xyks73sf6pk78rvrwf45ik181v0zw8rx-run-container
