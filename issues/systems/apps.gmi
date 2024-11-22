@@ -27,6 +27,7 @@ Current apps managed by shepherd/systemd on tux02/balg01 are
 * [ ] - add link in GN2
 * [X] - add banner for GeneNetwork
 * [ ] - create system container
+* [X] - create guix root
 * [ ] - make sure it works on reboot (systemd)
 => https://bnw.genenetwork.org/
 * [+] bnw [container] (yan cui and rob)
@@ -35,6 +36,7 @@ Current apps managed by shepherd/systemd on tux02/balg01 are
 * [X] - add link in GN2
 * [ ] - add banner for GeneNetwork
 * [ ] - update system container
+* [X] - create guix root
 * [ ] - make sure it works on reboot (systemd)
 => http://hrdp.genenetwork.org
 * [+] hrdp-project (hao?)
@@ -44,6 +46,7 @@ Current apps managed by shepherd/systemd on tux02/balg01 are
 * [ ] - add link in GN2
 * [ ] - add banner for GeneNetwork
 * [ ] - create system container
+* [ ] - create guix root
 * [ ] - make sure it works on reboot (systemd)
 => https://pluto.genenetwork.org/
 * [+] pluto (saunak)
@@ -52,6 +55,7 @@ Current apps managed by shepherd/systemd on tux02/balg01 are
 * [ ] - add link in GN2
 * [ ] - add banner for GeneNetwork
 * [ ] - create system container
+* [ ] - create guix root
 * [ ] - make sure it works on reboot (systemd)
 => https://power.genenetwork.org/
 * [+] power app (dave)
@@ -60,6 +64,7 @@ Current apps managed by shepherd/systemd on tux02/balg01 are
 * [ ] - add link in GN2
 * [ ] - add banner for GeneNetwork
 * [ ] - create system container
+* [X] - create guix root
 * [ ] - make sure it works on reboot (systemd)
 * [ ] root?
 => http://longevity-explorer.genenetwork.org/
@@ -70,6 +75,7 @@ Current apps managed by shepherd/systemd on tux02/balg01 are
 * [ ] - add link in GN2
 * [ ] - add banner for GeneNetwork
 * [ ] - create system container
+* [ ] - create guix root
 * [ ] - make sure it works on reboot (systemd)
 => https://singlecell.opar.io/
 * [+] singlecell (siamak)
@@ -78,6 +84,7 @@ Current apps managed by shepherd/systemd on tux02/balg01 are
 * [ ] - add link in GN2
 * [ ] - add banner for GeneNetwork
 * [ ] - create system container
+* [ ] - create guix root
 * [ ] - make sure it works on reboot (systemd)
 => http://jumpshiny.genenetwork.org/
 * [ ] jumpshiny app (xusheng)
@@ -87,6 +94,7 @@ Current apps managed by shepherd/systemd on tux02/balg01 are
 * [ ] - add link in GN2
 * [ ] - add banner for GeneNetwork
 * [ ] - create system container
+* [ ] - create guix root
 * [ ] - make sure it works on reboot (systemd)
 => https://hegp.genenetwork.org/
 * [+] hegp (pjotr)
@@ -95,6 +103,7 @@ Current apps managed by shepherd/systemd on tux02/balg01 are
 * [ ] - add link in GN2
 * [ ] - add banner for GeneNetwork
 * [ ] - create system container
+* [ ] - create guix root
 * [X] - make sure it works on reboot (systemd)
 
 * [-] rn6app (hao - remove)
