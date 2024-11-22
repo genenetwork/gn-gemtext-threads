@@ -20,24 +20,24 @@ GeneNetwork.org retains a number of apps. Currently they are managed by shepherd
 
 Current apps managed by shepherd/systemd on tux02/balg01 are
 
-* [+] genecup [shell] (hao)
 => https://genecup.org/
+* [+] genecup [shell] (hao)
 * [X] - fire up service
 * [X] - add sheepdog monitor
 * [ ] - add link in GN2
 * [X] - add banner for GeneNetwork
 * [ ] - create system container
 * [ ] - make sure it works on reboot (systemd)
-* [X] bnw [container] (yan cui and rob)
 => https://bnw.genenetwork.org/
+* [+] bnw [container] (yan cui and rob)
 * [X] - fire up service
 * [X] - add sheepdog monitor
 * [X] - add link in GN2
 * [ ] - add banner for GeneNetwork
 * [ ] - update system container
 * [ ] - make sure it works on reboot (systemd)
-* [+] hrdp-project (hao?)
 => http://hrdp.genenetwork.org
+* [+] hrdp-project (hao?)
 * [X] - fire up service
 * [X] - add sheepdog monitor
 * [ ] - https
@@ -45,16 +45,16 @@ Current apps managed by shepherd/systemd on tux02/balg01 are
 * [ ] - add banner for GeneNetwork
 * [ ] - create system container
 * [ ] - make sure it works on reboot (systemd)
-* [+] pluto (saunak)
 => https://pluto.genenetwork.org/
+* [+] pluto (saunak)
 * [X] - fire up service
 * [X] - add sheepdog monitor
 * [ ] - add link in GN2
 * [ ] - add banner for GeneNetwork
 * [ ] - create system container
 * [ ] - make sure it works on reboot (systemd)
-* [+] power app (dave)
 => https://power.genenetwork.org/
+* [+] power app (dave)
 * [X] - fire up service
 * [X] - add sheepdog monitor
 * [ ] - add link in GN2
@@ -62,8 +62,8 @@ Current apps managed by shepherd/systemd on tux02/balg01 are
 * [ ] - create system container
 * [ ] - make sure it works on reboot (systemd)
 * [ ] root?
-* [+] Longevity explorer [container balg01] (dave)
 => http://longevity-explorer.genenetwork.org/
+* [+] Longevity explorer [container balg01] (dave)
 * [X] - fire up service
 * [X] - add sheepdog monitor
 * [ ] - https
@@ -71,23 +71,25 @@ Current apps managed by shepherd/systemd on tux02/balg01 are
 * [ ] - add banner for GeneNetwork
 * [ ] - create system container
 * [ ] - make sure it works on reboot (systemd)
-* [+] singlecell (siamak)
 => https://singlecell.opar.io/
+* [+] singlecell (siamak)
 * [ ] - fire up service (requires source update, see below)
 * [-] - add sheepdog monitor (disabled)
 * [ ] - add link in GN2
 * [ ] - add banner for GeneNetwork
 * [ ] - create system container
 * [ ] - make sure it works on reboot (systemd)
+=> http://jumpshiny.genenetwork.org/
 * [ ] jumpshiny app (xusheng)
 * [ ] - fire up service
 * [ ] - add sheepdog monitor
+* [ ] - https
 * [ ] - add link in GN2
 * [ ] - add banner for GeneNetwork
 * [ ] - create system container
 * [ ] - make sure it works on reboot (systemd)
-* [+] hegp (pjotr)
 => https://hegp.genenetwork.org/
+* [+] hegp (pjotr)
 * [X] - fire up service
 * [X] - add sheepdog monitor
 * [ ] - add link in GN2
