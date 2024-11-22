@@ -18,22 +18,91 @@ GeneNetwork.org retains a number of apps. Currently they are managed by shepherd
 
 # List of apps
 
-Current apps managed by shepherd on tux02 are
+Current apps managed by shepherd/systemd on tux02/balg01 are
 
 * [+] genecup [shell] (hao)
+=> https://genecup.org/
+* [X] - fire up service
+* [X] - add sheepdog monitor
+* [ ] - add link in GN2
+* [X] - add banner for GeneNetwork
+* [ ] - create system container
+* [ ] - make sure it works on reboot (systemd)
 * [X] bnw [container] (yan cui and rob)
-* [ ] genome-browser (defunct)
-* [ ] hrdp-project (hao?)
+=> https://bnw.genenetwork.org/
+* [X] - fire up service
+* [X] - add sheepdog monitor
+* [X] - add link in GN2
+* [ ] - add banner for GeneNetwork
+* [ ] - update system container
+* [ ] - make sure it works on reboot (systemd)
+* [+] hrdp-project (hao?)
+=> http://hrdp.genenetwork.org
+* [X] - fire up service
+* [X] - add sheepdog monitor
+* [ ] - https
+* [ ] - add link in GN2
+* [ ] - add banner for GeneNetwork
+* [ ] - create system container
+* [ ] - make sure it works on reboot (systemd)
 * [+] pluto (saunak)
-* [ ] power (dave)
+=> https://pluto.genenetwork.org/
+* [X] - fire up service
+* [X] - add sheepdog monitor
+* [ ] - add link in GN2
+* [ ] - add banner for GeneNetwork
+* [ ] - create system container
+* [ ] - make sure it works on reboot (systemd)
+* [+] power app (dave)
+=> https://power.genenetwork.org/
+* [X] - fire up service
+* [X] - add sheepdog monitor
+* [ ] - add link in GN2
+* [ ] - add banner for GeneNetwork
+* [ ] - create system container
+* [ ] - make sure it works on reboot (systemd)
 * [ ] root?
-* [+] Longevity explorer [container] (dave)
-* [ ] singlecell (dave)
+* [+] Longevity explorer [container balg01] (dave)
+=> http://longevity-explorer.genenetwork.org/
+* [X] - fire up service
+* [X] - add sheepdog monitor
+* [ ] - https
+* [ ] - add link in GN2
+* [ ] - add banner for GeneNetwork
+* [ ] - create system container
+* [ ] - make sure it works on reboot (systemd)
+* [+] singlecell (siamak)
+=> https://singlecell.opar.io/
+* [ ] - fire up service (requires source update, see below)
+* [-] - add sheepdog monitor (disabled)
+* [ ] - add link in GN2
+* [ ] - add banner for GeneNetwork
+* [ ] - create system container
+* [ ] - make sure it works on reboot (systemd)
 * [ ] jumpshiny app (xusheng)
+* [ ] - fire up service
+* [ ] - add sheepdog monitor
+* [ ] - add link in GN2
+* [ ] - add banner for GeneNetwork
+* [ ] - create system container
+* [ ] - make sure it works on reboot (systemd)
 * [+] hegp (pjotr)
+=> https://hegp.genenetwork.org/
+* [X] - fire up service
+* [X] - add sheepdog monitor
+* [ ] - add link in GN2
+* [ ] - add banner for GeneNetwork
+* [ ] - create system container
+* [X] - make sure it works on reboot (systemd)
+
 * [-] rn6app (hao - remove)
+* [-] genome-browser (defunct)
 
 To fix them we need to validate the sheepdog monitor and make sure they are working in either shepherd (+), or as a system container (X).
+
+Sheepdog monitor is at
+
+=> http://sheepdog.genenetwork.org/sheepdog/status.html
 
 # Info
 
@@ -71,8 +140,53 @@ root@tux02:/home/shepherd# /home/shepherd/guix-profiles/bnw/bin/guix gc --list-r
   /usr/local/bin/bnw-app-container
 ```
 
+## R/shiny apps
+
+The R/shiny apps were showing a tarball mismatch:
+
+```
+building /gnu/store/rjnw7k56z955v4bl07flm9pjwxx5vs0r-r-minimal-4.0.2.drv...
+downloading from http://cran.r-project.org/src/contrib/Archive/KernSmooth/KernSmooth_2.23-17.tar.gz ...
+- 'configure' phasesha256 hash mismatch for /gnu/store/n05zjfhxl0iqx1jbw8i6vv1174zkj7ja-KernSmooth_2.23-17.tar.gz:
+  expected hash: 11g6b0q67vasxag6v9m4px33qqxpmnx47c73yv1dninv2pz76g9b
+  actual hash:   1ciaycyp79l5aj78gpmwsyx164zi5jc60mh84vxxzq4j7vlcdb5p
+hash mismatch for store item '/gnu/store/n05zjfhxl0iqx1jbw8i6vv1174zkj7ja-KernSmooth_2.23-17.tar.gz'
+```
+
+Guix checks and it is not great CRAN allows for changing tarballs with the same version number!! Luckily building with a more recent version of Guix just worked (TM). Now we create a root too:
+
+```
+/home/wrk/opt/guix-pull/bin/guix pull -p ~/guix-profiles/guix-for-r-shiny
+```
+
+Note I did not have to pull in guix-bioinformatics channel
+
+## Singlecell
+
+Singlecell is an R/shiny app. It starts with an error after above upgrade:
+
+```
+no slot of name "counts" for this object of class
+```
+
+and the code needs to be updated:
+
+=> https://github.com/satijalab/seurat/issues/8804
+
+The 4 year old code lives at
+
+=> https://github.com/genenetwork/singleCellRshiny
+
+and it looks like lines like these need to be updated:
+
+=> https://github.com/genenetwork/singleCellRshiny/blob/6b2a344dd0d02f65228ad8c350bac0ced5850d05/app.R#L167
+
+Let me ask the author Siamak Yousefi.
+
 ## jumpshiny
 
-jgart@balg01:~/gn-machines$ guix system container --network -L . -L ../guix-bioinformatics/ -L ../guix-past/modules/ --substitute-urls='https:
+```
+balg01:~/gn-machines$ guix system container --network -L . -L ../guix-bioinformatics/ -L ../guix-past/modules/ --substitute-urls='https:
 //ci.guix.gnu.org https://bordeaux.guix.gnu.org https://cuirass.genenetwork.org' test-r-container.scm -L ../guix-forge/guix/
 /gnu/store/xyks73sf6pk78rvrwf45ik181v0zw8rx-run-container
+```
