@@ -79,7 +79,7 @@ Current apps managed by shepherd/systemd on tux02/balg01 are
 * [ ] - make sure it works on reboot (systemd)
 => http://jumpshiny.genenetwork.org/
 * [+] jumpshiny app (xusheng)
-* [ ] - fire up service
+* [+] - fire up service (still some dependencies)
 * [X] - add sheepdog monitor
 * [ ] - https
 * [ ] - add link in GN2
