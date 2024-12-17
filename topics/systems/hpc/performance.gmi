@@ -12,6 +12,23 @@ For disk speeds make sure there is no load and run
 hdparm -Ttv /dev/sdc1
 ```
 
+Cheap and cheerful:
+
+Read test:
+
+```
+dd if=/dev/zero of=./test bs=512k count=2048 oflag=direct
+```
+
+Write test:
+
+```
+/sbin/sysctl -w vm.drop_caches=3
+dd if=./test of=/dev/zero bs=512k count=2048
+```
+
+
+
 ## Networking
 
 To check the network devices installed use
