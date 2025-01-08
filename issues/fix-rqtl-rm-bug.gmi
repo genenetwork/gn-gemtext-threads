@@ -51,7 +51,7 @@ def run_process(cmd, output_file, run_id):
             # Process output handling goes here
 ```
 
-The error generated at the end of the `rqtl` run is:
+The error generated at the end of the `rqtl` if the rm run does not exists inside the container is:
 
 ```
 sh: line 1: rm: command not found
