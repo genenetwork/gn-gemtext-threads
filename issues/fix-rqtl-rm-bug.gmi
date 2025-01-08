@@ -11,7 +11,7 @@
 
 For QTL analysis, we invoke the `rqtl` script as an external process through Python's `subprocess` module.  
 For reference, see the `rqtl_wrapper.R` script:  
-=> [GeneNetwork3 rqtl_wrapper.R](https://github.com/genenetwork/genenetwork3/blob/main/scripts/rqtl_wrapper.R)
+=> https://github.com/genenetwork/genenetwork3/blob/main/scripts/rqtl_wrapper.R
 
 The issue is that, upon analyzing the logs for `rqtl`, we see that an `rm` command is unexpectedly invoked:
 
@@ -89,5 +89,7 @@ def run_process(cmd, output_file, run_id):
 * [x] We simulated invoking a system command within the `rqtl` script, but the error does not match the observed issue.
 
 ## TODO
-- [ ] Test in a similar environment to the CD environment to replicate the issue.
-- [ ] Investigate the internals of the QTL library for any unintended `rm` invocation.
+
+* [ ] Test in a similar environment to the CD environment to replicate the issue.
+
+* [ ] Investigate the internals of the QTL library for any unintended `rm` invocation.
