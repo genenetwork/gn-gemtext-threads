@@ -1,0 +1,93 @@
+# Investigate and Fix  `rm` Command in `rqtl` Logs
+
+## Tags
+
+* assigned:  alex, Bons
+* type: Bug
+* status: in progress
+* keywords: external, qtl, rqtl, bug, logs
+
+## Description
+
+For QTL analysis, we invoke the `rqtl` script as an external process through Python's `subprocess` module.  
+For reference, see the `rqtl_wrapper.R` script:  
+=> [GeneNetwork3 rqtl_wrapper.R](https://github.com/genenetwork/genenetwork3/blob/main/scripts/rqtl_wrapper.R)
+
+The issue is that, upon analyzing the logs for `rqtl`, we see that an `rm` command is unexpectedly invoked:
+
+```
+sh: line 1: rm: command not found
+```
+
+This command cannot be traced to its origin, and it does not appear to be part of the expected behavior.
+
+The issue is currently observed only in the CD environment. The only way I have attempted to reproduce this locally is by invoking the command in a shell environment with string injection, which is not the case for GeneNetwork3, where all strings are parsed and passed as a list argument.
+
+Here’s an example of the above attempt:
+
+```python
+def run_process(cmd, output_file, run_id):
+    """Function to execute an external process and capture the stdout in a file.
+
+    Args:
+        cmd: The command to execute, provided as a list of arguments.
+        output_file: Absolute file path to write the stdout.
+        run_id: Unique ID to identify the process.
+
+    Returns:
+        A dictionary with the results, indicating success or failure.
+    """
+    cmd.append(" && rm")  # Injecting potentially problematic command
+    cmd = " ".join(cmd)  # The command is passed as a string
+    
+    try:
+        # Phase: Execute the command in a shell environment
+        with subprocess.Popen(
+                cmd,
+                shell=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+        ) as process:
+            # Process output handling goes here
+```
+
+The error generated at the end of the `rqtl` run is:
+
+```
+sh: line 1: rm: command not found
+```
+
+The actual code for GeneNetwork3 is:
+
+```python
+def run_process(cmd, output_file, run_id):
+    """Function to execute an external process and capture the stdout in a file.
+
+    Args:
+        cmd: The command to execute, provided as a list of arguments.
+        output_file: Absolute file path to write the stdout.
+        run_id: Unique ID to identify the process.
+
+    Returns:
+        A dictionary with the results, indicating success or failure.
+    """
+    try:
+        # Phase: Execute the command in a shell environment
+        with subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+        ) as process:
+            # Process output handling goes here
+```
+
+## Investigated and Excluded Possibilities
+
+* [x] The `rm` command is not explicitly invoked within the `rqtl` script.
+* [x] The `rqtl` command is passed as a list of parsed arguments (i.e., no direct string injection).
+* [x] The subprocess is not invoked within a shell environment, which would otherwise result in string injection.
+* [x] We simulated invoking a system command within the `rqtl` script, but the error does not match the observed issue.
+
+## TODO
+- [ ] Test in a similar environment to the CD environment to replicate the issue.
+- [ ] Investigate the internals of the QTL library for any unintended `rm` invocation.
