@@ -2,7 +2,7 @@
 
 ## Tags
 
-* assigned:  alex, Bons
+* assigned:  alex, bonfacem
 * type: Bug
 * status: in progress
 * keywords: external, qtl, rqtl, bug, logs
