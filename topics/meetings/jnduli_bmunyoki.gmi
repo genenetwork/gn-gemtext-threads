@@ -1,14 +1,14 @@
 # Meeting Notes
 
 ## 2024-10-15
-* @flisso: Follow up with the Medaka team on verification of genotype sample names
-* @flisso: Understand uploader scripts and help improve then.
-* @flisso: Set up virtuoso.  @bonfacem shall share notes on this.
-* @flisso: Write PhD concept note.
-* @alexm @jnduli: R/Qtl script.
-* @bonfacem: Test the production container locally and provide @fredm some feedback.
-* @bonfacem: Wrap-up re-writing gn-guile to be part of genenetwork-webservices.
-* @bonfacem: Start dataset metadata editing work.
+* DONE: @flisso: Follow up with the Medaka team on verification of genotype sample names
+* DONE: @flisso: Understand uploader scripts and help improve then.
+* CANCELLED: @flisso: Set up virtuoso.  @bonfacem shall share notes on this.
+* NOT DONE: @flisso: Write PhD concept note.
+* DONE: @alexm @jnduli: R/Qtl script.
+* DONE: @bonfacem: Test the production container locally and provide @fredm some feedback.
+* DONE: @bonfacem: Wrap-up re-writing gn-guile to be part of genenetwork-webservices.
+* NOT DONE: @bonfacem: Start dataset metadata editing work.
 
 ## 2024-10-08
 * NOT DONE: @bonfacem RIF Indexing for RIF page in Xapian.
