@@ -1,0 +1,43 @@
+# Genenetwork Streaming Functionality
+
+## Tags
+* type: documentation
+* Keywords: documentation, docs, genenetwork, streaming
+
+### Introduction
+Genenetwork implements streaming functionality that logs results from a running external process to a terminal emulator.
+
+The streaming functionality can be divided into several sections.
+
+### Streaming UI
+The terminal emulator is implemented using the `xterm.js` library and
+logs results from the GN3 API.
+
+See:
+=> https://github.com/xtermjs/xterm.js
+
+### Streaming API
+This is the main endpoint for streaming:
+
+See reference:
+=> https://github.com/genenetwork/genenetwork3/gn3/api/streaming.py
+
+### How to Integrate
+
+#### Import the `enable_streaming` Decorator
+
+```
+from gn3.computations.streaming import enable_streaming
+```
+
+#### Apply the Decorator to Your Endpoint that Runs an External Process
+
+Note: To run the external process, use the `run_process` function,
+which captures the `stdout` in a file identified by the `run_id`.
+
+```
+@app.route('/your-endpoint')
+@enable_streaming
+def your_endpoint(streaming_output_file):
+    run_process(command, streaming_output_file, run_id)
+```
