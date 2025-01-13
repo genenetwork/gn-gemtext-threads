@@ -1,0 +1,28 @@
+# Fix Pairscan Mapping
+
+## Tags
+
+* assigned: alexm,
+* priority: medium,
+* type: bug
+* keywords: pairscan, debug, fix, mapping
+
+## Description
+Pairscan mapping is currently  not working:
+
+Error:
+
+```
+GeneNetwork 3.12-rc1  https://genenetwork.org/run_mapping ( 1:01PM UTC Jan 13, 2025) 
+Traceback (most recent call last):
+  File "/gnu/store/cxawl32jm0fgavc9ahcr3g0j66zdan30-profile/lib/python3.10/site-packages/flask/app.py", line 1523, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/gnu/store/cxawl32jm0fgavc9ahcr3g0j66zdan30-profile/lib/python3.10/site-packages/flask/app.py", line 1509, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/gnu/store/cxawl32jm0fgavc9ahcr3g0j66zdan30-profile/lib/python3.10/site-packages/gn2/wqflask/views.py", line 1035, in mapping_results_page
+    template_vars = run_mapping.RunMapping(start_vars,
+  File "/gnu/store/cxawl32jm0fgavc9ahcr3g0j66zdan30-profile/lib/python3.10/site-packages/gn2/wqflask/marker_regression/run_mapping.py", line 312, in __init__
+    self.geno_db_exists = geno_db_exists(self.dataset, results[0]['name'])
+    KeyError: 'name'
+
+```
