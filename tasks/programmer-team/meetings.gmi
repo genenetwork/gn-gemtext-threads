@@ -1,0 +1,36 @@
+# Weekly meetings
+
+In this document we will track tasks based of our weekly meetings. This list sets the agenda
+on progress for the next week's meeting.
+
+## @bonfacem
+
+* [ ] Report:    OpenAI on Aider - use AI for programming - discuss with @alexm
+* [ ] Metadata:  Provide list of case attributes for BXD to @flisso
+* [ ] Code UI:   GeneRIF and GenWiki should work from the mapping page - encourage people to use
+                 - anyone logged in can edit
+                 - If RIF does not exist point to GeneWiki
+                 - If GeneWiki does not exist provide edit page
+* [ ] Code export: Exporting traits to lmdb PublishData - @alexm helps with SQL
+                 - missing data should not be an X
+                 - run lmdb design (first code) by @pjotrp
+                 - start exporting traits for Johannes (he will need to write a python reader)
+* Later:         Improve the work/dev container for @alexm
+
+## @flisso
+
+* [ ] Write:  Uploader protocol
+* [ ] Script: Run Reaper
+* [ ] Data:  Case attributes - with @bonfacem
+* [ ] Write:  Create protocol to upload case attributes
+
+## @alexm
+
+* [ ] Code: Rqtl2 match Rqtl1: match scan changes
+* [ ] Bug:  Fix pair scan
+* Later: AI changes
+
+## Pjotr
+
+* [ ] Code: Work on precompute with GEMMA (w. Jameson)
+* [ ] Code: Take Bonface's trait files when they become available
