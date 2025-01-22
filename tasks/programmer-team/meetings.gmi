@@ -6,6 +6,9 @@ on progress for the next week's meeting.
 ## @bonfacem
 
 * [ ] Report:    OpenAI on Aider - use AI for programming - discuss with @alexm
+
+=> https://issues.genenetwork.org/topics/ai/aider
+
 * [ ] Metadata:  Provide list of case attributes for BXD to @flisso
 * [ ] Code UI:   GeneRIF and GenWiki should work from the mapping page - encourage people to use
                  - anyone logged in can edit
