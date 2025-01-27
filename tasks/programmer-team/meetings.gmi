@@ -45,12 +45,11 @@ on progress for the next week's meeting.
 Last week's error with CD and production downtime:
 * [ level 1] Container: Error messages when data not loaded in Virtuoso, Indexing.
 * [ level 2] Sheepdog: Check services --- sheepdog.  Health checkpoints.
-* [ level 3] User feedback.  Escalate errors correctly to the users.
-
+* [ level 3] User feedback.  Escalate errors correctly to the users, so they can report to coders
 
 ### @Bonz
 * [ ] Troubleshoot CD.
-* [ ] Export files in lmdb.  Yohannes read file in Python
+* [ ] Export files in lmdb.  Yohannes read file in Python example
 * [ ] Metadata:  Provide list of case attributes for BXD to @flisso
 * [ ] Aider: See if it can generate some guile and python.  Give an example.
 
@@ -58,4 +57,4 @@ Last week's error with CD and production downtime:
 * [ ] UI for R/Qtl2.
 
 ### @flisso
-* [ ] Look at Fre'd Python code for the uploader and report on this.
+* [ ] Look at Fred Python code for the uploader and report on this.
