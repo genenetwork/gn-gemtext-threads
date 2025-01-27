@@ -3,14 +3,15 @@
 In this document we will track tasks based of our weekly meetings. This list sets the agenda
 on progress for the next week's meeting.
 
-## @bonfacem
+## 27-01-2024
+### @bonfacem
 
 * [ ] Report:    OpenAI on Aider - use AI for programming - discuss with @alexm
 
 => https://issues.genenetwork.org/topics/ai/aider
 
-* [ ] Metadata:  Provide list of case attributes for BXD to @flisso
-* [ ] Code UI:   GeneRIF and GenWiki should work from the mapping page - encourage people to use
+* [-] Metadata:  Provide list of case attributes for BXD to @flisso
+* [-] Code UI:   GeneRIF and GenWiki should work from the mapping page - encourage people to use
                  - anyone logged in can edit
                  - If RIF does not exist point to GeneWiki
                  - If GeneWiki does not exist provide edit page
@@ -20,20 +21,41 @@ on progress for the next week's meeting.
                  - start exporting traits for Johannes (he will need to write a python reader)
 * Later:         Improve the work/dev container for @alexm
 
-## @flisso
+### @flisso
 
-* [ ] Write:  Uploader protocol
+* [ ] Write:  Uploader protocol.  NOTES: Finished with C-elegans.  Yet to test with other datasets.
 * [ ] Script: Run Reaper
 * [ ] Data:  Case attributes - with @bonfacem
 * [ ] Write:  Create protocol to upload case attributes
 
-## @alexm
+### @alexm
 
-* [ ] Code: Rqtl2 match Rqtl1: match scan changes
-* [ ] Bug:  Fix pair scan
+* [ ] Code: Rqtl2 match Rqtl1: match scan changes.  Notes: PR out and added tests.
+* [ ] Bug:  Fix pair scan.  NOTES: Fixed it.  But can't test it now since CD is down.
 * Later: AI changes
 
-## Pjotr
+### Pjotr
 
 * [ ] Code: Work on precompute with GEMMA (w. Jameson)
 * [ ] Code: Take Bonface's trait files when they become available
+
+
+## 27-01-2024
+
+Last week's error with CD and production downtime:
+- [ level 1] Container: Error messages when data not loaded in Virtuoso, Indexing.
+- [ level 2] Sheepdog: Check services --- sheepdog.  Health checkpoints.
+- [ level 3] User feedback.  Escalate errors correctly to the users.
+
+
+### @Bonz
+* [ ] Troubleshoot CD.
+* [ ] Export files in lmdb.  Yohannes read file in Python
+* [ ] Metadata:  Provide list of case attributes for BXD to @flisso
+* [ ] Aider: See if it can generate some guile and python.  Give an example.
+
+### @alexm
+* [ ] UI for R/Qtl2.
+
+### @flisso
+* [ ] Look at Fre'd Python code for the uploader and report on this.
