@@ -43,9 +43,9 @@ on progress for the next week's meeting.
 ## 27-01-2024
 
 Last week's error with CD and production downtime:
-- [ level 1] Container: Error messages when data not loaded in Virtuoso, Indexing.
-- [ level 2] Sheepdog: Check services --- sheepdog.  Health checkpoints.
-- [ level 3] User feedback.  Escalate errors correctly to the users.
+* [ level 1] Container: Error messages when data not loaded in Virtuoso, Indexing.
+* [ level 2] Sheepdog: Check services --- sheepdog.  Health checkpoints.
+* [ level 3] User feedback.  Escalate errors correctly to the users.
 
 
 ### @Bonz
