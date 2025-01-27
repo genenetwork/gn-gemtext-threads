@@ -109,6 +109,30 @@ To trigger CI manually, run this with the project name:
 curl https://ci.genenetwork.org/hooks/example-gn3
 ```
 
+For gemtext we have a github hook that adds a forge-project and looks like
+
+```lisp
+(define gn-gemtext-threads-project
+  (forge-project
+   (name "gn-gemtext-threads")
+   (repository "https://github.com/genenetwork/gn-gemtext-threads/")
+   (ci-jobs (list (forge-laminar-job
+                   (name "gn-gemtext-threads")
+                   (run (with-packages (list nss-certs openssl)
+                          (with-imported-modules '((guix build utils))
+                            #~(begin
+                                (use-modules (guix build utils))
+
+                                (setenv "LC_ALL" "en_US.UTF-8")
+                                (invoke #$(file-append tissue "/bin/tissue")
+                                        "pull" "issues.genenetwork.org"))))))))
+   (ci-jobs-trigger 'webhook)))
+```
+
+Guix forge can be found at
+
+=> https://git.systemreboot.net/guix-forge/
+
 ### git.genenetwork.org hooks
 
 TBD
