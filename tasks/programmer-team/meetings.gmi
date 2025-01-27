@@ -3,7 +3,7 @@
 In this document we will track tasks based of our weekly meetings. This list sets the agenda
 on progress for the next week's meeting.
 
-## 27-01-2024
+## 20-01-2024
 ### @bonfacem
 
 * [ ] Report:    OpenAI on Aider - use AI for programming - discuss with @alexm
