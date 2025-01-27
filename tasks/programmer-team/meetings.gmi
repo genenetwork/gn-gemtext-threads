@@ -25,7 +25,7 @@ on progress for the next week's meeting.
 
 * [ ] Write:  Uploader protocol.  NOTES: Finished with C-elegans.  Yet to test with other datasets.
 * [ ] Script: Run Reaper
-* [ ] Data:  Case attributes - with @bonfacem
+* [ ] Data:   Case attributes - with @bonfacem
 * [ ] Write:  Create protocol to upload case attributes
 
 ### @alexm
