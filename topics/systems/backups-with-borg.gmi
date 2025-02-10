@@ -8,7 +8,12 @@ Sheepdog also includes a web server for output:
 
 => http://sheepdog.genenetwork.org/sheepdog/status.html
 
-## Install borg
+# Tags
+
+* assigned: pjotrp
+* keywords: systems, backup, sheepdog, database
+
+# Install borg
 
 Usually I use a version of borg from guix. This should really be done as the borg user (ibackup).
 
@@ -185,3 +190,9 @@ borg list genenetwork::borg-tux04-sql-20250209-01:43-Sun
 ```
 
 Make sure you not only see just a symlink.
+
+# Drop backups
+
+Once backups work it is useful to copy them to a remote server, so when the machine stops functioning we have another chance at recovery. See
+
+=> ./backup-drops.gmi
