@@ -9,8 +9,17 @@
 ## Tasks
 
 * [X] Indexing generif data / Improve Local Search
-* [ ] Add hashes to RDF metadata
-* [-] Brain Data (To be spec'ed further)
+* [ ] lmdb publishdata output and share with Pjotr and Johannes
+* [ ] Describe Generif access for Rob
+* [ ] Add case attributes to RDF and share with Felix
+* [ ] xapian search, add dataset size keys, as well as GN accession id, trait id, and date
+* [ ] Improve xapian markdown docs to show all used fields/keys with examples
+* [ ] Use aider
+* [ ] Add hashes to RDF metadata(?)
+
+## Later
+
+* [ ] AI improvements
 
 ### On going tasks
 
