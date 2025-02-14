@@ -5,7 +5,9 @@
 * status: open
 * priority: medium
 * type: bug
-* assigned: alexm, bonfacem, fredm
+* assigned: alexm
+* assigned: bonfacem
+* assigned: fredm
 * keywords: gn-guile, github
 
 ## Description
