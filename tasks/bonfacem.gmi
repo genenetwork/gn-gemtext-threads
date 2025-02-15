@@ -10,12 +10,14 @@
 
 * [X] Indexing generif data / Improve Local Search
 * [ ] lmdb publishdata output and share with Pjotr and Johannes
+* [ ] Add lmdb output hashes to RDF metadata
+* [ ] https://github.com/genenetwork/genenetwork2/blob/testing/scripts/sample_count.py
 * [ ] Describe Generif access for Rob
 * [ ] Add case attributes to RDF and share with Felix
 * [ ] xapian search, add dataset size keys, as well as GN accession id, trait id, and date
 * [ ] Improve xapian markdown docs to show all used fields/keys with examples
-* [ ] Use aider
-* [ ] Add hashes to RDF metadata(?)
+* [+] Use aider
+* [ ] Rest API for precompute output
 
 ## Later
 
