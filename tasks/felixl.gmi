@@ -1,4 +1,4 @@
-# Tasks for Munyoki
+# Tasks for Felix
 
 ## Tags
 
@@ -6,12 +6,32 @@
 * assigned: felixl
 * status: in progress
 
-## October
+## Tasks
 
+#### This week
+
+* [ ] Analyse and discuss BXD case attributes with Rob --- both group level and dataset level
+* [ ] Sane representation of case attributes in RDF with @bonfacem
+* [ ] Present C.elegans protocol and example mappings with GEMMA/Rqtl
+* [ ] Uploader - setting up code with @fredm
+*     - run small database mysql locally
+*     - aider with Sonnet + code fixes
+*     - document
+* [ ] Review paper: one-liners for @pjotrp - why is this important for GN and/or thesis
+* [ ] Sort @alexm application with Pwani
+
+### Later weeks
+
+* [ ] Review paper on genotyping
+* [ ] HS Rat
+* [ ] Prepare others for C.elegans
 * [ ] Upload Arabidopsis dataset
 * [ ] Upload Medaka dataset
 
-## Tasks
+### Done
+
+
+
 ### On going tasks
 
 => https://issues.genenetwork.org/search?query=assigned%3Afelixl+AND+is%3Aopen&type=open-issue All in-progress tasks

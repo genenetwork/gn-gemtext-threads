@@ -1,4 +1,4 @@
-# Tasks for Fred
+# Tasks for Alex
 
 ## Description
 
@@ -16,11 +16,20 @@ You can refine the search by constraining the checks some more, e.g. to get high
 
 # Tasks
 
-* [ ] Make GNQA reliable (with @fahamu)
-* [ ] Improve UX for GNQA (with @shelbys)
-* [ ] GNQA add abstracts pubmed (with @shelbys)
-=> ../issues/fetch-pubmed-references-to-gnqa
+## This week
 
-* [ ] Edit markdown/gemtext pages through web UI (with @bonfacem)
-* [ ] GNQA add GN metadata with @bonfacem
-* [ ] Create terminal output for external processes (WGCNA as a pilot, with @bonfacem and @pjotrp)
+* [ ] Rqtl2 - BXD output work on CD
+* [ ] Rqtl2 - ITP output - 3K individuals - family file
+* [ ] Start application
+
+## Next week(s)
+
+* [+] Create terminal output for external processes (Rqtl1, Rqtl2, pair-scan are done --- WGCNA as a pilot, with @bonfacem and @pjotrp)
+
+## Done
+
+* [X] Make GNQA reliable (with @fahamu)
+* [X] Improve UX for GNQA (with @shelbys) -- Adrian wants to use our AI UX for their setup
+* [X] GNQA add abstracts pubmed (with @shelbys)
+=> ../issues/fetch-pubmed-references-to-gnqa
+* [X] Edit markdown/gemtext pages through web UI (with @bonfacem)

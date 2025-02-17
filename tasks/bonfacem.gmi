@@ -8,16 +8,32 @@
 
 ## Tasks
 
-* [X] Indexing generif data / Improve Local Search
-* [ ] lmdb publishdata output and share with Pjotr and Johannes
-* [ ] Add lmdb output hashes to RDF metadata
-* [ ] https://github.com/genenetwork/genenetwork2/blob/testing/scripts/sample_count.py
-* [ ] Describe Generif access for Rob
-* [ ] Add case attributes to RDF and share with Felix
+### This week
+
+* [ ] Describe Generif access for Rob in an email
+* [ ] Migrate fahamuai RAG to VPS and switch tokens to GGI OpenAI account
+*     1. running AI server using (our) VPS and our tokens
+*     2. read the code base
+*     3. assess porting it to Guix (don't do any work)
+* [ ] Add lmdb output hashes with index and export LMDB_DATA_DIRECTORY
+* [ ] Share small database with @pjotrp and @felixl
+
+### Later
+
+* [ ] Sample/individual/strain/genometype counts for PublishData only - ProbeSetData? https://github.com/genenetwork/genenetwork2/blob/testing/scripts/sample_count.py - mirror in RDF and use global search
+*     - search for all traits that have more than X samples
 * [ ] xapian search, add dataset size keys, as well as GN accession id, trait id, and date
-* [ ] Improve xapian markdown docs to show all used fields/keys with examples
-* [+] Use aider
-* [ ] Rest API for precompute output
+*     - Improve xapian markdown docs to show all used fields/keys with examples
+* [+] Use aider - give a presentation in the coming weeks
+* [ ] Add case attributes to RDF and share with Felix (depends on @felixl)
+
+### Even later
+
+* [ ] Rest API for precompute output (mapping with GEMMA)
+* [ ] GNQA add GN metadata (to RAG)
+*     - Focus on RIF
+*     - triple -> plain text
+*     - bob :fatherof nancy -> Bob is the father of Nancy.
 
 ## Later
 
@@ -45,3 +61,6 @@ Should something in one of these closed issues be amiss, we can always and shoul
 Currently closed issues are:
 
 => https://issues.genenetwork.org/search?type=closed-issue&query=assigned%3ABonfaceKilz%20AND%20type%3Aissue%20AND%20is%3Aclosed Closed Issues
+
+* [X] Indexing generif data / Improve Local Search
+* [X] lmdb publishdata output and share with Pjotr and Johannes

@@ -18,6 +18,7 @@ Generally work applies to NIH/R073237482 and other grants.
 
 ## Systems
 
+* [ ] synchronize git repos for public, CD, fallback and production using sheepdog and document
 * [ ] make sure production is up to scratch (see stable below)
 * [ ] backup tux04
 * [ ] add Ceph for distributed network storage 1U01HG013760
