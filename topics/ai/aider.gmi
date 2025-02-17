@@ -1,12 +1,16 @@
 # Aider
 
-https://aider.chat/
+=> https://aider.chat/
 
+```
 python3 -m venv ~/opt/python-aider
 ~/opt/python-aider/bin/python3 -m pip install aider-install
 ~/opt/python-aider/bin/aider-install
+```
 
 Installed 1 executable: aider
 Executable directory /home/wrk/.local/bin is already in PATH
 
+```
 aider --model gpt-4o --openai-api-key aa...
+```
