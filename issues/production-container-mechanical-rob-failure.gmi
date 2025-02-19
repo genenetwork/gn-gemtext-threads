@@ -1,0 +1,26 @@
+# Production Container: `mechanical-rob` Failure
+
+## Tags
+
+* status: open
+* priority: high
+* type: bug
+* assigned: fredm
+* keywords: genenetwork, production, mechanical-rob
+
+## Description
+
+After deploying the latest commits to https://gn2-fred.genenetwork.org on 2025-02-19UTC-0600, with the following commits:
+
+* genenetwork2: 2a3df8cfba6b29dddbe40910c69283a1afbc8e51
+* genenetwork3: 99fd5070a84f37f91993f329f9cc8dd82a4b9339
+* gn-auth: 073395ff331042a5c686a46fa124f9cc6e10dd2f
+* gn-libs: 72a95f8ffa5401649f70978e863dd3f21900a611
+
+I had the (not so) bright idea to run the `mechanical-rob` tests against it before pushing it to production, proper. Here's where I ran into problems: some of the `mechanical-rob` tests failed, specifically, the correlation tests.
+
+Meanwhile, a run of the same tests against https://cd.genenetwork.org with the same commits was successful:
+
+=> https://ci.genenetwork.org/jobs/genenetwork2-mechanical-rob/1531 See this.
+
+This points to a possible problem with the setup of the production container, that leads to failures where none should be. This needs investigation and fixing.
