@@ -194,3 +194,25 @@ Version: '10.5.23-MariaDB-0+deb11u1-log'  socket: '/run/mysqld/mysqld.sock'  por
 2025-02-20  7:50:17 5 [Warning] Access denied for user 'root'@'localhost' (using password: NO)
 2025-02-20  7:50:17 0 [Note] InnoDB: Buffer pool(s) load completed at 250220  7:50:17
 ```
+
+A possible issue is the use of the environment variable SQL_URI at this point:
+
+=> https://github.com/genenetwork/genenetwork2/blob/testing/gn2/wqflask/correlation/rust_correlation.py#L34
+
+which is requested
+
+=> https://github.com/genenetwork/genenetwork2/blob/testing/gn2/wqflask/correlation/rust_correlation.py#L7 from here.
+
+I tried setting an environment variable "SQL_URI" with the same value as the config and rebuilt the container. That did not fix the problem.
+
+Running the query directly in the default mysql client also fails with:
+
+```
+ERROR 2013 (HY000): Lost connection to MySQL server during query
+```
+
+Huh, so this was not a code problem.
+
+Configured database to allow upgrade of tables if necessary and restarted mariadbd.
+
+The problem still persists.
