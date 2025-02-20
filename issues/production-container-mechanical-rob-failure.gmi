@@ -24,3 +24,173 @@ Meanwhile, a run of the same tests against https://cd.genenetwork.org with the s
 => https://ci.genenetwork.org/jobs/genenetwork2-mechanical-rob/1531 See this.
 
 This points to a possible problem with the setup of the production container, that leads to failures where none should be. This needs investigation and fixing.
+
+### Update 2025-02-20
+
+The MariaDB server is crashing. To reproduce:
+
+* Go to https://gn2-fred.genenetwork.org/show_trait?trait_id=1435464_at&dataset=HC_M2_0606_P
+* Click on "Calculate Correlations" to expand
+* Click "Compute"
+
+Observe that after a little while, the system fails with the following errors:
+
+* `MySQLdb.OperationalError: (2013, 'Lost connection to MySQL server during query')`
+* `MySQLdb.OperationalError: (2006, 'MySQL server has gone away')`
+
+I attempted updating the configuration for MariaDB, setting the `max_allowed_packet` to 16M and then 64M, but that did not resolve the problem.
+
+The log files indicate the following:
+
+```
+2025-02-20  7:46:07 0 [Note] Recovering after a crash using /var/lib/mysql/gn0-binary-log
+2025-02-20  7:46:07 0 [Note] Starting crash recovery...
+2025-02-20  7:46:07 0 [Note] Crash recovery finished.
+2025-02-20  7:46:07 0 [Note] Server socket created on IP: '0.0.0.0'.
+2025-02-20  7:46:07 0 [Warning] 'user' entry 'webqtlout@tux01' ignored in --skip-name-resolve mode.
+2025-02-20  7:46:07 0 [Warning] 'db' entry 'db_webqtl webqtlout@tux01' ignored in --skip-name-resolve mode.
+2025-02-20  7:46:07 0 [Note] Reading of all Master_info entries succeeded
+2025-02-20  7:46:07 0 [Note] Added new Master_info '' to hash table
+2025-02-20  7:46:07 0 [Note] /usr/sbin/mariadbd: ready for connections.
+Version: '10.5.23-MariaDB-0+deb11u1-log'  socket: '/run/mysqld/mysqld.sock'  port: 3306  Debian 11
+2025-02-20  7:46:07 4 [Warning] Access denied for user 'root'@'localhost' (using password: NO)
+2025-02-20  7:46:07 5 [Warning] Access denied for user 'root'@'localhost' (using password: NO)
+2025-02-20  7:46:07 0 [Note] InnoDB: Buffer pool(s) load completed at 250220  7:46:07
+250220  7:50:12 [ERROR] mysqld got signal 11 ;
+Sorry, we probably made a mistake, and this is a bug.
+
+Your assistance in bug reporting will enable us to fix this for the next release.
+To report this bug, see https://mariadb.com/kb/en/reporting-bugs
+
+We will try our best to scrape up some info that will hopefully help
+diagnose the problem, but since we have already crashed, 
+something is definitely wrong and this may fail.
+
+Server version: 10.5.23-MariaDB-0+deb11u1-log source revision: 6cfd2ba397b0ca689d8ff1bdb9fc4a4dc516a5eb
+key_buffer_size=10485760
+read_buffer_size=131072
+max_used_connections=1
+max_threads=2050
+thread_count=1
+It is possible that mysqld could use up to 
+key_buffer_size + (read_buffer_size + sort_buffer_size)*max_threads = 4523497 K  bytes of memory
+Hope that's ok; if not, decrease some variables in the equation.
+
+Thread pointer: 0x7f599c000c58
+Attempting backtrace. You can use the following information to find out
+where mysqld died. If you see no messages after this, something went
+terribly wrong...
+stack_bottom = 0x7f6150282d78 thread_stack 0x49000
+/usr/sbin/mariadbd(my_print_stacktrace+0x2e)[0x55f43330c14e]
+/usr/sbin/mariadbd(handle_fatal_signal+0x475)[0x55f432e013b5]
+sigaction.c:0(__restore_rt)[0x7f615a1cb140]
+/usr/sbin/mariadbd(+0xcbffbe)[0x55f43314efbe]
+/usr/sbin/mariadbd(+0xd730ec)[0x55f4332020ec]
+/usr/sbin/mariadbd(+0xd1b36b)[0x55f4331aa36b]
+/usr/sbin/mariadbd(+0xd1cd8e)[0x55f4331abd8e]
+/usr/sbin/mariadbd(+0xc596f3)[0x55f4330e86f3]
+/usr/sbin/mariadbd(_ZN7handler18ha_index_next_sameEPhPKhj+0x2a5)[0x55f432e092b5]
+/usr/sbin/mariadbd(+0x7b54d1)[0x55f432c444d1]
+/usr/sbin/mariadbd(_Z10sub_selectP4JOINP13st_join_tableb+0x1f8)[0x55f432c37da8]
+/usr/sbin/mariadbd(_ZN10JOIN_CACHE24generate_full_extensionsEPh+0x134)[0x55f432d24224]
+/usr/sbin/mariadbd(_ZN10JOIN_CACHE21join_matching_recordsEb+0x206)[0x55f432d245d6]
+/usr/sbin/mariadbd(_ZN10JOIN_CACHE12join_recordsEb+0x1cf)[0x55f432d23eff]
+/usr/sbin/mariadbd(_Z16sub_select_cacheP4JOINP13st_join_tableb+0x8a)[0x55f432c382fa]
+/usr/sbin/mariadbd(_ZN4JOIN10exec_innerEv+0xd16)[0x55f432c63826]
+/usr/sbin/mariadbd(_ZN4JOIN4execEv+0x35)[0x55f432c63cc5]
+/usr/sbin/mariadbd(_Z12mysql_selectP3THDP10TABLE_LISTR4ListI4ItemEPS4_jP8st_orderS9_S7_S9_yP13select_resultP18st_select_lex_unitP13st_select_lex+0x106)[0x55f432c61c26]
+/usr/sbin/mariadbd(_Z13handle_selectP3THDP3LEXP13select_resultm+0x138)[0x55f432c62698]
+/usr/sbin/mariadbd(+0x762121)[0x55f432bf1121]
+/usr/sbin/mariadbd(_Z21mysql_execute_commandP3THD+0x3d6c)[0x55f432bfdd1c]
+/usr/sbin/mariadbd(_Z11mysql_parseP3THDPcjP12Parser_statebb+0x20b)[0x55f432bff17b]
+/usr/sbin/mariadbd(_Z16dispatch_command19enum_server_commandP3THDPcjbb+0xdb5)[0x55f432c00f55]
+/usr/sbin/mariadbd(_Z10do_commandP3THD+0x120)[0x55f432c02da0]
+/usr/sbin/mariadbd(_Z24do_handle_one_connectionP7CONNECTb+0x2f2)[0x55f432cf8b32]
+/usr/sbin/mariadbd(handle_one_connection+0x5d)[0x55f432cf8dad]
+/usr/sbin/mariadbd(+0xbb4ceb)[0x55f433043ceb]
+nptl/pthread_create.c:478(start_thread)[0x7f615a1bfea7]
+x86_64/clone.S:97(__GI___clone)[0x7f6159dc6acf]
+
+Trying to get some variables.
+Some pointers may be invalid and cause the dump to abort.
+Query (0x7f599c012c50): SELECT ProbeSet.Name,ProbeSet.Chr,ProbeSet.Mb,
+                    ProbeSet.Symbol,ProbeSetXRef.mean,
+                    CONCAT_WS('; ', ProbeSet.description, ProbeSet.Probe_Target_Description) AS description,
+                    ProbeSetXRef.additive,ProbeSetXRef.LRS,Geno.Chr, Geno.Mb
+                    FROM ProbeSet INNER JOIN ProbeSetXRef
+                    ON ProbeSet.Id=ProbeSetXRef.ProbeSetId
+                    INNER JOIN Geno
+                    ON ProbeSetXRef.Locus = Geno.Name
+                    INNER JOIN Species
+                    ON Geno.SpeciesId = Species.Id
+                    WHERE ProbeSet.Name in ('1447591_x_at', '1422809_at', '1428917_at', '1438096_a_at', '1416474_at', '1453271_at', '1441725_at', '1452952_at', '1456774_at', '1438413_at', '1431110_at', '1453723_x_at', '1424124_at', '1448706_at', '1448762_at', '1428332_at', '1438389_x_at', '1455508_at', '1455805_x_at', '1433276_at', '1454989_at', '1427467_a_at', '1447448_s_at', '1438695_at', '1456795_at', '1454874_at', '1455189_at', '1448631_a_at', '1422697_s_at', '1423717_at', '1439484_at', '1419123_a_at', '1435286_at', '1439886_at', '1436348_at', '1437475_at', '1447667_x_at', '1421046_a_at', '1448296_x_at', '1460577_at', 'AFFX-GapdhMur/M32599_M_at', '1424393_s_at', '1426190_at', '1434749_at', '1455706_at', '1448584_at', '1434093_at', '1434461_at', '1419401_at', '1433957_at', '1419453_at', '1416500_at', '1439436_x_at', '1451413_at', '1455696_a_at', '1457190_at', '1455521_at', '1434842_s_at', '1442525_at', '1452331_s_at', '1428862_at', '1436463_at', '1438535_at', 'AFFX-GapdhMur/M32599_3_at', '1424012_at', '1440027_at', '1435846_x_at', '1443282_at', '1435567_at', '1450112_a_at', '1428251_at', '1429063_s_at', '1433781_a_at', '1436698_x_at', '1436175_at', '1435668_at', '1424683_at', '1442743_at', '1416944_a_at', '1437511_x_at', '1451254_at', '1423083_at', '1440158_x_at', '1424324_at', '1426382_at', '1420142_s_at', '1434553_at', '1428772_at', '1424094_at', '1435900_at', '1455322_at', '1453283_at', '1428551_at', '1453078_at', '1444602_at', '1443836_x_at', '1435590_at', '1434283_at', '1435240_at', '1434659_at', '1427032_at', '1455278_at', '1448104_at', '1421247_at', 'AFFX-MURINE_b1_at', '1460216_at', '1433969_at', '1419171_at', '1456699_s_at', '1456901_at', '1442139_at', '1421849_at', '1419824_a_at', '1460588_at', '1420131_s_at', '1446138_at', '1435829_at', '1434462_at', '1435059_at', '1415949_at', '1460624_at', '1426707_at', '1417250_at', '1434956_at', '1438018_at', '1454846_at', '1435298_at', '1442077_at', '1424074_at', '1428883_at', '1454149_a_at', '1423925_at', '1457060_at', '1433821_at', '1447923_at', '1460670_at', '1434468_at', '1454980_at', '1426913_at', '1456741_s_at', '1449278_at', '1443534_at', '1417941_at', '1433167_at', '1434401_at', '1456516_x_at', '1451360_at', 'AFFX-GapdhMur/M32599_5_at', '1417827_at', '1434161_at', '1448979_at', '1435797_at', '1419807_at', '1418330_at', '1426304_x_at', '1425492_at', '1437873_at', '1435734_x_at', '1420622_a_at', '1456019_at', '1449200_at', '1455314_at', '1428419_at', '1426349_s_at', '1426743_at', '1436073_at', '1452306_at', '1436735_at', '1439529_at', '1459347_at', '1429642_at', '1438930_s_at', '1437380_x_at', '1459861_s_at', '1424243_at', '1430503_at', '1434474_at', '1417962_s_at', '1440187_at', '1446809_at', '1436234_at', '1415906_at', 'AFFX-MURINE_B2_at', '1434836_at', '1426002_a_at', '1448111_at', '1452882_at', '1436597_at', '1455915_at', '1421846_at', '1428693_at', '1422624_at', '1423755_at', '1460367_at', '1433746_at', '1454872_at', '1429194_at', '1424652_at', '1440795_x_at', '1458690_at', '1434355_at', '1456324_at', '1457867_at', '1429698_at', '1423104_at', '1437585_x_at', '1437739_a_at', '1445605_s_at', '1436313_at', '1449738_s_at', '1437525_a_at', '1454937_at', '1429043_at', '1440091_at', '1422820_at', '1437456_x_at', '1427322_at', '1446649_at', '1433568_at', '1441114_at', '1456541_x_at', '1426985_s_at', '1454764_s_at', '1424071_s_at', '1429251_at', '1429155_at', '1433946_at', '1448771_a_at', '1458664_at', '1438320_s_at', '1449616_s_at', '1435445_at', '1433872_at', '1429273_at', '1420880_a_at', '1448645_at', '1449646_s_at', '1428341_at', '1431299_a_at', '1433427_at', '1418530_at', '1436247_at', '1454350_at', '1455860_at', '1417145_at', '1454952_s_at', '1435977_at', '1434807_s_at', '1428715_at', '1418117_at', '1447947_at', '1431781_at', '1428915_at', '1427197_at', '1427208_at', '1455460_at', '1423899_at', '1441944_s_at', '1455429_at', '1452266_at', '1454409_at', '1426384_a_at', '1428725_at', '1419181_at', '1454862_at', '1452907_at', '1433794_at', '1435492_at', '1424839_a_at', '1416214_at', '1449312_at', '1436678_at', '1426253_at', '1438859_x_at', '1448189_a_at', '1442557_at', '1446174_at', '1459718_x_at', '1437613_s_at', '1456509_at', '1455267_at', '1440480_at', '1417296_at', '1460050_x_at', '1433585_at', '1436771_x_at', '1424294_at', '1448648_at', '1417753_at', '1436139_at', '1425642_at', '1418553_at', '1415747_s_at', '1445984_at', '1440024_at', '1448720_at', '1429459_at', '1451459_at', '1428853_at', '1433856_at', '1426248_at', '1417765_a_at', '1439459_x_at', '1447023_at', '1426088_at', '1440825_s_at', '1417390_at', '1444744_at', '1435618_at', '1424635_at', '1443727_x_at', '1421096_at', '1427410_at', '1416860_s_at', '1442773_at', '1442030_at', '1452281_at', '1434774_at', '1416891_at', '1447915_x_at', '1429129_at', '1418850_at', '1416308_at', '1422858_at', '1447679_s_at', '1440903_at', '1417321_at', '1452342_at', '1453510_s_at', '1454923_at', '1454611_a_at', '1457532_at', '1438440_at', '1434232_a_at', '1455878_at', '1455571_x_at', '1436401_at', '1453289_at', '1457365_at', '1436708_x_at', '1434494_at', '1419588_at', '1433679_at', '1455159_at', '1428982_at', '1446510_at', '1434131_at', '1418066_at', '1435346_at', '1449415_at', '1455384_x_at', '1418817_at', '1442073_at', '1457265_at', '1447361_at', '1418039_at', '1428467_at', '1452224_at', '1417538_at', '1434529_x_at', '1442149_at', '1437379_x_at', '1416473_a_at', '1432750_at', '1428389_s_at', '1433823_at', '1451889_at', '1438178_x_at', '1441807_s_at', '1416799_at', '1420623_x_at', '1453245_at', '1434037_s_at', '1443012_at', '1443172_at', '1455321_at', '1438396_at', '1440823_x_at', '1436278_at', '1457543_at', '1452908_at', '1417483_at', '1418397_at', '1446589_at', '1450966_at', '1447877_x_at', '1446524_at', '1438592_at', '1455589_at', '1428629_at', '1429585_s_at', '1440020_at', '1417365_a_at', '1426442_at', '1427151_at', '1437377_a_at', '1433995_s_at', '1435464_at', '1417007_a_at', '1429690_at', '1427999_at', '1426819_at', '1454905_at', '1439516_at', '1434509_at', '1428707_at', '1416793_at', '1440822_x_at', '1437327_x_at', '1428682_at', '1435004_at', '1434238_at', '1417581_at', '1434699_at', '1455597_at', '1458613_at', '1456485_at', '1435122_x_at', '1452864_at', '1453122_at', '1435254_at', '1451221_at', '1460168_at', '1455336_at', '1427965_at', '1432576_at', '1455425_at', '1428762_at', '1455459_at', '1419317_x_at', '1434691_at', '1437950_at', '1426401_at', '1457261_at', '1433824_x_at', '1435235_at', '1437343_x_at', '1439964_at', '1444280_at', '1455434_a_at', '1424431_at', '1421519_a_at', '1428412_at', '1434010_at', '1419976_s_at', '1418887_a_at', '1428498_at', '1446883_at', '1435675_at', '1422599_s_at', '1457410_at', '1444437_at', '1421050_at', '1437885_at', '1459754_x_at', '1423807_a_at', '1435490_at', '1426760_at', '1449459_s_at', '1432098_a_at', '1437067_at', '1435574_at', '1433999_at', '1431289_at', '1428919_at', '1425678_a_at', '1434924_at', '1421640_a_at', '1440191_s_at', '1460082_at', '1449913_at', '1439830_at', '1425020_at', '1443790_x_at', '1436931_at', '1454214_a_at', '1455854_a_at', '1437061_at', '1436125_at', '1426385_x_at', '1431893_a_at', '1417140_a_at', '1435333_at', '1427907_at', '1434446_at', '1417594_at', '1426518_at', '1437345_a_at', '1420091_s_at', '1450058_at', '1435161_at', '1430348_at', '1455778_at', '1422653_at', '1447942_x_at', '1434843_at', '1454956_at', '1454998_at', '1427384_at', '1439828_at') AND
+                    Species.Name = 'mouse' AND
+                    ProbeSetXRef.ProbeSetFreezeId IN (
+                      SELECT ProbeSetFreeze.Id
+                      FROM ProbeSetFreeze WHERE ProbeSetFreeze.Name = 'HC_M2_0606_P')
+
+Connection ID (thread ID): 41
+Status: NOT_KILLED
+
+Optimizer switch: index_merge=on,index_merge_union=on,index_merge_sort_union=on,index_merge_intersection=on,index_merge_sort_intersection=off,engine_condition_pushdown=off,index_condition_pushdown=on,derived_merge=on,derived_with_keys=on,firstmatch=on,loosescan=on,materialization=on,in_to_exists=on,semijoin=on,partial_match_rowid_merge=on,partial_match_table_scan=on,subquery_cache=on,mrr=off,mrr_cost_based=off,mrr_sort_keys=off,outer_join_with_cache=on,semijoin_with_cache=on,join_cache_incremental=on,join_cache_hashed=on,join_cache_bka=on,optimize_join_buffer_size=on,table_elimination=on,extended_keys=on,exists_to_in=on,orderby_uses_equalities=on,condition_pushdown_for_derived=on,split_materialized=on,condition_pushdown_for_subquery=on,rowid_filter=on,condition_pushdown_from_having=on,not_null_range_scan=off
+
+The manual page at https://mariadb.com/kb/en/how-to-produce-a-full-stack-trace-for-mariadbd/ contains
+information that should help you find out what is causing the crash.
+Writing a core file...
+Working directory at /export/mysql/var/lib/mysql
+Resource Limits:
+Limit                     Soft Limit           Hard Limit           Units     
+Max cpu time              unlimited            unlimited            seconds   
+Max file size             unlimited            unlimited            bytes     
+Max data size             unlimited            unlimited            bytes     
+Max stack size            8388608              unlimited            bytes     
+Max core file size        0                    unlimited            bytes     
+Max resident set          unlimited            unlimited            bytes     
+Max processes             3094157              3094157              processes 
+Max open files            64000                64000                files     
+Max locked memory         65536                65536                bytes     
+Max address space         unlimited            unlimited            bytes     
+Max file locks            unlimited            unlimited            locks     
+Max pending signals       3094157              3094157              signals   
+Max msgqueue size         819200               819200               bytes     
+Max nice priority         0                    0                    
+Max realtime priority     0                    0                    
+Max realtime timeout      unlimited            unlimited            us        
+Core pattern: core
+
+Kernel version: Linux version 5.10.0-22-amd64 (debian-kernel@lists.debian.org) (gcc-10 (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2) #1 SMP Debian 5.10.178-3 (2023-04-22)
+
+2025-02-20  7:50:17 0 [Note] Starting MariaDB 10.5.23-MariaDB-0+deb11u1-log source revision 6cfd2ba397b0ca689d8ff1bdb9fc4a4dc516a5eb as process 3086167
+2025-02-20  7:50:17 0 [Note] InnoDB: !!! innodb_force_recovery is set to 1 !!!
+2025-02-20  7:50:17 0 [Note] InnoDB: Uses event mutexes
+2025-02-20  7:50:17 0 [Note] InnoDB: Compressed tables use zlib 1.2.11
+2025-02-20  7:50:17 0 [Note] InnoDB: Number of pools: 1
+2025-02-20  7:50:17 0 [Note] InnoDB: Using crc32 + pclmulqdq instructions
+2025-02-20  7:50:17 0 [Note] InnoDB: Using Linux native AIO
+2025-02-20  7:50:17 0 [Note] InnoDB: Initializing buffer pool, total size = 17179869184, chunk size = 134217728
+2025-02-20  7:50:17 0 [Note] InnoDB: Completed initialization of buffer pool
+2025-02-20  7:50:17 0 [Note] InnoDB: Starting crash recovery from checkpoint LSN=1537379110991,1537379110991
+2025-02-20  7:50:17 0 [Note] InnoDB: Last binlog file '/var/lib/mysql/gn0-binary-log.000134', position 82843148
+2025-02-20  7:50:17 0 [Note] InnoDB: 128 rollback segments are active.
+2025-02-20  7:50:17 0 [Note] InnoDB: Removed temporary tablespace data file: "ibtmp1"
+2025-02-20  7:50:17 0 [Note] InnoDB: Creating shared tablespace for temporary tables
+2025-02-20  7:50:17 0 [Note] InnoDB: Setting file './ibtmp1' size to 12 MB. Physically writing the file full; Please wait ...
+2025-02-20  7:50:17 0 [Note] InnoDB: File './ibtmp1' size is now 12 MB.
+2025-02-20  7:50:17 0 [Note] InnoDB: 10.5.23 started; log sequence number 1537379111003; transaction id 3459549902
+2025-02-20  7:50:17 0 [Note] Plugin 'FEEDBACK' is disabled.
+2025-02-20  7:50:17 0 [Note] InnoDB: Loading buffer pool(s) from /export/mysql/var/lib/mysql/ib_buffer_pool
+2025-02-20  7:50:17 0 [Note] Loaded 'locales.so' with offset 0x7f9551bc0000
+2025-02-20  7:50:17 0 [Note] Recovering after a crash using /var/lib/mysql/gn0-binary-log
+2025-02-20  7:50:17 0 [Note] Starting crash recovery...
+2025-02-20  7:50:17 0 [Note] Crash recovery finished.
+2025-02-20  7:50:17 0 [Note] Server socket created on IP: '0.0.0.0'.
+2025-02-20  7:50:17 0 [Warning] 'user' entry 'webqtlout@tux01' ignored in --skip-name-resolve mode.
+2025-02-20  7:50:17 0 [Warning] 'db' entry 'db_webqtl webqtlout@tux01' ignored in --skip-name-resolve mode.
+2025-02-20  7:50:17 0 [Note] Reading of all Master_info entries succeeded
+2025-02-20  7:50:17 0 [Note] Added new Master_info '' to hash table
+2025-02-20  7:50:17 0 [Note] /usr/sbin/mariadbd: ready for connections.
+Version: '10.5.23-MariaDB-0+deb11u1-log'  socket: '/run/mysqld/mysqld.sock'  port: 3306  Debian 11
+2025-02-20  7:50:17 4 [Warning] Access denied for user 'root'@'localhost' (using password: NO)
+2025-02-20  7:50:17 5 [Warning] Access denied for user 'root'@'localhost' (using password: NO)
+2025-02-20  7:50:17 0 [Note] InnoDB: Buffer pool(s) load completed at 250220  7:50:17
+```
