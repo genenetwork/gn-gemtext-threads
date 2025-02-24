@@ -319,7 +319,7 @@ Currently we have two databases for deployment,
 from BXD mice and 'db_webqtl_plant' which contains all plant related
 material.
 
-Download one database from
+Download a recent database from
 
 => https://files.genenetwork.org/database/
 
