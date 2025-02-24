@@ -18,9 +18,13 @@ Generally work applies to NIH/R073237482 and other grants.
 
 ## Systems
 
-* [ ] synchronize git repos for public, CD, fallback and production using sheepdog and document
+* [ ] Backup production databases on Tux04
+*     - [ ] Dump redis
+*     - [ ] Dump sqlite
+*     - [ ] Dump mariadb
 * [ ] make sure production is up to scratch (see stable below)
-* [ ] backup tux04
+* [ ] Small database public
+* [ ] synchronize git repos for public, CD, fallback and production using sheepdog and document
 * [ ] add Ceph for distributed network storage 1U01HG013760
 * [ ] drop tux02 backups on balg01
 * [ ] drop backups NL

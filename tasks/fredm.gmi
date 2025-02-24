@@ -3,6 +3,10 @@
 # Tasks
 
 * [ ] Fix password weakness
+* [ ] Fix gn-docs and editing, e.g. facilities page by gn-guile in container
+* [ ] Unifiy container dirs
+* [ ] Fix wikidata gene aliases (see mapping page) with @pjotrp
+* [ ] Public SPARQL container?
 
 ## Description
 

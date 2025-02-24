@@ -1,0 +1,5 @@
+# Tasks for Zach
+
+# Tasks
+
+* [ ] Move non-ephemeral data out of redis into sqlite DB

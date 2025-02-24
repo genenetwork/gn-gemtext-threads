@@ -23,6 +23,9 @@
 *     - Improve xapian markdown docs to show all used fields/keys with examples
 *     - genewiki search (link in table? check with Rob)
 *     - base line with GN1 search - add tests
+*     - Fix missing search term for sh* - both menu search and global search
+*     - Use GN1 as a benchmark for search results (mechanical Rob?)
+*     - Xapian ranges for markers
 * [ ] With Alex get rqtl2 demo going in CD (for BXD)
 
 ### Later
