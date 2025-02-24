@@ -10,15 +10,17 @@
 
 #### This week
 
+* [ ] Finalize the slide deck - so it can be read on its own
 * [ ] Analyse and discuss BXD case attributes with Rob --- both group level and dataset level
 * [ ] Sane representation of case attributes in RDF with @bonfacem
-* [ ] Present C.elegans protocol and example mappings with GEMMA/Rqtl
+* [X] Present C.elegans protocol and example mappings with GEMMA/Rqtl
 * [ ] Uploader - setting up code with @fredm
-*     - run small database mysql locally
-*     - aider with Sonnet + code fixes
-*     - document
+*     - [X] run small database mysql locally
+*     - [X] aider with Sonnet + code fixes
+*     - [ ] document - add to code base - merge with Fred's tree - share changes with Pjotr & team
 * [ ] Review paper: one-liners for @pjotrp - why is this important for GN and/or thesis
-* [ ] Sort @alexm application with Pwani
+*     - [ ] list of relevant papers with one-liners - the WHY
+* [ ] Sort @alexm application with Pwani = this week
 
 ### Later weeks
 

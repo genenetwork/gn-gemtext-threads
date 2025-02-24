@@ -1,5 +1,9 @@
 # Tasks for Fred
 
+# Tasks
+
+* [ ] Fix password weakness
+
 ## Description
 
 These are the tasks and issues to be handled by Fred.
