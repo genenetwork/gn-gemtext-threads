@@ -2,6 +2,7 @@
 
 # Tasks
 
+* [ ] Move production files from sdc to sde
 * [ ] Fix password weakness
 * [ ] Fix gn-docs and editing, e.g. facilities page by gn-guile in container
 * [ ] Unifiy container dirs

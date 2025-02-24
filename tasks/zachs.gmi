@@ -2,4 +2,6 @@
 
 # Tasks
 
-* [ ] Move non-ephemeral data out of redis into sqlite DB
+* [ ] Move non-ephemeral data out of redis into sqlite DB - see JSON dump
+*   - [ ] Collections
+*   - [ ] permanent URIs(?)
