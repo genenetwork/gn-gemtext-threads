@@ -6,15 +6,28 @@
 * assigned: pjotrp
 * status: in progress
 
-# Notes
-
-The tasks here should probably be broken out into appropriately tagged issues, where they have not - they can be found and filtered out with tissue (formerly gnbug).
-
-=> https://issues.genenetwork.org
-
-Generally work applies to NIH/R073237482 and other grants.
-
 # Current
+
+## 1U01HG013760
+
+* Prefix-Free Parsing Compressed Suffix Tree (PFP) for tokenization
+* Mempig
+
+* [+] create backup server with @fredm
+* [+] Moni builds 1U01HG013760
+* [+] test framework wfmash - vertebrate tree and HPC compute?
+* [ ] gbam - data compression with Nick and Hasithak
+* [ ] accelerate wfmash with @santiago and team
+* [ ] package wfmash and Rust wfa2-lib
+* [ ] add Ceph for distributed network storage 1U01HG013760
+* [ ] Work on pangenome genotyping 1U01HG013760
+* [ ] update freebayes into Debian (version #)
+*     - [ ] static build and prepare for conda
+* [ ] update vcflib into Debian (version #)
+*     - [ ] static build and prepare for conda
+* [ ] pangenome as a 1st class input for GEMMA
+* kilifish pangenome with Paul and Dario
+* RAG with Shelby and Bonz
 
 ## Systems
 
@@ -23,12 +36,11 @@ Generally work applies to NIH/R073237482 and other grants.
 *     - [ ] Dump sqlite
 *     - [ ] Dump mariadb
 * [ ] make sure production is up to scratch (see stable below)
-* [ ] Small database public
 * [ ] synchronize git repos for public, CD, fallback and production using sheepdog and document
-* [ ] add Ceph for distributed network storage 1U01HG013760
 * [ ] drop tux02 backups on balg01
-* [ ] drop backups NL
+* [ ] drop backups in NL
 * [ ] reintroduce borg-borg
+* [X] Small database public
 
 ## Ongoing tasks (current/urgent)
 
@@ -38,8 +50,6 @@ Generally work applies to NIH/R073237482 and other grants.
 * [ ] Check email setup tux04
 * [+] Julia as part of GN3 deployment
 => /topics/deploy/julia.gmi
-* [ ] Work on pangenome genotyping 1U01HG013760
-* [+] Moni builds 1U01HG013760
 
 # Tasks
 
@@ -56,11 +66,11 @@ Now (X=done +=WIP _=kickoff ?=?)
 * [+] Build leadership team
 * [+] gBAM
 * [ ] p-value global search
-* [+] Xapian search add tags, notmuch style (with @zachs)
+* [+] Xapian search add tags, notmuch style (with @bonfacem and @zachs)
 
 => ../issues/systems/octopus
 
-* [ ] Add R/qtl2 and multi-parent support with Karl (DO and Magic populations)
+* [+] Add R/qtl2 and multi-parent support with Karl (DO and Magic populations)
 * [+] Fix slow search on Mariadb? Moving to xapian
 * [.] GeneNetwork paper
 *     + [ ] add FAIR statement
@@ -91,11 +101,7 @@ Later
 ### Set up stable server instance with new hardware
 
 * [ ] ssh-shell access for git markdown
-* [ ] R/qtl2 with Karl and Alex
-* [+] Set up opensmtpd as a service
-  + [ ] Add package dependency
-  + [X] Test on open port 25
-  + [ ] Add public-inbox (Arun)
+* [+] R/qtl2 with Karl and Alex, see [alex.gmi]
 
 => ./machine-room.gmi machine room
 
@@ -123,3 +129,12 @@ Later
 * [X] Fix mariadb index search - need to upgrade mariadb to convert final utf8mb4, see
   => ../issues/slow-sql-query-for-xapian-indexing.gmi
 * [X] Debian/free software issues incl. vcflib work in Zig and release
+* [X] Set up opensmtpd as a service
+
+# Notes
+
+The tasks here should probably be broken out into appropriately tagged issues, where they have not - they can be found and filtered out with tissue (formerly gnbug).
+
+=> https://issues.genenetwork.org
+
+Generally work applies to NIH/R073237482 and other grants.
