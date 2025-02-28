@@ -17,8 +17,9 @@ Luckily not too much is running on this machine and if we mount things again, mo
 * [X] fix groups and users
 * [X] get guix going
 * [X] get mariadb going
-* [ ] fire up GN2 service
-* [ ] fire up SPARQL service
+* [X] fire up GN2 service
+* [X] fire up SPARQL service
+* [X] sheepdog
 * [ ] fix CRON jobs and backups
 * [ ] test full reboots
 
@@ -245,3 +246,30 @@ Feb 23 14:04:31 genenetwork-production shepherd[1]: Service redis (PID 3977) exi
 ```
 
 This is caused by a newer version of redis. This is odd because we are using the same version from the container?!
+
+Actually it turned out the redis DB was corrupted on the SSD! Same for some other databases (ugh).
+
+Fred copied all data to an enterprise level storage, and we rolled back to some older DBs, so hopefully we'll be OK for now.
+
+# Reinstating backups
+
+In the next step we need to restore backups as described in
+
+=> /topics/systems/backups-with-borg
+
+I already created an ibackup user. Next we test the backup script for mariadb.
+
+One important step is to check the database:
+
+```
+/usr/bin/mariadb-check -c -u user -p* db_webqtl
+```
+
+A successful mariadb backup consists of multiple steps
+
+```
+2025-02-27 11:48:28 +0000 (ibackup@tux04) SUCCESS 0 <32m43s> mariabackup-dump
+2025-02-27 11:48:29 +0000 (ibackup@tux04) SUCCESS 0 <00m00s> mariabackup-make-consistent
+2025-02-27 12:16:37 +0000 (ibackup@tux04) SUCCESS 0 <28m08s> borg-tux04-sql-backup
+2025-02-27 12:16:46 +0000 (ibackup@tux04) SUCCESS 0 <00m07s> drop-rsync-balg01
+```

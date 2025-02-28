@@ -191,6 +191,10 @@ borg list genenetwork::borg-tux04-sql-20250209-01:43-Sun
 
 Make sure you not only see just a symlink.
 
+# More backups
+
+Our production server runs databases and file stores that need to be backed up too.
+
 # Drop backups
 
 Once backups work it is useful to copy them to a remote server, so when the machine stops functioning we have another chance at recovery. See
