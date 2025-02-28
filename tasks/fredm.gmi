@@ -1,8 +1,15 @@
 # Tasks for Fred
 
+# Tags
+
+* kanban: fredm
+* assigned: @fredm
+* status: in progress
+
 # Tasks
 
-* [ ] Move production files from sdc to sde
+* [ ] Add drives to Penguin2, see issues/systems/penguin2-raid5
+* [X] Move production files from sdc to sde
 * [ ] Fix password weakness
 * [ ] Fix gn-docs and editing, e.g. facilities page by gn-guile in container
 * [ ] Unifiy container dirs

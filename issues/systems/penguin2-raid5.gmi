@@ -1,0 +1,61 @@
+# Penguin2 RAID 5
+
+# Tags
+
+* assigned: @fredm, @pjotrp
+* status: in progress
+
+# Description
+
+The current RAID contains 3 disks:
+
+```
+root@penguin2:~# cat /proc/mdstat
+md0 : active raid5 sdb1[1] sda1[0] sdg1[4]
+/dev/md0         33T   27T  4.2T  87% /export
+```
+
+using /dev/sda,sdb,sdg
+
+The current root and swap is on
+
+```
+# root
+/dev/sdd1       393G  121G  252G  33% /
+# swap
+/dev/sdd5 partition 976M 76.5M   -2
+```
+
+We can therefore add four new disks in slots /dev/sdc,sde,sdf,sdh
+
+penguin2 has no out-of-band and no serial connector right now. That means any work needs to be done on the terminal.
+
+Boot loader menu:
+
+```
+menuentry 'Debian GNU/Linux' --class debian --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-simple-7ff268df-cb90-4cbc-9d76-7fd6677b4964' {
+        load_video
+        insmod gzio
+        if [ x$grub_platform = xxen ]; then insmod xzio; insmod lzopio; fi
+        insmod part_msdos
+        insmod ext2
+        set root='hd2,msdos1'
+        if [ x$feature_platform_search_hint = xy ]; then
+          search --no-floppy --fs-uuid --set=root --hint-bios=hd2,msdos1 --hint-efi=hd2,msdos1 --hint-baremetal=ahci2,msdos1  7ff268df-cb90-4cbc-9d76-7fd6677b4964
+        else
+          search --no-floppy --fs-uuid --set=root 7ff268df-cb90-4cbc-9d76-7fd6677b4964
+        fi
+        echo    'Loading Linux 5.10.0-18-amd64 ...'
+        linux   /boot/vmlinuz-5.10.0-18-amd64 root=UUID=7ff268df-cb90-4cbc-9d76-7fd6677b4964 ro  quiet
+        echo    'Loading initial ramdisk ...'
+        initrd  /boot/initrd.img-5.10.0-18-amd64
+}
+```
+
+Added to sdd MBR
+
+```
+root@penguin2:~# grub-install /dev/sdd
+Installing for i386-pc platform.
+Installation finished. No error reported.
+```
