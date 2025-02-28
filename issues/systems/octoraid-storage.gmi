@@ -1,0 +1,18 @@
+# OctoRAID
+
+We are building machines that can handle cheap drives.
+
+# octoraid01
+
+This is a jetson with 4 22TB seagate-ironwolf-pro-st22000nt001-22tb-enterprise-nas-hard-drives-7200-rpm.
+
+Unfortunately the stock kernel has no RAID support, so we simple mount the 4 drives (hosted on a USB-SATA bridge).
+
+Stress testing:
+
+```
+cd /export/nfs/lair01
+stress -v -d 1
+```
+
+Running on multiple disks the jetson is holding up well!
