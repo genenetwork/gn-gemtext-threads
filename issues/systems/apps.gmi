@@ -153,7 +153,7 @@ downloading from http://cran.r-project.org/src/contrib/Archive/KernSmooth/KernSm
 - 'configure' phasesha256 hash mismatch for /gnu/store/n05zjfhxl0iqx1jbw8i6vv1174zkj7ja-KernSmooth_2.23-17.tar.gz:
   expected hash: 11g6b0q67vasxag6v9m4px33qqxpmnx47c73yv1dninv2pz76g9b
   actual hash:   1ciaycyp79l5aj78gpmwsyx164zi5jc60mh84vxxzq4j7vlcdb5p
-hash mismatch for store item '/gnu/store/n05zjfhxl0iqx1jbw8i6vv1174zkj7ja-KernSmooth_2.23-17.tar.gz'
+  hash mismatch for store item '/gnu/store/n05zjfhxl0iqx1jbw8i6vv1174zkj7ja-KernSmooth_2.23-17.tar.gz'
 ```
 
 Guix checks and it is not great CRAN allows for changing tarballs with the same version number!! Luckily building with a more recent version of Guix just worked (TM). Now we create a root too:
@@ -186,10 +186,20 @@ and it looks like lines like these need to be updated:
 
 Let me ask the author Siamak Yousefi. I think we'll drop it.
 
+## longevity
+
+Package definition is at
+
+=> https://git.genenetwork.org/guix-bioinformatics/tree/gn/packages/mouse-longevity.scm
+
+Container is at
+
+=> https://git.genenetwork.org/guix-bioinformatics/tree/gn/services/bxd-power-container.scm
+
 ## jumpshiny
 
 ```
-balg01:~/gn-machines$ guix system container --network -L . -L ../guix-bioinformatics/ -L ../guix-past/modules/ --substitute-urls='https:
-//ci.guix.gnu.org https://bordeaux.guix.gnu.org https://cuirass.genenetwork.org' test-r-container.scm -L ../guix-forge/guix/
-/gnu/store/xyks73sf6pk78rvrwf45ik181v0zw8rx-run-container
+root@balg01:/home/j*/gn-machines# . /usr/local/guix-profiles/guix-pull/etc/profile
+guix system container --network -L . -L ../guix-forge/guix/ -L ../guix-bioinformatics/ -L ../guix-past/modules/ --substitute-urls='https://ci.guix.gnu.org https://bordeaux.guix.gnu.org https://cuirass.genenetwork.org' test-r-container.scm -L ../guix-forge/guix/gnu/store/xyks73sf6pk78rvrwf45ik181v0zw8rx-run-container
+/gnu/store/6y65x5jk3lxy4yckssnl32yayjx9nwl5-run-container
 ```
