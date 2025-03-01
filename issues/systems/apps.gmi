@@ -184,7 +184,7 @@ and it looks like lines like these need to be updated:
 
 => https://github.com/genenetwork/singleCellRshiny/blob/6b2a344dd0d02f65228ad8c350bac0ced5850d05/app.R#L167
 
-Let me ask the author Siamak Yousefi.
+Let me ask the author Siamak Yousefi. I think we'll drop it.
 
 ## jumpshiny
 

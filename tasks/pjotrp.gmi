@@ -16,6 +16,8 @@
 * [+] create backup server with @fredm
 * [+] Moni builds 1U01HG013760
 * [+] test framework wfmash - vertebrate tree and HPC compute?
+*     -  wfmash - wgatools -> PAF + FASTA to VCF
+*     - wfmash arch=native build
 * [ ] gbam - data compression with Nick and Hasithak
 * [ ] accelerate wfmash with @santiago and team
 * [ ] package wfmash and Rust wfa2-lib
@@ -31,25 +33,29 @@
 
 ## Systems
 
+* [ ] jumpshiny
+* [ ] pluto
 * [ ] Backup production databases on Tux04
-*     - [ ] Dump redis
-*     - [ ] Dump sqlite
-*     - [ ] Dump mariadb
+*     - [+] Dump containers w. databases
+*     - [X] Dump mariadb
+*     - [ ] backup remote
+*     - [ ] borg-borg
+*     - [ ] fix root scripts
 * [ ] make sure production is up to scratch (see stable below)
 * [ ] synchronize git repos for public, CD, fallback and production using sheepdog and document
 * [ ] drop tux02 backups on balg01
-* [ ] drop backups in NL
-* [ ] reintroduce borg-borg
 * [X] Small database public
 
 ## Ongoing tasks (current/urgent)
 
+* [ ] ~Felix, Alex, Rahul as friends of UTHSC
 * [ ] Precompute
-* [+] Set up stable GeneNetwork server instance with new hardware (see below)
-=> /topics/systems/fire-up-genenetwork-system-container.gmi
 * [ ] Check email setup tux04
-* [+] Julia as part of GN3 deployment
+* [ ] jbrowse plugin code - https://genenetwork.trop.in/mm10
+* [+] bulklmm Julia as part of GN3 deployment
 => /topics/deploy/julia.gmi
+* [X] Set up stable GeneNetwork server instance with new hardware (see below)
+=> /topics/systems/fire-up-genenetwork-system-container.gmi
 
 # Tasks
 
@@ -85,7 +91,7 @@ Longer term
 Later
 
 * [ ] Mempang25 1U01HG013760
-  + [ ] Invites
+  + [X] Invites
   + [ ] Payments
   + [ ] Rooms
   + [ ] Catering
