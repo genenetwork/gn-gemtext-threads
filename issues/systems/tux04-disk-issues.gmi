@@ -101,3 +101,33 @@ and nothing ;). Megacli is actually the tool to use
 ```
 megacli -AdpAllInfo -aAll
 ```
+
+# Database
+
+During a backup the DB shows this error:
+
+```
+2025-03-02 06:28:33 Database page corruption detected at page 1079428, retrying...\n[01] 2025-03-02 06:29:33 Database page corruption detected at page 1103108, retrying...
+```
+
+
+Interestingly the DB recovered on a second backup.
+
+The database is hosted on a solid /dev/sde Dell Ent NVMe FI. The log says
+
+```
+kernel: I/O error, dev sde, sector 2136655448 op 0x0:(READ) flags 0x80700 phys_seg 40 prio class 2
+```
+
+Suggests:
+
+=> https://stackoverflow.com/questions/50312219/blk-update-request-i-o-error-dev-sda-sector-xxxxxxxxxxx
+
+> The errors that you see are interface errors, they are not coming from the disk itself but rather from the connection to it. It can be the cable or any of the ports in the connection.
+> Since the CRC errors on the drive do not increase I can only assume that the problem is on the receive side of the machine you use. You should check the cable and try a different SATA port on the server.
+
+and someone wrote
+
+> analyzed that most of the reasons are caused by intensive reading and writing.  This is a CDN cache node. Type reading NVME temperature is relatively high, if it continues, it will start to throttle and then slowly collapse.
+
+and temperature on that drive has been 70 C.
