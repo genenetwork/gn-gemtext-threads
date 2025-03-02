@@ -131,3 +131,43 @@ and someone wrote
 > analyzed that most of the reasons are caused by intensive reading and writing.  This is a CDN cache node. Type reading NVME temperature is relatively high, if it continues, it will start to throttle and then slowly collapse.
 
 and temperature on that drive has been 70 C.
+
+Mariabd log is showing errors:
+
+```
+2025-03-02  6:54:47 0 [ERROR] InnoDB: Failed to read page 449925 from file './db_webqtl/SnpAll.ibd': Page read from tablespace is corrupted.
+2025-03-02  7:01:43 489015 [ERROR] Got error 180 when reading table './db_webqtl/ProbeSetXRef'
+2025-03-02  8:10:32 489143 [ERROR] Got error 180 when reading table './db_webqtl/ProbeSetXRef'
+```
+
+Let's try and dump those tables when the backup is done.
+
+```
+mariadb-dump -uwebqtlout db_webqtl SnpAll
+mariadb-dump: Error 1030: Got error 1877 "Unknown error 1877" from storage engine InnoDB when dumping table `SnpAll` at row: 0
+mariadb-dump -uwebqtlout db_webqtl ProbeSetXRef > ProbeSetXRef.sql
+```
+
+Eeep:
+
+```
+tux04:/etc$ mariadb-check -uwebqtlout -c db_webqtl ProbeSetXRef
+db_webqtl.ProbeSetXRef
+Warning  : InnoDB: Index ProbeSetFreezeId is marked as corrupted
+Warning  : InnoDB: Index ProbeSetId is marked as corrupted
+error    : Corrupt
+tux04:/etc$ mariadb-check -uwebqtlout -c db_webqtl SnpAll
+db_webqtl.SnpAll
+Warning  : InnoDB: Index PRIMARY is marked as corrupted
+Warning  : InnoDB: Index SnpName is marked as corrupted
+Warning  : InnoDB: Index Rs is marked as corrupted
+Warning  : InnoDB: Index Position is marked as corrupted
+Warning  : InnoDB: Index Source is marked as corrupted
+error    : Corrupt
+```
+
+On tux01 we have a working database
+
+```
+mysqldump -uwebqtlout db_webqtl SnpAll > SnpAll.sql
+```
