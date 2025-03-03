@@ -10,15 +10,22 @@
 
 ### This week
 
-* [ ] Describe Generif/wikidata access for Rob in an email with test account on CD
+* [ ] Set up meeting with ILRI
+      - Zasper https://news.ycombinator.com/item?id=42572057 - Alan
+* [+] Describe Generif/wikidata access for Rob in an email with test account on CD
 *     1. Send email to Rob
-*     2. Work on production
-* [ ] Migrate fahamuai RAG to VPS and switch tokens to GGI OpenAI account
+*     2. Work on production w. Fred
+* [+] Migrate fahamuai RAG to VPS and switch tokens to GGI OpenAI account
 *     1. Running AI server using (our) VPS and our tokens
-*     2. Read the code base
-*     3. Try ingestion and prompt (REST API)
+*        + Pjotr gives API key - OpenAI - model?
+*     2. Read the code base - Elixir is plumbing incl. authentication, Python processing text etc.
+*     3. Try ingestion and prompt (REST API) - check out postgres tables
 *     4. Backup state from production Elixir
 *     5. Assess porting it to Guix (don't do any work) - minimum version Elixir
+* [X] With Alex get rqtl2 demo going in CD (for BXD)
+
+### Later
+
 * [ ] xapian search, add dataset size keys, as well as GN accession id, trait id, and date/year
 *     - Improve xapian markdown docs to show all used fields/keys with examples
 *     - genewiki search (link in table? check with Rob)
@@ -26,10 +33,6 @@
 *     - Fix missing search term for sh* - both menu search and global search
 *     - Use GN1 as a benchmark for search results (mechanical Rob?)
 *     - Xapian ranges for markers
-* [ ] With Alex get rqtl2 demo going in CD (for BXD)
-
-### Later
-
 * [ ] Sample/individual/strain/genometype counts for PublishData only - ProbeSetData? https://github.com/genenetwork/genenetwork2/blob/testing/scripts/sample_count.py - mirror in RDF and use global search
 *     - search for all traits that have more than X samples
 * [+] Use aider - give a presentation in the coming weeks
