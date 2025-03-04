@@ -166,8 +166,41 @@ Warning  : InnoDB: Index Source is marked as corrupted
 error    : Corrupt
 ```
 
-On tux01 we have a working database
+On tux01 we have a working database, we can test with
 
 ```
+mysqldump --no-data --all-databases > table_schema.sql
 mysqldump -uwebqtlout db_webqtl SnpAll > SnpAll.sql
+```
+
+Running the backup with rate limiting from:
+
+Mar 02 17:09:59 tux04 sudo[548058]: pam_unix(sudo:session): session opened for user root(uid=0) by wrk(uid=1000)
+Mar 02 17:09:59 tux04 sudo[548058]:      wrk : TTY=pts/3 ; PWD=/export3/local/home/wrk/iwrk/deploy/gn-deploy-servers/scripts/tux04 ; USER=roo>
+Mar 02 17:09:55 tux04 sudo[548058]: pam_unix(sudo:auth): authentication failure; logname=wrk uid=1000 euid=0 tty=/dev/pts/3 ruser=wrk rhost= >
+Mar 02 17:04:26 tux04 su[548006]: pam_unix(su:session): session opened for user ibackup(uid=1003) by wrk(uid=0)
+
+Oh oh
+
+Tux04 is showing errors on all disks. We have to bail out. I am copying the
+potentially corrupted files to tux01 right now. We have backups, so nothing
+serious I hope. I am only worried about the myisam files we have because they
+have no strong internal validation:
+
+> 2025-03-04  8:32:45 502 [ERROR] db_webqtl.ProbeSetData: Record-count is not ok; is 5264578601   Should be: 5264580806
+> 2025-03-04  8:32:45 502 [Warning] db_webqtl.ProbeSetData: Found 28665 deleted space.   Should be 0
+> 2025-03-04  8:32:45 502 [Warning] db_webqtl.ProbeSetData: Found       2205 deleted blocks       Should be: 0
+> 2025-03-04  8:32:45 502 [ERROR] Got an error from thread_id=502, ./storage/myisam/ha_myisam.cc:1120
+> 2025-03-04  8:32:45 502 [ERROR] MariaDB thread id 502, OS thread handle 139625162532544, query id 837999 localhost webqtlout Checking table
+> CHECK TABLE `ProbeSetData`
+> 2025-03-04  8:34:02 79695 [ERROR] mariadbd: Table './db_webqtl/ProbeSetData' is marked as crashed and should be repaired
+
+
+Tux04 will require open heart 'disk controller' surgery and some severe testing before we move back. We'll also look at tux05-8 to see if they have similar problems.
+
+## Other servers
+
+```
+un 09 03:10:05 tux05 kernel: blk_update_request: I/O error, dev sda, sector 2364120624 op 0x0:(READ) flags 0x80700 phys_seg 4 prio class 0
+Dec 13 12:31:55 tux06 kernel: I/O error, dev sdb, sector 3909239837 op 0x9:(WRITE_ZEROES) flags 0x8000000 phys_seg 0 prio class 2
 ```
