@@ -8,9 +8,57 @@
 * [ ] Check global search
 * [ ] Check authentication
 * [ ] Check sending E-mails
+* [ ] Make sure info.genenetwork.org can reach the DB
+
+The following are at the system level
+
+* [ ] Make journalctl presistent
+* [ ] Update certificates in CRON
+* [ ] Run trim in CRON
+
 
 # Check database
 
 => topics/systems/mariadb/mariadb.gmi
 
 # Check sending E-mails
+
+The swaks package is quite useful to test for a valid receive host:
+
+```
+swaks --to testing-my-server@gmail.com --server smtp.uthsc.edu
+=== Trying smtp.uthsc.edu:25...
+=== Connected to smtp.uthsc.edu.
+<-  220 mailrouter8.uthsc.edu ESMTP NO UCE
+ -> EHLO tux04.uthsc.edu
+<-  250-mailrouter8.uthsc.edu
+<-  250-PIPELINING
+<-  250-SIZE 26214400
+<-  250-VRFY
+<-  250-ETRN
+<-  250-STARTTLS
+<-  250-ENHANCEDSTATUSCODES
+<-  250-8BITMIME
+<-  250-DSN
+<-  250 SMTPUTF8
+ -> MAIL FROM:<root@tux04.uthsc.edu>
+<-  250 2.1.0 Ok
+ -> RCPT TO:<pjotr2020@thebird.nl>
+<-  250 2.1.5 Ok
+ -> DATA
+<-  354 End data with <CR><LF>.<CR><LF>
+ -> Date: Thu, 06 Mar 2025 08:34:24 +0000
+ -> To: pjotr2020@thebird.nl
+ -> From: root@tux04.uthsc.edu
+ -> Subject: test Thu, 06 Mar 2025 08:34:24 +0000
+ -> Message-Id: <20250306083424.624509@tux04.uthsc.edu>
+ -> X-Mailer: swaks v20201014.0 jetmore.org/john/code/swaks/
+ ->
+ -> This is a test mailing
+ ->
+ ->
+ -> .
+<-  250 2.0.0 Ok: queued as 4157929DD
+ -> QUIT
+<-  221 2.0.0 Bye                                                                                                                             === Connection closed with remote host
+```
