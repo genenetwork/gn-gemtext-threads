@@ -60,4 +60,7 @@ Stop the running mariadb-guix.service. Restore the latest backup archive and ove
 => https://www.borgbackup.org/ Borg
 => https://borgbackup.readthedocs.io/en/stable/ Borg documentation
 
-#
+# Uprade mariadb
+
+It is wise to upgrade mariadb once in a while. In a disaster recovery it is better to move forward in versions too.
+Before upgrading make sure there is a decent backup of the current setup.

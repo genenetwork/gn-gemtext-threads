@@ -202,6 +202,50 @@ See also
 
 Tux04 will require open heart 'disk controller' surgery and some severe testing before we move back. We'll also look at tux05-8 to see if they have similar problems.
 
+## Recovery
+
+According to the logs tux04 started showing serious errors on March 2nd - when I introduced sanitizing the mariadb backup:
+
+```
+Mar 02 05:00:42 tux04 kernel: I/O error, dev sde, sector 2071078320 op 0x0:(READ) flags 0x80700 phys_seg 16 prio class 2
+Mar 02 05:00:58 tux04 kernel: I/O error, dev sde, sector 2083650928 op 0x0:(READ) flags 0x80700 phys_seg 59 prio class 2
+...
+```
+
+The log started on Feb 23 when we had our last reboot. It probably is a good idea to turn on persistent logging! Anyway, it is likely files were fine until March 2nd. Similarly the mariadb logs also show
+
+```
+2025-03-02  6:53:52 489007 [ERROR] mariadbd: Index for table './db_webqtl/ProbeSetData.MYI' is corrupt; try to repair it
+2025-03-02  6:53:52 489007 [ERROR] db_webqtl.ProbeSetData: Can't read key from filepos: 2269659136
+```
+
+So, if we can restore a backup from March 1st we should be reasonably confident it is sane.
+
+First is to backup the existing database(!) Next restore the new DB by changing the DB location (symlink in /var/lib/mysql as well as check /etc/mysql/mariadb.cnf).
+
+When upgrading it is an idea to switch on these in mariadb.cnf
+
+```
+# forcing recovery with these two lines:
+innodb_force_recovery=3
+innodb_purge_threads=0
+```
+
+Make sure to disable (and restart) once it is up and running!
+
+So the steps are:
+
+* [X] install updated guix version of mariadb in /usr/local/guix-profiles (don't use Debian!!)
+* [X] repair borg backup
+* [X] Stop old mariadb (on new host tux02)
+* [X] backup old mariadb database
+* [X] restore 'sane' version of DB from borg March 1st
+* [X] point to new DB in /var/lib/mysql and cnf file
+* [X] update systemd settings
+* [X] start mariadb new version with recovery setting in cnf
+* [X] check logs
+* [X] once running revert on recovery setting in cnf and restart
+
 ## Other servers
 
 ```

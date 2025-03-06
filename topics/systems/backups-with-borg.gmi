@@ -200,3 +200,19 @@ Our production server runs databases and file stores that need to be backed up t
 Once backups work it is useful to copy them to a remote server, so when the machine stops functioning we have another chance at recovery. See
 
 => ./backup-drops.gmi
+
+# Recovery
+
+With tux04 we ran into a problem where all disks were getting corrupted(!) Probably due to the RAID controller, but we still need to figure that one out.
+
+Anyway, we have to assume the DB is corrupt. Files are corrupt AND the backups are corrupt. Borg backup has checksums which you can
+
+```
+borg check repo
+```
+
+it has a --repair switch which we needed to remove some faults in the backup itself:
+
+```
+borg check --repair repo
+```
