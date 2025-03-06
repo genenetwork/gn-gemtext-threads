@@ -1,0 +1,16 @@
+# Update production checklist
+
+
+# Tasks
+
+* [ ] Check database
+* [ ] Check gemma working
+* [ ] Check global search
+* [ ] Check authentication
+* [ ] Check sending E-mails
+
+# Check database
+
+=> topics/systems/mariadb/mariadb.gmi
+
+# Check sending E-mails
