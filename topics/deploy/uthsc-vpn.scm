@@ -9,7 +9,9 @@
 ;; Put in the hosts you are interested in here.
 (define %hosts
   (list "octopus01"
-        "tux01.genenetwork.org"))
+        "tux01.genenetwork.org"
+        "tux03.genenetwork.org"
+        "tux04.genenetwork.org"))
 
 (define (ini-file name scm)
   "Return a file-like object representing INI file with @var{name} and

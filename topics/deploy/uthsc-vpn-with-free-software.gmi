@@ -10,6 +10,11 @@ $ openconnect-sso --server uthscvpn1.uthsc.edu --authgroup UTHSC
 ```
 Note that openconnect-sso should be run as a regular user, not as root. After passing Duo authentication, openconnect-sso will try to gain root priviliges to set up the network routes. At that point, it will prompt you for your password using sudo.
 
+## Recommended way
+
+The recommended way is to use Arun's g-expression setup using guix. See below. It should just work, provided you have the
+chained certificate that you can get from the browser or one of us.
+
 ## Avoid tunneling all your network traffic through the VPN (aka Split Tunneling)
 
 openconnect, by default, tunnels all your traffic through the VPN. This is not good for your privacy. It is better to tunnel only the traffic destined to the specific hosts that you want to access. This can be done using the vpn-slice script.
