@@ -1,0 +1,17 @@
+# Replace Redis with SQL
+
+## Tags
+
+* status: open
+* priority: low
+* assigned: fredm
+* type: feature, feature-request, feature request
+* keywords: gn-uploader, uploader, redis, sqlite, sqlite3
+
+## Description
+
+We currently (as of 2024-06-27) use Redis for tracking any asynchronous jobs (e.g. QC on uploaded files).
+
+A lot of what we use redis for, we can do in one of the many SQL databases (we'll probably use SQLite3 anyway), which are more standardised, and easier to migrate data from and to. It has the added advantage that we can open multiple connections to the database, enabling the different processes to update the status and metadata of the same job consistently.
+
+Changes done here can then be migrated to the other systems, i.e. GN2, GN3, and gn-auth, as necessary.
