@@ -246,6 +246,25 @@ So the steps are:
 * [X] check logs
 * [X] once running revert on recovery setting in cnf and restart
 
+OK, looks like we are in business again. In the next phase we need to validate files. Normal files can be checked with
+
+```
+find -type f \( -not -name "md5sum.txt" \) -exec md5sum '{}' \; > md5sum.txt
+```
+
+and compared with another set on a different server with
+
+```
+md5sum -c md5sum.txt
+```
+
+* [X] check genotype file directory - some MAGIC files missing on tux01
+
+gn-docs is a git repo, so that is easily checked
+
+* [X] check gn-docs and sync with master repo
+
+
 ## Other servers
 
 ```
