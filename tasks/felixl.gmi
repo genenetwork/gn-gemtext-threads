@@ -16,14 +16,16 @@
 
 #### This week
 
+* [ ] Restless Legs Syndrome (RLS) - 'Traditional Phewas' - AI aspect - Johannes
 * [+] Finalize the slide deck - so it can be read on its own
-* [ ] Review paper: one-liners for @pjotrp - why is this important for GN and/or thesis
+* [.] Review paper: one-liners for @pjotrp - why is this important for GN and/or thesis
 *     - [ ] list of relevant papers with one-liners - the WHY
 => https://pmc.ncbi.nlm.nih.gov/articles/PMC3294237/
-* [ ] Analyse and discuss BXD case attributes with Rob --- both group level and dataset level
+* [+] Analyse and discuss BXD case attributes with Rob --- both group level and dataset level
 * [ ] Sane representation of case attributes in RDF with @bonfacem
 * [X] Present C.elegans protocol and example mappings with GEMMA/Rqtl
 * [ ] Uploader - setting up code with @fredm
+*     - [ ] Concrete improvement to work on
 *     - [X] run small database mysql locally
 *     - [X] aider with Sonnet + code fixes
 *     - [ ] document - add to code base - merge with Fred's tree - share changes with Pjotr & team

@@ -19,19 +19,17 @@ You can refine the search by constraining the checks some more, e.g. to get high
 ## This week
 
 * [ ] Start application - Pwani
-* [ ] Correlations - Fred is having issues - Rust updated on Guix
-*     - also take a look at long running SQL statement and large LIMIT value
+*     - [X] Got all transcripts
+* [+] Correlations - Fred is having issues - Rust updated on Guix
+*     - also take a look at long running SQL statement and large LIMIT value (check prod!)
 * [ ] Friend of UTHSC - Pjotr needs to send forms
-* [ ] Disable spinner on production
-* [ ] When bonz is ready wire up GNQA
-*     + balg-qa.genenetwork.org
-* [ ] Don't support new PIL - stick to the old one in guix-bioninformatics
+* [+] Disable spinner on production (check prod!)
 * [+] Rqtl2 - BXD output work on CD
 *     - [ ] should go to production w. fredm
-*     - [ ] DO mice family file - children are heterozygous - family file contains parents->child
-* [X] Rqtl1 - ITP output - 3K individuals - family file
+*     - [X] DO mice family file - children are heterozygous - family file contains parents->child
+*     - [ ] DO GN2 compatible by generating .geno files
 * [ ] Minor refactorings - Rqtl2 is hacky
-* [ ] Work in system container and document
+* [ ] Work in development system container and document
 => https://git.genenetwork.org/gn-machines/commit/?h=gn-local-development-container&id=589dcf32be90f5ec827cb6976d3cb5838d500ac0
 * [+] Create terminal output for external processes on *PRODUCTION* (Rqtl1, Rqtl2, GEMMA, pair-scan are done --- WGCNA as a pilot, with @bonfacem and @pjotrp)
 
@@ -44,6 +42,10 @@ You can refine the search by constraining the checks some more, e.g. to get high
 
 ## Done
 
+* [X] Rqtl1 - ITP output - 3K individuals - family file
+* [X] When bonz is ready wire up GNQA
+*     + balg-qa.genenetwork.org
+* [X] Don't support new PIL - stick to the old one in guix-bioninformatics
 * [X] Make GNQA reliable (with @fahamu)
 * [X] Improve UX for GNQA (with @shelbys) -- Adrian wants to use our AI UX for their setup
 * [X] GNQA add abstracts pubmed (with @shelbys)

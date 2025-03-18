@@ -14,13 +14,14 @@
 * Mempig
 
 * [+] create backup server with @fredm
+* [+] RAG with Shelby and Bonz
 * [+] Moni builds 1U01HG013760
 * [+] test framework wfmash - vertebrate tree and HPC compute?
 *     -  wfmash - wgatools -> PAF + FASTA to VCF
 *     - wfmash arch=native build
 * [ ] gbam - data compression with Nick and Hasithak
-* [ ] accelerate wfmash with @santiago and team
-* [ ] package wfmash and Rust wfa2-lib
+* [X] accelerate wfmash with @santiago and team
+* [+] package wfmash and Rust wfa2-lib
 * [ ] add Ceph for distributed network storage 1U01HG013760
 * [ ] Work on pangenome genotyping 1U01HG013760
 * [ ] update freebayes into Debian (version #)
@@ -29,7 +30,6 @@
 *     - [ ] static build and prepare for conda
 * [ ] pangenome as a 1st class input for GEMMA
 * kilifish pangenome with Paul and Dario
-* RAG with Shelby and Bonz
 
 ## Systems
 
