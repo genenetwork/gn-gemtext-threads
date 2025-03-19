@@ -33,11 +33,13 @@
 
 ### Later weeks
 
+* [ ] Kilifish into GN
 * [ ] Review paper on genotyping
 * [ ] HS Rat
 * [ ] Prepare others for C.elegans
 * [ ] Upload Arabidopsis dataset
 * [ ] Upload Medaka dataset
+* [ ] Work on improved DO and Ce genotyping
 
 ### Done
 
