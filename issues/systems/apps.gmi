@@ -198,6 +198,8 @@ Container is at
 
 ## jumpshiny
 
+Jumpshiny is hosted on balg01. Scripts are in tux02 git.
+
 ```
 root@balg01:/home/j*/gn-machines# . /usr/local/guix-profiles/guix-pull/etc/profile
 guix system container --network -L . -L ../guix-forge/guix/ -L ../guix-bioinformatics/ -L ../guix-past/modules/ --substitute-urls='https://ci.guix.gnu.org https://bordeaux.guix.gnu.org https://cuirass.genenetwork.org' test-r-container.scm -L ../guix-forge/guix/gnu/store/xyks73sf6pk78rvrwf45ik181v0zw8rx-run-container
