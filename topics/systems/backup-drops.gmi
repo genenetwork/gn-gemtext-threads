@@ -98,7 +98,7 @@ Next
 ssh -v -i ~/.ssh/id_ecdsa_backup bacchus@dropserver
 ```
 
-should give a Broken pipe(!) or it says `This service allows sftp connections only`.
+should give a Broken pipe(!) or -- more recently -- it says `This service allows sftp connections only`.
 When running sshd with a verbose switch you may see something like
 
 fatal: bad ownership or modes for chroot directory component "/export/backup/"
@@ -119,6 +119,18 @@ cd /export
 mkdir -p backup/bacchus/drop
 chown bacchus.bacchus backup/bacchus/drop/
 chmod 0700 backup/bacchus/drop/
+```
+
+Another error may be:
+
+```
+fusermount3: mount failed: Operation not permitted
+```
+
+This means you need to set the suid on the fusermount3 command. Bit nasty in Guix.
+
+```
+chmod 4755 /usr/bin/fusermount
 ```
 
 If auth.log says error: /dev/pts/11: No such file or directory on ssh, or received disconnect (...) disconnected by user we are good to go!
