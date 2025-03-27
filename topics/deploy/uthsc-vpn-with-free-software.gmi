@@ -77,6 +77,12 @@ Download it, download the UTHSC TLS certificate chain to uthsc-certificate.pem, 
 $(guix build -f uthsc-vpn.scm)
 ```
 
+to add a route by hand after you can do
+
+```
+ip route add 172.23.17.156 dev tun0
+```
+
 # Troubleshooting
 
 Older versions would not show a proper dialog for sign-in. Try
