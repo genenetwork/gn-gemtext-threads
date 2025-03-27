@@ -268,6 +268,22 @@ gn-docs is a git repo, so that is easily checked
 ## Other servers
 
 ```
-un 09 03:10:05 tux05 kernel: blk_update_request: I/O error, dev sda, sector 2364120624 op 0x0:(READ) flags 0x80700 phys_seg 4 prio class 0
-Dec 13 12:31:55 tux06 kernel: I/O error, dev sdb, sector 3909239837 op 0x9:(WRITE_ZEROES) flags 0x8000000 phys_seg 0 prio class 2
+journalctl -r|grep -i "I/O error"|less
+# tux05
+Nov 18 02:19:55 tux05 kernel: XFS (sdc2): metadata I/O error in "xfs_da_read_buf+0xd9/0x130 [xfs]" at daddr 0x78 len 8 error 74
+Nov 05 14:36:32 tux05 kernel: blk_update_request: I/O error, dev sdb, sector 1993616 op 0x1:(WRITE) flags
+0x0 phys_seg 35 prio class 0
+Jul 27 11:56:22 tux05 kernel: blk_update_request: I/O error, dev sdc, sector 55676616 op 0x0:(READ) flags
+0x80700 phys_seg 26 prio class 0
+Jul 27 11:56:22 tux05 kernel: blk_update_request: I/O error, dev sdc, sector 55676616 op 0x0:(READ) flags
+0x80700 phys_seg 26 prio class 0
+# tux06
+Apr 15 08:10:57 tux06 kernel: I/O error, dev sda, sector 21740352 op 0x1:(WRITE) flags 0x1000 phys_seg 4 prio class 2
+Dec 13 12:56:14 tux06 kernel: I/O error, dev sdb, sector 3910157327 op 0x9:(WRITE_ZEROES) flags 0x8000000 phys_seg 0 prio class 2
+# tux07
+Mar 27 08:00:11 tux07 mfschunkserver[1927469]: replication error: failed to create chunk (No space left)
+# tux08
+Mar 27 08:12:11 tux08 mfschunkserver[464794]: replication error: failed to create chunk (No space left)
 ```
+
+Tux04, 05 and 06 show disk errors. Tux07 and Tux08 are  overloaded with a full disk, but no other errors. We need to babysit Lizard more!

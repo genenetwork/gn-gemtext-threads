@@ -39,6 +39,7 @@ You can refine the search by constraining the checks some more, e.g. to get high
 * Check and fix CTL?
 * [+] Create terminal output for external processes (Rqtl1, Rqtl2, pair-scan are done --- WGCNA as a pilot, with @bonfacem and @pjotrp)
 * [ ] GNQA says there are no results, but has them
+* [ ] Correlations are slow
 
 ## Done
 
