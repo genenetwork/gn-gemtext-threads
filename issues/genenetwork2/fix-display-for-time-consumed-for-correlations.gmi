@@ -3,9 +3,9 @@
 ## Tags
 
 * type: bug
-* status: open
+* status: closed, completed
 * priority: low
-* assigned:
+* assigned: @alexm, @bonz
 * keywords: gn2, genenetwork2, genenetwork 2, gn3, genenetwork3 genenetwork 3, correlations, time display
 
 ## Description
