@@ -287,3 +287,25 @@ Mar 27 08:12:11 tux08 mfschunkserver[464794]: replication error: failed to creat
 ```
 
 Tux04, 05 and 06 show disk errors. Tux07 and Tux08 are  overloaded with a full disk, but no other errors. We need to babysit Lizard more!
+
+```
+stress -v -d 1
+```
+
+Write test:
+
+```
+dd if=/dev/zero of=./test bs=512k count=2048 oflag=direct
+```
+
+Read test:
+
+```
+/sbin/sysctl -w vm.drop_caches=3
+dd if=./test of=/dev/zero bs=512k count=2048
+```
+
+
+smartctl -a /dev/sdd -d megaraid,0
+
+RAID Controller in SL 3: Dell PERC H755N Front
