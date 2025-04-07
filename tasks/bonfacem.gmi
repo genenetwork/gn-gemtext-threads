@@ -9,7 +9,16 @@
 ## Tasks
 
 ### This week
-
+* [ ] Set-up grobit on balg01
+   - guix docker/native
+   - recent breaking changes
+* [ ] GeneRIF
+  - Merge recent changes first.  Ping Rob.
+  - Brainstorm ideas around log-in.
+  - Unlimited tokens that don't expire.
+  - Sync prod with CD -- sqlite.
+  - Distinguish CD from production -- banners/buttons/colors.
+* [ ] Correlations hash.
 * [ ] xapian search, add dataset size keys, as well as GN accession id, trait id, and date/year
 *     - Improve xapian markdown docs to show all used fields/keys with examples
 *     - genewiki search (link in table? check with Rob)
@@ -17,12 +26,12 @@
 *     - Fix missing search term for sh* - both menu search and global search
 *     - Use GN1 as a benchmark for search results (mechanical Rob?)
 *     - Xapian ranges for markers
-* [+] Set up meeting with ILRI
+* [X] Set up meeting with ILRI
 *     - Zasper https://news.ycombinator.com/item?id=42572057 - Alan
 * [+] Describe Generif/wikidata access for Rob in an email with test account on CD
 *     1. Send email to Rob
 *     2. Work on production w. Fred
-* [+] Migrate fahamuai RAG to VPS and switch tokens to GGI OpenAI account
+* [X] Migrate fahamuai RAG to VPS and switch tokens to GGI OpenAI account
 *     1. Running AI server using (our) VPS and our tokens
 *        + Pjotr gives API key - OpenAI - model?
 *     2. Read the code base - Elixir is plumbing incl. authentication, Python processing text etc.
