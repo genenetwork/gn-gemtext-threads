@@ -1,0 +1,37 @@
+# Broken Collections Features
+
+## Tags
+
+* type: bug
+* status: open
+* priority: high
+* assigned: zachs, fredm
+* keywords: gn2, genenetwork2, genenetwork 2, collections
+
+## Descriptions
+
+There are some features in the search results page, and/or the collections page that are broken — these are:
+
+* "CTL" feature
+* "MultiMap" feature
+* "Partial Correlations" feature
+* "Generate Heatmap" feature
+
+### Reproduce Issue
+
+* Go to https://genenetwork.org
+* Select "Mouse (Mus musculus, mm10) for "Species"
+* Select "BXD Family" for "Group"
+* Select "Traits and Cofactors" for "Type"
+* Select "BXD Published Phenotypes" for "Dataset"
+* Type "locomotion" in the "Get Any" field (without the quotes)
+* Click "Search"
+* In the results page, select the traits with the following "Record" values: "BXD_10050", "BXD_10051", "BXD_10088", "BXD_10091", "BXD_10092", "BXD_10455", "BXD_10569", "BXD_10570", "BXD_11316", "BXD_11317"
+* Click the "Add" button and add them to a new collection
+* In the resulting collections page, click the button for any of the listed failing features above
+
+### Failure modes
+
+* The "CTL" and "WCGNA" features have a failure mode that might have been caused by recent changes making use of AJAX calls, rather than submitting the form manually.
+* The "MultiMap" and "Generate Heatmap" features raise exceptions that need to be investigated and resolved
+* The "Partial Correlations" feature seems to run forever
