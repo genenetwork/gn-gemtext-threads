@@ -14,9 +14,9 @@
 2. Load data into GN - serve the communities
 3. Get comfortable with programming
 
-#### This week
+#### Previous week(s)
 
-* [ ] Restless Legs Syndrome (RLS) - 'Traditional Phewas' - AI aspect - Johannes
+* [x] Restless Legs Syndrome (RLS) - 'Traditional Phewas' - AI aspect - Johannes
 * [+] Finalize the slide deck - so it can be read on its own
 * [.] Review paper: one-liners for @pjotrp - why is this important for GN and/or thesis
 *     - [ ] list of relevant papers with one-liners - the WHY
@@ -30,6 +30,29 @@
 *     - [X] aider with Sonnet + code fixes
 *     - [ ] document - add to code base - merge with Fred's tree - share changes with Pjotr & team
 * [ ] Sort @alexm application with Pwani = this week
+
+### This week (07-04-2025 onwards) 
+
+* GN2 tasks 
+  * [ ] Progress on Kilifish 
+        - meet with Dennis (send him an email with all the queries needed) 
+        - progress to format and upload data to gn2 (to be ready by latest Friday!) 
+  * [ ] Make a milestone with genotype smoothing 
+
+* PhD tasks 
+  * [ ] Complete and share concept note and timeline to supervisors, have a meeting for progress 
+  * [ ] Make a milestone on chapter one manuscript (deep dive into the selected papers){THE BIG PICTURE; a complete draft by early May} 
+
+* Programming 
+  * [ ] Make a milestone with the uploader (really push and learn!) 
+         - documentation (use ai); add to the code base of the uploader  
+         - utilise the hurdles to learn programming priniciples in action 
+
+* AOBs 
+  * [  ] Weekly meetings 
+  * [  ] follow up with Paul on his progress 
+  * [  ] follow up on the MSc bioinformatics project 
+  * [  ] follow up on Alex's application with Pwani 
 
 ### Later weeks
 
