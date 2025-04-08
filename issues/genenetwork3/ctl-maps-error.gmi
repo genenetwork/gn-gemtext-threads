@@ -37,7 +37,7 @@ Rscript /home/frederick/genenetwork/genenetwork3/scripts/ctl_analysis.R /tmp/018
 ```
 
 Here is a zipped version of the json file:
-=> 01828928-26e6-4cad-bbc8-59fd7a7977de.json.zip
+=> https://github.com/genenetwork/gn-gemtext-threads/blob/main/issues/genenetwork3/01828928-26e6-4cad-bbc8-59fd7a7977de.json.zip
 
 Troubleshooting a while, I suspect
 => https://github.com/genenetwork/genenetwork3/blob/27d9c9d6ef7f37066fc63af3d6585bf18aeec925/scripts/ctl_analysis.R#L79-L80 this is the offending code.
