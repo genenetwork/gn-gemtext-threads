@@ -11,7 +11,8 @@
   (list "octopus01"
         "tux01.genenetwork.org"
         "tux03.genenetwork.org"
-        "tux04.genenetwork.org"))
+        "tux04.genenetwork.org"
+        "space.uthsc.edu"))
 
 (define (ini-file name scm)
   "Return a file-like object representing INI file with @var{name} and
