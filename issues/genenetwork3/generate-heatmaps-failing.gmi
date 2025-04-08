@@ -28,3 +28,37 @@ On https://gn2-fred.genenetwork.org the heatmaps fails with a note ("ERROR: unde
 => https://github.com/scipy/scipy/issues/19972
 
 This issue should not be present with python-plotly@5.20.0 but since guix-bioinformatics pins the guix version to `b0b988c41c9e0e591274495a1b2d6f27fcdae15a`, we are not able to pull in newer versions of packages from guix.
+
+
+### Update 2025-04-08T10:59CDT
+
+Got the following error when I ran the background command manually:
+
+```
+$ export RUST_BACKTRACE=full
+$ /gnu/store/dp4zq4xiap6rp7h6vslwl1n52bd8gnwm-profile/bin/qtlreaper --geno /home/frederick/genotype_files/genotype/genotype/BXD.geno --n_permutations 1000 --traits /tmp/traits_test_file_n2E7V06Cx7.txt --main_output /tmp/qtlreaper/main_output_NGVW4sfYha.txt --permu_output /tmp/qtlreaper/permu_output_MJnzLbrsrC.txt
+thread 'main' panicked at src/regression.rs:216:25:
+index out of bounds: the len is 20 but the index is 20
+stack backtrace:
+   0:     0x61399d77d46d - <unknown>
+   1:     0x61399d7b5e13 - <unknown>
+   2:     0x61399d78b649 - <unknown>
+   3:     0x61399d78f26f - <unknown>
+   4:     0x61399d78ee98 - <unknown>
+   5:     0x61399d78f815 - <unknown>
+   6:     0x61399d77d859 - <unknown>
+   7:     0x61399d77d679 - <unknown>
+   8:     0x61399d78f3f4 - <unknown>
+   9:     0x61399d6f4063 - <unknown>
+  10:     0x61399d6f41f7 - <unknown>
+  11:     0x61399d708f18 - <unknown>
+  12:     0x61399d6f6e4e - <unknown>
+  13:     0x61399d6f9e93 - <unknown>
+  14:     0x61399d6f9e89 - <unknown>
+  15:     0x61399d78e505 - <unknown>
+  16:     0x61399d6f8d55 - <unknown>
+  17:     0x75ee2b945bf7 - __libc_start_call_main
+  18:     0x75ee2b945cac - __libc_start_main@GLIBC_2.2.5
+  19:     0x61399d6f4861 - <unknown>
+  20:                0x0 - <unknown>
+```

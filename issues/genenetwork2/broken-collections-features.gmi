@@ -41,3 +41,4 @@ There are some features in the search results page, and/or the collections page 
 We break-out the issues above into separate pages to track the progress of the fixes for each feature separately.
 
 => /issues/genenetwork3/ctl-maps-error
+=> /issues/genenetwork3/generate-heatmaps-failing
