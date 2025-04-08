@@ -36,7 +36,7 @@ On my local development machine, the command run was
 Rscript /home/frederick/genenetwork/genenetwork3/scripts/ctl_analysis.R /tmp/01828928-26e6-4cad-bbc8-59fd7a7977de.json
 ```
 
-Here is a zipped version of the json file:
+Here is a zipped version of the json file (follow the link and click download):
 => https://github.com/genenetwork/gn-gemtext-threads/blob/main/issues/genenetwork3/01828928-26e6-4cad-bbc8-59fd7a7977de.json.zip
 
 Troubleshooting a while, I suspect
