@@ -35,3 +35,9 @@ There are some features in the search results page, and/or the collections page 
 * The "CTL" and "WCGNA" features have a failure mode that might have been caused by recent changes making use of AJAX calls, rather than submitting the form manually.
 * The "MultiMap" and "Generate Heatmap" features raise exceptions that need to be investigated and resolved
 * The "Partial Correlations" feature seems to run forever
+
+## Break-out Issues
+
+We break-out the issues above into separate pages to track the progress of the fixes for each feature separately.
+
+=> /issues/genenetwork3/ctl-maps-error

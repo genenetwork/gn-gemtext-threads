@@ -1,0 +1,45 @@
+# CTL Maps Error
+
+## Tags
+
+* type: bug
+* status: open
+* priority: high
+* assigned: zachs, fredm
+* keywords: CTL, CTL Maps, gn3, genetwork3, genenetwork 3
+
+## Description
+
+Trying to run the CTL Maps feature in the collections page as described in
+=> /issues/genenetwork2/broken-collections-feature
+
+We get an error in the results page of the form:
+
+```
+{'error': '{\'code\': 1, \'output\': \'Loading required package: MASS\\nLoading required package: parallel\\nLoading required package: qtl\\nThere were 13 warnings (use warnings() to see them)\\nError in xspline(x, y, shape = 0, lwd = lwd, border = col, lty = lty, : \\n invalid value specified for graphical parameter "lwd"\\nCalls: ctl.lineplot -> draw.spline -> xspline\\nExecution halted\\n\'}'}
+```
+
+on the CLI the same error is rendered:
+```
+Loading required package: MASS
+Loading required package: parallel
+Loading required package: qtl
+There were 13 warnings (use warnings() to see them)
+Error in xspline(x, y, shape = 0, lwd = lwd, border = col, lty = lty,  : 
+  invalid value specified for graphical parameter "lwd"
+Calls: ctl.lineplot -> draw.spline -> xspline
+Execution halted
+```
+
+On my local development machine, the command run was
+```
+Rscript /home/frederick/genenetwork/genenetwork3/scripts/ctl_analysis.R /tmp/01828928-26e6-4cad-bbc8-59fd7a7977de.json
+```
+
+=> /issues/genenetwork3/01828928-26e6-4cad-bbc8-59fd7a7977de.json.zip Here is a zipped version of the json file.
+
+Troubleshooting a while, I suspect
+=> https://github.com/genenetwork/genenetwork3/blob/27d9c9d6ef7f37066fc63af3d6585bf18aeec925/scripts/ctl_analysis.R#L79-L80 this is the offending code.
+
+=> https://cran.r-project.org/web/packages/ctl/ctl.pdf The manual for the ctl library
+indicates that our call above might be okay, which might mean something changed in the dependencies that the ctl library used.
