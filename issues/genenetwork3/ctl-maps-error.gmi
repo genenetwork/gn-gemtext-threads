@@ -5,7 +5,7 @@
 * type: bug
 * status: open
 * priority: high
-* assigned: zachs, fredm
+* assigned: alexm, zachs, fredm
 * keywords: CTL, CTL Maps, gn3, genetwork3, genenetwork 3
 
 ## Description
