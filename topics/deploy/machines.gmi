@@ -2,7 +2,8 @@
 
 ```
 - [ ] bacchus             172.23.17.156   (00:11:32:ba:7f:17) -  1 Gbs
-- [X] lambda01            172.23.18.212   (7c:c2:55:11:9c:ac)
+- [ ] penguin2
+- [X] lambda01            172.23.18.212   (7c:c2:55:11:9c:ac) - currently 172.23.17.41
 - [X] tux03i              172.23.17.181   (00:0a:f7:c1:00:8d) - 10 Gbs
   [X] tux03               128.169.5.101   (00:0a:f7:c1:00:8b) -  1 Gbs
 - [ ] tux04i              172.23.17.170   (14:23:f2:4f:e6:10)
@@ -26,6 +27,8 @@ c for console or control
 
 ```
 - [ ] DNS entries no longer visible
+- [X] penguin2-c        172.23.31.83
+- [ ] octolair01        172.23.16.228
 - [X] lambda01-c        172.23.17.173   (3c:ec:ef:aa:e5:50)
 - [X] tux01-c           172.23.31.85    (58:8A:5A:F9:3A:22)
 - [X] tux02-c           172.23.30.40    (58:8A:5A:F0:E6:E4)
