@@ -8,16 +8,20 @@
 
 ## Tasks
 
+### Note
+
+- View diffs in BXD: Edit case attributes throws an error
+
 ### This week
 * [ ] Set-up grobit on balg01
-   - guix docker/native
-   - recent breaking changes
+*     - guix docker/native
+*     - recent breaking changes
 * [ ] GeneRIF
-  - Merge recent changes first.  Ping Rob.
-  - Brainstorm ideas around log-in.
-  - Unlimited tokens that don't expire.
-  - Sync prod with CD -- sqlite.
-  - Distinguish CD from production -- banners/buttons/colors.
+*     - Merge recent changes first.  Ping Rob.
+*     - Brainstorm ideas around log-in.
+*     - Unlimited tokens that don't expire.
+*     - Sync prod with CD -- sqlite.
+*     - Distinguish CD from production -- banners/buttons/colors.
 * [ ] Correlations hash.
 * [ ] xapian search, add dataset size keys, as well as GN accession id, trait id, and date/year
 *     - Improve xapian markdown docs to show all used fields/keys with examples
