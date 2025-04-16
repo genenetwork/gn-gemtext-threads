@@ -1,0 +1,50 @@
+# GN Road map
+
+GN is a web service for complex traits. The main version is currently deployed in Memphis TN, mostly targetting mouse and rat.
+Here we define a road map to bring GN to more communities by providing federated services.
+The aim is to have plant.genenetwork.org, nematode.genenetwork.org, big.genenetwork.org running in the coming years.
+
+# Getting an instance up (step 1)
+
+## Deploy a new instance
+
+To test things we can use an existing database or a new one. We can deploy that as a (new) Guix service container.
+
+We'll need to run a few services including:
+
+* GN3
+* GN2
+* Auth (if required)
+* Uploader (if required)
+
+## Get database ready
+
+In the first step we have to upload data for the target community. This can be done by updating the databases with some example datasets. Care has to be taken that search etc. works and that we can do the mapping.
+
+* Add traits
+* Add genotype files
+* Add metadata
+
+# Branding and hosting (Step 2)
+
+Once we have a working database with a number of example use cases we can start rebranding the service and, ideally, host it on location.
+
+# Synchronization (Step 3)
+
+## Move traits into lmdb
+
+This is WIP. We need to adapt the GN3 code to work with lmdb when available.
+
+## Move genotypes into lmdb
+
+This is WIP. We need to adapt the GN3 code to work with lmdb when available.
+
+# Federated metadata (Step 4)
+
+## Move all metadata into RDF
+
+This is WIP and happening. We will need to document.
+
+# Community (Step 5)
+
+## Provide programming examples
