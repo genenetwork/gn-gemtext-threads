@@ -1,4 +1,4 @@
-# Migrating Production Across Machines
+# Setting Up or Migrating Production Across Machines
 
 ## Tags
 
