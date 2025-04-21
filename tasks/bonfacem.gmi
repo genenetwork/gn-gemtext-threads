@@ -13,37 +13,23 @@
 - View diffs in BXD: Edit case attributes throws an error
 
 ### This week
-* [ ] Set-up grobit on balg01
-*     - guix docker/native
-*     - recent breaking changes
 * [ ] GeneRIF
 *     - Merge recent changes first.  Ping Rob.
 *     - Brainstorm ideas around log-in.
 *     - Unlimited tokens that don't expire.
 *     - Sync prod with CD -- sqlite.
 *     - Distinguish CD from production -- banners/buttons/colors.
+*     - Add deletion
+* [ ] Case Attributes (Do a diagnostic and delegate)
+*     - Error when checking the history.
+* [ ] Set-up grobit on balg01
+*     - guix docker/native
+*     - recent breaking changes
 * [ ] Correlations hash.
-* [ ] xapian search, add dataset size keys, as well as GN accession id, trait id, and date/year
-*     - Improve xapian markdown docs to show all used fields/keys with examples
-*     - genewiki search (link in table? check with Rob)
-*     - base line with GN1 search - add tests
-*     - Fix missing search term for sh* - both menu search and global search
-*     - Use GN1 as a benchmark for search results (mechanical Rob?)
-*     - Xapian ranges for markers
-* [X] Set up meeting with ILRI
-*     - Zasper https://news.ycombinator.com/item?id=42572057 - Alan
 * [+] Describe Generif/wikidata access for Rob in an email with test account on CD
 *     1. Send email to Rob
 *     2. Work on production w. Fred
-* [X] Migrate fahamuai RAG to VPS and switch tokens to GGI OpenAI account
-*     1. Running AI server using (our) VPS and our tokens
-*        + Pjotr gives API key - OpenAI - model?
-*     2. Read the code base - Elixir is plumbing incl. authentication, Python processing text etc.
-*     3. Try ingestion and prompt (REST API) - check out postgres tables
-*     4. Backup state from production Elixir
-*     5. Assess porting it to Guix (don't do any work) - minimum version Elixir
-*     6. Get docs from Shelby/Brian
-* [X] With Alex get rqtl2 demo going in CD (for BXD)
+
 
 ### Later
 
@@ -51,6 +37,13 @@
 *     - search for all traits that have more than X samples
 * [+] Use aider - give a presentation in the coming weeks
 * [ ] Add case attributes to RDF and share with Felix (depends on @felixl)
+* [ ] xapian search, add dataset size keys, as well as GN accession id, trait id, and date/year
+*     - Improve xapian markdown docs to show all used fields/keys with examples
+*     - genewiki search (link in table? check with Rob)
+*     - base line with GN1 search - add tests
+*     - Fix missing search term for sh* - both menu search and global search
+*     - Use GN1 as a benchmark for search results (mechanical Rob?)
+*     - Xapian ranges for markers
 
 ### Even later
 
@@ -94,3 +87,14 @@ Currently closed issues are:
 
 * [X] Add lmdb output hashes with index and export LMDB_DATA_DIRECTORY
 * [X] Share small database with @pjotrp and @felixl
+* [X] With Alex get rqtl2 demo going in CD (for BXD)
+* [X] Set up meeting with ILRI
+*     - Zasper https://news.ycombinator.com/item?id=42572057 - Alan
+* [X] Migrate fahamuai RAG to VPS and switch tokens to GGI OpenAI account
+*     1. Running AI server using (our) VPS and our tokens
+*        + Pjotr gives API key - OpenAI - model?
+*     2. Read the code base - Elixir is plumbing incl. authentication, Python processing text etc.
+*     3. Try ingestion and prompt (REST API) - check out postgres tables
+*     4. Backup state from production Elixir
+*     5. Assess porting it to Guix (don't do any work) - minimum version Elixir
+*     6. Get docs from Shelby/Brian
