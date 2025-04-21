@@ -35,6 +35,23 @@ You can refine the search by constraining the checks some more, e.g. to get high
 => https://git.genenetwork.org/gn-machines/commit/?h=gn-local-development-container&id=589dcf32be90f5ec827cb6976d3cb5838d500ac0
 * [+] Create terminal output for external processes on *PRODUCTION* (Rqtl1, Rqtl2, GEMMA, pair-scan are done --- WGCNA as a pilot, with @bonfacem and @pjotrp)
 
+
+## (14/4/24)
+
+* []  Debug DO results for  for genenetwork2
+   * [x] inspect results from gn3 and display mapping results 
+   * [x] Debug db tunneling connection
+   * [] Debug  rendering huge datatables
+
+## (21/4/24)
+
+* [x] Debug rendering large datasets using datatables
+* [] Pwani Campus Application
+  
+
+
+
+
 ## Next week(s)
 
 * [ ] Accelerate Xapian functionality - needs Aider key from Pjotr
