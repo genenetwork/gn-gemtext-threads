@@ -49,10 +49,16 @@ The original reaper precompute lives in
 
 => https://github.com/genenetwork/genenetwork2/blob/testing/scripts/maintenance/QTL_Reaper_v6.py
 
-This script first fetches inbredsets
+More recent incarnations are at v8, including a PublishData version that can be found in
+
+=> https://github.com/genenetwork/genenetwork2/tree/testing/scripts/maintenance
+
+The first task is to prepare an update script that can run a set at a time and compute GEMMA output (instead of reaper).
+
+The script first fetches inbredsets
 
 ```
- select Id,InbredSetId,InbredSetName,Name,SpeciesId,FullName,public,MappingMethodId,GeneticType,Family,FamilyOrder,MenuOrderId,InbredSetCode from InbredSet LIMIT 5;
+select Id,InbredSetId,InbredSetName,Name,SpeciesId,FullName,public,MappingMethodId,GeneticType,Family,FamilyOrder,MenuOrderId,InbredSetCode from InbredSet LIMIT 5;
 +----+-------------+-------------------+----------+-----------+-------------------+--------+-----------------+-------------+--------------------------------------------------+-------------+-------------+---------------+
 | Id | InbredSetId | InbredSetName     | Name     | SpeciesId | FullName          | public | MappingMethodId | GeneticType | Family                                           | FamilyOrder | MenuOrderId | InbredSetCode |
 +----+-------------+-------------------+----------+-----------+-------------------+--------+-----------------+-------------+--------------------------------------------------+-------------+-------------+---------------+
