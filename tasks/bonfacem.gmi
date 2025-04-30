@@ -10,21 +10,13 @@
 
 ### Note
 
-- View diffs in BXD: Edit case attributes throws an error
+- View diffs in BXD: Edit case attributes throws an error.
+- Assess adding GeneRIF to LLM.
 
 ### This week
-* [ ] GeneRIF
-*     - Merge recent changes first.  Ping Rob.
-*     - Brainstorm ideas around log-in.
-*     - Unlimited tokens that don't expire.
-*     - Sync prod with CD -- sqlite.
-*     - Distinguish CD from production -- banners/buttons/colors.
-*     - Add deletion
+* [ ] Distinguish CD from production -- banners/buttons/colors.
 * [ ] Case Attributes (Do a diagnostic and delegate)
 *     - Error when checking the history.
-* [ ] Set-up grobit on balg01
-*     - guix docker/native
-*     - recent breaking changes
 * [ ] Correlations hash.
 * [+] Describe Generif/wikidata access for Rob in an email with test account on CD
 *     1. Send email to Rob
@@ -32,7 +24,7 @@
 
 
 ### Later
-
+* [ ] Send emails when job fail.
 * [ ] Sample/individual/strain/genometype counts for PublishData only - ProbeSetData? https://github.com/genenetwork/genenetwork2/blob/testing/scripts/sample_count.py - mirror in RDF and use global search
 *     - search for all traits that have more than X samples
 * [+] Use aider - give a presentation in the coming weeks
@@ -98,3 +90,12 @@ Currently closed issues are:
 *     4. Backup state from production Elixir
 *     5. Assess porting it to Guix (don't do any work) - minimum version Elixir
 *     6. Get docs from Shelby/Brian
+* [X] Set-up grobit on balg01
+*     - guix docker/native
+*     - recent breaking changes
+* [X] GeneRIF
+*     - Merge recent changes first.  Ping Rob.
+*     - Brainstorm ideas around log-in.
+*     - Unlimited tokens that don't expire.
+*     - Sync prod with CD -- sqlite.
+*     - Add deletion
