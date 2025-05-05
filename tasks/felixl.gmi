@@ -67,18 +67,27 @@
 * gn-uploader programming
  * [ ] - Run the uploader locally, then break the system, see how components connect to each other (ask help from Bonz)
   * [ ] - document your findings
+
 ### This week (28-04-Onwards) 
 * gn-uploader programming
- * [ ] - Run the uploader locally, then break the system, see how components connect to each other (ask help from Bonz)
-  * [ ] - document your findings
+ * [X] - Run the uploader locally, then break the system, see how components connect to each other (ask help from Bonz)
+  * [X] - document your findings
   {Get help from your teammates/AI to jump start this!, swallow your pride! :(}
 
 * genotype smoothing
- * [ ] Keep refining the following:
-   * [ ] filtering power adapted from plink
-   * [ ] the xsomes mix up in the plot (probably the phenotype data?)
-   * [ ] Update findings and push to github
+ * [X] Keep refining the following:
+   * [X] filtering power adapted from plink
+   * [X] the xsomes mix up in the plot (probably the phenotype data?)
+   * [X] Update findings and push to github
 
+### This week (05-05-Onwards) 
+* programming (gn-uploader)
+  * [ ] - pick one file each day, review it, understand it
+  * [ ] - pair programming with Alex on test runs
+
+* HS rats scripts
+  * [ ] - prepare/refine scripts to quickly process HS rats file
+  * [ ] - assist alex with hs rats cross info
 
 * AOBs 
   * [ X ] Weekly meetings 
