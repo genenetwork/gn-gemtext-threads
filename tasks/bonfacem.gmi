@@ -9,25 +9,28 @@
 ## Tasks
 
 ### Note
-
+- Check small db from: https://files.genenetwork.org/database/
 - View diffs in BXD: Edit case attributes throws an error.
 - Assess adding GeneRIF to LLM.
+- Referrer headers -- a way of preventing bots beyond rate-limiting.
 
 ### This week
-* [ ] Distinguish CD from production -- banners/buttons/colors.
-* [ ] Case Attributes (Do a diagnostic and delegate)
-*     - Error when checking the history.
-* [ ] Correlations hash.
-* [+] Describe Generif/wikidata access for Rob in an email with test account on CD
-*     1. Send email to Rob
-*     2. Work on production w. Fred
 
+* [+] Case Attributes (Do a diagnostic and delegate)
+*     - Error when checking the history.
+* [+] Correlations hash.
+*     - Add dataset count to RDF.
+* [ ] Spam + LLMs
+*     - RateLimiting for Rif Editing
+* [ ] Finish container work
+* [ ] Assess Brian's repo for deployment.
+* [ ] Changes to Production + (Alex)
+* [ ] gn-auth fixes
 
 ### Later
 * [ ] Send emails when job fail.
 * [ ] Sample/individual/strain/genometype counts for PublishData only - ProbeSetData? https://github.com/genenetwork/genenetwork2/blob/testing/scripts/sample_count.py - mirror in RDF and use global search
 *     - search for all traits that have more than X samples
-* [+] Use aider - give a presentation in the coming weeks
 * [ ] Add case attributes to RDF and share with Felix (depends on @felixl)
 * [ ] xapian search, add dataset size keys, as well as GN accession id, trait id, and date/year
 *     - Improve xapian markdown docs to show all used fields/keys with examples
@@ -99,3 +102,8 @@ Currently closed issues are:
 *     - Unlimited tokens that don't expire.
 *     - Sync prod with CD -- sqlite.
 *     - Add deletion
+* [X] Describe Generif/wikidata access for Rob in an email with test account on CD
+*     1. Send email to Rob
+*     2. Work on production w. Fred
+* [X] Distinguish CD from production -- banners/buttons/colors.
+* [X] Use aider - give a presentation in the coming weeks
