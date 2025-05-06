@@ -36,14 +36,14 @@ You can refine the search by constraining the checks some more, e.g. to get high
 * [+] Create terminal output for external processes on *PRODUCTION* (Rqtl1, Rqtl2, GEMMA, pair-scan are done --- WGCNA as a pilot, with @bonfacem and @pjotrp)
 
 
-## (14/4/24)
+## (14/4/25)
 
 * [x]  Debug DO results for  for genenetwork2
    * [x] inspect results from gn3 and display mapping results 
    * [x] Debug db tunneling connection
    * [x] Debug  rendering huge datatables
 
-## (21/4/24)
+## (21/4/25)
 * [x] QTL computation for the DO dataset
    * [x] Debug rendering large datasets using datatables
    * [x] fix issue with qtl2 plot for DO dataset 
@@ -51,12 +51,21 @@ You can refine the search by constraining the checks some more, e.g. to get high
    
 * [] Pwani Campus Application
  
-## 28/4/24
+## 28/4/25
 
 * [x] Push changes to CD/Production
-* [] Pwani application
-* [] Enable RQTL2 only  for DO/bxd dataset
+* [x] Enable RQTL2 only  for DO/bxd dataset
 * [] look at integrating   QTL for HS dataset
+* [x]  setup local container with bons
+
+## 5/05/25
+
+* [] Integrate hsrat dataset for rqtl2 mapping.
+* [] Pwani campus application.
+* [] Look at caching for genotype probabilities (rqtl2).
+* [] Add full logs on the mapping results page.
+* [x] Add test feature flag for rqtl2.
+
 
 
 
