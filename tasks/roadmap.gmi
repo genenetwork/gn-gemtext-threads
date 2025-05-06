@@ -45,7 +45,16 @@ This is WIP. We need to adapt the GN3 code to work with lmdb when available.
 
 This is WIP and happening. We will need to document.
 
-# Community (Step 5)
+# LLM Integration (Step 5)
+
+Provide an LLM that integrates well with the gn eco-system.  Goals for the LLM:
+
+* Flexible data ingestion
+* Plug and play LLMS (local, OpenAI, Claude etc.)
+
+This is still a WIP.
+
+# Community (Step 6)
 
 ## Uploading data examples
 
