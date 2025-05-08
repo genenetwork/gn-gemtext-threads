@@ -53,6 +53,19 @@ More recent incarnations are at v8, including a PublishData version that can be 
 
 => https://github.com/genenetwork/genenetwork2/tree/testing/scripts/maintenance
 
+Note that the locations are on space:
+
+```
+cd /mount/space2/lily-clone/acenteno/GN-Data
+ls -l
+python QTL_Reaper_v8_space_good.py 116
+--
+python UPDATE_Mean_MySQL_tab.py
+cd /mount/space2/lily-clone/gnshare/gn/web/webqtl/maintainance
+ls -l
+python QTL_Reaper_cal_lrs.py 7
+```
+
 The first task is to prepare an update script that can run a set at a time and compute GEMMA output (instead of reaper).
 
 The script first fetches inbredsets

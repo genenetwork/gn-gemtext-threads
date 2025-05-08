@@ -49,10 +49,23 @@
 ## Ongoing tasks (current/urgent)
 
 * [ ] ~Felix, Alex, Rahul as friends of UTHSC
-* [ ] Precompute
+* [ ] Precompute with GEMMA
+  + [ ] Store N
+  + [ ] Store significance levels
+  + [ ] Check genotype input data
+  + [ ] Imputation
+  + [ ] Do same with bulkLMM
+  + [ ] Generate lmdb output
+  + [ ] Hook into Xapian
+  + [ ] Hook into correlations
+
 * [ ] Check email setup tux04
 * [ ] jbrowse plugin code - https://genenetwork.trop.in/mm10
 * [+] bulklmm Julia as part of GN3 deployment
+  - precompute & Julia
+=> https://github.com/GregFa/TestSysimage
+   Here the repo with BulkLMMSysimage:
+=> https://github.com/GregFa/BulkLMMSysimage
 => /topics/deploy/julia.gmi
 * [X] Set up stable GeneNetwork server instance with new hardware (see below)
 => /topics/systems/fire-up-genenetwork-system-container.gmi
