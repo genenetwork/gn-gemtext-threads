@@ -6,6 +6,10 @@ Lately we have been running production on tux04. Unfortunately Debian got broken
 
 and that is alarming. We might as well try an upgrade. I created a new partition on /dev/sda4 using debootstrap.
 
+The hardware RAID has proven unreliable on this machine (and perhaps others).
+
+We added a drive on a PCIe raiser outside the RAID. Use this for bulk data copying. We still bootstrap from the RAID.
+
 Luckily not too much is running on this machine and if we mount things again, most should work.
 
 # Tasks

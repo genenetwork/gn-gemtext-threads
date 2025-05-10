@@ -3,6 +3,8 @@
 
 # Tasks
 
+* [ ] Install underlying Debian
+* [ ] Get guix going
 * [ ] Check database
 * [ ] Check gemma working
 * [ ] Check global search
@@ -16,8 +18,53 @@ The following are at the system level
 * [ ] Update certificates in CRON
 * [ ] Run trim in CRON
 
+# Install underlying Debian
+
+For our production systems we use Debian as a base install. Once installed:
+
+* [ ] set up git in /etc and limit permissions to root user
+* [ ] add ttyS0 support for grub and kernel - so out-of-band works
+* [ ] start ssh server and configure not to use with passwords
+* [ ] start nginx and check external networking
+* [ ] set up E-mail routing
+
+It may help to mount the old root if you have it. Now it is on
+
+```
+mount /dev/sdd2 /mnt/old-root/
+```
+
+# Get Guix going
+
+We can bootstrap with the Debian guix package. Next move the store to a large partion and hard mount it in /etc/fstab with
+
+```
+/export2/gnu /gnu none defaults,bind 0 0
+```
+
+Run guix pull
+
+```
+wrk@tux04:~$ guix pull -p ~/opt/guix-pull --url=https://codeberg.org/guix/guix-mirror.git
+```
+
+Use that to install guix in /usr/local/guix-profiles
+
+```
+guix package -i guix -p /usr/local/guix-profiles/guix
+```
+
+and update the daemon in systemd accordingly. After that I tend to remove /usr/bin/guix
 
 # Check database
+
+Basically recover the database from a backup is the best start and set permissions. We usually take the default mariadb unless production is already on a newer version - so we move to guix deployment.
+
+On tux02 mariadb-10.5.8 is running. On Debian it is now 10.11.11-0+deb12u1, so we should be good. On Guix is 10.10 at this point.
+
+```
+apt-get install mariadb-server
+```
 
 => topics/systems/mariadb/mariadb.gmi
 

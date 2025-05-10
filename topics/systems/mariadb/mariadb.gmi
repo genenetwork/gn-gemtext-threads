@@ -16,6 +16,8 @@ To install Mariadb (as a container) see below and
 Start the client and:
 
 ```
+mysql
+show databases
 MariaDB [db_webqtl]> show binary logs;
 +-----------------------+-----------+
 | Log_name              | File_size |
