@@ -3,8 +3,8 @@
 
 # Tasks
 
-* [ ] Install underlying Debian
-* [ ] Get guix going
+* [X] Install underlying Debian
+* [X] Get guix going
 * [ ] Check database
 * [ ] Check gemma working
 * [ ] Check global search
@@ -22,10 +22,10 @@ The following are at the system level
 
 For our production systems we use Debian as a base install. Once installed:
 
-* [ ] set up git in /etc and limit permissions to root user
-* [ ] add ttyS0 support for grub and kernel - so out-of-band works
-* [ ] start ssh server and configure not to use with passwords
-* [ ] start nginx and check external networking
+* [X] set up git in /etc and limit permissions to root user
+* [X] add ttyS0 support for grub and kernel - so out-of-band works
+* [X] start ssh server and configure not to use with passwords
+* [X] start nginx and check external networking
 * [ ] set up E-mail routing
 
 It may help to mount the old root if you have it. Now it is on
@@ -35,6 +35,11 @@ mount /dev/sdd2 /mnt/old-root/
 ```
 
 # Get Guix going
+
+* [X] Install Guix daemon
+* [X] Move /gnu/store to larger partition
+* [X] Update Guix daemon and setup in systemd
+* [ ] Make available in /usr/local/guix-profiles
 
 We can bootstrap with the Debian guix package. Next move the store to a large partion and hard mount it in /etc/fstab with
 
@@ -57,6 +62,10 @@ guix package -i guix -p /usr/local/guix-profiles/guix
 and update the daemon in systemd accordingly. After that I tend to remove /usr/bin/guix
 
 # Check database
+
+* [X] Install mariadb
+* [ ] Recover database
+* [ ] Test permissions
 
 Basically recover the database from a backup is the best start and set permissions. We usually take the default mariadb unless production is already on a newer version - so we move to guix deployment.
 
