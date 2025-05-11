@@ -11,6 +11,7 @@
 * [ ] Check authentication
 * [ ] Check sending E-mails
 * [ ] Make sure info.genenetwork.org can reach the DB
+* [ ] Backups
 
 The following are at the system level
 
@@ -39,7 +40,8 @@ mount /dev/sdd2 /mnt/old-root/
 * [X] Install Guix daemon
 * [X] Move /gnu/store to larger partition
 * [X] Update Guix daemon and setup in systemd
-* [ ] Make available in /usr/local/guix-profiles
+* [X] Make available in /usr/local/guix-profiles
+* [X] Clean up /etc/profile
 
 We can bootstrap with the Debian guix package. Next move the store to a large partion and hard mount it in /etc/fstab with
 
@@ -61,11 +63,14 @@ guix package -i guix -p /usr/local/guix-profiles/guix
 
 and update the daemon in systemd accordingly. After that I tend to remove /usr/bin/guix
 
+The Debian installer configures guix. I tend to remove the profiles from /etc/profile so people have a minimal profile.
+
 # Check database
 
 * [X] Install mariadb
 * [ ] Recover database
 * [ ] Test permissions
+* [ ] Mariadb update my.cnf
 
 Basically recover the database from a backup is the best start and set permissions. We usually take the default mariadb unless production is already on a newer version - so we move to guix deployment.
 
@@ -75,7 +80,34 @@ On tux02 mariadb-10.5.8 is running. On Debian it is now 10.11.11-0+deb12u1, so w
 apt-get install mariadb-server
 ```
 
+Next unpack the database files and set permissions to the mysql user. And (don't forget) update the /etc/mysql config files.
+
+Restart mysql until you see:
+
+```
+mysql -u webqtlout -p -e "show databases"
++---------------------------+
+| Database                  |
++---------------------------+
+| 20081110_uthsc_dbdownload |
+| db_GeneOntology           |
+| db_webqtl                 |
+| db_webqtl_s               |
+| go                        |
+| information_schema        |
+| kegg                      |
+| mysql                     |
+| performance_schema        |
+| sys                       |
++---------------------------+
+```
+
 => topics/systems/mariadb/mariadb.gmi
+
+## Recover database
+
+We use borg for backups. First restore the backup on the PCIe. Also a test for overheating!
+
 
 # Check sending E-mails
 
@@ -118,3 +150,33 @@ swaks --to testing-my-server@gmail.com --server smtp.uthsc.edu
  -> QUIT
 <-  221 2.0.0 Bye                                                                                                                             === Connection closed with remote host
 ```
+
+An exim configuration can be
+
+```
+dc_eximconfig_configtype='smarthost'
+dc_other_hostnames='genenetwork.org'
+dc_local_interfaces='127.0.0.1 ; ::1'
+dc_readhost=''
+dc_relay_domains=''
+dc_minimaldns='false'
+dc_relay_nets=''
+dc_smarthost='smtp.uthsc.edu'
+CFILEMODE='644'
+dc_use_split_config='false'
+dc_hide_mailname='false'
+dc_mailname_in_oh='true'
+dc_localdelivery='maildir_home'
+```
+
+And this should work:
+
+```
+swaks --to myemailaddress --from john@uthsc.edu --server localhost
+```
+
+# Backups
+
+* [ ] Create an ibackup user.
+* [ ] Install borg (usually guix version)
+* [ ] Create a borg passphrase
