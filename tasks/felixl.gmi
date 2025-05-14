@@ -34,13 +34,13 @@
 ### This week (07-04-2025 onwards) 
 
 * GN2 tasks 
-  * [ ] Progress on Kilifish 
+  * [ X ] Progress on Kilifish 
         - meet with Dennis (send him an email with all the queries needed) 
         - progress to format and upload data to gn2 (to be ready by latest Friday!) 
-  * [ ] Make a milestone with genotype smoothing 
+  * [ X ] Make a milestone with genotype smoothing 
 
 * PhD tasks 
-  * [ ] Complete and share concept note and timeline to supervisors, have a meeting for progress 
+  * [ X ] Complete and share concept note and timeline to supervisors, have a meeting for progress 
   * [ ] Make a milestone on chapter one manuscript (deep dive into the selected papers){THE BIG PICTURE; a complete draft by early May} 
 
 * Programming 
@@ -48,11 +48,52 @@
          - documentation (use ai); add to the code base of the uploader  
          - utilise the hurdles to learn programming priniciples in action 
 
+### This week (14-04-2025 onwards)  
+
+* gn-uploader programming
+  * [X] - Resolve the config file issue with your local uploader
+  * [ ] - Run the uploader locally, then break the system, see how components connect to each other
+  * [ ] - document your findings
+
+* genotype smoothing
+  * [ ] - resolve errors with plotting, document your findings
+
+### This week (21-04-Onwards) 
+
+* genotype smoothing
+ * [ ] - haplotyping tools for smoothing (plink,., etc)
+         - see what it can offer with smoothing. See what others say about this.
+
+* gn-uploader programming
+ * [ ] - Run the uploader locally, then break the system, see how components connect to each other (ask help from Bonz)
+  * [ ] - document your findings
+
+### This week (28-04-Onwards) 
+* gn-uploader programming
+ * [X] - Run the uploader locally, then break the system, see how components connect to each other (ask help from Bonz)
+  * [X] - document your findings
+  {Get help from your teammates/AI to jump start this!, swallow your pride! :(}
+
+* genotype smoothing
+ * [X] Keep refining the following:
+   * [X] filtering power adapted from plink
+   * [X] the xsomes mix up in the plot (probably the phenotype data?)
+   * [X] Update findings and push to github
+
+### This week (05-05-Onwards) 
+* programming (gn-uploader)
+  * [ ] - pick one file each day, review it, understand it
+  * [ ] - pair programming with Alex on test runs
+
+* HS rats scripts
+  * [ ] - prepare/refine scripts to quickly process HS rats file
+  * [ ] - assist alex with hs rats cross info
+
 * AOBs 
-  * [  ] Weekly meetings 
-  * [  ] follow up with Paul on his progress 
-  * [  ] follow up on the MSc bioinformatics project 
-  * [  ] follow up on Alex's application with Pwani 
+  * [ X ] Weekly meetings 
+  * [ X ] follow up with Paul on his progress 
+  * [ X ] follow up on the MSc bioinformatics project 
+  * [ X ] follow up on Alex's application with Pwani 
 
 ### Later weeks
 

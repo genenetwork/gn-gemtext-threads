@@ -53,3 +53,72 @@ and port forward:
 ssh -L 4200:127.0.0.1:4200 -f -N server
 curl localhost:4200
 ```
+
+# Troubleshooting
+
+## Moving the PubMed dir
+
+After moving the PubMed dir GeneCup stopped displaying part of the connections. This can be reproduced by running the standard example on the home page - the result should look like the image on the right of the home page.
+
+After fixing the paths and restarting the service there still was no result.
+
+Genecup is currently managed by the shepherd as user shepherd. Stop the service as that user:
+
+```
+shepherd@tux02:~$ herd stop genecup
+guile: warning: failed to install locale
+Service genecup has been stopped.
+```
+
+Now the servic looks stopped, but it is still running and you need to kill by hand:
+
+```
+shepherd@tux02:~$ ps xau|grep genecup
+shepherd  89524  0.0  0.0  12780   944 pts/42   S+   00:32   0:00 grep genecup
+shepherd 129334  0.0  0.7 42620944 2089640 ?    Sl   Mar05  66:30 /gnu/store/1w5v338qk5m8khcazwclprs3znqp6f7f-python-3.10.7/bin/python3 /gnu/store/a6z0mmj6iq6grwynfvkzd0xbbr4zdm0l-genecup-latest-with-tensorflow-native-HEAD-of-master-branch/.server.py-real
+shepherd@tux02:~$ kill -9 129334
+shepherd@tux02:~$ ps xau|grep genecup
+shepherd  89747  0.0  0.0  12780   944 pts/42   S+   00:32   0:00 grep genecup
+shepherd@tux02:~$
+```
+
+The log file lives in
+
+```
+shepherd@tux02:~/logs$ tail -f genecup.log
+```
+
+and we were getting errors on a reload and I had to fix
+
+```
+shepherd@tux02:~/shepherd-services$ grep export run_genecup.sh
+export EDIRECT_PUBMED_MASTER=/export3/PubMed
+export TMPDIR=/export/ratspub/tmp
+export NLTK_DATA=/export3/PubMed/nltk_data
+```
+
+See
+
+=> https://git.genenetwork.org/gn-shepherd-services/commit/?id=cd4512634ce1407b14b0842b0ef6a9cd35e6d46c
+
+The symlink from /export2 is not honoured by the guix container. Now the service works.
+
+Note we have deprecation warnings that need to be addressed in the future:
+
+```
+2025-04-22 00:40:07 /home/shepherd/services/genecup/guix-past/modules/past/packages/python.scm:740:19: warning: 'texlive-union' is deprecated,
+ use 'texlive-updmap.cfg' instead
+2025-04-22 00:40:07 guix build: warning: 'texlive-latex-base' is deprecated, use 'texlive-latex-bin' instead
+2025-04-22 00:40:15 updating checkout of 'https://git.genenetwork.org/genecup'...
+/gnu/store/9lbn1l04y0xciasv6zzigqrrk1bzz543-tensorflow-native-1.9.0/lib/python3.10/site-packages/tensorflow/python/framewo
+rk/dtypes.py:526: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+2025-04-22 00:40:38   _np_quint16 = np.dtype([("quint16", np.uint16, 1)])
+2025-04-22 00:40:38 /gnu/store/9lbn1l04y0xciasv6zzigqrrk1bzz543-tensorflow-native-1.9.0/lib/python3.10/site-packages/tensorflow/python/framewo
+rk/dtypes.py:527: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+2025-04-22 00:40:38   _np_qint32 = np.dtype([("qint32", np.int32, 1)])
+2025-04-22 00:40:38 /gnu/store/9lbn1l04y0xciasv6zzigqrrk1bzz543-tensorflow-native-1.9.0/lib/python3.10/site-packages/tensorflow/python/framewo
+rk/dtypes.py:532: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+2025-04-22 00:40:38   np_resource = np.dtype([("resource", np.ubyte, 1)])
+2025-04-22 00:40:39 /gnu/store/7sam0mr9kxrd4p7g1hlz9wrwag67a6x6-python-flask-sqlalchemy-2.5.1/lib/python3.10/site-packages/flask_sqlalchemy/__
+init__.py:872: FSADeprecationWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future. Set it to True or False to suppress this warning.
+```
