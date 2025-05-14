@@ -1,0 +1,46 @@
+# AuthorisationError in gn uploader 
+
+## Tags 
+* assigned: fredm 
+* status: open 
+* priority: critical 
+* type: error 
+* key words: authorisation, permission 
+
+## Description 
+
+Trying to create population for Kilifish dataset in the gn-uploader webpage, 
+then encountered the following error: 
+```sh 
+Traceback (most recent call last):
+ File "/gnu/store/wxb6rqf7125sb6xqd4kng44zf9yzsm5p-profile/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request
+   rv = self.dispatch_request()
+ File "/gnu/store/wxb6rqf7125sb6xqd4kng44zf9yzsm5p-profile/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request
+   return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+ File "/gnu/store/wxb6rqf7125sb6xqd4kng44zf9yzsm5p-profile/lib/python3.10/site-packages/uploader/authorisation.py", line 23, in __is_session_valid__
+   return session.user_token().either(
+ File "/gnu/store/wxb6rqf7125sb6xqd4kng44zf9yzsm5p-profile/lib/python3.10/site-packages/pymonad/either.py", line 89, in either
+   return right_function(self.value)
+ File "/gnu/store/wxb6rqf7125sb6xqd4kng44zf9yzsm5p-profile/lib/python3.10/site-packages/uploader/authorisation.py", line 25, in <lambda>
+   lambda token: function(*args, **kwargs))
+ File "/gnu/store/wxb6rqf7125sb6xqd4kng44zf9yzsm5p-profile/lib/python3.10/site-packages/uploader/population/views.py", line 185, in create_population
+   ).either(
+ File "/gnu/store/wxb6rqf7125sb6xqd4kng44zf9yzsm5p-profile/lib/python3.10/site-packages/pymonad/either.py", line 91, in either
+   return left_function(self.monoid[0])
+ File "/gnu/store/wxb6rqf7125sb6xqd4kng44zf9yzsm5p-profile/lib/python3.10/site-packages/uploader/monadic_requests.py", line 99, in __fail__
+   raise Exception(_data)
+Exception: {'error': 'AuthorisationError', 'error-trace': 'Traceback (most recent call last):\n  File "/gnu/store/38iayxz7dgm86f2x76kfaa6gwicnnjg4-profile/lib/python3.10/site-packages/flask/app.py", line 917, in full_dispatch_request\n    rv = self.dispatch_request()\n  File "/gnu/store/38iayxz7dgm86f2x76kfaa6gwicnnjg4-profile/lib/python3.10/site-packages/flask/app.py", line 902, in dispatch_request\n    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]\n  File "/gnu/store/38iayxz7dgm86f2x76kfaa6gwicnnjg4-profile/lib/python3.10/site-packages/authlib/integrations/flask_oauth2/resource_protector.py", line 110, in decorated\n    return f(*args, **kwargs)\n  File "/gnu/store/38iayxz7dgm86f2x76kfaa6gwicnnjg4-profile/lib/python3.10/site-packages/gn_auth/auth/authorisation/resources/inbredset/views.py", line 95, in create_population_resource\n    ).then(\n  File "/gnu/store/38iayxz7dgm86f2x76kfaa6gwicnnjg4-profile/lib/python3.10/site-packages/pymonad/monad.py", line 152, in then\n    result = self.map(function)\n  File "/gnu/store/38iayxz7dgm86f2x76kfaa6gwicnnjg4-profile/lib/python3.10/site-packages/pymonad/either.py", line 106, in map\n    return self.__class__(function(self.value), (None, True))\n  File "/gnu/store/38iayxz7dgm86f2x76kfaa6gwicnnjg4-profile/lib/python3.10/site-packages/gn_auth/auth/authorisation/resources/inbredset/views.py", line 98, in <lambda>\n    "resource": create_resource(\n  File "/gnu/store/38iayxz7dgm86f2x76kfaa6gwicnnjg4-profile/lib/python3.10/site-packages/gn_auth/auth/authorisation/resources/inbredset/models.py", line 25, in create_resource\n    return _create_resource(cursor,\n  File "/gnu/store/38iayxz7dgm86f2x76kfaa6gwicnnjg4-profile/lib/python3.10/site-packages/gn_auth/auth/authorisation/checks.py", line 56, in __authoriser__\n    raise AuthorisationError(error_description)\ngn_auth.auth.errors.AuthorisationError: Insufficient privileges to create a resource\n', 'error_description': 'Insufficient privileges to create a resource'}
+
+```
+The error above resulted from the attempt to upload the following information on the gn-uploader-`create population section` 
+Input details are as follows: 
+Full Name: Kilifish F2 Intercross Lines
+Name: KF2_Lines
+Population code: KF2
+Description: Kilifish second generation population 
+Family: Crosses, AIL, HS 
+Mapping Methods: GEMMA, QTLReaper, R/qtl 
+Genetic type: intercross 
+
+And when pressed the `Create Population` icon, it led to the error above.  
+
