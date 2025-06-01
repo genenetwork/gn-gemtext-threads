@@ -309,3 +309,36 @@ dd if=./test of=/dev/zero bs=512k count=2048
 smartctl -a /dev/sdd -d megaraid,0
 
 RAID Controller in SL 3: Dell PERC H755N Front
+
+# The story continues
+
+I don't know what happened but the server gave a hard
+error in the logs:
+
+```
+racadm getsel # get system log
+Record:      340
+Date/Time:   05/31/2025 09:25:17
+Source:      system
+Severity:    Critical
+Description: A high-severity issue has occurred at the Power-On
+Self-Test (POST) phase which has resulted in the system BIOS to
+abruptly stop functioning.
+```
+
+Woops! I fixed it by resetting idrac and rebooting remotely. Nasty.
+
+Looking around I found this link
+
+=>
+https://tomaskalabis.com/wordpress/a-high-severity-issue-has-occurred-at-the-power-on-self-te
+st-post-phase-which-has-resulted-in-the-system-bios-to-abruptly-stop-functioning/
+
+suggesting we should upgrade idrac firmware. I am not going to do that
+without backups and a fully up-to-date fallback online. It may fix the
+other hardware issues we have been seeing (who knows?).
+
+Fred, the boot sequence is not perfect yet. Turned out the network
+interfaces do not come up in the right order and nginx failed because
+of a missing /var/run/nginx. The container would not restart because -
+missing above - it could not check the certificates.
