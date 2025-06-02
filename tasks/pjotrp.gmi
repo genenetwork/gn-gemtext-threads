@@ -11,7 +11,7 @@
 ## 1U01HG013760
 
 * Prefix-Free Parsing Compressed Suffix Tree (PFP) for tokenization
-* Mempig
+* Mempang
 
 * [+] create backup server with @fredm
 * [+] RAG with Shelby and Bonz
@@ -33,7 +33,7 @@
 
 ## Systems
 
-* [ ] jumpshiny
+* [+] jumpshiny
 * [ ] pluto
 * [ ] Backup production databases on Tux04
 *     - [+] Dump containers w. databases

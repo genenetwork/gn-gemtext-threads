@@ -8,6 +8,8 @@ Sheepdog also includes a web server for output:
 
 => http://sheepdog.genenetwork.org/sheepdog/status.html
 
+which I run on one of my machines.
+
 # Tags
 
 * assigned: pjotrp
