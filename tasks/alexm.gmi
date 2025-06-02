@@ -66,8 +66,14 @@ You can refine the search by constraining the checks some more, e.g. to get high
 * [] Add full logs on the mapping results page.
 * [x] Add test feature flag for rqtl2.
 
+## 2/06/2025
 
+* work  onsubset for hs dataset;; define founder genotype files??
+* script to dump genotypes to db with bons
+* experiment with caching for Genotypic probabilities rds objects
+*  work on genenetwork  llms  how to make search without login
 
+* masters ; submit documents 
 
 ## Next week(s)
 
@@ -88,3 +94,5 @@ You can refine the search by constraining the checks some more, e.g. to get high
 * [X] GNQA add abstracts pubmed (with @shelbys)
 => ../issues/fetch-pubmed-references-to-gnqa
 * [X] Edit markdown/gemtext pages through web UI (with @bonfacem)
+
+
