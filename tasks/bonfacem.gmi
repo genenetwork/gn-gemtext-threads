@@ -9,26 +9,30 @@
 ## Tasks
 
 ### Note
-- Check small db from: https://files.genenetwork.org/database/
-- View diffs in BXD: Edit case attributes throws an error.
+
 - Assess adding GeneRIF to LLM.
-- Referrer headers -- a way of preventing bots beyond rate-limiting.
+- Referrer headers -- a way of preventing bots beyond rate-limiting. 
 
 ### This week
-
+* [ ] LMDB database.
+*     - Simplify (focus on small files).  Don't over-rely on Numpy.
+*     - Try computations with R/qtl2
+*     - Look at R LMDB libraries
 * [+] Case Attributes (Do a diagnostic and delegate)
 *     - Error when checking the history.
+*     - Reach out to Zach.
+*     - Disable RIF editing in the UI
 * [+] Correlations hash.
 *     - Add dataset count to RDF.
 * [ ] Spam + LLMs
 *     - RateLimiting for Rif Editing
-* [ ] Finish container work
-* [ ] Assess Brian's repo for deployment.
-* [ ] Changes to Production + (Alex)
-* [ ] gn-auth fixes
+* [+] Changes to Production + (Alex)
+
 
 ### Later
+
 * [ ] Send emails when job fail.
+* [ ] Look at updating gn-auth/gn-libs to PYTHONPATH for gn2/3.
 * [ ] Sample/individual/strain/genometype counts for PublishData only - ProbeSetData? https://github.com/genenetwork/genenetwork2/blob/testing/scripts/sample_count.py - mirror in RDF and use global search
 *     - search for all traits that have more than X samples
 * [ ] Add case attributes to RDF and share with Felix (depends on @felixl)
@@ -107,3 +111,8 @@ Currently closed issues are:
 *     2. Work on production w. Fred
 * [X] Distinguish CD from production -- banners/buttons/colors.
 * [X] Use aider - give a presentation in the coming weeks
+* [X] gn-auth fixes
+* [X] Assess Brian's repo for deployment.
+* [X] Finish container work
+* - View diffs in BXD: Edit case attributes throws an error.
+* [X] Check small db from: https://files.genenetwork.org/database/
