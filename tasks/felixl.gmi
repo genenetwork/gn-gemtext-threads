@@ -95,6 +95,25 @@
   * [ X ] follow up on the MSc bioinformatics project 
   * [ X ] follow up on Alex's application with Pwani 
 
+### (12-05-onwards) 
+  * [X] - HS genotypes scripting 
+
+### (19-05-onwards) 
+  * [X] - HS genotypes debugging (memory issue) 
+  * [X] - pair programming with Bonz to improve the script 
+
+### this week (26-05-onwards) 
+  * [X] - process the genotype file for hs rats
+       * [ ] - approach by tissues categories 
+             * [X] - adipose and liver 
+                    - test by Xsomes for memory capture 
+                    - run the working commands 
+             * [ ] - the rest 10 other tissues (in progress) 
+             * [ ] - *.bed file vs the updated vcf files from the website?   
+### this week (02-06-onwards) 
+* [ ] - process the genotypes for the rest of the 10 tissues for HS rats 
+* [ ] - document the new findings about smoothing using bcftools and plink 
+
 ### Later weeks
 
 * [ ] Kilifish into GN
