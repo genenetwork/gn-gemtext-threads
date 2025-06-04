@@ -130,7 +130,7 @@ fusermount3: mount failed: Operation not permitted
 This means you need to set the suid on the fusermount3 command. Bit nasty in Guix.
 
 ```
-apt-get install fuser sshfs
+apt-get install fuse(3) sshfs
 chmod 4755 /usr/bin/fusermount
 ```
 
