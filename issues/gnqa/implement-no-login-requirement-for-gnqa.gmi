@@ -1,0 +1,20 @@
+# Implement No-Login Requirement for GNQA
+
+## Tags
+
+* type: feature
+* status: progress
+* priority: medium
+* assigned: alexm,
+* keywords: gnqa, user experience, authentication, login, llm
+
+## Description
+This feature will allow usage of LLM/GNQA features without requiring user authentication, while implementing measures to filter out bots
+
+
+## Tasks
+
+* [x] If logged in: perform AI search with zero penalty
+* [ ] Add caching lifetime to save on token usage
+* [ ] Routes: check for referrer headers — if the previous search was not from the homepage, perform AI search
+* [ ] If global search returns more than *n* results (*n = number*), perform an AI search
