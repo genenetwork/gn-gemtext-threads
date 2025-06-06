@@ -342,3 +342,39 @@ Fred, the boot sequence is not perfect yet. Turned out the network
 interfaces do not come up in the right order and nginx failed because
 of a missing /var/run/nginx. The container would not restart because -
 missing above - it could not check the certificates.
+
+## A week later
+
+```
+[SMM] APIC 0x00 S00:C00:T00 > ASSERT [AmdPlatformRasRsSmm] u:\EDK2\MdePkg\Library\BasePciSegmentLibPci\PciSegmentLib.c(766): ((Address) & (0xfffffffff0000000ULL | (3))) == 0                !!!! X64 Exception Type - 03(#BP - Breakpoint)  CPU Apic ID - 00000000 !!!!
+RIP  - 0000000076DA4343, CS  - 0000000000000038, RFLAGS - 0000000000000002
+RAX  - 0000000000000010, RCX - 00000000770D5B58, RDX - 00000000000002F8
+RBX  - 0000000000000000, RSP - 0000000077773278, RBP - 0000000000000000
+RSI  - 0000000000000087, RDI - 00000000777733E0                                              R8   - 00000000777731F8, R9  - 0000000000000000, R10 - 0000000000000000
+R11  - 00000000000000A0, R12 - 0000000000000000, R13 - 0000000000000000
+R14  - FFFFFFFFA0C1A118, R15 - 000000000005B000
+DS   - 0000000000000020, ES  - 0000000000000020, FS  - 0000000000000020
+GS   - 0000000000000020, SS  - 0000000000000020
+CR0  - 0000000080010033, CR2 - 0000000015502000, CR3 - 0000000077749000
+CR4  - 0000000000001668, CR8 - 0000000000000001
+DR0  - 0000000000000000, DR1 - 0000000000000000, DR2 - 0000000000000000                      DR3  - 0000000000000000, DR6 - 00000000FFFF0FF0, DR7 - 0000000000000400
+GDTR - 000000007773C000 000000000000004F, LDTR - 0000000000000000                            IDTR - 0000000077761000 00000000000001FF,   TR - 0000000000000040
+FXSAVE_STATE - 0000000077772ED0
+!!!! Find image based on IP(0x76DA4343) u:\Build_Genoa\DellBrazosPkg\DEBUG_MYTOOLS\X64\DellPkgs\DellChipsetPkgs\AmdGenoaModulePkg\Override\AmdCpmPkg\Features\PlatformRas\Rs\Smm\AmdPlatformRasRsSmm\DEBUG\AmdPlatformRasRsSmm.pdb (ImageBase=0000000076D3E000, EntryPoint=0000000076D3E6C0) !!!!
+```
+
+New error in system log:
+
+```
+Record:      341                                                                             Date/Time:   06/04/2025 19:47:08
+Source:      system
+Severity:    Critical                                                                        Description: A high-severity issue has occurred at the Power-On Self-Test (POST) phase which has resulted in the system BIOS to abruptly stop functioning.
+```
+
+The error appears to relate to AMD Brazos which is probably part of the on board APU/GPU.
+
+The code where it segfaulted is online at:
+
+=> https://github.com/tianocore/edk2/blame/master/MdePkg/Library/BasePciSegmentLibPci/PciSegmentLib.c
+
+and has to do with PCI registers and that can actually be caused by the new PCIe card we hosted.
