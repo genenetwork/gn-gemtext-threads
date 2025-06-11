@@ -25,6 +25,17 @@ In this respect, a number of tasks rise to the front as necessary to accomplish 
 * TODO: List the necessary directories and describe what purpose each serves. This will be from the perspective of the container — actual paths on the host system are left to the builders choice, and can vary wildly.
 * TODO: Prefer explicit binding rather than implicit — makes the shell scripts longer, but no assumptions have to be made, everything is explicitly spelled out.
 
+## Redis
+
+We currently (2025-06-11) use Redis for:
+
+- Tracking user collection (this will be moved to SQLite database)
+- Tracking background jobs (this is being moved out to SQLite databases)
+- Tracking running-time (not sure what this is about)
+- Others?
+
+We do need to copy over the redis save file whenever we do a migration, at least until the user collections and background jobs features have been moved completely out of Redis.
+
 ## Container Configurations: Secrets
 
 * TODO: Detail how to extract/restore the existing secrets configurations in the new machine
