@@ -75,6 +75,20 @@ You can refine the search by constraining the checks some more, e.g. to get high
 
 * masters ; submit documents 
 
+## 9/06/2025
+
+* [x] no login for gnqna
+* [-] hsrat rqtl2 integration: follow up on the dumping genotypes files to lmdb 
+
+
+## 16/06/2025
+
+* [] implementation for  no logim for gnqa users.
+ see issue here: https://issues.genenetwork.org/issues/gnqa/implement-no-login-requirement-for-gnqa
+* [] hsrat rqtl2 integration: follow up on the dumping genotypes files to lmdb with bons 
+* [] create rqtl2 adapter for reading cross from  lmdb 
+
+
 ## Next week(s)
 
 * [ ] Accelerate Xapian functionality - needs Aider key from Pjotr
