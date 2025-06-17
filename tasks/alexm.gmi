@@ -83,7 +83,7 @@ You can refine the search by constraining the checks some more, e.g. to get high
 
 ## 16/06/2025
 
-* [] implementation for  no logim for gnqa users.
+* [] implementation for  no login  for gnqa users.
  see issue here: https://issues.genenetwork.org/issues/gnqa/implement-no-login-requirement-for-gnqa
 * [] hsrat rqtl2 integration: follow up on the dumping genotypes files to lmdb with bons 
 * [] create rqtl2 adapter for reading cross from  lmdb 
