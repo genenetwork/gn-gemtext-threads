@@ -86,7 +86,7 @@ Filesystem      Size  Used Avail Use% Mounted on
 
 so we know that's not a problem.
 
-A similar thing had shown up on space.uthsc.edu.
+A similar thing had shown up on our space server.
 
 ### More Troubleshooting Efforts
 

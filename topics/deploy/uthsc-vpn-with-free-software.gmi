@@ -6,7 +6,7 @@ It is possible to connect to the UTHSC VPN using only free software. For this, y
 
 To connect, run openconnect-sso as follows. A browser window will pop up for you to complete the Duo authentication. Once done, you will be connected to the VPN.
 ```
-$ openconnect-sso --server uthscvpn1.uthsc.edu --authgroup UTHSC
+$ openconnect-sso --server vpn-server --authgroup UTHSC
 ```
 Note that openconnect-sso should be run as a regular user, not as root. After passing Duo authentication, openconnect-sso will try to gain root priviliges to set up the network routes. At that point, it will prompt you for your password using sudo.
 
@@ -22,7 +22,7 @@ openconnect, by default, tunnels all your traffic through the VPN. This is not g
 
 For example, to connect to the UTHSC VPN but only access the hosts tux01 and tux02e through the VPN, run the following command.
 ```
-$ openconnect-sso --server uthscvpn1.uthsc.edu --authgroup UTHSC -- --script 'vpn-slice tux01 tux02e'
+$ openconnect-sso --server vpn-server --authgroup UTHSC -- --script 'vpn-slice tux01 tux02e'
 ```
 The vpn-slice script looks up the hostnames tux01 and tux02e on the VPN DNS and adds /etc/hosts entries and routes to your system. vpn-slice can also set up more complicated routes. To learn more, read the vpn-slice documentation.
 
@@ -52,7 +52,7 @@ Then, run the openconnect-sso client as usual.
 ## Misconfigured UTHSC TLS certificate
 
 The UTHSC TLS certificate does not validate on some systems. You can work around this by downloading the certificate chain and adding it to your system:
-* Navigate with browser to https://uthscvpn1.uthsc.edu/. Inspect the certificate in the browser (lock icon next to search bar) and export .pem file
+* Navigate with browser to https://vpn-server/. Inspect the certificate in the browser (lock icon next to search bar) and export .pem file
 * Move it to /usr/local/share/ca-certificates (with .crt extension) or equivalent
 * On Debian/Ubuntu update the certificate store with update-ca-certificates
 You should see
@@ -65,7 +65,7 @@ Thanks Niklas. See also
 
 However, adding certificates to your system manually is not good security practice. It is better to limit the added certificate to the openconnect process. You can do this using the REQUESTS_CA_BUNDLE environment variable like so:
 ```
-REQUESTS_CA_BUNDLE=/path/to/uthsc/certificate.pem openconnect-sso --server uthscvpn1.uthsc.edu --authgroup UTHSC
+REQUESTS_CA_BUNDLE=/path/to/uthsc/certificate.pem openconnect-sso --server vpn-server --authgroup UTHSC
 ```
 
 ## Putting it all together using Guix G-expressions

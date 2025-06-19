@@ -114,12 +114,12 @@ We use borg for backups. First restore the backup on the PCIe. Also a test for o
 The swaks package is quite useful to test for a valid receive host:
 
 ```
-swaks --to testing-my-server@gmail.com --server smtp.uthsc.edu
-=== Trying smtp.uthsc.edu:25...
-=== Connected to smtp.uthsc.edu.
-<-  220 mailrouter8.uthsc.edu ESMTP NO UCE
- -> EHLO tux04.uthsc.edu
-<-  250-mailrouter8.uthsc.edu
+swaks --to testing-my-server@gmail.com --server smtp.network
+=== Trying smtp.network:25...
+=== Connected to smtp.network.
+<-  220 mailrouter8.network ESMTP NO UCE
+ -> EHLO tux04.network
+<-  250-mailrouter8.network
 <-  250-PIPELINING
 <-  250-SIZE 26214400
 <-  250-VRFY
@@ -129,7 +129,7 @@ swaks --to testing-my-server@gmail.com --server smtp.uthsc.edu
 <-  250-8BITMIME
 <-  250-DSN
 <-  250 SMTPUTF8
- -> MAIL FROM:<root@tux04.uthsc.edu>
+ -> MAIL FROM:<root@tux04.network>
 <-  250 2.1.0 Ok
  -> RCPT TO:<pjotr2020@thebird.nl>
 <-  250 2.1.5 Ok
@@ -137,9 +137,9 @@ swaks --to testing-my-server@gmail.com --server smtp.uthsc.edu
 <-  354 End data with <CR><LF>.<CR><LF>
  -> Date: Thu, 06 Mar 2025 08:34:24 +0000
  -> To: pjotr2020@thebird.nl
- -> From: root@tux04.uthsc.edu
+ -> From: root@tux04.network
  -> Subject: test Thu, 06 Mar 2025 08:34:24 +0000
- -> Message-Id: <20250306083424.624509@tux04.uthsc.edu>
+ -> Message-Id: <20250306083424.624509@tux04.network>
  -> X-Mailer: swaks v20201014.0 jetmore.org/john/code/swaks/
  ->
  -> This is a test mailing
@@ -161,7 +161,7 @@ dc_readhost=''
 dc_relay_domains=''
 dc_minimaldns='false'
 dc_relay_nets=''
-dc_smarthost='smtp.uthsc.edu'
+dc_smarthost='smtp.network'
 CFILEMODE='644'
 dc_use_split_config='false'
 dc_hide_mailname='false'
@@ -172,7 +172,7 @@ dc_localdelivery='maildir_home'
 And this should work:
 
 ```
-swaks --to myemailaddress --from john@uthsc.edu --server localhost
+swaks --to myemailaddress --from john@network --server localhost
 ```
 
 # Backups

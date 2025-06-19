@@ -12,7 +12,7 @@
 
 When setting up e-mail verification, the following configurations should be set for gn-auth:
 
-SMTP_HOST = "smtp.uthsc.edu"
+SMTP_HOST = "smtp.uthsc"
 SMTP_PORT = 25 (not 587, which is what we first tried)
 SMTP_TIMEOUT = 200 # seconds
 

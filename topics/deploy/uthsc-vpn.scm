@@ -9,7 +9,7 @@
 ;; Put in the hosts you are interested in here.
 (define %hosts
   (list "octopus01"
-        "spacex.uthsc.edu"))
+        "spacex"))
 
 (define (ini-file name scm)
   "Return a file-like object representing INI file with @var{name} and
@@ -81,7 +81,7 @@
         (setenv "REQUESTS_CA_BUNDLE"
                 #$(local-file "uthsc-certificate.pem"))
         (invoke #$(file-append openconnect-sso-uthsc "/bin/openconnect-sso")
-                "--server" "uthscvpn1.uthsc.edu"
+                "--server" "$vpn-server" ; ask us for end-point or see UT docs
                 "--authgroup" "UTHSC"
                 "--"
                 "--script" (string-join (cons #$(file-append vpn-slice "/bin/vpn-slice")

@@ -63,7 +63,7 @@ Security:
 * [X] describe machines with Rick Stripes
 * [X] get bacchus back on line
 * [X] fix www.genenetwork.org and gn2.genenetwork.org https
-* [-] get data from summer211.uthsc.edu (access machine room)
+* [-] get data from summer211 (access machine room)
 * [X] VPN access and FoUT
 * [X] lambda: get fiber working
 * [X] lambda: add to Octopus HPC
