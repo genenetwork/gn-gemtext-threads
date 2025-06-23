@@ -9,36 +9,39 @@
 ## Tasks
 
 ### Note
+
 - GN-auth dashboard fixes.  Follow up with Fred.
 - Case-attributes used in co-variates.
-- Encourage FahamuAI to be open.
 
 ### This week
-* [+] Case Attributes (Do a diagnostic and delegate)
-*     - Git blame.  Add tests.
-*     - Error when checking the history.
-*     - Reach out to Zach.
-*     - Disable diff in the UI.
-* [ ] Distinct admin and dev user.
+* [+] Case Attributes.
+*     - Git blame.  Add tests.  Fred.
+*     - NOTE: Fixed the diffs.  But there's an edge-case with BXD longevity (I haven't checked.  Shared scripts)
+*     - NOTE: Elpy broke.  Eglot/lspemacs doesn't work.
+*     - NOTE: Moved away from storing diffs in files to LMDB.
+*     - Error when checking the history.  Fixed by fixing the diffs.
+*     - Reach out to Zach.  NOTE: Timing differences.
+*     - Disable diff in the UI - unnecessary.
+* [+] Distinct admin and dev user.
+*     - Extra fluff to grant dev user access to everything.
+* [ ] Dump DO and BXD into LMDB
 * [ ] Adapter to LMDB into a cross object.
-*     - Try computations with R/qtl2.
+*     - Try computations with R/qtl2
 *     - Look at R LMDB libraries.
 *     - Look at functions that read the files.
 *     - PJ: LMDB adapter in R and cross-type files.
-* [ ] Send Arun an e-mail on how to go about upgrading shepherd.
+* [X] Send Arun an e-mail on how to go about upgrading shepherd.
 * [ ] Dump all genotypes from production to LMDB.
 *     - PJ sync tux01 genotypes with tux02/04.
+*     - Yet to set-up 2FA on new device.
+
+
+### Later
 * [+] Correlations hash.
 *     - Add dataset count to RDF.
 * [ ] Spam + LLMs
 *     - RateLimiting for Rif Editing.
-*     - Honep Pot approach.
-* [+] Help Alex with SSL certification container error.
-*     - Put the changes in the actual scm files.
-* [X] Python Fahamu.
-* [X] Memvid - brief look.
-
-### Later
+*     - Honepot approach.
 * [ ] Dockerise GN container.   For Harm.
 * [ ] Send emails when job fail.
 * [ ] Look at updating gn-auth/gn-libs to PYTHONPATH for gn2/3.
@@ -131,3 +134,10 @@ Currently closed issues are:
 *     - Simplify (focus on small files).  Don't over-rely on Numpy.
 * [X] Assess adding GeneRIF to LLM.
 * [X] Referrer headers -- a way of preventing bots beyond rate-limiting. 
+* [X] Python Fahamu.
+* [X] Memvid - brief look.
+
+* [X] Encourage FahamuAI to be open.
+*     Another paper with his group should be out this month
+* [X] Help Alex with SSL certification container error.
+*     - Fix SSL issues in local container.
