@@ -89,6 +89,13 @@ You can refine the search by constraining the checks some more, e.g. to get high
 * [] create rqtl2 adapter for reading cross from  lmdb 
 
 
+## 23/06/2025
+
+*  []  focus on documentation/source code  for read cross  ;;add option for reading lmdb
+*  []  looking at thor an lmdb interface
+*  [x] implementation of no login for gnqna users ;; TODO push this code to cd. 
+
+
 ## Next week(s)
 
 * [ ] Accelerate Xapian functionality - needs Aider key from Pjotr
