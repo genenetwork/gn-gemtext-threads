@@ -116,9 +116,18 @@
 * [X] - document the new findings about smoothing using bcftools and plink
 
 * ## this week (09-06-onwards) 
-* [ ] - identify start and end points for haplotypes in hs genotype files 
-* [ ] - upload the final updates to gn2, test and see the results 
-* [ ] - gn-uploader/uploader folder, explore 
+* [+] - identify start and end points for haplotypes in hs genotype files 
+* [+] - upload the final updates to gn2, test and see the results 
+* [-] - gn-uploader/uploader folder, explore 
+
+* ## this week (16-06-onwards)
+* [X] - hs rats proximal and distal haplotype edges
+* [+] - uploading kilifish using the backend route
+
+* ## this week (23-06-onwards)
+* [ ] - hs rats recombination counts
+* [ ] - kilifish to gn2 via backend
+
 
 ### Later weeks (non-programming tasks)
 
