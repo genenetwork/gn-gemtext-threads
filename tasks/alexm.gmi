@@ -93,7 +93,8 @@ You can refine the search by constraining the checks some more, e.g. to get high
 
 *  []  focus on documentation/source code  for read cross  ;;add option for reading lmdb
 *  []  looking at thor an lmdb interface
-*  [x] implementation of no login for gnqna users ;; TODO push this code to cd. 
+*  [x] implementation of no login for gnqna users ;; TODO push this code to cd.
+* []  for nologin llm provide the correct feedbacks to user  if ai search does not meet criteria;; currently only static response `Please login to view AI generated summary`
 
 
 ## Next week(s)
