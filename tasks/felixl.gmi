@@ -125,8 +125,14 @@
 * [+] - uploading kilifish using the backend route
 
 * ## this week (23-06-onwards)
-* [ ] - hs rats recombination counts
-* [ ] - kilifish to gn2 via backend
+* [X] - hs rats recombination counts
+* [+] - kilifish to gn2 via backend
+
+* ## this week (30-06-onwards)
+* [ ] - mapping offsprings to founders (hs rats)
+* [ ] - upload kilifish to genenetwork
+* [ ] - revise celegans smoothing (genotypes)
+
 
 
 ### Later weeks (non-programming tasks)
