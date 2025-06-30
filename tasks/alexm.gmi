@@ -83,19 +83,22 @@ You can refine the search by constraining the checks some more, e.g. to get high
 
 ## 16/06/2025
 
-* [] implementation for  no login  for gnqa users.
+* [x] implementation for  no login  for gnqa users.
  see issue here: https://issues.genenetwork.org/issues/gnqa/implement-no-login-requirement-for-gnqa
-* [] hsrat rqtl2 integration: follow up on the dumping genotypes files to lmdb with bons 
+* [-] hsrat rqtl2 integration: follow up on the dumping genotypes files to lmdb with bons 
 * [] create rqtl2 adapter for reading cross from  lmdb 
 
 
 ## 23/06/2025
 
-*  []  focus on documentation/source code  for read cross  ;;add option for reading lmdb
-*  []  looking at thor an lmdb interface
+*  [-]  focus on documentation/source code  for read cross  ;;add option for reading lmdb
+*  [-]  looking at thor an lmdb interface
 *  [x] implementation of no login for gnqna users ;; TODO push this code to cd.
-* []  for nologin llm provide the correct feedbacks to user  if ai search does not meet criteria;; currently only static response `Please login to view AI generated summary`
+* [x]  for nologin llm provide the correct feedbacks to user  if ai search does not meet criteria;; currently only static response `Please login to view AI generated summary`
 
+## 30/06/2025
+
+* [] rqtl2 lmdb interface
 
 ## Next week(s)
 
