@@ -12,8 +12,17 @@ Note that openconnect-sso should be run as a regular user, not as root. After pa
 
 ## Recommended way
 
-The recommended way is to use Arun's g-expression setup using guix. See below. It should just work, provided you have the
-chained certificate that you can get from the browser or one of us.
+The recommended way is to use Arun's g-expression setup using guix. See below. It should just work, provided you have the chained certificate that you can get from the browser or one of us and point to the right server. Simply
+
+```
+$(guix build -f uthsc-vpn.scm)
+```
+
+See
+
+=> ./uthsc-vpn.scm
+
+Get the final details from us. UT does not like it when we put it online even though there is no real risk.
 
 ## Avoid tunneling all your network traffic through the VPN (aka Split Tunneling)
 
@@ -93,6 +102,6 @@ export QTWEBENGINE_CHROMIUM_FLAGS=--disable-seccomp-filter-sandbox
 
 ## Acknowledgement
 
-Many thanks to Pjotr Prins and Erik Garrison without whose earlier work this guide would not be possible.
+Many thanks to Arun, Pjotr and Erik without whose earlier work this guide would not be possible.
 => https://github.com/pjotrp/linux-at-university-of-tennessee
 => https://github.com/ekg/openconnect-sso-docker
