@@ -13,16 +13,14 @@
 - GN-auth dashboard fixes.  Follow up with Fred.
 - Case-attributes used in co-variates.
 
+### PhD Work
+
+* Concept note/ideas: Add all metadata in GN to an LLM that enriches GnQA.
+* Use mapping output as full vectors for gpt/transformers.  Integrate this work into GN.
+
 ### This week
-* [+] Case Attributes.
-*     - Git blame.  Add tests.  Fred.
-*     - NOTE: Fixed the diffs.  But there's an edge-case with BXD longevity (I haven't checked.  Shared scripts)
-*     - NOTE: Elpy broke.  Eglot/lspemacs doesn't work.
-*     - NOTE: Moved away from storing diffs in files to LMDB.
-*     - Error when checking the history.  Fixed by fixing the diffs.
-*     - Reach out to Zach.  NOTE: Timing differences.
-*     - Disable diff in the UI - unnecessary.
-* [+] Distinct admin and dev user.
+* [ ] Talk to Fred and hand over case-attributes.
+* [ ] Distinct admin and dev user. [w/ Fred]
 *     - Extra fluff to grant dev user access to everything.
 * [ ] Dump DO and BXD into LMDB
 * [ ] Adapter to LMDB into a cross object.
@@ -30,13 +28,13 @@
 *     - Look at R LMDB libraries.
 *     - Look at functions that read the files.
 *     - PJ: LMDB adapter in R and cross-type files.
-* [X] Send Arun an e-mail on how to go about upgrading shepherd.
 * [ ] Dump all genotypes from production to LMDB.
 *     - PJ sync tux01 genotypes with tux02/04.
 *     - Yet to set-up 2FA on new device.
 
 
 ### Later
+* [ ] Editing genotype metadata
 * [+] Correlations hash.
 *     - Add dataset count to RDF.
 * [ ] Spam + LLMs
@@ -141,3 +139,14 @@ Currently closed issues are:
 *     Another paper with his group should be out this month
 * [X] Help Alex with SSL certification container error.
 *     - Fix SSL issues in local container.
+* [X] Send Arun an e-mail on how to go about upgrading shepherd.
+* [X] Case Attributes.
+*     - Git blame.  Add tests.  Fred.
+*     - NOTE: Fixed the diffs.  But there's an edge-case with BXD longevity (I haven't checked.  Shared scripts)
+*     - NOTE: Elpy broke.  Eglot/lspemacs doesn't work.
+*     - NOTE: Moved away from storing diffs in files to LMDB.
+*     - Error when checking the history.  Fixed by fixing the diffs.
+*     - Reach out to Zach.  NOTE: Timing differences.
+*     - Disable diff in the UI - unnecessary.
+* [X] Added LMDB_PATH to dev container.   Updated old commits.
+* [X] Merged no-login AI work that Alex did.
