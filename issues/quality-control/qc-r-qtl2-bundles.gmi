@@ -1,0 +1,57 @@
+# Quality Control of Data in Uploaded R/qtl2 Bundles
+
+## Tags
+
+* assigned: fredm, acenteno
+* status: closed, completed
+* type: feature request
+* priority: medium
+* keywords: quality control, QC, R/qtl2 bundle
+
+## Description
+
+Currently (2024-02-02T05:41+03:00UTC), the code simply allows the upload of data, doing the bare minimum in terms of quality control. In this document, we detail the quality control checks that are required to be run against the uploaded data, to ensure the data we have is acceptable.
+
+The following "key" details the meanings of certain notations in this file:
+
+* [ ]: not started
+* [-]: partially done or in progress
+* [x]: completed
+
+### [x] Control File
+
+* [x] MUST exist in bundle
+* [x] One and only one control file in the bundle
+* [x] Defaults for control data are auto-provided by code
+* [x] Every file listed in control file MUST exist in the bundle
+
+### [x] geno File(s)
+
+* [x] Every value existing in file is one of the genotype encodings in the control file
+
+### [ ] phenocovar File(s)
+
+* [ ] At least one of the phenocovar files contains a "description" column
+* [ ] The description of every phenotype fits the rules[1]
+
+### [ ] pheno File(s)
+
+* [x] Check for a minimal number of decimal places (three?)
+* [ ] Check that the numbers are log2 normalised (See 'Check for log2-normalised Values' section below)
+* [ ] Verify that all listed samples/cases exist in the database, prior to attempting to parse the file and load data into the database
+* [ ] If listed samples/cases do not exist in database, verify they are all listed in the "geno" file(s)
+
+### [ ] phenose File(s)
+
+This is a proposed addition for our specific use-case. If the data in the pheno file(s) was derived from averaging values, then the user could provide the corresponding "standard error" file(s).
+
+Has similar QC checks to those for the "pheno" file(s) above. The number of decimal places might vary, however.
+
+## Check for log2-normalised Values
+
+* Check that none of the values are negative
+* Check that the values do not exceed 20 -- This is probably wrong, e.g. `mth.log2(3472935867452934)=51.62507719292422`
+
+## Resources
+
+* [1]: Description rules: https://info.genenetwork.org/faq.php#q-22

@@ -1,0 +1,114 @@
+# Handling Tissue in Uploader
+
+## Tags
+
+* status: open
+* priority: high
+* assigned: fredm
+* type: feature-request
+* keywords: gn-uploader, tissues
+
+## Description
+
+"ProbeSet" studies in GeneNetwork seem to be linked to a specific tissue:
+
+```sql
+MariaDB [db_webqtl]> DESC ProbeFreeze;
++---------------+----------------------+------+-----+------------+----------------+
+| Field         | Type                 | Null | Key | Default    | Extra          |
++---------------+----------------------+------+-----+------------+----------------+
+| Id            | smallint(5) unsigned | NO   | PRI | NULL       | auto_increment |
+| ProbeFreezeId | int(5)               | YES  |     | NULL       |                |
+| ChipId        | smallint(5) unsigned | NO   |     | 0          |                |
+| TissueId      | smallint(5) unsigned | NO   |     | 0          |                |
+| Name          | varchar(100)         | NO   | UNI |            |                |
+| FullName      | varchar(100)         | NO   |     |            |                |
+| ShortName     | varchar(100)         | NO   |     |            |                |
+| CreateTime    | date                 | NO   |     | 0000-00-00 |                |
+| InbredSetId   | smallint(5) unsigned | YES  |     | 1          |                |
++---------------+----------------------+------+-----+------------+----------------+
+9 rows in set (0.00 sec)
+```
+
+According to the [`ProbeFreeze` table schema][1], `TissueId` links to the
+[`Tissue` table][2].
+
+From that, we need the following data to add a non-existing tissue to the system:
+
+* *TissueName*
+* *Name*: Name of the biological material used in the experiment
+* *Short_Name*
+
+There does not seem to be any difference between *TissueName* and *Name* from
+what I can tell so far, therefore, the UI can simply have a single element to
+get the name.
+
+There are other fields in the `Tissue` table that do not seem to have much (if
+any) utility - these are *BIRN_lex_ID* and *BIRN_lex_Name*: From what I have
+figured out so far, they are probably linked to the Biomedical Informatics
+Research Network (BIRN), but beyond that, I have no idea. Thankfully, these are
+not required information, so we can ignore them for now.
+
+If I have the go-ahead, I can begin working on this, but I needed to start the
+discussion, especially regarding the possible issues mentioned next.
+
+
+## Possible Gotchas
+
+According to the [`ProbeFreeze` table schema][1], the `TissueId` is a mandatory
+field and
+
+> Links to the information about the biological material analysed . ID1206
+
+The [`Tissue` table][2] on the other hand, does not link the material to the
+species. This makes it virtually impossible to filter out the tissues for UI
+presentantion, and thus, the user will always be presented with all tissues from
+all species in the system (and possibly some species the system is unaware of -
+there's nothing to prevent that).
+
+The closest we come to linking tissues with the species is via the `ProbeFreeze`
+table that refers to the `InbredSet` table that then refers to the `Species`
+table. Even with that, on the **Tux02** database, we have 48 tissues that are
+not connected to any species.
+
+```sql
+MariaDB [db_webqtl]> SELECT COUNT(*) FROM Tissue WHERE Id NOT IN (SELECT TissueId FROM ProbeFreeze);
++----------+
+| COUNT(*) |
++----------+
+|       48 |
++----------+
+1 row in set (0.01 sec)
+```
+
+The other major gotcha is regarding datatypes, i.e.
+
+```sql
+MariaDB [db_webqtl]> DESC Tissue;
++---------------+----------------------+------+-----+---------+----------------+
+| Field         | Type                 | Null | Key | Default | Extra          |
++---------------+----------------------+------+-----+---------+----------------+
+| Id            | smallint(5) unsigned | NO   | PRI | NULL    | auto_increment |
+| TissueId      | int(5)               | YES  |     | NULL    |                |
+| TissueName    | varchar(50)          | YES  |     | NULL    |                |
+| Name          | char(50)             | YES  | UNI | NULL    |                |
+| Short_Name    | char(30)             | NO   | UNI |         |                |
+| BIRN_lex_ID   | char(30)             | YES  |     | NULL    |                |
+| BIRN_lex_Name | char(30)             | YES  |     | NULL    |                |
++---------------+----------------------+------+-----+---------+----------------+
+```
+
+The `Id` and `TissueId` field have different types, despite seemingly serving
+the same purpose, "Uniquely identifying each record".
+
+We should probably fix that, maybe with something like:
+
+```sql
+ALTER TABLE Tissue MODIFY Id INT(5) UNIQUE NOT NULL;
+```
+
+
+## References
+
+* [1] https://gn1.genenetwork.org/webqtl/main.py?FormID=schemaShowPage#ProbeFreeze
+* [2] https://gn1.genenetwork.org/webqtl/main.py?FormID=schemaShowPage#Tissue

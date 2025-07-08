@@ -1,0 +1,51 @@
+# Mapping Error
+
+## Tags
+
+* type: bug
+* status: open
+* priority: medium
+* assigned: zachs, fredm, flisso
+* keywords: gn2, genenetwork2, genenetwork 2, mapping
+
+## Reproduction
+
+* Go to https://staging.genenetwork.org/
+* For 'Species' select "Arabidopsis (Arabidopsis thaliana, araTha1)"
+* For 'Group' select "BayXSha(RIL by sib-mating)"
+* For 'Type' select "arabidopsis seeds"
+* For 'Dataset' select "Arabidopsis BayXShaXRIL_expr_reg _ATH1"
+* Leave 'Get Any' blank
+* Enter "*" for "Combined"
+* Click "Search"
+* On the search results page, click on "AT1G01010"
+* Expand the "Mapping Tools" section
+* For 'Chromosome' select "All"
+* For 'Minor Allele ≥' enter "0.05"
+* For 'Use LOCO' select "Yes"
+* Ignore covariates
+* Click "Compute"
+
+### Expected
+
+The system would compute the maps and display the mapping diagram(s) and data.
+
+### Actual
+
+The computation fails with:
+
+```
+      GeneNetwork 2.11-rc2  https://staging.genenetwork.org/loading ( 6:50PM UTC Jul 03, 2024) 
+Traceback (most recent call last):
+  File "/gnu/store/jsvqai0gz6fn40k7kx3r12yq4hzfini6-profile/lib/python3.10/site-packages/flask/app.py", line 1523, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/gnu/store/jsvqai0gz6fn40k7kx3r12yq4hzfini6-profile/lib/python3.10/site-packages/flask/app.py", line 1509, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/gnu/store/jsvqai0gz6fn40k7kx3r12yq4hzfini6-profile/lib/python3.10/site-packages/gn2/wqflask/views.py", line 812, in loading_page
+    for sample in samples:
+TypeError: 'NoneType' object is not iterable
+```
+
+### Updates
+
+This is likely just because the genotype file doesn't exist in the necessary format (BIMBAM). We probably need to convert the R/qtl2 genotypes to BIMBAM.

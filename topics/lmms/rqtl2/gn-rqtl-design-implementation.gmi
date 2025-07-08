@@ -1,0 +1,203 @@
+# RQTL Implementation for GeneNetwork Design Proposal
+
+## Tags
+
+* Assigned: alexm,
+* Keywords: RQTL, GeneNetwork2, Design
+* Type: Enhancements,
+* Status: In Progress
+
+
+
+## Description
+
+This document outlines the design proposal for the re-implementation of the RQTL feature in GeneNetwork providing also  a console view to track the  stdout from the external process.
+
+### Problem Definition
+
+The current RQTL implementation faces the following challenges:
+
+- Lack of adequate error handling for the API and scripts.
+
+- Insufficient separation of concerns between GN2 and GN3.
+
+- lack way for user to track the progress of the r-qtl script being executed
+
+- There is lack of a clear way in which the r-qtl script is executed
+
+We will address these challenges and add  enhancements by:
+
+- Rewriting the R script using r-qtl2 instead of r-qtl.
+
+- Establishing clear separation of concerns between GN2 and GN3, eliminating file path transfers between the two.
+
+- Implementing better error handling for both the API and the RQTL script.
+
+- run the script as  a  job in a task queue
+
+- Piping stdout from the script to the browser through a console for real-time monitoring.
+
+- Improving the overall design and architecture of the system.
+
+
+
+## High-Level Design
+This is divided into three major components:
+
+* GN3 RQTL-2 Script implementation
+* RQTL Api
+* Monitoring system for the rqtl script
+
+
+### GN3 RQTL-2 Script implementation
+We currently have an rqtl script written in rqtl https://github.com/genenetwork/genenetwork3/blob/main/scripts/rqtl_wrapper.R
+There is a newer rqtl implementation (rqtl-2) which is
+a reimplementation of the QTL analysis software R/qtl, to better handle high-dimensional data and complex cross designs.
+To see the difference between the two see documentation:
+=> https://kbroman.org/qtl2/assets/vignettes/rqtl_diff.html
+We aim to implement a seperate script using this while maintaining the  one
+implemented using rqtl1 (rqtl) .
+(TODO) This probably needs to be split to a new issue(with enough knowledge) , to capture
+each computation step  in the r script.
+
+### RQTL Api
+
+
+This component will serve as the entry point for running RQTL in GN3. At this stage, we need to improve the overall architecture and error handling. This process will be divided into the following steps:
+
+-  Data Validation
+In this step, we must validate that all required data to run RQTL is provided in the JSON format. This includes the mapping method, genotype file, phenotype file, etc. Please refer to the r-qtl2 documentation for an overview on the requirements :
+=> https://rqtl.org/
+
+-  Data Preprocessing
+During this stage, we will transform the data into a format that R can understand. This includes converting boolean values to the appropriate representations, preparing the RQTL command with all required values, and adding defaults where necessary.
+
+-  Data Computation
+In this stage, we will pass the RQTL script command to the task queue to run as a job.
+
+-   Output Data Processing
+In this step, we need to retrieve the results outputted from the script in a specified format, such as JSON or CSV and process the data. This may include outputs like RQTL pair scans and generated diagrams. Please refer to the documentation for an overview:
+=> https://rqtl.org/
+
+
+
+**Subtasks:**
+
+- [ ] add the rqtl api endpoint (10%)
+- [ ] Input Data validation (15%)
+- [ ] Input data  processing  (20%)
+- [ ] Passing data to r-script for the computation (40%)
+- [ ] output data processing  (80%)
+ -[ ] add unittests for this module (100%)
+
+
+###  Monitoring system for the  rqtl script
+
+This component involves creating a monitoring system to track the state of the external process and output relevant information to the user.
+We need a way to determine the status for the current job for example
+QUEUED, STARTED, INPROGRESS, COMPLETED (see deep dive for more on this)
+
+
+## Deep Dive
+
+
+### Running the External Script
+The RQTL implementation is in R, and we need a strategy for executing this script as an external process. This can be subdivided into several key steps:
+
+- **Task Queue Integration**:
+
+  - We will utilize a task queue system ,
+  We already have an implementation in gn3
+  to  manage script execution
+
+- https://github.com/genenetwork/genenetwork3/blob/0820295202c2fe747c05b93ce0f1c5a604442f69/gn3/commands.py#L101
+
+- **Job Submission**: 
+  - Each API call will create a new job in the task queue, which will handle the execution of the R script.
+
+- **Script Execution**: 
+  - This stage involves executing the R script in a controlled environment, ensuring all necessary dependencies are loaded.
+
+- **Monitoring and Logging**: 
+
+- The system will include monitoring tools to track the status of each job. Users will receive real-time updates on job progress and logs for the current task.
+
+In this stage, we can have different states for the current job, such as QUEUED, IN PROGRESS, and COMPLETED. 
+
+We need to output to the user which stage of computation we are currently on during the script
+execution.
+
+- During the QUEUED state, the standard output (stdout) should display the  command to be executed along with all its arguments. 
+
+- During the STARTED stage, the stdout should notify the user that execution has begun. 
+
+- In the IN PROGRESS stage, we need to fetch logs from the script being executed at each computation step. Please refer to this documentation for an overview of the different computations we
+shall have :
+=> https://rqtl.org/
+
+- During the DONE step, the system should output the results from the R/qtl script to the user.
+
+
+- **Result Retrieval**: 
+  - Once the R script completes (either successfully or with an error), results will be returned to the API call.
+
+- **Error Handling**: 
+  - Better error handling will be implemented to manage potential issues during script execution. This includes capturing errors from the R script and providing meaningful feedback to users through the application.
+
+### Additional Error Handling Considerations
+This will involve:
+* API error handling
+* Error handling within the R script
+
+## Additional UI Considerations
+We need to rethink where to output the external process stdout  in the UI. Currently, we can add flags to the URL to enable this functionality, e.g., `URL/page&flags&console=1`.
+Also the design suggestion is to output the results in a terminal emulator for
+example xterm ,See more: https://xtermjs.org/, A current implementation already exists
+for gn3 see
+=> https://github.com/genenetwork/genenetwork2/blob/abe324888fc3942d4b3469ec8d1ce2c7dcbd8a93/gn2/wqflask/templates/wgcna_setup.html#L89
+
+###  Design Suggestions:
+#### With HTMX, offer a split screen
+This will include an output page and a monitoring system page.
+
+#### Popup button for preview
+A button that allows users to preview and hide the console output.
+
+
+
+
+
+## Long-Term Goals
+We aim to run computations on clusters rather than locally. This project will serve as a pioneer for that approach.
+
+## Related Issues
+=> https://issues.genenetwork.org/topics/lmms/rqtl2/using-rqtl2
+
+### Tasks
+
+* stage 1  (20%) *
+
+ - [x] implement the rqtl script using rqtl2
+ 
+* stage 2  (40%) * 
+
+- [ ] Implement  the RQTL API endpoints
+- [ ] validation  and preprocessing for data from the client
+- [ ] Implement state-of-the-art error handling
+- [ ] Add unit tests for the rqtl api module
+- [ ] Make improvements to the current R script if possible
+
+* stage 3  (60%)*
+
+- [ ] Task queue integration (refer to the Deep Dive section)
+- [ ] Implement a monitoring and logging system for job execution (refer to the deep dive section
+- [ ] Fetch results from running jobs
+- [ ]  Processing output from  the external script
+
+* stage 4  (80%) *
+- [ ] Implement a console preview UI for user feedback
+- [ ] Refactor the GN2 UI
+
+* stage 5  (100%) * 
+
+- [ ] Run this computation on clusters    

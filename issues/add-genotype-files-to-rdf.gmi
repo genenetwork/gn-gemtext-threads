@@ -3,7 +3,7 @@
 ## Tags
 * assigned: bonfacem
 * type: bug
-* status: open, in progress
+* status: stalled
 
 In Penguin2, genotype files are located in: /export/data/genenetwork/genotype_files/genotype.  Each genotype files has an identifier to a dataset it refers to:
 

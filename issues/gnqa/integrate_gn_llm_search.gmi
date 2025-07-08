@@ -1,0 +1,26 @@
+# GN-LLM Integration
+
+### Notes
+
+This Gist is intended to integrate GN-LLM (https://github.com/ShelbySolomonDarnell/GN-LLMs) into Genenetwork as a search.
+
+For reference on the initial implementation, please visit:
+
+=> https://github.com/ShelbySolomonDarnell/GN-LLMs
+
+## Tags
+
+* Assigned: alexm
+* Type: Feature
+* Priority: High
+* status: completed, done, closed.
+
+## Tasks
+
+* [x] Move API Endpoint + logic code from QNQA to GN3.
+* [x] Implement UI in GN2.
+* [x] Add GN authentication.
+
+## Notes
+
+The initial code was implemented as a full MVC application. The idea is to split the codebase into an API endpoint, which should be moved to the GN3 codebase, while the UI should reside in GN2.

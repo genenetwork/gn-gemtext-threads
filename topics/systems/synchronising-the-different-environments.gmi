@@ -1,0 +1,68 @@
+# Synchronising the Different Environments
+
+## Tags
+
+* status: open
+* priority:
+* type: documentation
+* assigned: fredm
+* keywords: doc, docs, documentation
+
+## Introduction
+
+We have different environments we run for various reasons, e.g.
+
+* Production: This is the user-facing environment. This is what GeneNetwork is about.
+* gn2-fred: production-adjacent. It is meant to test out changes before they get to production. It is **NOT** meant for users.
+* CI/CD: Used for development. The latest commits get auto-deployed here. It's the first place (outside of developer machines) where errors and breakages are caught and/or revealed. This will break a lot. Do not expose to users!
+* staging: Uploader environment. This is where Felix, Fred and Arthur flesh out the upload process, and tasks, and also test out the uploader.
+
+These different environments demand synchronisation, in order to have mostly similar results and failure modes.
+
+## Synchronisation of the Environments
+
+### Main Database: MariaDB
+
+* [ ] TODO: Describe process
+
+=> https://issues.genenetwork.org/topics/systems/restore-backups Extract borg archive
+* Automate? Will probably need some checks for data sanity.
+
+### Authorisation Database
+
+* [ ] TODO: Describe process
+
+* Copy backup from production
+* Update/replace GN2 client configs in database
+* What other things?
+
+### Virtuoso/RDF
+
+* [ ] TODO: Describe process
+
+* Copy TTL (Turtle) files from (where?). Production might not always be latest source of TTL files.
+=> https://issues.genenetwork.org/issues/set-up-virtuoso-on-production Run setup to "activate" database entries
+* Can we automate this? What checks are necessary?
+
+## Genotype Files
+
+* [ ] TODO: Describe process
+
+* Copy from source-of-truth (currently Zach's tux01 and/or production).
+* Rsync?
+
+### gn-docs
+
+* [ ] TODO: Describe process
+
+* Not sure changes from other environments should ever take
+
+### AI Summaries (aka. gnqna)
+
+* [ ] TODO: Describe process
+
+* Update configs (should be once, during container setup)
+
+### Others?
+
+* [ ] TODO: Describe process

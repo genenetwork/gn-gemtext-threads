@@ -127,75 +127,211 @@ startup script.
 These are the steps you can take to install a fresh installation of
 mariadb (which comes as part of the GNU Guix genenetwork2 install).
 
-As root configure the Guix profile
+As root configure the Guix profile, previously that was
 
-: . ~/opt/genenetwork2/etc/profile
+```
+. ~/opt/genenetwork2/etc/profile
+```
+
+But now we use the recommended
+
+```
+/usr/local/guix-profiles/guix-pull/bin/guix install mariadb borg -p /usr/local/guix-profiles/gn-latest
+. /usr/local/guix-profiles/gn-latest/etc/profile
+```
+
+Exctract the db (that takes a while too)
+
+```
+/usr/local/guix-profiles/gn-latest/bin/borg extract /export2/data/wrk/tux01/borg-tux01::borg-backup-mariadb-20240218-06:16-Sun --progress
+```
 
 and run for example
 
-#+BEGIN_SRC bash
-adduser mariadb && addgroup mariadb
+```
+adduser mariadb
+addgroup mariadb (and add user to group)
 mkdir -p /export2/mariadb/database
 chown mariadb.mariadb -R /export2/mariadb/
 mkdir -p /var/run/mysqld
 chown mariadb.mariadb /var/run/mysqld
 su mariadb
-mysql --version
-  mysql  Ver 15.1 Distrib 10.1.45-MariaDB, for Linux (x86_64) using readline 5.1
-mysql_install_db --user=mariadb --datadir=/export2/mariadb/database
-mysqld -u mariadb --datadir=/exportdb/mariadb/database/mariadb --explicit_defaults_for_timestamp -P 12048"
-#+END_SRC
+. /usr/local/guix-profiles/gn-latest/etc/profile
+mariadb --version
+  mariadb  Ver 15.1 Distrib 10.10.2-MariaDB, for Linux (x86_64) using readline 5.1
+mariadb_install_db --user=mariadb --datadir=/export2/mariadb/database
+mariadbd -u mariadb --datadir=/exportdb/mariadb/database/mariadb --explicit_defaults_for_timestamp -P 12048"
+```
 
-If you want to run as root you may have to set
+If you want to run as root you may have to set /etc/my.cnf
 
-: /etc/my.cnf
-: [mariadbd]
-: user=root
+```
+[mariadbd]
+user=root
+```
 
 You also need to set
 
-: ft_min_word_len = 3
+```
+ft_min_word_len = 3
+```
 
 To make sure word text searches (shh) work and rebuild the tables if
 required.
 
 To check error output in a file on start-up run with something like
 
-: mariadbd -u mariadb --console  --explicit_defaults_for_timestamp  --datadir=/gnu/mariadb --log-error=~/test.log
 
-Other tips are that Guix installs mariadbd in your profile, so this may work
-
-: /home/user/.guix-profile/bin/mariadbd -u mariadb --explicit_defaults_for_timestamp  --datadir=/gnu/mariadb
+```
+mariadbd -u mariadb --console  --explicit_defaults_for_timestamp  --datadir=/export/mariadb/tux01_mariadb/latest --log-error=~/test.log
+/usr/local/guix-profiles/gn-latest/bin/mariadb -uwebqtlout -pwebqtlout db_webqtl -e 'show tables'
+```
 
 When you get errors like:
 
-: qlalchemy.exc.IntegrityError: (_mariadb_exceptions.IntegrityError) (1215, 'Cannot add foreign key constraint')
+```
+qlalchemy.exc.IntegrityError: (_mariadb_exceptions.IntegrityError) (1215, 'Cannot add foreign key constraint')
+```
 
 you may need to set
 
-: set foreign_key_checks=0
+```
+set foreign_key_checks=0
+```
 
-** Load the small database in MySQL
+The current production my.conf is
 
-At this point we require the underlying distribution to install and
-run mysqld (see next section for GNU Guix). Currently we have two databases for deployment,
+```
+[mysqld]
+
+# innodb_empty_free_list_algorithm=backoff
+innodb_buffer_pool_size=16G
+# innodb_ibuf_max_size=2G
+innodb_ft_min_token_size=3
+# innodb_use_sys_malloc=0
+innodb_file_per_table=ON
+key_buffer_size=10M
+
+ft_min_word_len = 3
+
+# main = 1 for active master: server A
+gtid-domain-id=1
+
+tmpdir=/export/tmp
+wait_timeout=180
+lc_time_names=en_US
+lc_messages=en_US
+max_connections=2048
+thread_cache_size=16
+open_files_limit = 16384
+query_cache_type=1                                                                                  query_cache_min_res_unit = 1k
+query_cache_limit = 1M
+query_cache_size=128M
+
+log_error=/var/log/mysql/error.log
+skip-name-resolve
+
+# Skip recovery for now:
+innodb_force_recovery=1
+
+# Only when listening to the network!
+# bind-address = 0.0.0.0
+# port = 3306
+
+slow_query_log=1
+slow_query_log_file=/var/log/mysql/mysql-slow.log
+long_query_time=60.0
+log_queries_not_using_indexes=0
+log_warnings=4
+log_slow_admin_statements=ON
+
+ft_min_word_len=3
+
+log-bin=/var/lib/mysql/gn0-binary-log
+expire-logs-days=120
+server-id=1
+# Domain = 1 for active master: server A
+gtid-domain-id=1
+
+[myisamchk]
+sort_buffer_size=4M
+ft_min_word_len = 3
+```
+
+Note that we handle IP restrictions through the nftables firewall.
+
+The systemd config is
+
+```
+[Unit]
+Description=MariaDB database server
+Documentation=man:mysqld(8)
+Documentation=https://mariadb.com/kb/en/library/systemd/
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+Alias=mysqld.service
+
+[Service]
+TimeoutStartSec=infinity
+TimeoutStopSec=infinity
+LimitNOFILE=infinity
+LimitMEMLOCK=infinity
+
+Type=simple
+PrivateNetwork=false
+
+User=mariadb
+Group=mariadb
+
+CapabilityBoundingSet=CAP_IPC_LOCK                                                                  # Prevent writes to /usr, /boot, and /etc
+ProtectSystem=true
+                                                                       PrivateDevices=true
+# Prevent accessing /home, /root and /run/user
+ProtectHome=false
+
+# Execute pre and post scripts as root, otherwise it does it as User=
+PermissionsStartOnly=true
+
+ExecStartPre=/usr/bin/install -m 755 -o mariadb -g root -d /var/run/mysqld
+
+ExecStart=/usr/local/guix-profiles/gn-latest/bin/mariadbd --datadir=/export/mariadb/tux01_mariadb/latest $MYSQLD_OPTS $_WSREP_NEW_CLUSTER $_WS
+REP_START_POSITION -W
+
+ExecStartPost=/bin/sh -c "systemctl unset-environment _WSREP_START_POSITION"
+
+KillSignal=SIGTERM
+
+SendSIGKILL=no
+Restart=on-abort
+RestartSec=15s
+
+UMask=007
+
+PrivateTmp=false
+```
+
+## Load the small database in MySQL
+
+Currently we have two databases for deployment,
 'db_webqtl_s' is the small testing database containing experiments
 from BXD mice and 'db_webqtl_plant' which contains all plant related
 material.
 
-Download one database from
+Download a recent database from
 
-http://ipfs.genenetwork.org/ipfs/QmRUmYu6ogxEdzZeE8PuXMGCDa8M3y2uFcfo4zqQRbpxtk
+=> https://files.genenetwork.org/database/
 
-After installation unzip the database binary in the MySQL directory
+After installation unzip the database binary in the MySQL directory, e.g.
 
-#+BEGIN_SRC sh
+```
 cd ~/mysql
 p7zip -d db_webqtl_s.7z
 chown -R mysql:mysql db_webqtl_s/
 chmod 700 db_webqtl_s/
 chmod 660 db_webqtl_s/*
-#+END_SRC
+```
 
 restart MySQL service (mysqld). Login as root
 
@@ -229,84 +365,22 @@ configuration (see below).
 Note for the plant database you can rename it to db_webqtl_s, or
 change the settings in etc/default_settings.py to match your path.
 
-* Get genotype files
+# Get genotype files
 
-The script looks for genotype files. You can find them in
-http://ipfs.genenetwork.org/ipfs/QmXQy3DAUWJuYxubLHLkPMNCEVq1oV7844xWG2d1GSPFPL
+The script looks for genotype files. You can find a BXD subset in
 
-#+BEGIN_SRC sh
+=> https://files.genenetwork.org/genotype_files/
+
+(Note we should add plants)
+
+```
 mkdir -p $HOME/genotype_files
 cd $HOME/genotype_files
+```
 
-#+END_SRC
+# Trouble shooting
 
-* GN2 Dependency Graph
-
-List of all runtime dependencies for GN2 as installed by GNU Guix.
-
-https://genenetwork.org/environments/
-
-* Working with the GN2 source code
-
-See [[development.org]].
-
-* Read more
-
-If you want to understand the architecture of GN2 read
-[[Architecture.org]].  The rest of this document is mostly on deployment
-of GN2.
-
-* Trouble shooting
-
-** ImportError: No module named jinja2
-
-If you have all the Guix packages installed this error points out that
-the environment variables are not set. Copy-paste the paths into your
-terminal (mainly so PYTHON_PATH and R_LIBS_SITE are set) from the
-information given by guix:
-
-: guix package --search-paths
-
-On one system:
-
-: export PYTHONPATH="$HOME/.guix-profile/lib/python3.8/site-packages"
-: export R_LIBS_SITE="$HOME/.guix-profile/site-library/"
-: export GEM_PATH="$HOME/.guix-profile/lib/ruby/gems/2.2.0"
-
-and perhaps a few more.
-** ERROR: 'can not find directory $HOME/gn2_data' or 'can not find directory $HOME/genotype_files/genotype'
-
-The default settings file looks in your $HOME/gn2_data. Since these
-files come with a Guix installation you should take a hint from the
-values in the installed version of default_settings.py (see above in
-this document).
-
-You can use the GENENETWORK_FILES switch to set the datadir, for example
-
-: env GN2_PROFILE=~/opt/gn-latest GENENETWORK_FILES=/gnu/data/gn2_data ./bin/genenetwork2
-
-** Can't run a module
-
-In rare cases, development modules are not brought in with Guix
-because no source code is available. This can lead to missing modules
-on a running server. Please check with the authors when a module
-is missing.
-** Rpy2 error 'show' now found
-
-This error
-
-: __show = rpy2.rinterface.baseenv.get("show")
-: LookupError: 'show' not found
-
-means that R was updated in your path, and that Rpy2 needs to be
-recompiled against this R - don't you love informative messages?
-
-In our case it means that GN's PYTHONPATH is not in sync with
-R_LIBS_SITE. Please check your GNU Guix GN2 installation paths,
-you man need to reinstall. Note that this may be the point you
-may want to start using profiles (see profile section).
-
-** Mysql can't connect server through socket ERROR
+## Mysql can't connect server through socket ERROR
 
 The following error
 
@@ -324,31 +398,3 @@ try to connect over the network interface instead, e.g.
 if that works run genenetwork after setting SQL_URI to something like
 
 : export SQL_URI=mysql://gn2:mysql_password@127.0.0.1/db_webqtl_s
-
-* NOTES
-
-** Deploying GN2 official
-
-Let's see how fast we can deploy a second copy of GN2.
-
-- [ ] Base install
-  + [ ] First install a Debian server with GNU Guix on board
-  + [ ] Get Guix build going
-    - [ ] Build the correct version of Guix
-    - [ ] Check out the correct gn-stable version of guix-bioinformatics http://git.genenetwork.org/pjotrp/guix-bioinformatics
-    - [ ] guix package -i genenetwork2 -p /usr/local/guix-profiles/gn2-stable
-  + [ ] Create a gn2 user and home with space
-  + [ ] Install redis
-    - [ ] add to systemd
-    - [ ] update redis.cnf
-    - [ ] update database
-  + [ ] Install mariadb (currently debian mariadb-server)
-    - [ ] add to systemd
-    - [ ] system stop mysql
-    - [ ] update mysql.cnf
-    - [ ] update database (see gn-services/services/mariadb.md)
-    - [ ] check tables
-  + [ ] run gn2
-  + [ ] update nginx
-  + [ ] install genenetwork3
-    - [ ] add to systemd

@@ -1,0 +1,173 @@
+
+# GN Markdown Editor Integration
+
+## Tags
+
+* assigned: alexm
+* status: in progress
+* priority: high
+* tags: markdown, integration, guile
+
+## Notes
+
+This is a to-do list to integrate the GN Markdown editor into GN2.
+To see the implementation, see:
+
+=> https://git.genenetwork.org/gn-guile/
+
+## Tasks
+
+* [x] Implement APIs to fetch files for editing
+* [x] Add verification for the repository
+* [x] Implement API to edit and commit changes
+* [x] Replace JS with HTMX
+* [x] Support external links and image rendering
+* [x] Package dependencies
+* [x] show diff for files
+* [x] Handle errors
+* [ ] Review by users
+* [x] Integrate authentication into the system
+
+
+## API Documentation
+
+This APi endpoints are implemented in guile See repo:
+
+=> https://git.genenetwork.org/gn-guile/
+
+The main endpoints are: `/edit` and `/commit`
+
+### Edit (GET)
+
+This is a `GET` request to retrieve file content. Make sure you pass a valid `file_path` as `search_query` (the path should be relative to the repository).
+
+**Edit Request Example:**
+
+```bash
+
+curl -G -d "file_path=test.md"  localhost:8091/edit
+```
+
+In case of a successful response, the expected result is:
+
+
+```json
+{
+"path": "<file_path>",
+"content": "Test for new user\n test 2 for line\n test 3 for new line\n ## real markdown two test\n",
+"hash": "<commit_sha>"
+}
+```
+
+In case of an error, the expected response is:
+
+```json
+{
+"error": "<error_type>",
+"msg": "<error_reason>"
+}
+```
+
+### Commit (POST)
+
+**Endpoint:**
+
+```
+localhost:8091/commit
+```
+
+
+```bash
+
+curl -X POST http://127.0.0.1:8091/commit \
+-H 'Content-Type: application/json' \
+-d '{
+"content": "make test commit",
+"filename": "test.md",
+"email": "test@gmail.com",
+"username": "test",
+"commit_message": "init commit",
+"prev_commit": "7cbfc40d98b49a64e98e7cd562f373053d0325bd"
+}'
+
+```
+
+It expects the following data in JSON format:
+
+* `content` (the data you want to commit to the file, *valid markdown*)
+* `prev_commit` (required for integrity)
+* `filename` (file path to the file you are modifying)
+* `username` (identifier for the user, in our case from auth)
+* `email` (identifier email from the user, in our case from auth)
+* `commit_message`
+
+If the request succeeds, the response should be:
+
+```json
+{
+"status": "201",
+"message": "Committed file successfully",
+"content": "Test for new user\n test 2 for line\n test 3 for new line\n ## real markdown two test\n",
+"commit_sha": "47df3b7f13a935d50cc8b40e98ca9e513cba104c",
+"commit_message": "commit by genetics"
+}
+```
+
+If there are no changes to the file:
+
+```json
+{
+"status": "200",
+"message": "Nothing to commit, working tree clean",
+"commit_sha": "ecd96f27c45301279150fbda411544687db1aa45"
+}
+```
+
+If the request fails, the expected results are:
+
+```json
+{
+"error": "<error_type>",
+"msg": "Commits do not match. Please pull in the latest changes for the current commit *ecd96f27c45301279150fbda411544687db1aa45* and previous commits."
+}
+```
+
+## Related Issues
+
+=> https://issues.genenetwork.org/issues/implement-gn-markdown-editor-in-guile
+=> https://issues.genenetwork.org/issues/implement-gn-markdown-editor
+
+## Notes on Gn-Editor UI
+
+Here is the link to the PR for integrating the GN-Editor, including screenshots:
+
+=> https://github.com/genenetwork/genenetwork2/pull/854
+
+Genenetwork2 consumes the endpoint for the GN-Editor. Authentication is required to prevent access by malicious users and bots.
+
+The main endpoint to fetch and edit a file is:
+
+```
+genenetwork.org/editor/edit?file-path=<relative file path>
+```
+
+This loads the editor with the content for editing.
+
+### Modifying Editor Settings
+
+You can modify editor settings, such as font size and keyboard bindings. To do this, navigate to:
+
+```
+genenetwork.org/editor/settings
+```
+
+Be sure to save your changes for them to take effect.
+
+### Showing Diff for Editor
+
+The editor also provides a diff functionality to show you the changes made to the file. Use the "Diff" button in the navigation to view these changes.
+
+### Committing Changes
+
+To commit your changes, use the "Commit" button. A commit message is required in the text area for the commit to be processed.
+

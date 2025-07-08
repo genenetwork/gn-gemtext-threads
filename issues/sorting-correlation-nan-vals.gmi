@@ -3,7 +3,7 @@
 * type: bug
 * assigned:alexm
 * priority: medium
-* status:in progress
+* status: closed, done, completed
 * keywords: correlations, sorting,nan
 
 ##  Description

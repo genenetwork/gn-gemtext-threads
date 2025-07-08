@@ -1,0 +1,31 @@
+# Setting Up a Basic Pre-Commit Hook for Linting Scheme Files
+
+* author: bonfacem
+* reviewed-by: jnduli
+
+Git executes hooks before/after events such as: commit, push and receive.  A pre-commit hook runs before a commit is finalized [0].  This post shows how to create a pre-commit hook for linting scheme files using `guix style`.
+
+```
+# Step 1: Create the hook
+touch .git/hooks/pre-commit
+
+# Step 2: Make the hook executable
+chmod +x .git/hooks/pre-commit
+
+# Step 3: Copy the following to .git/hooks/pre-commit
+
+#!/bin/sh
+
+# Run guix style on staged .scm files
+for file in $(git diff --cached --name-only --diff-filter=ACM | grep ".scm$"); do
+  if ! guix style --whole-file "$file"; then
+    echo "Linting failed for $file. Please fix the errors and try again."
+    exit 1
+  fi
+  git add $file
+done
+```
+
+## References:
+
+=> https://www.slingacademy.com/article/git-pre-commit-hook-a-practical-guide-with-examples/ [0] Git Pre-Commit Hook: A Practical Guide (with Examples)

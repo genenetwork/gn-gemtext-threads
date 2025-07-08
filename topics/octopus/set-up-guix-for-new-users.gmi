@@ -1,0 +1,38 @@
+# Set up Guix for new users
+
+This document describes how to set up Guix for new users on a machine in which Guix is already installed (such as octopus01).
+
+## Create a per-user profile for yourself by running your first guix pull
+
+"Borrow" some other user's guix to run guix pull. In the example below, we use root's guix, but it might as well be any guix.
+```
+$ /var/guix/profiles/per-user/root/current-guix/bin/guix pull
+```
+This should create your very own Guix profile at ~/.config/guix/current. You may invoke guix from this profile as
+```
+$ ~/.config/guix/current/bin/guix ...
+```
+But, you'd normally want to make this more convenient. So, add ~/.config/guix/current/bin to your PATH. To do this, add the following to your ~/.profile
+```
+GUIX_PROFILE=~/.config/guix/current
+. $GUIX_PROFILE/etc/profile
+```
+Thereafter, you may run any guix command simply as
+```
+$ guix ...
+```
+
+## Pulling from a different channels.scm
+
+By default, guix pull pulls the latest commit of the main upstream Guix channel. You may want to pull from additional channels as well. Put the channels you want into ~/.config/guix/channels.scm, and then run guix pull. For example, here's a channels.scm if you want to use the guix-bioinformatics channel.
+```
+$ cat ~/.config/guix/channels.scm
+(list (channel
+       (name 'gn-bioinformatics)
+       (url "https://git.genenetwork.org/guix-bioinformatics")
+       (branch "master")))
+```
+And,
+```
+$ guix pull
+```

@@ -1,0 +1,122 @@
+# GeneNetwork Services
+
+## Tags
+
+* type: documentation
+* keywords: documentation, docs, doc, services, genenetwork services
+
+## GeneNetwork Core Services
+
+GeneNetwork is composed of a number of different services. This document attempts to document all the services that make up GeneNetwork and document what links give access to the services.
+
+### GeneNetwork2
+
+This is the main user-interface to the entire GeneNetwork system.
+
+#### Links
+
+=> https://github.com/genenetwork/genenetwork2 Repository
+=> https://genenetwork.org/ GN2 on production
+=> https://fallback.genenetwork.org/ GN2 on old production
+=> https://cd.genenetwork.org/ GN2 on CI/CD
+=> https://staging.genenetwork.org/ GN2 on staging
+
+### GeneNetwork3
+
+This is the main API server for GeneNetwork.
+
+#### Links
+
+=> https://github.com/genenetwork/genenetwork3 Repository
+=> https://genenetwork.org/api3/ GN3 on production
+=> https://fallback.genenetwork.org/api3/ GN3 on old production
+=> https://cd.genenetwork.org/api3/ GN3 on CI/CD
+=> https://staging.genenetwork.org/api3/ GN3 on staging
+
+### Sparql Service
+
+The SparQL service is served from a Virtuoso-OSE service.
+
+=> https://issues.genenetwork.org/topics/deploy/our-virtuoso-instances We have notes on our virtuoso instances here.
+
+
+#### Links
+
+=> https://github.com/genenetwork/genenetwork3 Repository
+=> https://sparql.genenetwork.org/sparql/ sparql-service on production
+* ??? sparql-service on old production
+* ??? sparql-service on CI/CD
+* ??? sparql-service on staging
+
+### GN-Auth
+
+This is the authorisation server for the GeneNetwork system.
+
+#### Links
+
+=> https://git.genenetwork.org/gn-auth/ Repository
+=> https://auth.genenetwork.org/ gn-auth on production
+=> https://fallback.genenetwork.org/gn-auth/ gn-auth on old production
+* ??? gn-auth on CI/CD
+=> https://staging-auth.genenetwork.org/ gn-auth on staging
+
+### GN-Uploader
+
+This service is to be used for uploading data to GeneNetwork. It is currently in development (best case, alpha).
+
+#### Links
+
+=> https://git.genenetwork.org/gn-uploader/ Repository
+* ??? gn-uploader on production
+* ??? gn-uploader on old production
+* ??? gn-uploader on CI/CD
+=> https://staging-uploader.genenetwork.org/ gn-uploader on staging
+
+### Aliases Server
+
+An extra server to respond with aliases for genetic (etc.) symbols.
+
+This is currently a project in racket, but we should probably pull in the features in this repository into one of the others (probably GeneNetwork3) and trash this repository.
+
+#### Links
+
+=> https://github.com/genenetwork/gn3 Repository
+=> https://genenetwork.org/gn3/ aliases-server on production
+=> https://fallback.genenetwork.org/gn3/ aliases-server on old production
+=> https://cd.genenetwork.org/gn3/ aliases-server on CI/CD
+=> https://staging.genenetwork.org/gn3/ aliases-server on staging
+
+### Markdown Editing Server
+
+#### Links
+
+=> https://git.genenetwork.org/gn-guile/ Repository
+=> https://genenetwork.org/facilities/ markdown-editing-server on production
+=> https://fallback.genenetwork.org/facilities/ markdown-editing-server on old production
+=> https://cd.genenetwork.org/facilities/ markdown-editing-server on CI/CD
+=> https://staging.genenetwork.org/facilities/ markdown-editing-server on staging
+
+## Support Services
+
+These are other services that support the development and maintenance of the core services.
+
+### Issue Tracker
+
+We use a text-based issue tracker that is accessible via
+=> https://issues.genenetwork.org/
+
+The repository for this service is at
+=> https://github.com/genenetwork/gn-gemtext-threads/
+
+### Repositories Server
+
+This is where a lot of the genenetwork repositories live. You can access it at
+=> https://git.genenetwork.org/
+
+### Continuous Integration Service
+
+…
+
+=> https://ci.genenetwork.org/
+
+### …

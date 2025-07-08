@@ -6,9 +6,23 @@ It is possible to connect to the UTHSC VPN using only free software. For this, y
 
 To connect, run openconnect-sso as follows. A browser window will pop up for you to complete the Duo authentication. Once done, you will be connected to the VPN.
 ```
-$ openconnect-sso --server uthscvpn1.uthsc.edu --authgroup UTHSC
+$ openconnect-sso --server vpn-server --authgroup UTHSC
 ```
 Note that openconnect-sso should be run as a regular user, not as root. After passing Duo authentication, openconnect-sso will try to gain root priviliges to set up the network routes. At that point, it will prompt you for your password using sudo.
+
+## Recommended way
+
+The recommended way is to use Arun's g-expression setup using guix. See below. It should just work, provided you have the chained certificate that you can get from the browser or one of us and point to the right server. Simply
+
+```
+$(guix build -f uthsc-vpn.scm)
+```
+
+See
+
+=> ./uthsc-vpn.scm
+
+Get the final details from us. UT does not like it when we put it online even though there is no real risk.
 
 ## Avoid tunneling all your network traffic through the VPN (aka Split Tunneling)
 
@@ -17,7 +31,7 @@ openconnect, by default, tunnels all your traffic through the VPN. This is not g
 
 For example, to connect to the UTHSC VPN but only access the hosts tux01 and tux02e through the VPN, run the following command.
 ```
-$ openconnect-sso --server uthscvpn1.uthsc.edu --authgroup UTHSC -- --script 'vpn-slice tux01 tux02e'
+$ openconnect-sso --server vpn-server --authgroup UTHSC -- --script 'vpn-slice tux01 tux02e'
 ```
 The vpn-slice script looks up the hostnames tux01 and tux02e on the VPN DNS and adds /etc/hosts entries and routes to your system. vpn-slice can also set up more complicated routes. To learn more, read the vpn-slice documentation.
 
@@ -44,17 +58,50 @@ export OPENSSL_CONF=/tmp/openssl.cnf
 ```
 Then, run the openconnect-sso client as usual.
 
+## Misconfigured UTHSC TLS certificate
+
+The UTHSC TLS certificate does not validate on some systems. You can work around this by downloading the certificate chain and adding it to your system:
+* Navigate with browser to https://vpn-server/. Inspect the certificate in the browser (lock icon next to search bar) and export .pem file
+* Move it to /usr/local/share/ca-certificates (with .crt extension) or equivalent
+* On Debian/Ubuntu update the certificate store with update-ca-certificates
+You should see
+```
+Updating certificates in /etc/ssl/certs...
+1 added, 0 removed; done.
+```
+Thanks Niklas. See also
+=> https://superuser.com/a/719047/914881
+
+However, adding certificates to your system manually is not good security practice. It is better to limit the added certificate to the openconnect process. You can do this using the REQUESTS_CA_BUNDLE environment variable like so:
+```
+REQUESTS_CA_BUNDLE=/path/to/uthsc/certificate.pem openconnect-sso --server vpn-server --authgroup UTHSC
+```
+
 ## Putting it all together using Guix G-expressions
 
 Remembering to do all these steps is a hassle. Writing a shell script to automate this is a good idea, but why write shell scripts when we have G-expressions! Here's a G-expression script that I prepared earlier.
 => uthsc-vpn.scm
-Download it, tweak the %hosts variable to specify the hosts you are interested in, and run it like so:
+Download it, download the UTHSC TLS certificate chain to uthsc-certificate.pem, tweak the %hosts variable to specify the hosts you are interested in, and run it like so:
 ```
 $(guix build -f uthsc-vpn.scm)
 ```
 
+to add a route by hand after you can do
+
+```
+ip route add 172.23.17.156 dev tun0
+```
+
+# Troubleshooting
+
+Older versions would not show a proper dialog for sign-in. Try
+
+```
+export QTWEBENGINE_CHROMIUM_FLAGS=--disable-seccomp-filter-sandbox
+```
+
 ## Acknowledgement
 
-Many thanks to Pjotr Prins and Erik Garrison without whose earlier work this guide would not be possible.
+Many thanks to Arun, Pjotr and Erik without whose earlier work this guide would not be possible.
 => https://github.com/pjotrp/linux-at-university-of-tennessee
 => https://github.com/ekg/openconnect-sso-docker

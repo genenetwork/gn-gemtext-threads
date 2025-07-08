@@ -1,0 +1,15 @@
+# Fix Display for the Time Consumed for Correlations
+
+## Tags
+
+* type: bug
+* status: closed, completed
+* priority: low
+* assigned: @alexm, @bonz
+* keywords: gn2, genenetwork2, genenetwork 2, gn3, genenetwork3 genenetwork 3, correlations, time display
+
+## Description
+
+The breakdown of the time consumed for the correlations computations, displayed at the bottom of the page, is not representative of reality. The time that GeneNetwork3 (or background process) takes for the computations is not actually represented in the breakdown, leading to wildly inaccurate displays of total time.
+
+This will need to be fixed.

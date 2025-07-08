@@ -1,0 +1,127 @@
+# [gn-transform-databases/ADR-002] Remodel GeneRIF_BASIC (NCBI RIFs) Metadata To Be More Compact
+
+* author: bonfacem
+* status: proposal
+* reviewed-by: pjotr, jnduli
+
+## Context
+
+Currently, we represent NCBI RIFs as blank nodes that form the object of a given symbol:
+
+```
+gn:symbolsspA rdfs:comment [
+	rdf:type gnc:NCBIWikiEntry ;
+	rdfs:comment "N-terminus verified by Edman degradation on mature peptide"^^xsd:string ;
+	gnt:belongsToSpecies gn:Mus_musculus ;
+	skos:notation taxon:511145 ;
+	gnt:hasGeneId generif:944744 ;
+	dct:hasVersion '1'^^xsd:int ;
+	dct:references pubmed:97295 ;
+	...
+	dct:references pubmed:15361618 ;
+	dct:created "2007-11-06T00:38:00"^^xsd:datetime ;
+] .
+gn:symbolaraC rdfs:comment [
+	rdf:type gnc:NCBIWikiEntry ;
+	rdfs:comment "N-terminus verified by Edman degradation on mature peptide"^^xsd:string ;
+	gnt:belongsToSpecies gn:Mus_musculus ;
+	skos:notation taxon:511145 ;
+	gnt:hasGeneId generif:944780 ;
+	dct:hasVersion '1'^^xsd:int ;
+	dct:references pubmed:320034 ;
+	...
+	dct:references pubmed:16369539 ;
+	dct:created "2007-11-06T00:39:00"^^xsd:datetime ;
+] .
+```
+
+Moreover, we also store all the different versions of a comment:
+
+```
+mysql> SELECT * FROM GeneRIF_BASIC WHERE SpeciesId=1 AND TaxID=7955 AND GeneId=323473 AND PubMed_ID = 15680355\G
+*************************** 1. row ***************************
+ SpeciesId: 1
+     TaxID: 7955
+    GeneId: 323473
+    symbol: prdm1a
+ PubMed_ID: 15680355
+createtime: 2010-01-21 00:00:00
+   comment: One of two mutations in which defects are observed in both cell populations: it leads to a complete absence of RB neurons and a reduction in neural crest cells
+ VersionId: 1
+*************************** 2. row ***************************
+ SpeciesId: 1
+     TaxID: 7955
+    GeneId: 323473
+    symbol: prdm1a
+ PubMed_ID: 15680355
+createtime: 2010-01-21 00:00:00
+   comment: prdm1 functions to promote the cell fate specification of both neural crest cells and sensory neurons
+ VersionId: 2
+```
+
+## Decision
+
+First, we should only store the latest version of a given RIF entry and ignore all other versions.  RIF entries in the GeneRIF_BASIC table are uniquely identified by the columns: SpeciesId, GeneId, PubMed_ID, createtime, and VersionId.  Since we are storing the latest version of a given RIF entry, we drop the version identifier during the RDF transform.
+
+We use a unique identifier for a given comment, and use that as a triple's QName:
+
+> gn:rif-<speciesId>-<GeneId>
+
+Finally instead of:
+
+```
+<symbol> predicate <comment metadata>
+```
+
+We use:
+
+```
+<comment-uid> predicate object ;
+              ... (more metadata) .
+```
+
+An example triple would take the form:
+
+```
+gn:rif-1-511145 rdf:label '''N-terminus verified by Edman degradation on mature peptide'''@en .
+gn:rif-1-511145 rdf:type gnc:NCBIWikiEntry .
+gn:rif-1-511145 gnt:belongsToSpecies gn:Mus_musculus .
+gn:rif-1-511145 skos:notation taxon:511145 .
+gn:rif-1-511145 rdfs:seeAlso [
+    gnt:hasGeneId generif:944744 ;
+    gnt:symbol "spA" ;
+    dct:references ( pubmed:97295 ... pubmed:15361618 ) .
+] .
+gn:rif-1-511145 rdfs:seeAlso [
+    gnt:hasGeneId generif:944780 ;
+    gnt:symbol "araC" ;
+    dct:references ( pubmed:320034 ... pubmed:16369539 ) .
+]
+```
+
+To efficiently store GeneIds, symbols and references, we use blank nodes.  This reduces redundancy and simplifies the triples compared to including these details within the subject:
+
+```
+gn:rif-1-511145-944744 rdf:label '''N-terminus verified by Edman degradation on mature peptide'''@en .
+gn:rif-1-511145-944744 rdf:type gnc:NCBIWikiEntry .
+gn:rif-1-511145-944744 gnt:belongsToSpecies gn:Mus_musculus .
+gn:rif-1-511145-944744 skos:notation taxon:511145 .
+gn:rif-1-511145-944744 gnt:hasGeneId generif:944744 .
+gn:rif-1-511145-944744 gnt:symbol "spA" .
+gn:rif-1-511145-944744 dct:references ( pubmed:97295 ... pubmed:15361618 ) .
+
+gn:rif-1-511145-944780 rdf:label '''N-terminus verified by Edman degradation on mature peptide'''@en .
+gn:rif-1-511145-944780 rdf:type gnc:NCBIWikiEntry .
+gn:rif-1-511145-944780 gnt:belongsToSpecies gn:Mus_musculus .
+gn:rif-1-511145-944780 skos:notation taxon:511145 .
+gn:rif-1-511145-944780 gnt:hasGeneId generif:944744 .
+gn:rif-1-511145-944780 gnt:symbol "spA" .
+gn:rif-1-511145-944780 dct:references ( pubmed:97295 ... pubmed:15361618 ) .
+```
+
+## Consequences
+
+* More complex SQL query required for the transform.
+* De-duplication of RIF entries during the transform.
+* Because of the terseness, less work during the I/O heavy operation.
+* Update SPARQL in tux02, tux01 in lockstep with updating GN3/GN2 and the XAPIAN index.

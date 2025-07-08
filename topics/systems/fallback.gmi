@@ -1,0 +1,94 @@
+# Fallbacks
+
+We will run fallback servers using Arun's Guix machine configuration. Outside the system container there are a few dependencies, particularly MariaDB and a number of file directories.
+
+# Tags
+
+* assigned: pjotrp
+* priority: medium
+* type: system administration
+* keywords: system administration, GN, tux01, tux02, tux04, balg01
+
+# Tasks
+
+## Prepare backups to copy to the new machines
+
+Note that copying from the new machines is 10x faster.
+
+* [X] Copy backup from tux01 to balg01
+* [X] Copy backup from tux01 to tux04
+* [X] Copy backup from balg01 to tb
+* [+] Make sure CRON works on tux01 for balg01
+* [X] Make sure CRON works on tux01 for tux04
+* [X] Make sure CRON works on tux01 for space
+* [ ] Make sure CRON works on tb
+* [ ] Create borg-borg on tb
+* [ ] After borg-borg add CRON `borg prune' on tux01
+
+## Update guix
+
+* [X] Make sure guix is on a large partition (200Gb)
+* [X] Update guix in /usr/local/guix-profiles
+* [X] Disable default guix on Debian
+* [X] Reboot
+* [X] Update nftables
+
+Having issues with sdd drive.
+
+## Install mariadb
+
+* [X] Extract DB from backup on a fast partition
+* [X] Install mariadb using guix
+* [X] Add to systemd
+
+see also
+
+=> ../deploy/installation
+
+## Unpack genotype files and other files
+
+* [X] borg extract genotype files
+
+```
+/usr/local/guix-profiles/gn-latest/bin/borg extract /export2/data/wrk/tux01/borg-genenetwork::borg-GN2-home-20240218-10:00-Sun --progress
+```
+
+* [X] extract redis
+* [+] backup and extract sqlite for auth, e.g. auth_prod_20240218.db
+
+## Guix system container
+
+* [X] Assess gemtext documentation
+* [ ] Check tux02 configurations
+
+The main example lives in
+
+
+we create fallback.scm, see
+
+=> fire-up-genenetwork-system-container.gmi
+
+* [ ] Set up guix channels
+* [ ] Set up guix gcroot
+* [ ] Update systemd
+* [ ] Add gn-guile to configuration
+* [ ] Test, test, test
+
+=> guix-system-containers-and-how-we-use-them More info
+
+## Sheepdog monitoring
+
+* [ ] Move host to tb
+* [ ] Update all clients
+* [ ] Add monitoring new fallback services
+
+## Continuous updates
+
+* [ ] Mariadb
+* [ ] Redis
+* [ ] Auth
+* [ ] Files
+
+## Remaining issues
+
+See

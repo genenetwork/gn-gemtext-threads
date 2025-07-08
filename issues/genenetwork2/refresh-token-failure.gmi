@@ -1,0 +1,108 @@
+# Refresh Token Failure
+
+## Tags
+
+* status: open
+* priority: high
+* type: bug
+* assigned: fredm, zsloan, zachs
+* keywords: gn2, genenetwork2
+
+## Description
+
+* Go to https://genenetwork.org
+* Click "Sign in" and sign in to the application
+* Wait 15 minutes
+* Close the entire browser
+* Open the browser and go to https://genenetwork.org
+* Observe the "ERROR" message at the "Collections" link's badge
+
+The expectation is that the Collections badge would list the number of collection the user has, rather than the error message.
+
+The logs fail with an 'invalid_client' error:
+
+```
+2025-01-08 20:48:56     raise self.oauth_error_class(
+2025-01-08 20:48:56 authlib.integrations.base_client.errors.OAuthError: invalid_client: 
+2025-01-08 20:48:56 ERROR:gn2.wqflask:Error loading number of collections
+2025-01-08 20:48:56 Traceback (most recent call last):
+2025-01-08 20:48:56   File "/gnu/store/3n1cl5cxal3qk7p9q363qgm2ag45a177-profile/lib/python3.10/site-packages/gn2/wqflask/__init__.py", 
+line 55, in numcoll
+2025-01-08 20:48:56     return num_collections()
+2025-01-08 20:48:56   File "/gnu/store/3n1cl5cxal3qk7p9q363qgm2ag45a177-profile/lib/python3.10/site-packages/gn2/wqflask/oauth2/collect
+ions.py", line 13, in num_collections
+2025-01-08 20:48:56     all_collections = all_collections + oauth2_get(
+2025-01-08 20:48:56   File "/gnu/store/3n1cl5cxal3qk7p9q363qgm2ag45a177-profile/lib/python3.10/site-packages/gn2/wqflask/oauth2/client.
+py", line 168, in oauth2_get
+2025-01-08 20:48:56     resp = oauth2_client().get(
+2025-01-08 20:48:56   File "/gnu/store/3n1cl5cxal3qk7p9q363qgm2ag45a177-profile/lib/python3.10/site-packages/requests/sessions.py", lin
+e 600, in get
+2025-01-08 20:48:56     return self.request("GET", url, **kwargs)
+2025-01-08 20:48:56   File "/gnu/store/3n1cl5cxal3qk7p9q363qgm2ag45a177-profile/lib/python3.10/site-packages/authlib/integrations/reque
+sts_client/oauth2_session.py", line 109, in request
+2025-01-08 20:48:56     return super(OAuth2Session, self).request(
+2025-01-08 20:48:56   File "/gnu/store/3n1cl5cxal3qk7p9q363qgm2ag45a177-profile/lib/python3.10/site-packages/requests/sessions.py", lin
+e 573, in request
+2025-01-08 20:48:56     prep = self.prepare_request(req)
+2025-01-08 20:48:56   File "/gnu/store/3n1cl5cxal3qk7p9q363qgm2ag45a177-profile/lib/python3.10/site-packages/requests/sessions.py", lin
+e 484, in prepare_request
+2025-01-08 20:48:56     p.prepare(
+2025-01-08 20:48:56   File "/gnu/store/3n1cl5cxal3qk7p9q363qgm2ag45a177-profile/lib/python3.10/site-packages/requests/models.py", line 
+372, in prepare
+2025-01-08 20:48:56     self.prepare_auth(auth, url)
+2025-01-08 20:48:56   File "/gnu/store/3n1cl5cxal3qk7p9q363qgm2ag45a177-profile/lib/python3.10/site-packages/requests/models.py", line 
+603, in prepare_auth
+2025-01-08 20:48:56     r = auth(self)
+2025-01-08 20:48:56   File "/gnu/store/3n1cl5cxal3qk7p9q363qgm2ag45a177-profile/lib/python3.10/site-packages/authlib/integrations/reque
+sts_client/oauth2_session.py", line 24, in __call__
+2025-01-08 20:48:56     self.ensure_active_token()
+2025-01-08 20:48:56   File "/gnu/store/3n1cl5cxal3qk7p9q363qgm2ag45a177-profile/lib/python3.10/site-packages/authlib/integrations/reque
+sts_client/oauth2_session.py", line 20, in ensure_active_token
+2025-01-08 20:48:56     if self.client and not self.client.ensure_active_token(self.token):
+2025-01-08 20:48:56   File "/gnu/store/3n1cl5cxal3qk7p9q363qgm2ag45a177-profile/lib/python3.10/site-packages/authlib/oauth2/client.py",
+ line 262, in ensure_active_token
+2025-01-08 20:48:56     self.refresh_token(url, refresh_token=refresh_token)
+2025-01-08 20:48:56   File "/gnu/store/3n1cl5cxal3qk7p9q363qgm2ag45a177-profile/lib/python3.10/site-packages/authlib/oauth2/client.py",
+ line 252, in refresh_token
+2025-01-08 20:48:56     return self._refresh_token(
+2025-01-08 20:48:56   File "/gnu/store/3n1cl5cxal3qk7p9q363qgm2ag45a177-profile/lib/python3.10/site-packages/authlib/oauth2/client.py",
+ line 373, in _refresh_token
+2025-01-08 20:48:56     token = self.parse_response_token(resp)
+2025-01-08 20:48:56   File "/gnu/store/3n1cl5cxal3qk7p9q363qgm2ag45a177-profile/lib/python3.10/site-packages/authlib/oauth2/client.py",
+ line 340, in parse_response_token
+2025-01-08 20:48:56     raise self.oauth_error_class(
+2025-01-08 20:48:56 authlib.integrations.base_client.errors.OAuthError: invalid_client:
+```
+
+
+### Troubleshooting
+
+The following commits were done as part of the troubleshooting:
+
+=> https://github.com/genenetwork/genenetwork2/commit/55da5809d851a3c8bfa13637947b019a2c02cc93
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=d1cada0f0933732eb68b7786fb04ea541d8c51c9
+=> https://github.com/genenetwork/genenetwork2/commit/93dd7f7583af4e0bdd3c7b9c88d375fdc4b40039
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=5fe04ca1545f740cbb91474576891c7fd1dff13a
+=> https://github.com/genenetwork/genenetwork2/commit/2031da216f3b62c23dca64eb6d1c533c07dc81f1
+=> https://github.com/genenetwork/genenetwork2/commit/125c436f5310b194c10385ce9d81135518ac0adf
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=758e6f0fbf6af4af5b94b9aa5a9264c31f050153
+=> https://github.com/genenetwork/genenetwork2/commit/8bf483a3ab23ebf25d73380e78271c368ff06b2d
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=f1ee97a17e670b12112d48bea8969e2ee162f808
+=> https://github.com/genenetwork/genenetwork2/commit/de01f83090184fc56dce2f9887d2dc910edc60fe
+=> https://github.com/genenetwork/genenetwork2/commit/91017b97ee346e73bed9b77e3f3f72daa4acbacd
+=> https://github.com/genenetwork/genenetwork2/commit/7e6bfe48167c70d26e27b043eb567608bc1fda84
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=1f71a1e78af87266e7a4170ace8860111a1569d6
+=> https://github.com/genenetwork/genenetwork2/commit/9bdc8ca0b17739c1df9dc504f8cd978296b987dd
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=02a9a99e7e3c308157f7d740a244876ab4196337
+=> https://github.com/genenetwork/genenetwork2/commit/236a48835dc6557ba0ece6aef6014f496ddb163e
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=f928be361d2e331d72448416300c331e47341807
+=> https://github.com/genenetwork/genenetwork2/commit/5fb56c51ad4eaff13a7e24b6022dffb7d82aa41d
+=> https://github.com/genenetwork/genenetwork2/commit/c6c9ef71718d650f9c19ae459d6d4e25e72de00a
+=> https://github.com/genenetwork/genenetwork2/commit/dc606f39fb4aad74004959a6a15e481fa74d52ff
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=4ab597b734968916af5bae6332756af8168783b3
+=> https://github.com/genenetwork/genenetwork2/commit/854639bd46293b6791c629591fd934d1f34038ac
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=7e0083555150d151e566cebed4bd82d69e347eb6
+=> https://github.com/genenetwork/genenetwork2/commit/c4508901027a2d3ea98e1e9b3f8767a455cad02f
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=955e4ce9370be9811262d7c73fa5398385cc04d8
+
+

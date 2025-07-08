@@ -1,0 +1,17 @@
+# MGAMMA LMM
+
+MGamma does GWAS, which means it has to do Linear Mixed Models—both univariate and multivariate.
+
+# Tags
+
+* assigned: pjotrp, artyom
+* type: feature
+* priority: high
+
+# Tasks
+
+* [X] Kinship matrix computation.
+* [X] Univariate LMM.
+* [ ] Multivariate LMM.
+* [X] Export data from GEMMA.
+* [ ] Compare and ensure data match between MGamma and GEMMA.

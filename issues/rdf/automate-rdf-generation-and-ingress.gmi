@@ -1,0 +1,37 @@
+# Update RDF Generation and Ingress to Virtuoso
+
+## Tags
+
+* assigned: bonfacem
+* priority: high
+* tags: in-progress
+* deadline: 2024-10-23 Wed
+
+We need to update Virtuoso in production.  At the moment this is done manually.  For the current set-up, we need to update the recent modified RIF+WIKI models:
+
+
+```
+# Generate the RDF triples
+time guix shell guile-dbi guile-hashing -m manifest.scm -- ./pre-inst-env ./examples/generif.scm --settings conf.scm --output /home/bonfacem/ttl-files/generif-metadata-new.ttl --documentation ./docs/generif-metadata.md
+
+# Make sure they are valid
+guix shell -m manifest.scm -- rapper --input turtle --count /home/bonfacem/ttl-files/generif-metadata-new.ttl
+
+# Copy the files over to the exposed virtuoso path
+cp /home/bonfacem/ttl-files/generif-metadata-new.ttl </some/dir/>
+
+# Get into Virtuoso (with a password)
+guix shell virtuoso-ose -- isql <port-number>
+
+# Load the files to be loaded
+# Assuming that '/var/lib/data' is where the files are
+ld_dir('/var/lib/data', 'generif-metadata-new.ttl', 'http://genenetwork.org');
+
+# Load the files
+rdf_loader_run();
+CHECKPOINT;
+```
+
+Above steps should be automated and tested in CD before roll-out in production.  Key considerations:
+
+- Pick latest important changes from git, so that we can pick what files to run instead of generating all the ttl files all the time.

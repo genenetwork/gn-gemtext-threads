@@ -2,6 +2,12 @@
 
 GN relies on precomputed mapping scores for search and other functionality. Here we prepare for a new generation of functionality that introduces LMMs for compute and multiple significant scores for queries.
 
+At this stage we precompute GEMMA and tarball or lmdb it. As a project is never complete we need to add a metadata record in each tarball that track the status of the 'package'. Also, to offload compute to machines without DB access we need to prepare a first step that contains genotypes and phenotypes for compute. The genotypes have to be shared, as well as the computed kinship with and without LOCO. See
+
+=> /topics/data/precompute/steps
+
+The mariadb database gets (re)updated from the computed data, parsing metadata and forcing an update. We only need to handle state to track creating batches for (offline) compute. As this can happen on a single machine we don't need to do anything real fancy. Just write out the last updated traitid, i.e., DataId from ProbeSetXRef which is indexed. Before doing anything we use Locus_old to identify updates by setting it to NULL. See the header of list-traits-to-compute.scm.
+
 # Tags
 
 * assigned: pjotrp
@@ -12,18 +18,26 @@ GN relies on precomputed mapping scores for search and other functionality. Here
 
 # Tasks
 
-* [ ] Start using GEMMA for precomputed values as a background pipeline on a different machine
-* [ ] Update the table values using GEMMA output (single highest score)
+See
 
-Above is the quick win for plugging in GEMMA values. We will make sure not to recompute the values that are already up to date.
-This is achieved by naming the input and output files as a hash on their DB inputs.
+=> topics/data/precompute/steps
 
-Next:
+Next, for running the full batch:
 
-* [ ] Store all GEMMA values efficiently
+* [X] Store all GEMMA values efficiently
+* [ ] Include metadata record in lmdb and as JSON file
+* [ ] Include metadata record on compute status
+* [ ] Remove junk from tarball - use lmdb?
+* [ ] List significant markers as metadata in lmdb
+* [ ] Reread below info
+* [ ] Submit jobs to PBS using CCWL
+* [ ] Report results to mariadb
+
+And after:
+
 * [ ] Track metadata of computed datasets (in RDF?)
 * [ ] Compute significance with GEMMA or other LMM (bulkLMM?)
-* [ ] Store signficance and significant values for processing
+* [ ] Store significance and significant values for processing
 * [ ] Update search & correlations to use these
 * [ ] Further optimize computations so they can run continuously in the background
 
@@ -35,10 +49,29 @@ The original reaper precompute lives in
 
 => https://github.com/genenetwork/genenetwork2/blob/testing/scripts/maintenance/QTL_Reaper_v6.py
 
-This script first fetches inbredsets
+More recent incarnations are at v8, including a PublishData version that can be found in
+
+=> https://github.com/genenetwork/genenetwork2/tree/testing/scripts/maintenance
+
+Note that the locations are on space:
 
 ```
- select Id,InbredSetId,InbredSetName,Name,SpeciesId,FullName,public,MappingMethodId,GeneticType,Family,FamilyOrder,MenuOrderId,InbredSetCode from InbredSet LIMIT 5;
+cd /mount/space2/lily-clone/acenteno/GN-Data
+ls -l
+python QTL_Reaper_v8_space_good.py 116
+--
+python UPDATE_Mean_MySQL_tab.py
+cd /mount/space2/lily-clone/gnshare/gn/web/webqtl/maintainance
+ls -l
+python QTL_Reaper_cal_lrs.py 7
+```
+
+The first task is to prepare an update script that can run a set at a time and compute GEMMA output (instead of reaper).
+
+The script first fetches inbredsets
+
+```
+select Id,InbredSetId,InbredSetName,Name,SpeciesId,FullName,public,MappingMethodId,GeneticType,Family,FamilyOrder,MenuOrderId,InbredSetCode from InbredSet LIMIT 5;
 +----+-------------+-------------------+----------+-----------+-------------------+--------+-----------------+-------------+--------------------------------------------------+-------------+-------------+---------------+
 | Id | InbredSetId | InbredSetName     | Name     | SpeciesId | FullName          | public | MappingMethodId | GeneticType | Family                                           | FamilyOrder | MenuOrderId | InbredSetCode |
 +----+-------------+-------------------+----------+-----------+-------------------+--------+-----------------+-------------+--------------------------------------------------+-------------+-------------+---------------+
@@ -63,7 +96,7 @@ MariaDB [db_webqtl]> select Id, Name from InbredSet limit 5;
 +----+----------+
 ```
 
-and expands them to a .geno file, e.g. BXD.geno. Note that the script does not compute with the many variations of .geno files we have today. Next it sets the Id for ProbeSetFreeze which is the same as the InbredSet Id. So, ProbeSetFreeze.Id == IndbredSet.Id.
+and expands them to a .geno file, e.g. BXD.geno. Note that the script does not compute with the many variations of .geno files we have today (let alone the latest?). Next it sets the Id for ProbeSetFreeze which is the same as the InbredSet Id. So, ProbeSetFreeze.Id == IndbredSet.Id.
 
 There are groups/collections, such as "Hippocampus_M430_V2_BXD_PDNN_Jun06"
 
@@ -979,17 +1012,136 @@ Genotype state lives in 4 places. Time to create a 5th one with lmdb ;). At leas
 
 Using this information we created our first phenotype file and GEMMA run!
 
-# Storing output
+# Successfully running gemma-wrapper
+
+Running the wrapper is a two step process:
+
+```
+env TMPDIR=tmp ruby ./bin/gemma-wrapper --force --json \
+        --loco -- \
+        -g test/data/input/BXD_geno.txt.gz \
+        -p test/data/input/BXD_pheno.txt \
+        -a test/data/input/BXD_snps.txt \
+        -gk > K.json
+env TMPDIR=tmp ruby ./bin/gemma-wrapper --json --input K.json \
+        -- \
+        -g test/data/input/BXD_geno.txt.gz \
+        -p test/data/input/BXD_pheno.txt \
+        -a test/data/input/BXD_snps.txt \
+        -lmm -maf 0.1 > G.json
+```
+
+The current LOCO approach leads to two files for every chromosome GRM and two files for every chr association output file. In this case 82 files with a total of 13Mb (4Mb compressed).
+That is a bit insane if you know the input is 300K, even knowing disk space is cheap(!) Cheap is not always cheap because we still need to process the data and with growing datasets the size grows rapidly overall.
+
+So, this is the right time to put gemma-wrapper on a diet. The GRM files are largest. Currently we create kinship files for every population subset that is used and that may change once we simply reduce the final GRM by removing cols/rows. But that is one exercise we want to prove first using our precompute exercise. In this case we will simply compress the kinship files and that halves the size with zip. xz compression brings it down to 1/4. That is impressive by itself. I also checked lmza and bzip2 and they were no better. So, with gemma-wrapper we can now store the GRMs in an xz archive. For the assoc files we will cat them in to one file and compress that too, reducing the size to 1/7th. As noted above, the current cache size for GN is 190Gb for 3 months. We can reduce that significantly and that will speed up lookups. Decompression with xz is very fast.
+
+# Storing GRM output
+
+The current version of gemma-wrapper stores per chromosome GRMs in separate files. The first fix was to store them in an xz archive. gemma-wrapper already uses a temporary directory so, that was straightforward. Next I had to tell gemma-wrapper not to recompute when the xz archive exists. This now works.
+
+Next step is to use the archive to check the GWA run. In the final step we will archive results and write an lmdb file for further processing. If we can make it really small we'll retain that instead of the full archive. This code is part of gemma-wrapper right now:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/gemma2lmdb.py
+
+I looked at using SQLITE - which would have been a bit easier - but the size would have been at least double the size of lmdb (floats are stored as 8 bytes in SQLITE).
+
+Inside the lmdb file we also store the results of the log files as a JSON 'meta' record. A metadata record is important because it allows for quick assessments later, such has how long the compute took at each step and how much memory was used. We collect metadata at every step. This means that we pass around a growing JSON object. Also we should be able to expose the JSON easily so it can be parsed with python, ruby, jq etc. With metadata we can store some extra information on the ProbeSet:
+
+```
+MariaDB [db_webqtl]> select Id,Chr,Mb,Name,Symbol,description from ProbeSet where Id=1 limit 1;
++----+------+-----------+-----------+--------+---------------------------------+
+| Id | Chr  | Mb        | Name      | Symbol | description                     |
++----+------+-----------+-----------+--------+---------------------------------+
+|  1 | 9    | 44.970689 | 100001_at | Cd3g   | CD3d antigen, gamma polypeptide |
++----+------+-----------+-----------+--------+---------------------------------+
+```
+
+and the dataset:
+
+```
+MariaDB [db_webqtl]> select * from ProbeSetFreeze WHERE Name='HC_M2_0606_P' limit 5;
++-----+---------------+-------+--------------+------------------------------------+--------------------------------------------+-----------------------------------+------------+-----------+--------+-----------------+-----------------+-----------+
+| Id  | ProbeFreezeId | AvgID | Name         | Name2                              | FullName                                   | ShortName                         | CreateTime | OrderList | public | confidentiality | AuthorisedUsers | DataScale |
++-----+---------------+-------+--------------+------------------------------------+--------------------------------------------+-----------------------------------+------------+-----------+--------+-----------------+-----------------+-----------+
+| 112 |            30 |     2 | HC_M2_0606_P | Hippocampus_M430_V2_BXD_PDNN_Jun06 | Hippocampus Consortium M430v2 (Jun06) PDNN | Hippocampus M430v2 BXD 06/06 PDNN | 2016-02-11 |         1 |      2 |               0 |                 | log2      |
++-----+---------------+-------+--------------+------------------------------------+--------------------------------------------+-----------------------------------+------------+-----------+--------+-----------------+-----------------+-----------+
+```
+
+gemma-wrapper outputs JSON - but it is fairly elaborate so we'll reduce it to a minimum. At the time of lmdb creation we will pass in a small JSON file that describes the gemma-wrapper run.
+
+# Storing assoc output
 
 To kick off precompute we added new nodes to the Octopus cluster: doubling its capacity. In the next step we have to compress the output of GEMMA so we can keep it forever. For this we want to have the peaks (obviously), but we als want to retain the 'shape' of the distribution - i.e., the QTL with sign. This shape we can use for correlations and potentially some AI-style mining. The way it is presented in AraQTL.
 
 For the sign we can use the SNP additive effect estimate. The se of Beta is a function of MAF of the SNP. So if you want to present Beta as the SNP additive effect for a standardized genotype, then you want to use Beta/se; otherwise, Beta is the SNP additive effect for the original, unstandardized genotype. The Beta is obtained by controlling for population structure. For effect sign we need to check the incoming genotypes because they may have been switched.
 
 Anyway, we can consider compressing the shape the way a CDROM is compressed.
+For now, in the next step we will compress the storage using xz - as discussed above. In the next step, after running the precompute and storing the highest hit in the DB, we will start using lmdb to store assoc values.
 
+The precompute runs on tux04 with
+
+```
+tux04:~/services/gn-guile$ . .guix-shell ruby --expose=/home/wrk/services/gemma-wrapper=/gemma-wrapper --share=/export2/precompute-gemma -- env TMPDIR=/export2/precompute-gemma guile -L . -s ./scripts/precompute/precompute-hits.scm
+```
+
+## Final tweaks
+
+The precompute runs and updates the DB. We are creating a new precompute table that contains the highest hits, so we can track status of the runs. From this we can update ProbeSetXRef - rather than doing it directly.
+
+That way we can also track the top hits for different computation.
+
+For one result we have
+
+```js
+  "meta": {
+    "type": "gemma-wrapper",
+    "version": "0.99.7-pre1",
+    "population": "BXD",
+    "name": "HC_U_0304_R",
+    "trait": "101500_at",
+    "url": "https://genenetwork.org/show_trait?trait_id=101500_at&dataset=HC_U_0304_R",
+    "archive_GRM": "46bfba373fe8c19e68be6156cad3750120280e2e-gemma-cXX.tar.xz",
+    "archive_GWA": "779a54a59e4cd03608178db4068791db4ca44ab3-gemma-GWA.tar.xz",
+    "dataid": 75629,
+    "probesetid": 1097,
+    "probesetfreezeid": 7
+  }
+```
+
+Continue with steps:
+
+=> /topics/data/precompute/steps
 
 
 # Notes
+
+1	rsm10000000577	3.20	Chr1: 69.315198	-0.248
+
+=> chr,pos,af,beta,se,l_mle,p_lrt
+1,69315198,0.2800000011920929,0.49527430534362793,0.13411599397659302,100000.0,0.0006254952750168741
+Math.log(0.0006254952750168741,10)
+=> -3.203775966613006
+-0.4952743053436279/2
+=> -0.24763715267181394
+
+
+5	rsm10000001990	3.11	Chr4: 81.464858	0.282
+
+4,81464858,0.36500000953674316,-0.5631462931632996,0.15581850707530975,100000.0,0.0007759517757222056
+Math.log(0.0007759517757222056,10)
+=> -3.1101652686754857
+ 0.563146/2
+=> 0.281573
+
+The likelihood ratio is bounded between zero and one.
+The l_lrt runs between 0.0 and 1.0. The smaller the number the higher the log10 value (basically the number of digits; 0.000001 is -5.99
+
+The point in the parameter space that maximizes the likelihood function is called the maximum likelihood estimate. In our case it is always exactly 10^5 or -10^5 for some reason. According to GEMMA doc that means it is a pure genetic effect when positive.
+
+## Xapian
+
+We want to add the log values, effect size and number of individuals to the xapian search
 
 ## NAs in GN
 
@@ -1024,3 +1176,37 @@ because it has 71 BXD samples and 32 other samples.
 This paper discusses a number of approaches that may be interesting:
 
 => https://biodatamining.biomedcentral.com/articles/10.1186/s13040-023-00331-3 Automated quantitative trait locus analysis (AutoQTL)
+
+## Fetch strain IDs
+
+The following join will fetch StrainID in a dataset
+
+```
+MariaDB [db_webqtl]> select StrainId, Locus, DataId, ProbeSetId, ProbeSetFreezeId from ProbeSetXRef INNER JOIN ProbeSetData ON ProbeSetXRef.DataId=ProbeSetData.Id where DataId>0 AND Locus_old is NULL ORDER BY DataId LIMIT 5;
++----------+-----------+--------+------------+------------------+
+| StrainId | Locus     | DataId | ProbeSetId | ProbeSetFreezeId |
++----------+-----------+--------+------------+------------------+
+|        1 | rs6394483 | 115467 |      13825 |                8 |
+|        2 | rs6394483 | 115467 |      13825 |                8 |
+|        3 | rs6394483 | 115467 |      13825 |                8 |
+|        4 | rs6394483 | 115467 |      13825 |                8 |
+|        5 | rs6394483 | 115467 |      13825 |                8 |
++----------+-----------+--------+------------+------------------+
+5 rows in set (0.205 sec)
+```
+
+## Count data sets
+
+Using above line we can count the number of times BXD1 was used:
+
+```
+MariaDB [db_webqtl]> select count(StrainId) from ProbeSetXRef INNER JOIN ProbeSetData ON ProbeSetXRef.DataId=ProbeSetData.Id where DataId>0 AND Locus_old is NULL AND StrainId=1 ORDER BY DataId LIMIT 5;
++-----------------+
+| count(StrainId) |
++-----------------+
+|        10432197 |
++-----------------+
+1 row in set (39.545 sec)
+```
+
+Or the main BXDs

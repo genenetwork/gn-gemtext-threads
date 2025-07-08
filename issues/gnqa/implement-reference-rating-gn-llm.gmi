@@ -1,0 +1,26 @@
+# Implement Reference Rating for gn-llm
+
+## Tags
+
+* assigned: alexm,
+* keywords: llm, reference, rating
+* type: enhancements
+* status: closed, completed
+
+## Description
+
+For each reference in a query, we need to allow users to provide feedback or a rating on its relevance to a given task. This will help in improving future queries.
+
+## Tasks
+
+* [x] Create an API endpoint for reference rating.
+
+* [x] Implement the UI for this feature.
+
+
+For the UI and api imeplementation see commits:
+
+
+=> https://github.com/genenetwork/genenetwork2/pull/828/files
+
+=> https://github.com/genenetwork/genenetwork3/commit/482a8908dc08d6e5a13e576c4ba4bc3ff934bb8d

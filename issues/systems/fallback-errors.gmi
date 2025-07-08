@@ -1,0 +1,226 @@
+# Fallback issues
+
+This page tracks outstanding problems with
+
+=> https://fallback.genenetwork.org/
+
+Note that some issues may be related to production (i.e. the same). Note also I created my own development VM in just an hour, so I don't have to mess with the fallback while others are using it.
+
+# Tags
+
+* type: bug
+* assigned: pjotrp
+* keywords: systems, fallback, deploy
+* status: in progress
+* priority: critical
+
+# Tasks
+
+* [X] 502 timeout errors
+* [X] Rqtl2 not working
+* [X] 413 error
+* [ ] BNW error
+* [ ] Monitor service - both systemd and sheepdog
+* [ ] Files in /tmp
+
+## 502 timeout errors (fixed)
+
+These should no longer happen. It required relaxing timeouts on nginx and gunicorn.
+
+## Rqtl2/HK/Pairscan not working (fixed)
+
+URL error on result of
+
+=> https://fallback.genenetwork.org/show_trait?trait_id=5581148&dataset=UMUTAffyExon_0209_RMA
+
+```
+      GeneNetwork 2.11-rc2  https://fallback.genenetwork.org/run_mapping (10:01AM UTC Mar 22, 2024)
+Traceback (most recent call last):
+  File "/gnu/store/a39cgbdawj9vp24nsz9q25sf9g5vda7c-profile/lib/python3.10/site-packages/requests/models.py", line 434, in prepare_url
+    scheme, auth, host, port, path, query, fragment = parse_url(url)
+  File "/gnu/store/a39cgbdawj9vp24nsz9q25sf9g5vda7c-profile/lib/python3.10/site-packages/urllib3/util/url.py", line 397, in parse_url
+    return six.raise_from(LocationParseError(source_url), None)
+  File "<string>", line 3, in raise_from
+urllib3.exceptions.LocationParseError: Failed to parse: http://localhost:8893api/rqtl/compute
+```
+
+The error points out a missing slash in the local URL: http://localhost:8893api/rqtl/compute
+
+Grepping machines we get:
+
+```
+gn3-port 8893
+("GN3_LOCAL_URL" ,(string-append "http://localhost:" (number->string gn3-port)))
+```
+
+On production we set a trailing slash
+
+```
+GN3_LOCAL_URL = "http://localhost:8081/"
+```
+
+and in the code we mostly see another addition of the slash - except for this particular link. Arguably the slash is not part of the URL prefix (it is part of the path), so I think setting GN3_LOCAL_URL without the trailing slash is preferred. See also
+
+=> https://en.wikipedia.org/wiki/URL
+
+# R/qtl JSONDecodeError (fixed)
+
+After adding the slash to GN3 URLs (see above) led to the next error:
+
+```
+simplejson.errors.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+```
+
+This looks similar to the earlier documented
+
+=> ../rqtl-mapping-throws-JSONDecodeError
+
+suggesting a missing path for R. In the container log GN3 actually gives the error
+
+```
+2024-03-24 08:02:24     return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+2024-03-24 08:02:24   File "/gnu/store/yi76sybwqql4ky60yahv91z57srb2fr0-profile/lib/python3.10/site-packages/gn3/api/rqtl.py", line 25, in compute
+2024-03-24 08:02:24     raise FileNotFoundError
+2024-03-24 08:02:24 FileNotFoundError
+```
+
+Now two things are bad here becuase there is no context other than the error lines! For FileNotFound pass in the filename as suggested here:
+
+=> https://stackoverflow.com/questions/36077266/how-do-i-raise-a-filenotfounderror-properly
+
+Patched in
+
+=> https://github.com/genenetwork/genenetwork3/commit/b615df8c65d4fb6c8f08cf653e920c360c136552
+
+That should help clarify the missing path or file.
+
+```
+  File "/export/source/fallback-debug/genenetwork3/gn3/fs_helpers.py", line 21, in assert_paths_exist
+    raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), path)
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/gn2/83f0831af5911ab6dc62cbbd37d13741.csv'
+```
+
+So, GN2 is miscommunicating the path to GN3.
+
+This also led to documenting how one should test GN2 and GN3 in a running VM:
+
+=> /topics/guix/guix-system-containers-and-how-we-use-them.gmi
+
+and fixing the shared TMPDIR. The next step however fails with
+
+```
+sh: line 1: Rscript: command not found
+2024-04-01 07:33:13   File "/gnu/store/yi76sybwqql4ky60yahv91z57srb2fr0-profile/lib/python3.10/site-packages/gn3/computations/rqtl.py", line 6
+5, in process_rqtl_mapping
+(...)
+2024-04-01 07:33:13     with open(
+2024-04-01 07:33:13 FileNotFoundError: [Errno 2] No such file or directory: '/tmp/output/d41d8cd98f00b204e9800998ecf8427ePr1axOhhSF5DMEMowkGu6AvGj6hf+TA2Ra7FIrlrT4Pw-output.csv'
+```
+
+So, for some reason Rscript is not in the path for GN3. So I added that to the propagated inputs. Now we still have the output error. There is no information the Rscript has actually been invoked and successfuly (or unsuccessfully) wrote the file. To fix this we mount the GN3 source directory in the container again. See
+
+=>  /topics/systems/debug-and-developing-code-with-genenetwork-system-container.gmi
+
+That way I was able to troubleshoot the paths and added them to the containers.
+
+## QTLReaper showing font problem (fixed)
+
+Try HK on
+
+=> https://fallback.genenetwork.org/show_trait?trait_id=5581148&dataset=UMUTAffyExon_0209_RMA
+
+```
+  File "/gnu/store/hvv0r5nzhbbsnd9s68cmx5q0sznjhnrp-profile/lib/python3.10/site-packages/PIL/ImageFont.py", line 956, in freetype
+    return FreeTypeFont(font, size, index, encoding, layout_engine)
+  File "/gnu/store/hvv0r5nzhbbsnd9s68cmx5q0sznjhnrp-profile/lib/python3.10/site-packages/PIL/ImageFont.py", line 247, in __init__
+    self.font = core.getfont(
+OSError: cannot open resource
+```
+
+This error in on gn2. An image file appears in /tmp/gn2/generated/.
+
+The fonts exist in the GN2 directory, e.g.
+/gnu/store/mymfiz2jgkfc196az1c0vcc2digc84jy-genenetwork2-stable-stable-3.11-1.42b37bb/lib/python3.10/site-packages/gn2/wqflask/static/fonts/courbd.ttf, but are not found. In the code the path is set to
+
+```
+COUR_FILE = "./gn2/wqflask/static/fonts/courbd.ttf"
+```
+
+so most likely GN2 is not running from that actually source dir.
+
+## Pair scan runs, but does not show image (fixed)
+
+Pair scan shows a table on the fallback, but not the image. On CD and production no pair scan results!
+
+=> https://gndev.genenetwork.org/show_trait?trait_id=10150&dataset=BXDPublish
+
+Takes about a minute for 26 mice. The csv files are generated in /tmp/gn3, but no image. The relevant code is
+
+```
+   <div class="qtlcharts" id="chart_container">
+        <div id="pairscan_chart"></div>
+    </div>
+```
+
+The problem is with Karl's D3 panels, we get an error 'TypeError: d3.scaleLinear is not a function'. That 1.7.1 release is a bit old, so let's try updating that first. After updating to 1.8.4 we have the same error. D3 is at 3.5.17 - that is 2016(!).
+
+Now the latest versions of D3 do *not* provide the actual JS through github. The page
+
+=> https://d3js.org/getting-started
+
+has links to
+
+=> https://d3js.org/d3.v7.js
+=> https://d3js.org/d3.v7.min.js
+
+We can't use those because the SHA may change. So we have to host a local copy. That is fine.
+
+## 413 Request Entity Too Large (fixed)
+
+On mapping from
+
+=> https://fallback.genenetwork.org/show_trait?trait_id=10002&dataset=HET3-ITPPublish
+
+This resolved itself - probably a permission issue.
+
+## Files generated in /tmp (later)
+
+Not unique file names appearing in TMPDIR:
+
+```
+-rw-r--r-- 1 gunicorn-genenetwork2 gunicorn-genenetwork2 337 Apr  2 07:03 175.png
+-rw-r--r-- 1 gunicorn-genenetwork2 gunicorn-genenetwork2 287 Apr  2 07:03 75.png
+-rw-r--r-- 1 gunicorn-genenetwork2 gunicorn-genenetwork2 303 Apr  2 07:03 25.png
+-rw-r--r-- 1 gunicorn-genenetwork2 gunicorn-genenetwork2 348 Apr  2 07:03 125.png
+-rw-r--r-- 1 gunicorn-genenetwork2 gunicorn-genenetwork2 835 Apr  2 07:03 -logP.png
+```
+
+These are created by the HK run. Harmless for now, but if two people run HK at the same time we'll get a conflict.
+
+Unique file names, but lingering on file system - note they are root because I created them outside a container
+
+```
+-rw-r--r-- 1 root root   10M Apr  2 07:03 4OJCzmGV.cross
+-rw-r--r-- 1 root root   10M Apr  2 07:03 6cExgwkd.cross
+```
+
+# Purescript browser buttons not showing (fixed)
+
+The following button does not display:
+
+```
+                       <button id="scrollLeft"  type="button" >
+                          <i class="fas fa-arrow-left"></i>
+```
+
+it is part of font-awesome and apparently not loaded properly. Actually the stylesheet is loaded twice(!) in mapping_results.html AND we use two different class names (fas and fa). Changing the class name fixed it.
+
+# BNW gives a jquery error
+
+This is probably a jquery update is causing
+
+```
+Uncaught TypeError: data1.join is not a function
+    <anonymous> https://bnw.genenetwork.org/sourcecodes/layout_cyto.php?My_key=jFv:102
+    jQuery 4
+```

@@ -1,0 +1,380 @@
+# Tux04/Tux05 disk issues
+
+We are facing some disk issues with Tux04:
+
+```
+May 02 20:57:42 tux04 kernel: Buffer I/O error on device sdf1, logical block 859240457
+```
+
+and the same happened to tux05 (same batch). Basically the controllers report no issues. Just to be sure we added
+a copy of the boot partition.
+
+=> topics/system/linux/add-boot-partition
+
+# Tags
+
+* assigned: pjotrp, aruni
+* type: systems
+* keywords: hardware
+* status: unclear
+* priority: medium
+
+# Info
+
+
+```
+journalctl |grep mega
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_00], opened
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_00], [NVMe     Dell DC NVMe PE8 .2.0], lu id: 0x9a9ad026002ee4ac, S/N: SSBBN7299I250C41H, 960 GB
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_01], opened
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_01], [NVMe     Dell Ent NVMe FI .0.0], lu id: 0x3655523054a001820025384500000002, S/N: S6URNE0TA00182, 1.60 TB
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_02], opened
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_02], [NVMe     UMIS RPJTJ512MGE 0630], lu id: 0x8a13205102504a04, S/N: SS0L25210X8RC25E14WA, 512 GB
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_03], opened
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_03], [NVMe     CT4000P3SSD8     R30A], lu id: 0x550000f077a77964, S/N: 2314E6C3E33E, 4.00 TB
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_04], opened
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_04], [NVMe     CT4000P3SSD8     R30A], lu id: 0x830000f077a77964, S/N: 2314E6C3E2E2, 4.00 TB
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_05], opened
+May 01 01:40:45 tux04 smartd[2440]: Device: /dev/bus/0 [megaraid_disk_05], [NVMe     CT4000P3SSD8     R30A], lu id: 0x4d0000907da77964, S/N: 2327E6E9CB05, 4.00 TB
+```
+
+Switched on smartmontools.
+
+```
+smartctl -a /dev/sdf -d megaraid,0
+```
+
+shows no errors.
+
+```
+tux04:/$ lspci |grep RAID
+41:00.0 RAID bus controller: Broadcom / LSI MegaRAID 12GSAS/PCIe Secure SAS39xx
+```
+
+Download megacli from
+
+=> https://hwraid.le-vert.net/wiki/DebianPackages
+
+```
+apt-get update
+apt-get install megacli
+megacli -LDInfo -L5 -a0
+
+```
+
+```
+tux04:/$  megacli -PDList -a0|grep -i S.M
+megacli -PDList -a0
+Drive has flagged a S.M.A.R.T alert : No
+Drive has flagged a S.M.A.R.T alert : No
+Drive has flagged a S.M.A.R.T alert : No
+Drive has flagged a S.M.A.R.T alert : No
+Drive has flagged a S.M.A.R.T alert : No
+Drive has flagged a S.M.A.R.T alert : No
+tux04:/$  megacli -PDList -a0|grep -i Firm
+Firmware state: Online, Spun Up
+Device Firmware Level: .2.0
+Firmware state: Online, Spun Up
+Device Firmware Level: .0.0
+Firmware state: Online, Spun Up
+Device Firmware Level: 0630
+Firmware state: Online, Spun Up
+Device Firmware Level: R30A
+Firmware state: Online, Spun Up
+Device Firmware Level: R30A
+Firmware state: Online, Spun Up
+Device Firmware Level: R30A
+```
+
+So the drives are OK and the controller is not complaining.
+
+Smartctl self tests do not work on this controller:
+
+```
+tux04:/$ smartctl -t short -d megaraid,0 /dev/sdf -c
+Short Background Self Test has begun
+Use smartctl -X to abort test
+```
+
+and nothing ;). Megacli is actually the tool to use
+
+```
+megacli -AdpAllInfo -aAll
+```
+
+# Database
+
+During a backup the DB shows this error:
+
+```
+2025-03-02 06:28:33 Database page corruption detected at page 1079428, retrying...\n[01] 2025-03-02 06:29:33 Database page corruption detected at page 1103108, retrying...
+```
+
+
+Interestingly the DB recovered on a second backup.
+
+The database is hosted on a solid /dev/sde Dell Ent NVMe FI. The log says
+
+```
+kernel: I/O error, dev sde, sector 2136655448 op 0x0:(READ) flags 0x80700 phys_seg 40 prio class 2
+```
+
+Suggests:
+
+=> https://stackoverflow.com/questions/50312219/blk-update-request-i-o-error-dev-sda-sector-xxxxxxxxxxx
+
+> The errors that you see are interface errors, they are not coming from the disk itself but rather from the connection to it. It can be the cable or any of the ports in the connection.
+> Since the CRC errors on the drive do not increase I can only assume that the problem is on the receive side of the machine you use. You should check the cable and try a different SATA port on the server.
+
+and someone wrote
+
+> analyzed that most of the reasons are caused by intensive reading and writing.  This is a CDN cache node. Type reading NVME temperature is relatively high, if it continues, it will start to throttle and then slowly collapse.
+
+and temperature on that drive has been 70 C.
+
+Mariabd log is showing errors:
+
+```
+2025-03-02  6:54:47 0 [ERROR] InnoDB: Failed to read page 449925 from file './db_webqtl/SnpAll.ibd': Page read from tablespace is corrupted.
+2025-03-02  7:01:43 489015 [ERROR] Got error 180 when reading table './db_webqtl/ProbeSetXRef'
+2025-03-02  8:10:32 489143 [ERROR] Got error 180 when reading table './db_webqtl/ProbeSetXRef'
+```
+
+Let's try and dump those tables when the backup is done.
+
+```
+mariadb-dump -uwebqtlout db_webqtl SnpAll
+mariadb-dump: Error 1030: Got error 1877 "Unknown error 1877" from storage engine InnoDB when dumping table `SnpAll` at row: 0
+mariadb-dump -uwebqtlout db_webqtl ProbeSetXRef > ProbeSetXRef.sql
+```
+
+Eeep:
+
+```
+tux04:/etc$ mariadb-check -uwebqtlout -c db_webqtl ProbeSetXRef
+db_webqtl.ProbeSetXRef
+Warning  : InnoDB: Index ProbeSetFreezeId is marked as corrupted
+Warning  : InnoDB: Index ProbeSetId is marked as corrupted
+error    : Corrupt
+tux04:/etc$ mariadb-check -uwebqtlout -c db_webqtl SnpAll
+db_webqtl.SnpAll
+Warning  : InnoDB: Index PRIMARY is marked as corrupted
+Warning  : InnoDB: Index SnpName is marked as corrupted
+Warning  : InnoDB: Index Rs is marked as corrupted
+Warning  : InnoDB: Index Position is marked as corrupted
+Warning  : InnoDB: Index Source is marked as corrupted
+error    : Corrupt
+```
+
+On tux01 we have a working database, we can test with
+
+```
+mysqldump --no-data --all-databases > table_schema.sql
+mysqldump -uwebqtlout db_webqtl SnpAll > SnpAll.sql
+```
+
+Running the backup with rate limiting from:
+
+```
+Mar 02 17:09:59 tux04 sudo[548058]: pam_unix(sudo:session): session opened for user root(uid=0) by wrk(uid=1000)
+Mar 02 17:09:59 tux04 sudo[548058]:      wrk : TTY=pts/3 ; PWD=/export3/local/home/wrk/iwrk/deploy/gn-deploy-servers/scripts/tux04 ; USER=roo>
+Mar 02 17:09:55 tux04 sudo[548058]: pam_unix(sudo:auth): authentication failure; logname=wrk uid=1000 euid=0 tty=/dev/pts/3 ruser=wrk rhost= >
+Mar 02 17:04:26 tux04 su[548006]: pam_unix(su:session): session opened for user ibackup(uid=1003) by wrk(uid=0)
+```
+
+Oh oh
+
+Tux04 is showing errors on all disks. We have to bail out. I am copying the potentially corrupted files to tux01 right now. We have backups, so nothing serious I hope. I am only worried about the myisam files we have because they have no strong internal validation:
+
+```
+2025-03-04  8:32:45 502 [ERROR] db_webqtl.ProbeSetData: Record-count is not ok; is 5264578601   Should be: 5264580806
+2025-03-04  8:32:45 502 [Warning] db_webqtl.ProbeSetData: Found 28665 deleted space.   Should be 0
+2025-03-04  8:32:45 502 [Warning] db_webqtl.ProbeSetData: Found       2205 deleted blocks       Should be: 0
+2025-03-04  8:32:45 502 [ERROR] Got an error from thread_id=502, ./storage/myisam/ha_myisam.cc:1120
+2025-03-04  8:32:45 502 [ERROR] MariaDB thread id 502, OS thread handle 139625162532544, query id 837999 localhost webqtlout Checking table
+CHECK TABLE ProbeSetData
+2025-03-04  8:34:02 79695 [ERROR] mariadbd: Table './db_webqtl/ProbeSetData' is marked as crashed and should be repaired
+```
+
+See also
+
+=> https://dev.mysql.com/doc/refman/8.4/en/myisam-check.html
+
+Tux04 will require open heart 'disk controller' surgery and some severe testing before we move back. We'll also look at tux05-8 to see if they have similar problems.
+
+## Recovery
+
+According to the logs tux04 started showing serious errors on March 2nd - when I introduced sanitizing the mariadb backup:
+
+```
+Mar 02 05:00:42 tux04 kernel: I/O error, dev sde, sector 2071078320 op 0x0:(READ) flags 0x80700 phys_seg 16 prio class 2
+Mar 02 05:00:58 tux04 kernel: I/O error, dev sde, sector 2083650928 op 0x0:(READ) flags 0x80700 phys_seg 59 prio class 2
+...
+```
+
+The log started on Feb 23 when we had our last reboot. It probably is a good idea to turn on persistent logging! Anyway, it is likely files were fine until March 2nd. Similarly the mariadb logs also show
+
+```
+2025-03-02  6:53:52 489007 [ERROR] mariadbd: Index for table './db_webqtl/ProbeSetData.MYI' is corrupt; try to repair it
+2025-03-02  6:53:52 489007 [ERROR] db_webqtl.ProbeSetData: Can't read key from filepos: 2269659136
+```
+
+So, if we can restore a backup from March 1st we should be reasonably confident it is sane.
+
+First is to backup the existing database(!) Next restore the new DB by changing the DB location (symlink in /var/lib/mysql as well as check /etc/mysql/mariadb.cnf).
+
+When upgrading it is an idea to switch on these in mariadb.cnf
+
+```
+# forcing recovery with these two lines:
+innodb_force_recovery=3
+innodb_purge_threads=0
+```
+
+Make sure to disable (and restart) once it is up and running!
+
+So the steps are:
+
+* [X] install updated guix version of mariadb in /usr/local/guix-profiles (don't use Debian!!)
+* [X] repair borg backup
+* [X] Stop old mariadb (on new host tux02)
+* [X] backup old mariadb database
+* [X] restore 'sane' version of DB from borg March 1st
+* [X] point to new DB in /var/lib/mysql and cnf file
+* [X] update systemd settings
+* [X] start mariadb new version with recovery setting in cnf
+* [X] check logs
+* [X] once running revert on recovery setting in cnf and restart
+
+OK, looks like we are in business again. In the next phase we need to validate files. Normal files can be checked with
+
+```
+find -type f \( -not -name "md5sum.txt" \) -exec md5sum '{}' \; > md5sum.txt
+```
+
+and compared with another set on a different server with
+
+```
+md5sum -c md5sum.txt
+```
+
+* [X] check genotype file directory - some MAGIC files missing on tux01
+
+gn-docs is a git repo, so that is easily checked
+
+* [X] check gn-docs and sync with master repo
+
+
+## Other servers
+
+```
+journalctl -r|grep -i "I/O error"|less
+# tux05
+Nov 18 02:19:55 tux05 kernel: XFS (sdc2): metadata I/O error in "xfs_da_read_buf+0xd9/0x130 [xfs]" at daddr 0x78 len 8 error 74
+Nov 05 14:36:32 tux05 kernel: blk_update_request: I/O error, dev sdb, sector 1993616 op 0x1:(WRITE) flags
+0x0 phys_seg 35 prio class 0
+Jul 27 11:56:22 tux05 kernel: blk_update_request: I/O error, dev sdc, sector 55676616 op 0x0:(READ) flags
+0x80700 phys_seg 26 prio class 0
+Jul 27 11:56:22 tux05 kernel: blk_update_request: I/O error, dev sdc, sector 55676616 op 0x0:(READ) flags
+0x80700 phys_seg 26 prio class 0
+# tux06
+Apr 15 08:10:57 tux06 kernel: I/O error, dev sda, sector 21740352 op 0x1:(WRITE) flags 0x1000 phys_seg 4 prio class 2
+Dec 13 12:56:14 tux06 kernel: I/O error, dev sdb, sector 3910157327 op 0x9:(WRITE_ZEROES) flags 0x8000000 phys_seg 0 prio class 2
+# tux07
+Mar 27 08:00:11 tux07 mfschunkserver[1927469]: replication error: failed to create chunk (No space left)
+# tux08
+Mar 27 08:12:11 tux08 mfschunkserver[464794]: replication error: failed to create chunk (No space left)
+```
+
+Tux04, 05 and 06 show disk errors. Tux07 and Tux08 are  overloaded with a full disk, but no other errors. We need to babysit Lizard more!
+
+```
+stress -v -d 1
+```
+
+Write test:
+
+```
+dd if=/dev/zero of=./test bs=512k count=2048 oflag=direct
+```
+
+Read test:
+
+```
+/sbin/sysctl -w vm.drop_caches=3
+dd if=./test of=/dev/zero bs=512k count=2048
+```
+
+
+smartctl -a /dev/sdd -d megaraid,0
+
+RAID Controller in SL 3: Dell PERC H755N Front
+
+# The story continues
+
+I don't know what happened but the server gave a hard
+error in the logs:
+
+```
+racadm getsel # get system log
+Record:      340
+Date/Time:   05/31/2025 09:25:17
+Source:      system
+Severity:    Critical
+Description: A high-severity issue has occurred at the Power-On
+Self-Test (POST) phase which has resulted in the system BIOS to
+abruptly stop functioning.
+```
+
+Woops! I fixed it by resetting idrac and rebooting remotely. Nasty.
+
+Looking around I found this link
+
+=>
+https://tomaskalabis.com/wordpress/a-high-severity-issue-has-occurred-at-the-power-on-self-te
+st-post-phase-which-has-resulted-in-the-system-bios-to-abruptly-stop-functioning/
+
+suggesting we should upgrade idrac firmware. I am not going to do that
+without backups and a fully up-to-date fallback online. It may fix the
+other hardware issues we have been seeing (who knows?).
+
+Fred, the boot sequence is not perfect yet. Turned out the network
+interfaces do not come up in the right order and nginx failed because
+of a missing /var/run/nginx. The container would not restart because -
+missing above - it could not check the certificates.
+
+## A week later
+
+```
+[SMM] APIC 0x00 S00:C00:T00 > ASSERT [AmdPlatformRasRsSmm] u:\EDK2\MdePkg\Library\BasePciSegmentLibPci\PciSegmentLib.c(766): ((Address) & (0xfffffffff0000000ULL | (3))) == 0                !!!! X64 Exception Type - 03(#BP - Breakpoint)  CPU Apic ID - 00000000 !!!!
+RIP  - 0000000076DA4343, CS  - 0000000000000038, RFLAGS - 0000000000000002
+RAX  - 0000000000000010, RCX - 00000000770D5B58, RDX - 00000000000002F8
+RBX  - 0000000000000000, RSP - 0000000077773278, RBP - 0000000000000000
+RSI  - 0000000000000087, RDI - 00000000777733E0                                              R8   - 00000000777731F8, R9  - 0000000000000000, R10 - 0000000000000000
+R11  - 00000000000000A0, R12 - 0000000000000000, R13 - 0000000000000000
+R14  - FFFFFFFFA0C1A118, R15 - 000000000005B000
+DS   - 0000000000000020, ES  - 0000000000000020, FS  - 0000000000000020
+GS   - 0000000000000020, SS  - 0000000000000020
+CR0  - 0000000080010033, CR2 - 0000000015502000, CR3 - 0000000077749000
+CR4  - 0000000000001668, CR8 - 0000000000000001
+DR0  - 0000000000000000, DR1 - 0000000000000000, DR2 - 0000000000000000                      DR3  - 0000000000000000, DR6 - 00000000FFFF0FF0, DR7 - 0000000000000400
+GDTR - 000000007773C000 000000000000004F, LDTR - 0000000000000000                            IDTR - 0000000077761000 00000000000001FF,   TR - 0000000000000040
+FXSAVE_STATE - 0000000077772ED0
+!!!! Find image based on IP(0x76DA4343) u:\Build_Genoa\DellBrazosPkg\DEBUG_MYTOOLS\X64\DellPkgs\DellChipsetPkgs\AmdGenoaModulePkg\Override\AmdCpmPkg\Features\PlatformRas\Rs\Smm\AmdPlatformRasRsSmm\DEBUG\AmdPlatformRasRsSmm.pdb (ImageBase=0000000076D3E000, EntryPoint=0000000076D3E6C0) !!!!
+```
+
+New error in system log:
+
+```
+Record:      341                                                                             Date/Time:   06/04/2025 19:47:08
+Source:      system
+Severity:    Critical                                                                        Description: A high-severity issue has occurred at the Power-On Self-Test (POST) phase which has resulted in the system BIOS to abruptly stop functioning.
+```
+
+The error appears to relate to AMD Brazos which is probably part of the on board APU/GPU.
+
+The code where it segfaulted is online at:
+
+=> https://github.com/tianocore/edk2/blame/master/MdePkg/Library/BasePciSegmentLibPci/PciSegmentLib.c
+
+and has to do with PCI registers and that can actually be caused by the new PCIe card we hosted.

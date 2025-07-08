@@ -1,0 +1,98 @@
+# Virtuoso: Shutdown Clears Data
+
+## Tags
+
+* type: bug
+* assigned: fredm
+* priority: critical
+* status: closed, completed
+* interested: bonfacem, pjotrp, zsloan
+* keywords: production, container, tux04, virtuoso
+
+## Description
+
+It seems that virtuoso has the bad habit of clearing data whenever it is stopped/restarted.
+
+This issue will track the work necessary to get the service behaving correctly.
+
+According to the documentation on
+=> https://vos.openlinksw.com/owiki/wiki/VOS/VirtBulkRDFLoader the bulk loading process
+
+```
+The bulk loader also disables checkpointing and the scheduler, which also need to be re-enabled post bulk load
+```
+
+That needs to be handled.
+
+### Notes
+
+After having a look at
+=> https://docs.openlinksw.com/virtuoso/ch-server/#databaseadmsrv the configuration documentation
+it occurs to me that the reason virtuoso supposedly clears the data is that the `DatabaseFile` value is not set, so it defaults to a new database file every time the server is restarted (See also the `Striping` setting).
+
+### Troubleshooting
+
+Reproduce locally:
+
+We begin by getting a look at the settings for the remote virtuoso
+```
+$ ssh tux04
+fredm@tux04:~$ cat /gnu/store/bg6i4x96nm32gjp4qhphqmxqc5vggk3h-virtuoso.ini
+[Parameters]
+ServerPort = localhost:8981
+DirsAllowed = /var/lib/data
+NumberOfBuffers = 4000000
+MaxDirtyBuffers = 3000000
+[HTTPServer]
+ServerPort = localhost:8982
+```
+
+Copy these into a file locally, and adjust the `NumberOfBuffers` and `MaxDirtyBuffers` for smaller local dev environment. Also update `DirsAllowed`.
+
+We end up with our local configuration in `~/tmp/virtuoso/etc/virtuoso.ini` with the content:
+
+```
+[Parameters]
+ServerPort = localhost:8981
+DirsAllowed = /var/lib/data
+NumberOfBuffers = 10000
+MaxDirtyBuffers = 6000
+[HTTPServer]
+ServerPort = localhost:8982
+```
+
+Run virtuoso!
+```
+$ cd ~/tmp/virtuoso/var/lib/virtuoso/
+$ ls
+$ ~/opt/virtuoso/bin/virtuoso-t +foreground +configfile ~/tmp/virtuoso/etc/virtuoso.ini
+```
+
+Here we start by changing into the `~/tmp/virtuoso/var/lib/virtuoso/` directory which will be where virtuoso will put its state. Now in a different terminal list the files created int the state directory:
+
+```
+$ ls ~/tmp/virtuoso/var/lib/virtuoso
+virtuoso.db  virtuoso.lck  virtuoso.log  virtuoso.pxa  virtuoso.tdb  virtuoso.trx
+```
+
+That creates the database file (and other files) with the documented default values, i.e. `virtuoso.*`.
+
+We cannot quite reproduce the issue locally, since every reboot will have exactly the same value for the files locally.
+
+Checking the state directory for virtuoso on tux04, however:
+
+```
+fredm@tux04:~$ sudo ls -al /export2/guix-containers/genenetwork/var/lib/virtuoso/ | grep '\.db$'
+-rw-r--r-- 1  986  980 3787456512 Oct 28 14:16 js1b7qjpimdhfj870kg5b2dml640hryx-virtuoso.db
+-rw-r--r-- 1  986  980 4152360960 Oct 28 17:11 rf8v0c6m6kn5yhf00zlrklhp5lmgpr4x-virtuoso.db
+```
+
+We see that there are multiple db files, each created when virtuoso was restarted. There is an extra (possibly) random string prepended to the `virtuoso.db` part. This happens for our service if we do not actually provide the `DatabaseFile` configuration.
+
+
+## Fixes
+
+=> https://github.com/genenetwork/gn-gemtext-threads/commit/8211c1e49498ba2f3b578ed5b11b15c52299aa08 Document how to restart checkpointing and the scheduler after bulk loading
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=2dc335ca84ea7f26c6977e6b432f3420b113f0aa Add configs for scheduler and checkpointing
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=7d793603189f9d41c8ee87f8bb4c876440a1fce2 Set up virtuoso database configurations
+=> https://git.genenetwork.org/gn-machines/commit/?id=46a1c4c8d01198799e6ac3b99998dca40d2c7094 Explicitly name virtuoso database files.

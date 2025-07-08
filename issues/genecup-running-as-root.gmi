@@ -1,5 +1,9 @@
 # genecup is currently running as root on penguin2.
 
+Is this still true for tux02? Fixed: genecup is now running as a container so we can close this.
+
+## Info
+
 Currently when run using shepherd it fails like this:
 
 guix system: warning: Consider running 'guix pull' followed by
@@ -32,7 +36,7 @@ A number of changes to different types of shepherd services (exec-command, make-
 * assigned: Efraim
 * type: failure
 * keywords: genecup, penguin2
-* status: unclear
+* status: closed
 * priority: high
 
 ## Notes

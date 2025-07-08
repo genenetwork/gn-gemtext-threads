@@ -1,20 +1,53 @@
 # Tasks for Fred
 
-## Tags
+# Tags
 
-* assigned: fredm
+* kanban: fredm
+* assigned: @fredm
 * status: in progress
-* priority: high
 
-## Tasks
+# Tasks
 
-* Complete correlation bug hunting and merge with production
-* Genotype data uploader on space
-  - finalise spack configuration (nginx)
-  - add simple password protection (using nginx?)
-* Start on authentication/authorization for GN2 (with @pjotrp)
-* Merge phenotype uploader functionality that is already in GN2 (with @bonfacem)
+* [ ] Add drives to Penguin2, see issues/systems/penguin2-raid5
+* [X] Move production files from sdc to sde
+* [ ] Fix password weakness
+* [ ] Fix gn-docs and editing, e.g. facilities page by gn-guile in container
+* [ ] Unifiy container dirs
+* [ ] Fix wikidata gene aliases (see mapping page) with @pjotrp
+* [ ] Public SPARQL container?
 
-Extra:
+## Description
 
-* Work on analysis of aging mice
+These are the tasks and issues to be handled by Fred.
+
+Here are all open issues
+=> https://issues.genenetwork.org/search?query=is%3Aopen+AND+assigned%3Afrederick&type=all assigned to Frederick
+
+The search used for the list above is
+> is:open AND assigned:Frederick
+
+You can refine the search by constraining the checks some more, e.g. to get high-priority issues
+
+> is:open AND assigned:Frederick AND priority:high
+
+
+## Priority
+
+### gn-uploader
+
+=> https://issues.genenetwork.org/search?query=is%3Aopen+AND+assigned%3Afrederick+AND+keywords%3Agn-uploader&type=all
+
+### gn-auth
+
+=> https://issues.genenetwork.org/search?query=is%3Aopen+AND+assigned%3Afrederick+AND+keywords%3Agn-auth&type=all
+
+### GeneNetwork2
+
+=> https://issues.genenetwork.org/search?query=is%3Aopen+AND+assigned%3Afrederick+AND+keywords%3Agn2&type=all
+
+### GeneNetwork2
+
+=> https://issues.genenetwork.org/search?query=is%3Aopen+AND+assigned%3Afrederick+AND+keywords%3Agn3&type=all
+
+
+## Extra

@@ -1,0 +1,559 @@
+# Meeting Notes
+
+## 2024-10-15
+* DONE: @flisso: Follow up with the Medaka team on verification of genotype sample names
+* DONE: @flisso: Understand uploader scripts and help improve then.
+* CANCELLED: @flisso: Set up virtuoso.  @bonfacem shall share notes on this.
+* NOT DONE: @flisso: Write PhD concept note.
+* DONE: @alexm @jnduli: R/Qtl script.
+* DONE: @bonfacem: Test the production container locally and provide @fredm some feedback.
+* DONE: @bonfacem: Wrap-up re-writing gn-guile to be part of genenetwork-webservices.
+* NOT DONE: @bonfacem: Start dataset metadata editing work.
+
+## 2024-10-08
+* NOT DONE: @bonfacem RIF Indexing for RIF page in Xapian.
+* IN PROGRESS: @bonfacem: Test the production container locally and provide @fredm some feedback.
+* IN PROGRESS: @bonfacem: Re-writing gn-guile to be part of genenetwork-webservices.
+* NOT DONE: @shelbys @bonfacem: Getting RDF into R2R.
+* NOT DONE: @flisso: Follow up with the Medaka team on verification of genotype sample names.  NOTE: Medaka team are yet to respond.
+* IN PROGRESS: @flisso: Figure out how to add C Elegans data in staging. NOTE: Got access to staging server.  Ran example tests.  Still working on some errors.
+* NOT DONE: @flisso: Set up virtuoso.  @bonfacem shall share notes on this.
+* NOT DONE: @flisso: Write PhD concept note. NOTE: Doing some lit review.
+* @shelbys: Be able to test things on lambda01 for LLM tests.
+* @alexm @jnduli: R/Qtl script.
+
+## 2024-10-18
+* IN-PROGRESS: @priscilla @flisso: Set up mariadb and virtuoso to test out some GN3 endpoints. NOTE: Mariadb set-up
+* NOT DONE: @priscilla @flisso @bmunyoki: Improve docs while hacking on the above.
+* DONE: @jnduli Remove gn-auth code from GN3.
+* DONE: @jnduli Resolve current issue with broken auth in gn-qa.
+* DONE: @jnduli @alexm Work on the R/Qtl design doc.
+* IN-PROGRESS: @alexm: R/Qtl script.  NOTE: Reviewed by @jnduli.
+* DONE: @flisso MIKK genotyping.  NOTE: Verification pending from Medaka team.
+* DONE: @flisso Make sure we have C Elegans and HS Rats dataset to testing, and have the genotyping pipeline working.  NOTE: Issues with tux02 staging server.
+* DONE: @shelbys: Modify existing Grant write-up for pangenomes.  NOTES: Some more edits to be done.
+* NOT DONE: @shelbys @bonfacem: Getting RDF into R2R.
+* NOT DONE: @bonfacem RIF Indexing for RIF page in Xapian.
+* DONE: @bonfacem Work on properly containerizing gn-guile.  NOTE: Send in patches to @alexm, @aruni, and @fredm to review later today.
+* DONE: @bonfacem: Fix the virtuoso CI job in CD: NOTE: I'm awaiting feedback from @arun/@fredm.
+
+## 2024-10-11
+* WIP @priscilla @flisso: Try out API endpoints that don't require auth.  NOTE: Priscilla got to set-up guix channels for gn3.  Felix ran into problems.  Priscilla set up the MySQL in her Ubuntu system.
+* NOT DONE: @jnduli Harden hook system for gn-auth.
+* WIP: @jnduli Remove gn-auth code from GN3.  NOTE: Sent latest patches to Fred.  Running issue, some patches may have caused gn-qa to fail.
+* DONE: @jnduli @bonfacem Finish up RIF Editing project.
+* NOT DONE: @jnduli @alexm Create issue on describing the monitoring system. 
+* NOT DONE: @jnduli @alexm Create issue on prompt engineering in GN to improve what we already have.
+* WIP: @alex Work on R/Qtl.  NOTE: @jnduli/@bonfacem help out with this.  NOTE: Finished writing the design doc for gn-qa.
+* DONE: Looked at documentation for R/Qtl.
+* NOT DONE: @alex: Review @bmunyoki's work on RIF/Indexing.
+* WIP: @flisso: Make sure we have C Elegans dataset and MIKK genotypes to production.   NOTE: Issues with data entry scripts.  Fred/Zach working to set up test environment.
+* WIP: @flisso: MIKK genotyping.  NOTE: Still testing the pipeline.  Halfway there.
+* NOT DONE: @flisso: Make sure we have HS Rats in testing stage.
+* WIP: @flisso: Make progress in learning back-end coding WRT GN.  NOTE: Issue setting up GN3.
+* WIP: @shelbys: Modify existing Grant write-up for pangenomes.  NOTE: Reviewed by Pj and Eric.  More mods based of feedback.  Paper got accepted by BioArxiv.  Added some docs to R2R evaluation code.
+* DONE: @shelbys: Finish getting all the R2R scores from the first study. NOTE: Got scores for all the scores from first papers using R2R instead of Fahamu.
+* NOT DONE: @bonfacem RIF Indexing for RIF page in Xapian.
+* WIP: @bonfacem Work on properly containerizing gn-guile.
+* DONE: @bonfacem Fix the gn-transform-database in CI.  Sent patches to Arun for review.
+* DONE: @bonfacem Fixed broken utf-8 characters in gn-gemtext.
+
+## 2024-10-04
+* IN PROGRESS: @priscilla @bonfacem Setting up GN3.  @priscilla try out API endpoints that don't require auth. NOTE: @priscilla Able to set up guix as a package manager.  Trouble with Guix set-up with GN3.  @bonfacem good opportunity to improve docs in GN3.
+* IN PROGRESS: @jnduli Harden hook system for gn-auth.
+* IN PROGRESS: @jnduli Remove gn-auth code from GN3.
+* DONE: @jnduli Finish UI changes for RIF editing.  NOTE: Demo done in GN Learning team.
+* IN PROGRESS: @alex Work on R/Qtl.  NOTE: Met with Karl Brohman/PJ.  Been reading the docs.  Will track this issue in GN.
+* NOT DONE: @alex @bonfacem Work on properly containerizing gn-guile.
+* DONE: @bonfacem API/Display of NCBI Rif metadata.
+* IN PROGRESS: @bonfacem @alex RIF Indexing for RIF page in Xapian.
+* IN PROGRESS: @flisso Push data to production.  Commence work on Arabidopsis data and HS Rats data.  NOTE: C-Elegans pushed in process of being pushed to testing server, then later production.  WIP with HS Rats data in collab with Palmer.
+* DONE: @flisso: Learning how to use SQL WRT C Elegans data.
+* IN PROGRESS: @shelbys Re-formatting grant to use pangenomes.  Waiting for Garisson for feedback.
+* DONE: @shelbys Got the R2R for the human generated questions.  TODO: Run this for GPT 4.0 model.
+
+## 2024-09-27
+
+* DONE: @jnduli @bonfacem @alex Look at base files refactor and merge work.
+* DONE: @priscilla continue to upload more papers. NOTE: Uploaded an extra 200 papers.
+* NOT DONE: @priscilla @flisso Set up GN3.  Goal is to be able to query some APIs in cURL.
+* IN PROGRESS: @jnduli Improve hook systems for gn-auth. NOTE: Still figuring out a cleaner implementation for some things.
+* IN PROGRESS: @jnduli Trying to remove auth code GN3 code.  NOTE: Idea, though unsure about safety.  @fred to review work and make sure things are safe.
+* DONE: @jnduli @bonfacem @alex Push most recent changes to production.  Figure out what needs doing.  NOTE: @Zach is in charge of deployment.  @fredm is working on the production container.
+* DONE: @alex Close down remaining issues on issue tracker.  NOTE: Merged work on cleaning up base files.  Few more minor modifications to the UI.
+* NOT DONE: @alex investigate the dumped static files for encoding issues.
+* IN PROGRESS: @bonfacem NCBI Metadata - Modelling and Display.  NOTE: Done with the modelling.  Almost done with API/UI work.
+* DONE: @bonfacem Fix broken CD tests.  NOTE: We have tests running inside the guix build phase.
+* IN-PROGRESS: @flisso Continue work on uploading datasets: C Elegans and MIKK.  NOTE: Managed to create data files that need to be upleaded to the testing gn2 stage server.
+* NOT DONE: @flisso @jnduli help @flisso with SQL.
+
+## 2024-09-20
+* NOT DONE: @priscilla @flisso @bmunyoki @jnduli set up GN ecosystem and review UI PRs
+* DONE: @priscilla continue to upload more papers. NOTE: Shared access to drive to @bmunyoki.  We are at 800 papers.
+* DONE: @bmunyoki update tux02/01 with recent RIF modifications
+* DONE: @jnduli Finish up experiments on hook system.  NOTE: Patches got merged.  Needs to make some things more concrete.
+* NOT DONE: @alex @bonfacem investigate the dumped static files for encoding issues.
+* DONE: Refactoring base files for GN2.
+* IN PROGRESS: @flisso: Continue work on uploading datasets: C Elegans and MIKK.  Note: Waiting for the original MIKK genotype file from the Medaka team.  C Elegans yet to process the annotation file---some info is missing.
+* NOT DONE: @flisso: Do code reviews on Sarthak's script.
+* NOT DONE: @bmunyoki NCBI Metadata - Modelling and Display.
+* DONE: @bmunyoki update tux02/01 with recent RIF modifications.  NOTE: CD tests are broken and need to be fixed.
+
+## 2024-09-13
+* NOT DONE: @jnduli @bmunyoki fetch ncbi metadata and display them in GN2
+* DONE: @jnduli @bmunyoki add auth layer to edit rifs functionality
+* DONE: @jnduli complete design doc for hooks system for gn-auth.  NOTE: More experimentation with this.
+* DONE: @jnduli @alex bug fixes for LLM integration.
+* DONE: @priscilla added more papers to the LLM ~ 250 papers.
+* NOT DONE: @priscilla @flisso @bmunyoki @jnduli set up GN ecosystem and review UI PRs
+* DONE: @bmunyoki modify edit api to also write to RIF
+* NOT DONE: @bmunyoki update tux02/01 with recent RIF modifications
+* DONE: @bmunyoki Add test cases for RDF
+* DONE: @alex Bug fix for session expiry.
+* DONE: @alex Update links for static content to use self-hosted git repo.
+* IN PROGRESS: @flisso Upload C Elegans Dataset.  Nb: MIKK one has some issues, so work is paused for now. NOTE: Waiting for annotation and phenotype file for the C Elegans Dataset.
+* DONE @flisso: Reviewed  gemma wrapper scripts.
+
+
+Nice to have:
+* @bmunyoki build system container for gn-guile and write documentation for creating containers
+
+## 2024-09-06
+
+* DONE: @bmunyoki Replicate GN1 WIKI+RIF in GN2.
+* DONE: @bmunyoki update server to include latest code changes
+* IN PROGRESS: @bmunyoki modify edit api to also write to RIF
+* NOT DONE: @bmunyoki build system container for gn-guile and write documentation for creating containers
+* DONE: @bmunyoki @flisso update case attributes to capture hierarchy info
+* DONE: @bmunyoki prepare presentation for RIF work to GN learning team (goal is to present on Wednesday next week)
+* NOT DONE: @bmunyoki update tux02/01 with recent RIF modifications
+* NOT DONE: @jnduli @bmunyoki fetch ncbi metadata and display them in GN2
+* NOT DONE: @jnduli complete design doc for hooks system for gn-auth; Focus for next week.
+* DONE: @alexm @jnduli integrate LLM in GN2 and GN3: On the look-out for bug-fixes.
+* IN PROGRESS: @jnduli add auth layer to edit rifs functionality
+* DONE: @flisso generate genotype file on Medaka fish dataset: @arthur to have a look at this.
+* IN PROGRESS: @flisso code reviews for gemma-wrapper with @pjotr
+* DONE: @flisso update gemtext documentation
+* DONE: @flisso help Masters students with their proposal defences
+* @priscilla add more papers to LLM
+* NOT DONE: @priscilla @flisso @bmunyoki @jnduli set up GN ecosystem and review UI PRs
+
+
+## 2024-09-02 (Sync with @flisso+@bonfacem)
+
+### Case-Attributes
+
+* @bmunyoki understood case attributes by reverse-engineering the relevant tables from GeneNetwork's database.
+
+* One source of confusion for @bmunyoki is that we have the same "CaseAttribute.Name" that applies to different strains.  Example Query:
+
+```
+SELECT * FROM CaseAttribute JOIN CaseAttributeXRef ON CaseAttribute.CaseAttributeId = CaseAttributeXRef.CaseAttributeId WHERE CaseAttribute.Name = "Sex"\G
+```
+
+* @rob wants fine-grained access control with case attributes.
+
+* @flisso, case-attributes are GN invention.  Case Attributes are extra metadata about a given dataset beyond the phenotype measurements.  E.g.  We can have the phenotype: "Central nervous system"; whereby we collect the values, and SE.  However, we can also collect extra metadata like "Body Weight", "Sex", "Status", etc, and in GN terminology, that extra metadata is called Case Attributes.
+
+* @bmunyoki.  Most of the confusion around case-attributes is because of how we store case-attributes.  We don't have unique identifiers for case-attributes.
+
+## 2024-08-30
+
+* IN PROGRESS: @bmunyoki Replicate GN1 WIKI+RIF in GN2.
+* DONE: @bmunyoki and @alex help Alex deploy gn-guile code on tux02, run this in a tmux session.
+* DONE: @bmunyoki api for history for all tasks
+* DONE: @bmunyoki UI layer for RDF history
+* @bmunyoki modify edit api to also write to RIF
+* @bmunyoki build system container for gn-guile and write documentation for creating containers
+* NOT DONE: @jnduli complete design doc for hooks system for gn-auth
+* DONE: @alexm @jnduli create branches to testing for LLM in GN2 and GN3
+* IN PROGRESS: @alexm @jnduli integrate LLM in GN2 and GN3
+* IN PROGRESS: @jnduli add auth layer to edit rifs functionality
+* DONE: @bmunyoki @felix sync on case attributes and document
+* DONE: @flisso managed to upload <TODO> dataset to production
+
+
+### nice to haves
+
+* nice_to_have: @bmunyoki experiment and document updating gn-bioinformatics set up packages (to support rshiny)
+
+## 2024-08-23
+* @shelby re-ingest data and run RAGAs against the queries already in the system to perform comparison with new papers.
+* @shelby figure out Claude Sonnet stuff.
+* IN PROGRESS: @felix @fred push RQTL bundles to uploader, also includes metadata.
+* IN PROGESS: @felix look for means to fix metadata challenge ie. trouble associating data we upload and metadata that provides descriptions.
+* DONE: @bmunyoki API: Get all RIF metadata by symbols from rdf.
+* NOT DONE: @bmunyoki UI: Modify traits page to have "GN2 (GeneWiki)", to be picked after RDF is updated in tux02
+* DONE: @bmunyoki UI: Integrate with API
+* NOT DONE: @bmunyoki Replicate GN1 WIKI+RIF in GN2.
+* IN PROGRESS: @bmunyoki and @alex help Alex deploy gn-guile code on tux02.
+* DONE: @bmunyoki @jnduli review gn2 UI change for markdown editor
+* NOT DONE: @bmunyoki create template for bio paper
+* DONE: @alex sync with Boni to set up gn-guile
+* DONE: @alex @bmunyoki @jnduli sync to plan out work for llm integration
+* DONE: @jnduli edit WIKI+RIF 
+* NOT DONE: @jnduli set up gn-uploader locally and improve docs
+* NOT DONE: @jnduli complete design doc for hooks system for gn-auth
+* DONE: @felix to document email threads on gemtext
+
+## 2024-08-22
+
+=> https://issues.genenetwork.org/issues/edit-rif-metadata APIs for wiki editting and broke down wiki-editting task to sub-projects.
+
+## 2024-08-20
+
+Integrating GNQA to GN2 website and how it will work?
+
+1. Have the context information displayed to the right of the GN2 xapian search page
+2. When someone clicks the context info page, it opens the search from GNQA which has all the references.
+3. Cache queries since many searches are the same.
+
+Problems:
+
+1. search has xapian specific terminology. How do we handle this? Remove xapian prefixes and provide the key words to search.
+2. how do we handle cache expiry?
+    - no expiry for now.
+    - store them in a database table.
+    - every quarter year, the search can be updated.
+    - group:bxd, species: mouse -> bxd mouse
+      mouse bxd: -> when caching the ordering for the seach terms shouldn't matter much.
+
+Game Plan:
+
+1. Production the code relating to LLM search. Get the code for LLMs merged into main branch. 
+2. UI changes to show the search context from LLM.
+3. Figuring out caching:
+    - database table structure
+    - cache expiry (use 1 month for now)
+    - modify LLM search to pick from cache if it exists.
+4. Have another qa branch that fixes all errors since we had the freeze.
+5. Only logged in users will have access to this functionality.
+
+## 2024-08-16
+* @jnduli Fix failing unit tests on GN-Auth.
+* @jnduli Exploring Mechanical Rob for Integration Tests.  GN-Auth should be as stable as possible.
+* @jnduli Research e-mail patch workflow and propose a sane workflow for GN through an engineering blog post.
+* @jnduli Help @alexm with auth work.
+* @felix @fred push RQTL bundles to uploader.
+* @felix look for means to fix metadata challenge ie. trouble associating data we upload and metadata that provides descriptions.
+* @felix @jnduli programming learning: started building a web server to learn backend using Flask.
+* @felix @jnduli Read Shelby's paper and provide feedback by the end of Saturday.
+
+## 2024-08-16
+* DONE: @jnduli Fix failing unit tests on GN-Auth.
+* NOT DONE: @jnduli Exploring Mechanical Rob for Integration Tests. GN-Auth should be as stable as possible.
+* NOT DONE: @jnduli Research e-mail patch workflow and propose a sane workflow for GN through an engineering blog post.
+* DONE: @jnduli Help @alexm with auth work.
+* IN PROGRESS: @felix @fred push RQTL bundles to uploader, also includes metadata.
+* IN PROGRESS: @felix look for means to fix metadata challenge ie. trouble associating data we upload and metadata that provides descriptions.
+* DONE: @felix @jnduli programming learning: started building a web server to learn backend using Flask. Learning html and css and will share the progress with this.
+* DONE: @felix ~@jnduli~ Read Shelby's paper and provide feedback by the end of Saturday.
+* DONE: @felix tested the time tracker script.
+* IN PROGRESS: @bmunyoki implementation code work to edit Rif + WIki SQL n RDF data. We'll break this down.
+* @bmunyoki and @alex help Alex deploy gn-guile code on tux02.
+* NOT DONE: @bmunyoki Replicate GN1 WIKI+RIF in GN2.
+* @shelby @bonfacem @alex Integrate QNQA Search to global search.
+* @shelby handling edits with the current open paper
+
+Nice To Have:
+* DEPRIORITIZED: @felix figure out how to fix large data uploads ie. most data sets are large e.g. 45GB. Uploader cannot handle these large files.
+* DONE: @felix Try out John's time tracking tool and provide feedback.
+* @shelby run RAGAs against the queries already in the system to perform comparison with new papers: re-ingesting, now at 1500 papers.
+* @bmunyoki Send out emails to the culprit on failing tests in CI/CD.
+
+## 2024-08-15
+### RTF Editing (bmunyoki+alexm)
+
+In our static content, we don't really store RTF; instead we store, HTML.  As an example compare these 2 documements and note their difference:
+
+=> https://github.com/bitfocus/rtf2text/blob/master/sample.rtf => [Proper RTF] sample.rtf
+=> https://github.com/genenetwork/gn-docs/blob/master/general/datasets/Br_u_1203_rr/acknowledgment.rtf => [GN] acknowledgement.rtf
+
+* TODO @alexm Rename all the *rtf to *html during transform to make things clearer.  Send @bonfacem PR.
+
+## 2024-08-13
+### Markdown Editor (bmunyoki+alexm)
+
+* @alexm @bonfacem Tested the Markdown Editor locally and it works fine.  Only issue is that someone can make edits without logging in.
+* API end-points to be only exposed locally.
+* @alexm: Fix minor bug for when showing the diff.  Have a back arrow.
+* @bonfacem, @alexm: Deploy gn-guile; make sure it's only exposed locally.
+* [blocking] @alexm having issues setting up gn-auth.  @jnduli to help out to set up gn-auth and work out any quirks.  @alexm to make sure you can't make edits without being logged in.
+* @bmunyoki to set merge ge-editor UI work once basic auth is figured out.
+* [nice-to-have] @alexm work on packaging: "diff2html-ui.min.js", "diff.min.js", "marked.min.js", "index.umd.js", "diff2html.min.js".
+* [nice-to-have] @alexm to check-out djlint for linting jinja templates.
+* @bonfacem share pre-commit hooks for setting up djlint and auto-pep8.
+* [nice-to-have] @alexm to checkout:
+
+> djlint gn2/wqflask/templates/gn_editor.htmll --profile=jinja --reformat --format-css --format-js
+=> https://www.djlint.com/ dj Lint; Lint & Format HTML Templates
+
+## 2024-08-09
+
+* @shelby figure out Claude Sonnet stuff: NOT DONE, main focus was on the paper
+* @shelby planning session for next work and tasks for Priscilla.  DONE: Priscilla was given some work.  Loop in Priscilla for our meetings.
+* @shelby format output for ingested paper so that we can test the RAG engine.  IN PROGRESS.  Most focus has been on editing paper and some funding pursuit.
+* @shelby run RAGAs against the queries already in the system to perform comparison with new papers.  NOT DONE.
+* @bmunyoki implementation code work to edit Rif + WIki SQL n RDF data.  IN PROGRESS.  Updated the RDF transform for geneWIKI; Now we can do a single GET for a single comment in RDF.
+* @bmunyoki @shelby group paper on dissertation to target Arxiv.  NOT DONE.
+* @bmunyoki and @alex help Alex deploy gn-guile code on tux02.  NOT DONE.  Currently auth is a blocker.
+* @bmunyoki review UI code editor work.  DONE.
+* @alex address comments in UI work.  DONE.
+* @felix @fred push RQTL bundles to uploader.  In Progress: OOM Killer killing upload process. 
+* @felix look for means to fix metadata challenge ie. trouble associating data we upload and metadata that provides descriptions. The metadata doesn't meeting requirements.  In Progress: Some things to be confirmed with Rob/PJ on coming up with a good format for adding metadata. NOT DONE.
+* @felix figure out how to fix large data uploads ie. most data sets are large e.g. 45GB. Uploader cannot handle these large files.
+* @felix @jnduli programming learning: started building a web server to learn backend using Flask.  NOT DONE.
+* @felix (@bmunyoki / @alex) learning emacs so that he figures out how to track times. @jnduli shared his time-tracking tool with @felix.  DONE.
+* @jnduli fix group creation bug in gn-auth. DONE: Group creation wasn't exactly a bug; updated docs, and fixed the masquerade API.
+* @jnduli edit rif metadata using gn3. NOT DONE
+* @jnduli update documentation for gn-auth setup.  DONE
+* @jnduli investigate more bugs related to gn-auth.  DONE
+
+Note: When setting up sync between @jnduli and @felix, add @bmunyoki too.
+
+
+## 2024-08-02
+
+* DONE: @bmunyoki virtuoso and xapian updated in prod
+* @bmunyoki code work to edit Rif + WIki SQL n RDF data: WIP, we have desired API, but we need to implement code.
+* NOT DONE: @bmunyoki group paper on dissertation to target Arxiv
+* DONE: @bmunyoki fix case insensitivity in Xapian search
+* DONE: @jnduli review Alex patches
+* DONE: @bmunyoki: updated gn2 and gn3 on git.genetwork server. Shared QA code with @shelby on a special branch.
+* @bmunyoki @jnduli: fixed minor bug on xapian reflected with stemming.
+* @shelby figure out Claude Sonnet stuff: NOT DONE, main focus was on the paper
+* IN PROGRESS: @shelby edit paper with @pjtor
+* @shelby planning session for next work and tasks for Priscilla.
+* @shelby use RAGAS to test R2R with the new papers (follow up on the ingestion of papers tasks)
+* @shelby and @boni to discuss R2R and interfacing with Virtuoso: deprioritized, we'll figure out interfacing with R2R. Implementation to happen later.
+* DONE: @jnduli get up to speed on gn-auth
+* @alex have an instance of gn-guile running on production: Code in prod, but needs to liase with Boni to get this working.
+* @jgart getting genecup and rshiny containers to run as normal users instead of root users. May use libvirts APIs; or podman/docker as normal user; or rewriting the services as guix home services: system container doesn't have work around this, there's no work around. Because guix by default needs root to run as a system container. We also need sudo since at root level we define our system containers in a systemd that needs to be run as root. Why systemd? Systemd no one needs to run this.
+
+### Meeting with Sevila on Masters Papers
+
+- mainly stylistic changes provided.
+- provide an email explaining how long ethical review took, so that he follows up on unexpected delays.
+- met up with Dr Betsy, once done with defences in October (hopefully), and Boni may get his degree before graduation next year, to facilitate Boni applying for PhD.
+
+### Guix Root Container
+
+- With docker, to prevent the need for sudo, we usually create a docker group, and add users that need to run this to this group. Can this ahppen in guix?
+- Guix has a guix group. Why haven't we done this??? @jgart and @boni
+
+## 2024-07-26
+Plan for this week:
+
+* NOT DONE, needs a meeting: @bmunyoki virtuoso and xapian are up-to-date in prod. Boni doesn't have root access in production, so coordination with Fred and Zach is causing delays.
+* Apis design DONE, actual CODE incomplete: @bmunyoki update RIF+WIKI on SQL and RDF from gn2 website
+* DONE: @bmunyoki and @shelby review dissertation for Masters
+* DONE, needs to review new changes: @bmunyoki and @jgart to review patches for `genecup` and `rshiny`.
+* @bmunyoki and @jnduli to review patches for markdown parser
+* DONE, patches sent. @alexm add validation and document to markdown parser.
+* DONE: @shelby ingest ageing data to RAG, 10% left to complete.
+* DONE: @shelby do another round for editting on the AI paper
+* IN PROGRESS: @shelby RAG engine only works with OpenAI, figure out Claude Sonnet integration
+* IN PROGRESS: @jnduli get up to speed on gn-auth
+* @jgart enabling acme service in genecup and rshiny containers.
+* @jnduli and @bmunyoki to attempt to get familiar with R2R
+
+Nice to have:
+* @bmunyoki fix CI job for GN transformer database i.e. instead of checksums just run full job once per month: scheme script created that dumps the example files, next step is to create Gexp that runs this script. Bandwidth constraints.
+
+## 2024-07-23
+### LLM Meeting (@shelby+@bmunyoki)
+* There's no clear way of ingesting human-readable data with context into the RAG Graph from RDF.
+* What specific graph should we ingest into the RAG Graph from RDF?   @bmunyoki suggested RIF, PubMed Metadata.  We'll figure this out.
+* @bonfacem recommended: Much better to work with SPARQL than directly with TTL files.
+* We've uploaded rdf triples, yet they loose their strength as the RAG system is not undergirded with a knowledge graph.  @bonfacem should read the following for more context and should reach out to @shelby on how to move forward with SPARQL more concretely:
+
+=> https://r2r-docs.sciphi.ai/cookbooks/knowledge-graph#r2r-knowledge-graph-configuration
+
+* We need to test the knowledge graph backend of R2R to see how feasible it is to use with the existing data (RDF).
+* Fahamu just stored the object and lost the subject+predicate
+* Loop in Alex.
+
+
+## 2024-07-19
+Plan for this week:
+
+* DONE: @jgart getting `genecup` app to run in a guix container i.e. `gunicorn service` should then run `genecup`, similar to how gn2 and gn-uploader work. Patches sent to Boni, include `genecup` and `rshiny` and the container patches are tested. 
+* @jgart enable acme certificates for `genecup` container: Should just enable a single form, let's use arun's email since its what we use for all our services. Reverse proxy happens inside the container. Add a comment explaining that this shouldn't be standard python set up.
+* INPROGRESS: @bmunyoki virtuoso and xapian are up-to-date in prod:
+* NOT DONE: @bmunyoki update RIF+WIKI on SQL and RDF from gn2 website
+* INPROGRESS: @bmunyoki fix CI job for GN transformer database i.e. instead of checksums just run full job once per month: scheme script created that dumps the example files, next step is to create Gexp that runs this script. Bandwidth constraints.
+* @bmunyoki and @shelby review dissertation for Masters: @bonz needs to send updated version. Also reviewed another masters by Johannes.
+* ON HOLD: @alexm rewrite UI code using htmx
+* INPROGRESS: @alexm address review comments in markdown parser. Api endpoints are getting reimplemented. Needs to add validation and documentation and send v2 patches for review.
+* DONE: @shelby compile ingesting 500 more papers into RAG engine
+* @shelby ingesting ageing research into the RAG engine: diabetes reseach is ingested, ageing will be done later.
+* NOT DONE: @shelby RAG engine only works with OpenAI, figure out Claude Sonnet integration
+* DONE: @shelby @bmunyoki @alexm to define the problem with RDF triple stores
+* DONE: @jnduli finish up on RIF update
+* IN PROGRESS: @jnduli get up to speed on gn-auth
+
+AOB
+
+* RAG engine uses R2R for the integration. It would be great if we could integrate this into guix. @shelby will send @jgart the paper on how we use the RAG.
+
+
+## 2024-07-12
+
+Plan for this week:
+
+* @shelby use Claude Sonnet with R2R RAG engine with 1000 papers and fix bugs: 500 papers ingested into R2R, remaining with 500.
+* @shelby final run through for paper 1 before Pjotr's review. DONE, configurations fixed. New repo gnai that contains the results and will contain R2R stuff.
+* NOT DONE: @shelby and @bmunyoki review dissertation paper for Masters
+* @shelby @bmunyoki @alexm to define the problem with RDF triple stores
+* @alexm integrate the markdown parser: DONE, patches sent to Boni
+* @alexm rewrite UI code using htmx: NOT DONE
+* @bmunyoki investigate why xapian index isn't getting rebuilt: DONE
+* @bmunyoki investigate discrepancies between wiki and rif search: DONE, get this to prod to be tested
+* @jnduli update the generif_basic table from NCBI: IN PROGRESS.
+* @jnduli blog post of preference for documentation: DONE.
+
+We have qa.genenetwork.com. We need to have this set up to `qa.genenetwork.com/paper1` so that we always have the system that was used for this. How?
+
+Nice to Haves
+
+* @bmunyoki Nice to have tag for paper1: Fix this with Boni and get done later on/iron them out then.
+* @bmunyoki fix CI job that transforms gn tables to TTL: Move this to running a cron job once per month instead of 
+
+
+## 2024-06-24
+
+Plan for this Week:
+
+* CANCELED: @bmunyoki Remove boolean prefixes from search where it makes sense.
+* DONE: @bmunyoki GeneWiki + GeneRIF search in production. Mostly needs to be run in prod to see impact.
+* DONE: @jnduli Children process termination when we kill the main index-genenetwork script
+* CANCELED: @bmunyoki Follow up on getting virtuoso child pages in production
+* IN PROGRESS @alexm push endpoints for editting and making commits for markdown files
+* DONE: @all Reply to survey from Shelby
+* DONE: @jnduli Fix JS import orders (without messing up the rest of Genenetwork)
+* DONE: @jnduli fix search results when nothing is found
+* CANCELED: @jnduli test out running guix cron jobs locally
+* NOT DONE: @Jnduli mention our indexing documentation in gn2 README
+
+Note: For qa.genenetwork.com, we chose to pause work on this until papers are done.
+
+Review for last week
+
+* DONE: @bmunyoki rebuild guix container with new mcron changes
+* WIP: @jnduli attempts to make UI change that shows all supported keys in the search: Blocked because our JS imports aren't ordered correctly and using `boolean_prefixes` means our searches don't work as we'd expect.
+* WIP: @bmunyoki create an issue with all the problems experienced with search and potential solutions. Make sure it has replication steps, and plans for solutions. Issue was created but we need to get a better understanding for how cis and trans searches work.
+* TODO: @bmunyoki and @jnduli genewiki indexing: PR for WIKI indexing is completed, but we didn't test it out due to the outage caused by RAM and our script. We don't have a way to easily instrument how much RAM our process uses and how to kill the process.
+* DONE: @bmunyoki demoes and documents how to run and test guix cron job for indexing
+* DONE: @bmunyoki trains @jnduli on how to review patchsets from emails
+* DONE: @jnduli Follow up notes on setting up local index-genenetwork search
+* DONE: @alexm handling with graduation, AFK
+* TODO: @bmunyoki follow up with Rob to makes sure he tests search after everything is complete: He got some feedback and Rob is out of Town but wants RIF and Wiki search by July 2nd.
+
+Nice to haves:
+
+* TODO: minor: bonfacem makes sure that mypy/pylint in CI runs against the index-genenetwork script.
+* TODO: @bmunyoki follow up how do we make sure that xapian prefix changes in code retrigger xapian indexing?
+    - howto: xapian prefix changes, let's maintain a hash for the file and store it in xapian
+    - howto: for RDF changes, since we have ttl files, if this ever changes we trigger the script. It's also nice to be able to automatically also load up data to virtuoso if this file changes.
+
+
+## 2024-06-21
+### Outage for 2024-06-20
+
+What happened?
+
+2024-06-19: Dev experienced intermittent ssh connections, and got logged out  
+2024-06-19: Dev assumed this wasn't related to the server problems and clocked out
+2024-06-20: Another team mate experienced problems accessing git.genenetwork.org and reported this to the genenetwork sphere channel
+2024-06-20: We noted that CI and CD services were also down
+2024-06-20: We assumed it could be a DNS issue and followed up with our providers??
+2024-06-20: Realized it was because the server was out of RAM. Killing processes resolved the issue
+
+What can we learn from this?
+
+* If we experience network problems, communicate to other team members.
+* Our gunicorn processes are expensive each taking 17GB.
+* We don't have monitoring and alerting for our server resources.
+* Shouldn't OOM have helped with this?
+* How much memory/resources do the scripts we run use? This can help us know the impact before running in production.
+* If we start multiple processes from python, similar to the index-genenetwork script, does sending SIGTERM or SIGKILL kill the children processes or will they remain as orphans? Note: there were orphans, so we should investigate ways of killing the script next time completely.
+
+How do we prevent something similar from happening in the future?
+
+* Ask if anything our server is slow and attempt to inspect this. Add documentation for quick bash scripts to run for this.
+* Reduce the amount of gunicorn processes to reduce their memory footprints. How did we end up with the no of processes we currently have? What impact will reducing this have on our users?
+* Attempt to get an estimate memory footprint for `index-genenetwork` and use this to determine when it's safe to run the script or not. This can even end up integrated into the cron job.
+* Create some alerting mechanism for sane thresholds that can be send to a common channel/framework e.g. when CPU usage > 90%, memory usage > 90% etc. This allows someone to be on the look out in case something drastic needs to be taken.
+* Python doesn't kill child processes when SIGTERM is used. This means when testings, we were creating more and more orphaned processes. Investigate how to propagate the SIGTERM signal to all children processes.
+
+=> https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Process.terminate
+
+
+
+## 2024-06-18
+### Agenda
+
+* Last week review: DONE, made good progress on what we planned. We need to make sure we're more aware of the TODOs we had.
+* Plan for this week: DONE, LET'S GOOO!
+* Reviewing patches: added to week's goals.
+* Search bugs discussions: Boni will create an issue with all details and we'll plan further on how to attack this.
+
+If we have a plan for the week, and something comes up that breaks our plan:
+
+* Are we aware that it broke our plans?
+* Communicate the impact this may have on the plan.
+
+### Plan for Week
+
+* TODO: @bmunyoki rebuild guix container with new mcron changes
+* TODO: @jnduli attempts to make UI change that shows all supported keys in the search
+* TODO: @bmunyoki create an issue with all the problems experienced with search and potential solutions. Make sure it has replication steps, and plans for solutions.
+* TODO: @bmunyoki follows up to make sure RDF changes are visible in production and fix issues that come up
+* TODO: @bmunyoki and @jnduli genewiki indexing
+* TODO: @bmunyoki demoes and documents how to run and test guix cron job for indexing
+* TODO: @bmunyoki trains @jnduli on how to review patchsets from emails
+* TODO: @jnduli attempts to add stronger types to index-genenetwork script, to make it explicit that we're using MonadicDicts
+* TODO: @jnduli Documentation improvements for GN2 and GN3 and auth? None done last week. 
+* TODO: @jnduli Follow up notes on setting up local index-genenetwork search
+
+
+Nice to haves:
+
+* TODO: minor: bonfacem makes sure that mypy in CI runs against the index-genenetwork script.
+* TODO: @bmunyoki improve search documentation and fix bugs in the frontend: binary term search doesn't work as expected
+* TODO: @bmunyoki follow up with Rob to makes sure he tests search after everything is complete
+* TODO: @bmunyoki follow up how do we make sure that xapian prefix changes in code retrigger xapian indexing?
+
+
+
+## 2024-06-11
+
+### Agenda
+
+* Local checks to do before PRs: 
+
+In gn3, make sure to run:
+ 
+> pylint main.py setup.py wsgi.py setup_commands tests gn3 scripts
+> TODO jnduli run this: mypy --show-error-codes .
+    DONE: led to a PR that fixed all mypy errors in index-genenetwork
+> pytest -k unit_test
+
+* Set up new DB before sync + fixing any problems that occur: DONE, no errors after Jnduli set up new DB.
+
+### Generif Indexing
+
+* Probeset data exists in SQL. Generif metadata exists in RDF.
+* Write code that queries RDF for Generif metadata and enriches exising Probeset query.
+* DONE: checksums in Generif rdf output
+* TODO: jnduli look at xapian docs and their example for python bindings: DONE, led to a WIP PR for wiki data indexing and a local custom script to search the index without the need to run genenetwork web service
+* TODO: bonfacem makes sure tux02 indexing works: DONE, there's a working patchset sent to Arun for review.
+* TODO: bonfacem make changes to mcron and guix-machines: DONE, there's a working patch set sent to Arun. Follow up needs to be done for the learnings gained
+
+
+### How would GeneWiki work?
+
+* GeneWiki = GeneRif data from NCBI
+* Workflow would be similar to Generif Indexing. We need to figure out if we'll need an extra RDF query or if we can modify the existing SPARQL query.
+* TODO: jnduli attempts to add stronger types to index-genenetwork script, to make it explicit that we're using MonadicDicts: Not DONE, got stuck trying to run index-genenetwork locally and removing global variables from the script..
+* TODO: bonfacem makes sure that mypy in CI runs against the index-genenetwork script: NOT DONE, needs a separate PR that will be sent to Arun.

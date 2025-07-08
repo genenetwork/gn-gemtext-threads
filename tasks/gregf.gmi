@@ -13,7 +13,3 @@
 * [ ] Replicate using GNU Guix (@pjotrp)
 * [ ] Add first dependency from bulklmm (@gregf)
 * [ ] Replicate with GNU Guix (@pjotrp)
-
-# Notes
-
-=> https://julialang.github.io/PackageCompiler.jl/dev/sysimages.html

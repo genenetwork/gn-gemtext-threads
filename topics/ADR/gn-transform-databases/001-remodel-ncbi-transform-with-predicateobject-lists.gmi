@@ -1,0 +1,102 @@
+# [gn-transform-databases/ADR-001] Remodel GeneRIF_BASIC (NCBI RIFs) Metadata Using predicateObject Lists
+
+* author: bonfacem
+* status: rejected
+* reviewed-by: pjotr, jnduli
+
+## Context
+
+We can model RIF comments using pridacetobject lists as described in:
+
+=> https://issues.genenetwork.org/topics/ADR/gn-transform-databases/000-remodel-rif-transform-with-predicateobject-lists [ADR/gn-transform-databases] Remodel GeneRIF Metadata Using predicateObject Lists
+
+However, currently for NCBI RIFs we represent comments as blank nodes:
+
+```
+gn:symbolsspA rdfs:comment [
+	rdf:type gnc:NCBIWikiEntry ;
+	rdfs:comment "N-terminus verified by Edman degradation on mature peptide"^^xsd:string ;
+	gnt:belongsToSpecies gn:Mus_musculus ;
+	skos:notation taxon:511145 ;
+	gnt:hasGeneId generif:944744 ;
+	dct:hasVersion '1'^^xsd:int ;
+	dct:references pubmed:97295 ;
+	...
+	dct:references pubmed:15361618 ;
+	dct:created "2007-11-06T00:38:00"^^xsd:datetime ;
+] .
+gn:symbolaraC rdfs:comment [
+	rdf:type gnc:NCBIWikiEntry ;
+	rdfs:comment "N-terminus verified by Edman degradation on mature peptide"^^xsd:string ;
+	gnt:belongsToSpecies gn:Mus_musculus ;
+	skos:notation taxon:511145 ;
+	gnt:hasGeneId generif:944780 ;
+	dct:hasVersion '1'^^xsd:int ;
+	dct:references pubmed:320034 ;
+	...
+	dct:references pubmed:16369539 ;
+	dct:created "2007-11-06T00:39:00"^^xsd:datetime ;
+] .
+
+```
+
+Here we see alot of duplicated entries for the same symbols.  For the above 2 entries, everything is exactly the same except for the "gnt:hasGeneId" and "dct:references" predicates.
+
+## Decision
+
+We use predicateObjectLists with blankNodePropertyLists as an idiom to represent the generif comments.
+
+=> https://www.w3.org/TR/turtle/#grammar-production-predicateObjectList predicateObjectList
+=> https://www.w3.org/TR/turtle/#grammar-production-blankNodePropertyList blankNodePropertyList
+
+In so doing, we can de-duplicate the entries demonstrated above.  A representation of the above RDF Turtle triples would be:
+
+```
+[ rdfs:comment "N-terminus verified by Edman degradation on mature peptide"^^xsd:string ]
+rdf:type gnc:NCBIWikiEntry ;
+dct:created "2007-11-06T00:39:00"^^xsd:datetime ;
+gnt:belongsToSpecies gn:Mus_musculus ;
+skos:notation taxon:511145 ;
+dct:hasVersion '1'^^xsd:int ;
+rdfs:seeAlso [
+	gnt:hasGeneId generif:944744 ;
+	gnt:symbol gn:symbolsspA ;
+	dct:references ( pubmed:97295 ... pubmed:15361618 ) ;
+] ;
+rdfs:seeAlso [
+	gnt:hasGeneId generif:944780 ;
+	gn:symbolaraC ;
+	dct:references ( pubmed:320034 ... pubmed:16369539 ) ;
+] .
+```
+
+The above would translate to the following triples:
+
+```
+_:comment rdfs:comment "N-terminus verified by Edman degradation on mature peptide"^^xsd:string .
+_:comment rdfs:type gn:NCBIWikiEntry .
+_:comment dct:created "2007-11-06T00:39:00"^^xsd:datetime .
+_:comment gnt:belongsToSpecies gn:Mus_musculus .
+_:comment skos:notation taxon:511145 .
+_:comment dct:hasVersion '1'^^xsd:int .
+_:comment rdfs:seeAlso _:metadata1
+_:comment rdfs:seeAlso _:metadata2 .
+_:metadata1 gnt:hasGeneId generif:944744 .
+_:metadata1 gnt:symbol gn:symbolaraC .
+_:metadata1 dct:references ( pubmed:97295 ... pubmed:15361618 )
+_:metadata2 gnt:hasGeneId generif:944780 .
+_:metadata2 gnt:symbol gn:symbolsspA .
+_:metadata2 dct:references ( pubmed:320034 ... pubmed:16369539 ) .
+```
+
+Beyond that, we intentionally use a sequence to store a list of pubmed references.
+
+## Consequences
+
+* De-duplication of comments during the transform while retaining the integrity of the RIF metadata.
+* Because of the terseness, less work during the I/O heavy operation.
+* Update SPARQL in tux02, tux01 in lockstep with updating GN3/GN2 and the XAPIAN index.
+
+## Rejection Rationale
+
+This proposal was rejected because relying on blank-nodes as an identifier is opaque and not human-readable.  We want to use human readable identifiers where possible.

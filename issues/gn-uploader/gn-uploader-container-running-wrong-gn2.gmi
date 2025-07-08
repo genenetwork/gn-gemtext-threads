@@ -1,0 +1,31 @@
+# gn-uploader container: Running wrong genenetwork2
+
+## Tags
+
+* assigned: fredm, aruni
+* status: closed, completed
+* priority: high
+* type: bug
+* keywords: guix, gn-uploader
+
+## Description
+
+I build the uploader container with Genenetwork2, commit b9e04ad, as shown:
+
+```
+$ guix gc -R /usr/local/bin/genenetwork-uploader-container | grep genenetwork2
+/gnu/store/8m0jx05b1j029iklfvy64ipjpyk6jhnz-genenetwork2-3.11-4.b9e04ad
+/gnu/store/y8vsv4r22lw9f76hk418sik56vzbhpzk-gunicorn-genenetwork2-pola-wrapper
+/gnu/store/g0w06f0bk0nb53phj5lp0wh8nlkf4ckn-shepherd-gunicorn-genenetwork2.scm
+/gnu/store/jf02yvzvlc4nk204qgl9jxk754r9s7v8-shepherd-gunicorn-genenetwork2.go
+```
+
+However, when I look at the logs, it seems the container is instead running the code under
+
+```
+/gnu/store/2qhgkf5j649kv57nw4lzsbwlnb1790vq-profile/
+```
+
+instead, which seems to be stuck on an older commit without fixes for a circular import bug I'd fixed.
+
+=> https://github.com/genenetwork/gn-gemtext-threads/blob/main/issues/gn-uploader/build-uploader-container-20240321.org Troubleshooting log: 2024-03-21

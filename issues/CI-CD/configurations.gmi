@@ -4,7 +4,7 @@
 
 * assigned: aruni, fredm
 * priority: normal
-* status: open
+* status: closed, completed
 * keywords: CI, CD, configuration, config
 * type: bug
 
@@ -38,3 +38,7 @@ and at least one of the values other than "localhost" is used to determine the c
 The secrets (e.g. SECRET_KEY, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, etc) can be encrypted and stored in some secrets management system (e.g. Pass [https://www.passwordstore.org/] etc.) setup in each relevant host: better yet, have all configurations (secret or otherwise) encrypted and stored in such a secrets management system and fetch them from there. This reduces the mental overhead of dealing with multiple places to fetch the configs.
 
 From these, the CI/CD system can them build and intern the configurations into the store with guix functions like "plain-file", "local-file", etc.
+
+## Notes
+
+This idea was mostly rejected — it seems — in favour of using external settings files that are shared with the running container and separate build scripts for the different environments. This mostly covers all the bases necessary to get the settings correct.

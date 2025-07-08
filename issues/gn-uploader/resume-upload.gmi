@@ -1,0 +1,41 @@
+# gn-uploader: Resume Upload
+
+## Tags
+
+* status: closed, completed, fixed
+* priority: medium
+* assigned: fredm, flisso
+* type: feature request, feature-request
+* keywords: gn-uploader, uploader, upload, resume upload
+
+## Description
+
+If a user is uploading a particularly large file, we might need to provide a way for the user to resume their upload of the file.
+
+Maybe this can wait until we have
+=> /issues/gn-uploader/link-authentication-authorisation linked authentication/authorisation to gn-uploader.
+In this way, each upload can be linked to a specific user.
+
+### TODOs
+
+* [x] Build UI to allow uploads
+* [x] Build back-end to handle uploads
+* [x] Handle upload failures/errors
+* [x] Deploy to staging
+
+### Updates
+
+=> https://git.genenetwork.org/gn-uploader/commit/?id=9a8dddab072748a70d43416ac8e6db69ad6fb0cb
+=> https://git.genenetwork.org/gn-uploader/commit/?id=df9da3d5b5e4382976ede1b54eb1aeb04c4c45e5
+=> https://git.genenetwork.org/gn-uploader/commit/?id=47c2ea64682064d7cb609e5459d7bd2e49efa17e
+=> https://git.genenetwork.org/gn-uploader/commit/?id=a68fe177ae41f2e58a64b3f8dcf3f825d004eeca
+
+### Possible Resources
+
+=> https://javascript.info/resume-upload
+=> https://github.com/23/resumable.js/
+=> https://www.dropzone.dev/
+=> https://stackoverflow.com/questions/69339582/what-hash-python-3-hashlib-yields-a-portable-hash-of-file-contents
+
+
+This is mostly fixed. Any arising bugs can be tracked is separate issues.

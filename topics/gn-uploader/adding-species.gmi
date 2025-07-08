@@ -1,0 +1,81 @@
+# Adding Species
+
+## Tags
+
+* status: open
+* priority: medium
+* type: documentation
+* assigned: fredm, flisso, acenteno
+* keywords: doc, documentation, platform, gn-uploader, uploader, adding data
+
+## Description
+
+We do not have a UI for adding new species. In this case, we need to add the data manually by running a query.
+
+As an example, I document how I added the C. elegans species to the https://staging.genenetwork.org server:
+
+We begin by looking at the schema for the Species table:
+
+```
+MariaDB [db_webqtl]> DESC Species;
++---------------+----------------------+------+-----+---------+----------------+
+| Field         | Type                 | Null | Key | Default | Extra          |
++---------------+----------------------+------+-----+---------+----------------+
+| Id            | smallint(5) unsigned | NO   | PRI | NULL    | auto_increment |
+| SpeciesId     | int(5)               | YES  |     | NULL    |                |
+| SpeciesName   | varchar(50)          | YES  |     | NULL    |                |
+| Name          | char(30)             | NO   | MUL |         |                |
+| MenuName      | char(50)             | YES  |     | NULL    |                |
+| FullName      | char(100)            | NO   |     |         |                |
+| Family        | varchar(50)          | YES  |     | NULL    |                |
+| FamilyOrderId | smallint(6)          | YES  |     | NULL    |                |
+| TaxonomyId    | int(11)              | YES  |     | NULL    |                |
+| OrderId       | smallint(6)          | YES  |     | NULL    |                |
++---------------+----------------------+------+-----+---------+----------------+
+10 rows in set (0.00 sec)
+```
+
+From
+=> https://gn1.genenetwork.org/webqtl/main.py?FormID=schemaShowPage#Species the schema docs
+and looking at the data, we know the following about the fields:
+
+* Id: Internal GeneNetwork species identifier
+* SpeciesId: Same as 'Id'
+* SpeciesName: A layman's name for the species, e.g. Mouse, Roundworm, Barley, etc.
+* Name: Mostly the same as SpeciesName, but in all lowercase
+* MenuName: A display name to show on the UI - computed for 'SpeciesName' and 'FullName'
+* FullName: The species binomial name (scientific name) e.g. Mus musculus, Caenorhabditis elegans, etc.
+* Family: A loose, largish grouping for the species, e.g. Vertebrates, Plants, etc.
+* FamilyOrderId: ???
+* TaxonomyId: The Taxonomy ID for the species on https://www.ncbi.nlm.nih.gov/
+* OrderId: ???
+
+### Preparing the Data
+
+With this in mind, we can now get any missing data for the species.
+
+To find the Taxonomy ID value:
+
+=> https://www.ncbi.nlm.nih.gov/ Go to NCBI
+* In the "All Databases" drop-down, select "Taxonomy"
+* In the search box, enter the species' FullName, e.g. Caenorhabditis elegans
+* Click "Search"
+* If the species exists, a link with the species' binomial name shows up. Click it.
+* Near the top of the page, you should see something like " Taxonomy ID: 6239 (for references in articles please use NCBI:txid6239)". The number after the "Taxonomy ID: " is what you want.
+
+***TODO: Figure out what FamilyOrderId and OrderId are, and how to get the data. Update this page.***
+
+### Adding the Species to the Database
+
+We can now run the query to insert the data:
+
+```
+INSERT INTO Species(SpeciesName,Name,MenuName,FullName,Family,FamilyOrderId,TaxonomyId,OrderId)
+VALUES ("Roundworm", "roundworm", "Roundworm (C. elegans)", "Caenorhabditis elegans", "Nematodes", NULL, "6239", NULL);
+```
+
+now update the "SpeciesId":
+
+```
+UPDATE Species SET SpeciesId=Id WHERE SpeciesName="Roundworm";
+```

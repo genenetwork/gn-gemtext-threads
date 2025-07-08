@@ -1,0 +1,33 @@
+# Containerising Production: Issues
+
+## Tags
+
+* type: bug
+* assigned: fredm
+* priority: critical
+* status: closed, completed
+* keywords: production, container, tux04
+* interested: alexk, aruni, bonfacem, fredm, pjotrp, soloshelby, zsloan, jnduli
+
+## Description
+
+We have recently got production into a container and deployed it: It has come up, however, that there are services that are useful to get a full-featured GeneNetwork system running that are not part of the container.
+
+This is, therefore, a meta-issue, tracking all issues that relate to the deployment of the disparate services that make up GeneNetwork.
+
+## Documentation
+
+=> https://issues.genenetwork.org/topics/genenetwork/genenetwork-services
+
+The link above documents the various services that make up the GeneNetwork service.
+
+## Issues
+
+* [x] Move user directories to a large partition
+=> ./handle-tmp-dirs-in-container [x] Link TMPDIR in container to a directory on a large partition
+=> ./markdown-editing-service-not-deployed [ ] Define and deploy Markdown Editing service
+=> ./umhet3-samples-timing-slow [ ] Figure out and fix UM-HET3 Samples mappings on Tux04
+=> ./setup-mailing-on-tux04 [x] Setting up email service on Tux04
+=> ./virtuoso-shutdown-clears-data [x] Virtuoso seems to lose data on restart
+=> ./python-requests-error-in-container [x] Fix python's requests library certificates error
+=> ./cannot-connect-to-mariadb [ ] GN3 cannot connect to mariadb server

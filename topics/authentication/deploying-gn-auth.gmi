@@ -1,0 +1,196 @@
+# Deploying gn-auth
+
+## Tags
+
+* type: doc, docs, documentation
+* keywords: gn-auth, deployment
+* status:
+* priority:
+* assigned:
+
+## …
+
+︙
+
+### Run Migrations
+
+At this point, you have a container running, but the database is either empty, or the schema could be out of date. To fix that, we need to run some migrations on the database.
+
+1. Stop the service:
+
+```
+$ sudo systemctl stop genenetwork-container.service
+```
+
+2. Make a copy of the original file.
+
+```
+$ cp /export2/guix-containers/genenetwork/var/genenetwork/auth.db ./auth-run-migrations.db
+$ ls -al
+︙
+-rw-r--r--  1 fredm fredm     0 Mar  3 19:27 auth-run-migrations.db
+︙
+$ ls -al /export2/guix-containers/genenetwork/var/genenetwork/auth.db
+-rw-r--r-- 1 guixbuilder11 983 0 Mar  1 21:45 /export2/guix-containers/genenetwork/var/genenetwork/auth.db
+```
+
+***NOTE***: The path "/export2/guix-containers/genenetwork/var/genenetwork/auth.db" is an example. Do change it to suit what you are working on.
+
+Note, also, that the copy has different ownership than the original. We will need to fix that once we successfully run the migrations.
+
+3. Now we can clone gn-auth if we do not have a copy and cd into it:
+
+```
+$ git clone https://git.genenetwork.org/gn-auth/
+$ cd gn-auth
+```
+
+or change into it and update to the latest code:
+
+```
+$ cd gn-auth
+$ git pull origin main
+```
+
+4. Now get a guix shell:
+
+```
+$ ~/opt/guix/bin/guix shell --container --network --share=../auth-run-migrations.db=/home/fredm/auth-run-migrations.db --development --file=guix.scm
+…/gn-auth [env]$
+```
+
+***Note***: You can change the path "/home/fredm/auth-run-migrations.db" in the command to fit your situation.
+
+5. And run the migrations:
+
+```
+…/gn-auth [env]$ yoyo apply --database sqlite:////home/fredm/auth-run-migrations.db ./migrations/auth/
+
+[20221103_01_js9ub-initialise-the-auth-entic-oris-ation-database]
+Shall I apply this migration? [Ynvdaqjk?]: Y
+
+[20221103_02_sGrIs-create-user-credentials-table]
+Shall I apply this migration? [Ynvdaqjk?]:
+
+︙
+
+Selected 49 migrations:
+  [20221103_01_js9ub-initialise-the-auth-entic-oris-ation-database]
+  [20221103_02_sGrIs-create-user-credentials-table]
+
+  ︙
+Apply these 49 migrations to sqlite:////home/fredm/auth-run-migrations.db [Yn]: Y
+Save migration configuration to yoyo.ini?
+This is saved in plain text and contains your database password.
+
+Answering 'y' means you do not have to specify the migration source or database connection for future runs [yn]: n
+```
+
+As you can see from the above, you have to review what migrations you want to run. If you have previously reviewed the migration, you can run the migrations in batch by providing the "--batch" option, e.g.
+
+```
+…/gn-auth [env]$ yoyo apply --database sqlite:////home/fredm/auth-run-migrations.db --batch ./migrations/auth/
+```
+
+6. Leave the shell:
+
+```
+…/gn-auth [env]$ exit                                                                                 /
+exit
+…/gn-auth$
+```
+
+7. Make a backup of the original file:
+
+```
+…/gn-auth$ sudo cp /export2/guix-containers/genenetwork/var/genenetwork/auth.db /export2/guix-containers/genenetwork/var/genenetwork/auth.db.bkp$(date +"%Y%m%dT%H:%M%z")
+```
+
+8. Copy the file that has the migrations run on it onto the original:
+
+```
+…/gn-auth$ sudo cp ../auth-run-migrations.db /export2/guix-containers/genenetwork/var/genenetwork/auth.db
+…/gn-auth$ ls -al /export2/guix-containers/genenetwork/var/genenetwork/
+total 260
+drwxr-xr-x 2 guixbuilder11  983   4096 Mar  3 20:03 .
+drwxr-xr-x 4 root          root   4096 Mar  1 21:38 ..
+-rw-r--r-- 1 guixbuilder11  983 258048 Mar  3 20:06 auth.db
+-rw-r--r-- 1 root          root      0 Mar  3 20:03 auth.db.bkp20240303T20:03-0600
+```
+
+That should copy the file retaining the original permissions.
+
+9. Restart the service:
+
+```
+$ sudo systemctl start genenetwork-container.service
+```
+
+### Register a System Admin
+
+This part expects that you have already run the migrations as above to setup the latest database schema in place. If you have not already done that, please do that first.
+
+The process is mostly very similar to that of the migrations, except in step 5, instead of running migrations, we instead run the CLI script to create the administrative user:
+
+```
+…/gn-auth [env]$ python3 -m scripts.register_sys_admin /home/fredm/auth.db
+Enter the user's name: Some Admin User
+Enter the administrator's email: some@admin.user
+Enter password: 
+Confirm password: 
+…/gn-auth [env]$
+```
+
+After that, we continue with steps 6 onward as in the section on running migrations.
+
+## Web Server Configurations
+
+We serve most of the GeneNetwork services as applications proxied via a trusted web server such as Nginx or Apache2.
+
+Python applications are (mostly) run via gunicorn in HTTP mode. We however have all our endpoints exposed to the user via HTTPS. This means the web server proxies the HTTPS requests over to the applications running HTTP from a URI such as https://genenetwork.org to a local URI such as http://127.0.0.1:9393.
+
+By default, then, the URIs built by the application would end up being something like "http://127.0.0.1:9393/endpoint/…".
+
+For internal use, the URIs above are okay - the problem begins when such a URI is then exposed to the user: as you could probably guess, this will break the application, since the end user will probably not have anything running on their local device at the specified port, and even if they did, it will probably not be what the application expects.
+
+We, thus, need a way to build the applications correctly. Thankfully, mature webservers provide a way to pass the values we need to build the correct URIs on to any (and all) proxied applications - we just need to tweak the configurations. The sections below give some detail on how to achieve that for the webservers we use.
+
+### Nginx
+
+The "location" configuration needs to have the following:
+
+```
+location … {
+	 ︙
+	 proxy_set_header Host $host;
+	 proxy_set_header X-Forwarded-Proto $scheme;
+	 ︙
+}
+```
+
+We have "proxy_set_header Host $host;" in order to ensure the URIs are built correctly in the proxied app, and do not end up as "http://localhost:<port>/…" or "http://127.0.0.1:<port>/…".
+
+The "proxy_set_header X-Forwarded-Proto $scheme;" setting ensures the URIs in the proxied application are built with the HTTPS scheme when the server URI (what the user sees, e.g. https://cd.genenetwork.org/) is served via HTTPS.
+
+See
+
+=> http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_set_header proxy_set_header
+
+### Apache2
+
+The "location" configuration will have to have the following:
+
+```
+<Location …>
+	  ︙
+	  ProxyPreserveHost On
+	  RequestHeader setifempty X-Forwarded-Proto "https"
+	  ︙
+</Location>
+```
+
+They do the same task as those in Nginx above.
+
+See
+=> https://httpd.apache.org/docs/2.4/mod/mod_proxy.html#proxypreservehost ProxyPreserveHost
+=> https://httpd.apache.org/docs/2.4/mod/mod_headers.html#requestheader RequestHeader

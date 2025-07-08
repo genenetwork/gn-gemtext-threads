@@ -1,0 +1,65 @@
+# Using autossh to Keep SSH Tunnels Alive
+
+## Tags
+* keywords: ssh, autossh, tunnel, alive
+
+
+## TL;DR
+
+```
+guix package -i autossh  # Install autossh with Guix
+autossh -M 0 -o "ServerAliveInterval 60" -o "ServerAliveCountMax 5" -L 4000:127.0.0.1:3306 alexander@remoteserver.org
+```
+
+## Introduction
+
+Autossh is a utility for automatically restarting SSH sessions and tunnels if they drop or become inactive. It's particularly useful for long-lived tunnels in unstable network environments.
+
+See official docs:
+
+=> https://www.harding.motd.ca/autossh/
+
+## Installing autossh
+
+Install autossh using Guix:
+
+```
+guix package -i autossh
+```
+
+Basic usage:
+
+```
+autossh [-V] [-M monitor_port[:echo_port]] [-f] [SSH_OPTIONS]
+```
+
+## Examples
+
+### Keep a database tunnel alive with autossh
+
+Forward a remote MySQL port to your local machine:
+
+**Using plain SSH:**
+
+```
+ssh -L 5000:localhost:3306 alexander@remoteserver.org
+```
+
+**Using autossh:**
+
+```
+autossh -L 5000:localhost:3306 alexander@remoteserver.org
+```
+
+### Better option 
+
+```
+autossh -M 0 -o "ServerAliveInterval 30" -o "ServerAliveCountMax 3" -L 5000:localhost:3306 alexander@remoteserver.org
+```
+
+#### Option explanations:
+
+- `ServerAliveInterval`: Seconds between sending keepalive packets to the server (default: 0).
+- `ServerAliveCountMax`: Number of unanswered keepalive packets before SSH disconnects (default: 3).
+
+You can also configure these options in your `~/.ssh/config` file to simplify command-line usage.

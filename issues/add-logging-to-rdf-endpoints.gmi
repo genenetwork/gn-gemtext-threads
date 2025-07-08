@@ -1,0 +1,31 @@
+# Improve Logging in GN3 RDF endpoints
+
+## Tags
+
+* assigned: bonfacem
+* priority: high
+* type: API
+* keywords: RDF, gn3
+
+## Description
+
+Right now troubleshooting RDF endpoints as mentioned in:
+
+=> issues/non-deterministic-gn3-setup-on-tux01.gmi
+
+... is difficult since we return an empty result on failure.  The culprit:
+
+```
+...
+    except (RemoteDisconnected, URLError) as error:
+        breakpoint()
+        return jsonify({})
+```
+
+## Resolution
+
+This has been fixed in:
+
+=> https://github.com/genenetwork/genenetwork3/pull/151
+
+* closed

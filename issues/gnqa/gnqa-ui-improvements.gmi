@@ -1,0 +1,17 @@
+# GNQA UI Enhancements
+
+## Tags
+
+* Assigned: alexm
+* Keywords: UI, GNQA
+* Type: enhancement
+* Status: completed, closed
+
+## Description
+
+The issue involves integrating pubmed data to references list from fahamu api.
+
+## Tasks
+
+
+* [x] Integrate PubMed references: Provide users with useful information by integrating PubMed references and present them in a modal window.

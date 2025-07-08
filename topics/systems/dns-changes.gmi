@@ -27,6 +27,7 @@ We are moving thing to a new DNS hosting service. We have accounts on both. To m
 * Import DNS settings on DNSimple (cut-N-paste)
   + Edit delegation - make sure the delegation box is set
 => https://support.dnsimple.com/articles/delegating-dnsimple-registered
+  + Registration menu item comes up after transfer...
 * Approve transfer on GoDaddy a few minutes later (!!), see
   + https://dcc.godaddy.com/control/transfers
 * Add DNSSec

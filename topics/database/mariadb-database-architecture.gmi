@@ -1,0 +1,830 @@
+# MariaDB Database Architecture
+
+The GeneNetwork database is running on MariaDB and the layout is almost carved in stone because so much code depends on it.
+We are increasingly moving material out into lmdb (genotypes and phenotypes) and virtuoso (all types of metadata), but this proves a lengthy and rather tedious process. We also run redis for cachine, sqlite for authentication, and xapian for search!
+
+In this document we'll discuss where things are, where they ought to go, and how the nomenclature should change.
+
+An SVG of the SQL layout can be found here
+
+=> https://raw.githubusercontent.com/genenetwork/gn-gemtext-threads/main/topics/database/sql.svg
+
+# Nomenclature
+
+These are the terms we use
+
+* Genotypes
+* Case or genometype: individual, strain, sample
+* ProbeData: Now almost obsolete. [Comment by RWW perhaps for a footnote: In GeneNetwork 1 we had built and maintained a table for individual "Probe level" data simply because the Affymetrix data sets were so large. For example, the BXD Family: "UMUTAffy Hippocampus Exon 9Feb09)RMA" array data consists of 1.236 million "probesets" each of which is a summary of many individual probe assays (ProbeData)—a total of 4.5 million probes (see https://www.thermofisher.com/order/catalog/product/900817). In GN1 we built a special interface to interrogate these 4.5 million indivdual probes--extremely useful to studing the fine-structure of mRNA expresswion. We thought it best to split these very large "pro-level" data sets from the much smaller and more widely use "ProbeSetData". The term "Probe" in this particular context (Affymetrix Exon arrays) refers to short nucleotide probes used by Affymetrix and other microarray vendors. Affymetrix "Exon"-type arrays consist of 25 nt hybridization probes that target relatively specific parts of RNAs--mainly exons but also many intronic sequences.]
+* ProbeSetData: trait/sample values almost exclusively used for molecular data types (mRNA, protein, methylation assays, metabolomics, etc). [Comment by RWW perhaps for a footnote: The term "ProbeSetData" should ideally be changed to "High_Content_Data_Assays. In 2003 the only high content data assays we had were  Affymetrix microarrays that measured mRNA level, and the vendor called their assays "ProbeSets". We used this now obsolete term. Most ProbeSetData in GN1 and GN2 as of 2024 are measurments of molecular traits that can be tagged to a single genome location—-the location of the gene from which the mRNA and its derivative protein are transcribed and translated, or in the case of epigenomic studies—the site at which the genome is methylated. When these three types of molecular traits are mapped, we typically add a mark all graphic output maps that highlight the location of the "parent" gene. For example, the sonic hedgehog gene in mice is located on chromosome 5 at about 28.457 Mb on the mm10 assembly (aka GRCm38). When we measure the expression of Shh mRNA, we place a purple triangle at the coordinate of the Shh gene. Two notes: 1. There are at least three ProbeSetData types do NOT have parent genes--metabolomic data, and metagenomic data, and new high-content brain connectome data. When we do NOT know the location of a parent gene, we should NOT place any mark along the X-axis. 2. Ideally GN databases would define the TYPE of high-content data, so that the code could fork to the correct GUI for that particular data type. Connectome data for the brain is an example of a data type that is very large (40,000 measurements per brain), that is truly high-content data, but that is NOT molecular. Time series data may also fall into this category.]
+* ProbeSetFreeze: points to datasets
+
+## More on naming
+
+Naming convention-wise there is a confusing use of id and data-id in particular. We should stick to the table-id naming.
+
+# The small test database (2GB)
+
+The default install comes with a smaller database which includes a
+number of the BXDs and the Human liver dataset (GSE9588).
+
+It can be downloaded from:
+
+=> https://files.genenetwork.org/database/
+
+Try the latest one first.
+
+# GeneNetwork database
+
+Estimated table sizes with metadata comment for the important tables
+
+select table_name,round(((data_length + index_length) / 1024 / 1024), 2) `Size in MB` from information_schema.TABLES where table_schema = "db_webqtl" order by data_length;
+
+```
++-------------------------+------------+
+| table_name              | Size in MB | Should be named:
++-------------------------+------------+
+| PublishData             |      22.54 | ClassicTraitValues  <- data-id, strain-id, value (3M traits)
+| PublishSE               |       4.71 | ClassicTraitValueError (300K traits) <- data-id, strain-id, value
+| PublishXRef             |       2.18 | List of publications <- id, data-id, inbred-id, pheno-id, pub-id
+| ProbeSetData            |   59358.80 | BulkTraitValues     <- id, strain, value
+| ProbeSetSE              |   14551.02 | BulkTraitValueError <- SE values aligns with ProbeSetData
+| ProbeSetXRef            |    4532.89 | PrecomputedLRS      <- precomputed LRS values, pointing to dataset+trait
+| ProbeSet                |    2880.21 | ProbeSetInfo        <- over utilized mRNA probeset description, e.g. 100001_at comes with sequence info
+| ProbeSetFreeze          |       0.22 | DatasetInfo         <- dataset description, e.g. "Hippocampus_BXD_Jun06" - probesetfreezeid points to dataset, shortname, public?
+| Probe                   |    2150.30 | ProbeInfo           <- Probe trait info incl sequence, id, probeset-id
+| ProbeFreeze             |       0.06 | Dataset names       <- Similar to ProbesetFreeze, id, chip-id, inbredset-id, tissue-id
+| Phenotype               |       6.50 | PhenotypeMeta       <- "Hippocampus weight", id, prepublish short-name, postpublish short-name
+| ProbeXRef               |     743.38 | ProbeFreezeDataIDs  <- link ProbeFreeze-Id,Probe-Id with Data-Id
+| Datasets                |       2.31 | DatasetMeta         <- "Data generated by...", investigator-id, publication title
+| NStrain                 |       4.80 | StrainCountDataId   <- Strains used in dataset, count, strain-id, data-id
+| Strain                  |       1.07 | StrainNames         <- with species ID and alias, id, species-id, name
+| TissueProbeSetData      |      74.42 |                     <- link Id,TissueID with value
+| TissueProbeSetXRef      |      14.73 | TissueGeneTable? <- data-id, gene-id, mean, symbol, TissueProbeSetFreezeId | ProbesetId | DataId
+| TissueProbeSetFreeze    |       0.01 | tissueprobefreeze-id
+| InbredSet               |       0.01 | InbredSetMeta -> Id,SpeciesId,FullName
+| ProbeData               |   22405.44 | (OLD?) mRNAStrainValues used for partial correlations <- id, strain, value = individual probe data (mRNA) [GN1,GN3]
+| ProbeSE                 |    6263.83 | (OLD?) Trait Error  <- trait SE aligns with ProbeData? [GN3]
++-------------------------+------------+
+```
+Less commonly used tables:
+
+```
++-------------------------+------------+
+| table_name              | Size in MB |
++-------------------------+------------+
+| LCorrRamin3             |   18506.53 |
+| SnpAll                  |   15484.67 |
+| SnpPattern              |    9177.05 |
+| QuickSearch             |    5972.86 |
+| GenoData                |    3291.91 | Strain by genotype - only used in GN1
+| CeleraINFO_mm6          |     989.80 |
+| pubmedsearch            |    1032.50 |
+| GeneRIF_BASIC           |     448.54 |
+| BXDSnpPosition          |     224.44 |
+| EnsemblProbe            |     133.66 |
+| EnsemblProbeLocation    |     105.49 |
+| Genbank                 |      37.71 |
+| AccessLog               |      42.38 |
+| GeneList                |      34.11 |
+| Geno                    |      33.90 | Marker probe info (incl. sequence)
+| MachineAccessLog        |      28.34 |
+| IndelAll                |      22.42 |
+| ProbeH2                 |      13.26 |
+| GenoXRef                |      22.83 |
+| TempData                |       8.35 |
+| GeneList_rn3            |       5.54 |
+| GORef                   |       4.97 |
+| temporary               |       3.59 |
+| InfoFiles               |       3.32 |
+| Publication             |       3.42 |
+| Homologene              |       5.69 |
+| GeneList_rn33           |       2.61 |
+| GeneRIF                 |       2.18 |
+| Vlookup                 |       1.87 |
+| H2                      |       2.18 |
+| IndelXRef               |       2.91 |
+| GeneMap_cuiyan          |       0.51 |
+| user_collection         |       0.30 |
+| CaseAttributeXRef       |       0.44 |
+| StrainXRef              |       0.56 |
+| GeneIDXRef              |       0.77 |
+| Docs                    |       0.17 |
+| News                    |       0.17 |
+| GeneRIFXRef             |       0.24 |
+| Sample                  |       0.06 |
+| login                   |       0.06 |
+| user                    |       0.04 |
+| TableFieldAnnotation    |       0.05 |
+| DatasetMapInvestigator  |       0.05 |
+| User                    |       0.04 |
+| TableComments           |       0.02 |
+| Investigators           |       0.02 |
+| DBList                  |       0.03 |
+| Tissue                  |       0.02 |
+| GeneChip                |       0.01 |
+| GeneCategory            |       0.01 |
+| SampleXRef              |       0.01 |
+| SnpAllele_to_be_deleted |       0.00 |
+| Organizations           |       0.01 |
+| PublishFreeze           |       0.00 |
+| GenoFreeze              |       0.00 | Used for public/private
+| Chr_Length              |       0.01 |
+| SnpSource               |       0.00 |
+| AvgMethod               |       0.00 |
+| Species                 |       0.00 |
+| Dataset_mbat            |       0.00 |
+| TissueProbeFreeze       |       0.00 |
+| EnsemblChip             |       0.00 |
+| UserPrivilege           |       0.00 |
+| CaseAttribute           |       0.00 |
+| MappingMethod           |       0.00 |
+| DBType                  |       0.00 |
+| InfoFilesUser_md5       |       0.00 |
+| GenoCode                |       0.00 |
+| DatasetStatus           |       0.00 |
+| GeneChipEnsemblXRef     |       0.00 |
+| GenoSE                  |       0.00 |
+| user_openids            |       0.00 |
+| roles_users             |       0.00 |
+| role                    |       0.00 |
+| Temp                    |       NULL |
++-------------------------+------------+
+97 rows in set, 1 warning (0.01 sec)
+```
+
+All *Data tables are large
+
+## Tables containing trait values
+
+A trait on GN is defined by a trait-id with a dataset-id.
+
+=> https://genenetwork.org/show_trait?trait_id=10031&dataset=BXDPublish
+
+The trait-id can also be a probe name
+
+=> https://genenetwork.org/show_trait?trait_id=1441566_at&dataset=HC_M2_0606_P
+
+One of the more problematic aspects of GN is that there are two tables containing trait values (actually there are three!). ProbeSetData mostly contains expression data. PublishData contains 'classical' phenotypes. ProbeData is considered defunct.
+
+So, a set of trait values gets described by the dataset+probe (trait_id) OR by BXDPublish --- which is its own table --- and an identifier, here 10031.
+
+OK, let's look at the ProbeSetData (expression) traits:
+
+```
+MariaDB [db_webqtl]> select * from ProbeSetData limit 5;
++----+----------+-------+
+| Id | StrainId | value |
++----+----------+-------+
+|  1 |        1 | 5.742 |
+|  1 |        2 | 5.006 |
+|  1 |        3 | 6.079 |
+|  1 |        4 | 6.414 |
+|  1 |        5 | 4.885 |
++----+----------+-------+
+5 rows in set (0.193 sec)
+MariaDB [db_webqtl]> select * from ProbeData limit 5;
++--------+----------+---------+
+| Id     | StrainId | value   |
++--------+----------+---------+
+| 503636 |       42 | 11.6906 |
+| 503636 |       43 | 11.4205 |
+| 503636 |       44 | 11.2491 |
+| 503636 |       45 | 11.2373 |
+| 503636 |       46 | 12.0471 |
++--------+----------+---------+
+5 rows in set (0.183 sec)
+```
+
+ProbeSet describes ProbeSetData. I.e., every probe ID comes with a sequence (microarray) etc.
+
+As for duplicated data: duplicated or "detached"* data happens sometimes, though that's not related to the PublishData/ProbeSetData distinction (unless this is done deliberately for some reason). I believe that whether data is entered as one or the other primarily comes down to the desire/need to divide it into datasets (or by tissue) within a group (with mRNA expression data just being the most common reason for this). I've encountered a situation before with Arthur where there was data in ProbeSetData that wasn't also in ProbeSetXRef
+
+an you give an example of exactly what you mean? PublishData would be stuff like sex, weight, etc (is this what you mean?) while ProbeSetData is used for mRNA expression data (except for a few situations where it isn't lol).
+
+That being said, *functionally*, I think the only real distinction (aside from what metadata is displayed) is that "ProbeSet" data has extra levels of "granularity" where it's also organized by tissue type and can be split into "datasets" (while "PublishData" traits are only associated with a Group (InbredSet in DB). That's why some non-mRNA expression data is still classified as "ProbeSet" - I think it's basically just a way to separate it into datasets within a group, often for specific tissues.
+
+So the organization is something like this:
+
+```
+Group -> PublishData
+Group -> Tissue -> Dataset -> ProbeSetData
+```
+
+## ProbeData
+
+[OBSOLETE] ProbeData meanwhile is a table with fine-grained probe level Affymetrix data only. Contains 1 billion rows March 2016. This table may be *deleted* later since it is only used by the Probe Table display in GN1. Not used in GN2
+"ProbeData" should probably be "AssayData" or something more neutral.
+
+In comparison the "ProbeSetData" table contains more molecular assay data, including probe set data, RNA-seq data, proteomic data, and metabolomic data. 2.5 billion rows March 2016.
+ProbeData contains data only for Affymetrix probe level data (e.g. Exon array probes and M430 probes).
+
+"StrainId" should be "CaseId" or "SampleId" or "GenometypeId", see nomenclature above.
+
+```
+select * from ProbeData limit 2;
++--------+----------+---------+
+| Id     | StrainId | value   |
++--------+----------+---------+
+| 503636 |       42 | 11.6906 |
+| 503636 |       43 | 11.4205 |
++--------+----------+---------+
+2 rows in set (0.00 sec)
+
+select count(*) from ProbeData limit 2;
++-----------+
+| count(*)  |
++-----------+
+| 976753435 |
++-----------+
+1 row in set (0.00 sec)
+```
+
+## PublishData
+
+These are the classic phenotypes under BXDPublish.
+
+```
+MariaDB [db_webqtl]> select * from PublishData where StrainId=5 limit 5;
++---------+----------+------------+
+| Id      | StrainId | value      |
++---------+----------+------------+
+| 8967043 |        5 |  49.000000 |
+| 8967044 |        5 |  50.099998 |
+| 8967045 |        5 | 403.000000 |
+| 8967046 |        5 |  45.500000 |
+| 8967047 |        5 |  44.900002 |
++---------+----------+------------+
+5 rows in set (0.265 sec)
+MariaDB [db_webqtl]> select * from PublishSE where StrainId=5 limit 5;
++---------+----------+-------+
+| DataId  | StrainId | error |
++---------+----------+-------+
+| 8967043 |        5 |  1.25 |
+| 8967044 |        5 |  0.71 |
+| 8967045 |        5 |   8.6 |
+| 8967046 |        5 |  1.23 |
+| 8967047 |        5 |  1.42 |
++---------+----------+-------+
+5 rows in set (0.203 sec)
+MariaDB [db_webqtl]> select * from PublishXRef limit 2;
++-------+-------------+-------------+---------------+---------+-------------------+----------------+------------------+------------------+----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Id    | InbredSetId | PhenotypeId | PublicationId | DataId  | mean              | Locus          | LRS              | additive         | Sequence | comments                                                                                                                                                     |
++-------+-------------+-------------+---------------+---------+-------------------+----------------+------------------+------------------+----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 10001 |           1 |           4 |           116 | 8967043 | 52.13529418496525 | rs48756159     | 13.4974911471087 | 2.39444435069444 |        1 | robwilliams modified post_publication_description at Mon Jul 30 14:58:10 2012
+robwilliams modified post_publication_description at Sat Jan 30 13:48:49 2016
+ |
+| 10002 |           1 |          10 |           116 | 8967044 | 52.22058767430923 | rsm10000005699 |  22.004269639323 | 2.08178575714286 |        1 | robwilliams modified phenotype at Thu Oct 28 21:43:28 2010
+                                                                                                  |
++-------+-------------+-------------+---------------+---------+-------------------+----------------+------------------+------------------+----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------+
+2 rows in set (0.328 sec)
+```
+
+## ProbeSet
+
+
+Comment: PLEASE CHANGE TABLE NAME and rework fields carefully. This is a terrible table but it works well (RWW March 2016). It is used in combination with the crucial TRAIT DATA and ANALYSIS pages in GN1 and GN2. It is also used by annotators using the UPDATE INFO AND DATA web form to correct and update annotation. It is used by Arthur to enter new annotation files and metadata for arrays, genes, proteins, metabolites. The main problem with this table is that it is doing too much work. And it is not doing enough because it is huge, but does not track changes. The plan is to migrate to lmdb for that.
+
+Initially (2003) this table contained only Affymetrix ProbeSet data for mouse (U74aV2 initially). Many other array platforms for different species were added. At least four other major categories of molecular assays have been added since about 2010:
+
+1. RNA-seq annotation and sequence data for transcripts using ENSEMBL identifiers or NCBI NM_XXXXX and NR_XXXXX type identifiers
+
+2. Protein and peptide annotation and sequence data (see BXD Liver Proteome data, SRM and SWATH type data) with identifiers such as "abcb10_q9ji39_t311" for SRM data and "LLGNMIVIVLGHHLGKDFTPAAQAA" for SWATH data where the latter is just the peptide fragment that has been quantified. Data first entered in 2015 for work by Rudi Aebersold and colleagues.
+
+3. Metabolite annotation and metadata (see BXD Liver Metabolome data) with identifiers that are usually Mass charge ratios such as "149.0970810_MZ"
+
+4. Epigenomic and methylome data (e.g. Human CANDLE Methylation data with identifiers such as "cg24523000")
+
+It would make good sense to break this table into four or more types of molecular assay metadata or annotation tables) (AssayRNA_Anno, AssayProtein_Anno, AssayMetabolite_Anno, AssayEpigenome_Anno, AssayMetagenome_Anno), since these assays will have many differences in annotation content compared to RNAs (RWW).
+
+Some complex logic is used to update contents of this table when annotators modify and correct the information (for example, updating gene symbols). These features requested by Rob so that annotating one gene symbol in one species would annotate all gene symbols in the same species based on common NCBI GeneID number. For example, changing the gene alias for one ProbeSet.Id will changing the list of aliases in all instances with the same gene symbol.
+
+If the ProbeSet.BlatSeq (or is this ProbSetTargetSeq) is identical between different ProbeSet.Ids then annotation is forced to be the same even if the symbol or geneID is different. This "feature" was implemented when we found many probe sets with identical sequence but different annotations and identifiers.
+
+
+```
+select count(*) from ProbeSet limit 5;
++----------+
+| count(*) |
++----------+
+|  4351030 |
++----------+
+| Id   | ChipId | Name     | TargetId | Symbol | description                                  | Chr  | Mb        | alias    | GeneId | GenbankId | SNP  | BlatSeq                                                                                                                                                                     |TargetSeq                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | UniGeneId | Strand_Probe | Strand_Gene | OMIM   | comments | Probe_set_target_region | Probe_set_specificity | Probe_set_BLAT_score | Probe_set_Blat_Mb_start | Probe_set_Blat_Mb_end | Probe_set_strand | Probe_set_Note_by_RW | flag | Symbol_H | description_H | chromosome_H | MB_H | alias_H | GeneId_H | chr_num | name_num | Probe_Target_Description | RefSeq_TranscriptId | Chr_mm8 | Mb_mm8    | Probe_set_Blat_Mb_start_mm8 | Probe_set_Blat_Mb_end_mm8 | HomoloGeneID | Biotype_ENS | ProteinID | ProteinName | Flybase_Id | HMDB_ID | Confidence | ChEBI_ID | ChEMBL_ID | CAS_number | PubChem_ID | ChemSpider_ID | UNII_ID | EC_number | KEGG_ID | Molecular_Weight | Nugowiki_ID | Type | Tissue | PrimaryName | SecondaryNames | PeptideSequence |
++------+--------+----------+----------+--------+----------------------------------------------+------+-----------+----------+--------+-----------+------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------+--------------+-------------+--------+----------+-------------------------+-----------------------+----------------------+-------------------------+-----------------------+------------------+----------------------+------+----------+---------------+--------------+------+---------+----------+---------+----------+--------------------------+---------------------+---------+-----------+-----------------------------+---------------------------+--------------+-------------+-----------+-------------+------------+---------+------------+----------+-----------+------------+------------+---------------+---------+-----------+---------+------------------+-------------+------+--------+-------------+----------------+-----------------+
+| 7282 |      1 | 93288_at | NULL     | Arpc2  | actin related protein 2/3 complex, subunit 2 | 1    | 74.310961 | AK008777 | 76709  | AI835883  |    0 | CCGACTTCCTTAAGGTGCTCAACCGGACTGCTTGCTACTGGATAATCGTGAGGGATTCTCCATTTGGGTTCCATTTTGTACGAGTTTGGCAAATAACCTGCAGAAACGAGCTGTGCTTGCAAGGACTTGATAGTTCCTAATCCTTTTCCAAGCTGTTTGCTTTGCAATATGT | ccgacttccttaaggtgctcaaccgtnnnnnnccnannnnccnagaaaaaagaaatgaaaannnnnnnnnnnnnnnnnnnttcatcccgctaactcttgggaactgaggaggaagcgctgtcgaccgaagnntggactgcttgctactggataatcgtnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnntgagggattctccatttgggttccattttgtacgagtttggcaaataacctgcagaaacgagctgtgcttgcaaggacttgatagttcctaagaattanaanaaaaaaaanaanttccacttgatcaanttaattcccttttatttttcctccctcantccccttccttttccaagctgtttgctttgcaatatgt                                                                                                                                                                                                                                     | Mm.337038 | +            |             | 604224 |          | NULL                    |                  8.45 |                  169 |               74.310961 |              74.31466 | NULL             | NULL                 | 3    | NULL     | NULL          | NULL         | NULL | NULL    | NULL     |       1 |    93288 | NULL                     | XM_129773           | 1       | 74.197594 |                   74.197594 |                 74.201293 | 4187         | NULL        | NULL      | NULL        | NULL       | NULL    |       NULL |     NULL | NULL      | NULL       |       NULL |          NULL | NULL    | NULL      | NULL    |             NULL |        NULL | NULL | NULL   | NULL        | NULL           | NULL            |
++------+--------+----------+----------+--------+----------------------------------------------+------+-----------+----------+--------+-----------+------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------+--------------+-------------+--------+----------+-------------------------+-----------------------+----------------------+-------------------------+-----------------------+------------------+----------------------+------+----------+---------------+--------------+------+---------+----------+---------+----------+--------------------------+---------------------+---------+-----------+-----------------------------+---------------------------+--------------+-------------+-----------+-------------+------------+---------+------------+----------+-----------+------------+------------+---------------+---------+-----------+---------+------------------+-------------+------+--------+-------------+----------------+-----------------+
+2 rows in set (0.00 sec)
+```
+
+** ProbeSetXRef (phenotypes/dataset_name.json)
+
+For every probe set (read dataset measuring point):
+
+```
+select * from ProbeSetXRef;
+| ProbeSetFreezeId | ProbeSetId | DataId   | Locus_old | LRS_old | pValue_old | mean             | se   | Locus      | LRS               | pValue | additive              | h2   |
+|              112 |     123528 | 23439389 | NULL      |    NULL |       NULL |  6.7460707070707 | NULL | rs6239372  |  10.9675593568894 |  0.567 |    0.0448545966228878 | NULL |
+|              112 |     123527 | 23439388 | NULL      |    NULL |       NULL | 6.19416161616162 | NULL | rs13476936 |  10.9075670392762 |  0.567 |   -0.0358456732993988 | NULL |
+```
+
+where ProbeSetFreezeId is the dataset (experiment). ProbesetId refers to the probe set information (measuring point). DataId points to the data point. The other values are used for search. It is used in search thus:
+
+```
+SELECT distinct ProbeSet.Name as TNAME,
+  ProbeSetXRef.Mean as TMEAN, ProbeSetXRef.LRS as TLRS,
+  ProbeSetXRef.PVALUE as TPVALUE, ProbeSet.Chr_num as TCHR_NUM,
+  ProbeSet.Mb as TMB, ProbeSet.Symbol as TSYMBOL,
+  ProbeSet.name_num as TNAME_NUM
+FROM ProbeSetXRef, ProbeSet
+WHERE ProbeSet.Id = ProbeSetXRef.ProbeSetId
+  and ProbeSetXRef.ProbeSetFreezeId = 112
+  ORDER BY ProbeSet.symbol ASC limit 5;
+| TNAME      | TMEAN            | TLRS               | TPVALUE               | TCHR_NUM | TMB        | TSYMBOL       | TNAME_NUM |
+| 1445618_at | 7.05679797979798 |   13.5417452764616 |                  0.17 |        8 |  75.077895 | NULL          |   1445618 |
+| 1452452_at |            7.232 |   30.4944361132252 | 0.0000609756097560421 |       12 |    12.6694 | NULL          |   1452452 |
+```
+
+Probedata - main molecular data. Probesets, metabolome,
+
+Almost all important molecular assay data is in this table including probe set data, RNA-seq data, proteomic data, and metabolomic data. 2.5 billion rows March 2016. In comparison, ProbeData contains data only for Affymetrix probe level data (e.g. Exon array probes and M430 probes).
+
+# Strain
+
+```
+select * from Strain limit 5;
++----+----------+----------+-----------+--------+-------+
+| Id | Name     | Name2    | SpeciesId | Symbol | Alias |
++----+----------+----------+-----------+--------+-------+
+|  1 | B6D2F1   | B6D2F1   |         1 | NULL   | NULL  |
+|  2 | C57BL/6J | C57BL/6J |         1 | B6J    | NULL  |
+|  3 | DBA/2J   | DBA/2J   |         1 | D2J    | NULL  |
+|  4 | BXD1     | BXD1     |         1 | NULL   | NULL  |
+|  5 | BXD2     | BXD2     |         1 | NULL   | NULL  |
++----+----------+----------+-----------+--------+-------+
+```
+
+```
+show indexes from Strain;
++--------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| Table  | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
++--------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| Strain |          0 | PRIMARY  |            1 | Id          | A         |       14368 |     NULL | NULL   |      | BTREE      |         |               |
+| Strain |          0 | Name     |            1 | Name        | A         |       14368 |     NULL | NULL   | YES  | BTREE      |         |               |
+| Strain |          0 | Name     |            2 | SpeciesId   | A         |       14368 |     NULL | NULL   |      | BTREE      |         |               |
+| Strain |          1 | Symbol   |            1 | Symbol      | A         |       14368 |     NULL | NULL   | YES  | BTREE      |         |               |
++--------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+
+A typical query may look like
+
+SELECT Strain.Name, ProbeSetData.value, ProbeSetSE.error, ProbeSetData.Id
+                    FROM (ProbeSetData, ProbeSetFreeze, Strain, ProbeSet, ProbeSetXRef)
+                    left join ProbeSetSE on
+                      (ProbeSetSE.DataId = ProbeSetData.Id AND ProbeSetSE.StrainId = ProbeSetData.StrainId)
+                    WHERE
+                      ProbeSetFreeze.name = 'B139_K_1206_M' AND
+                      ProbeSetXRef.ProbeSetId = ProbeSet.Id AND
+                      ProbeSetXRef.ProbeSetFreezeId = ProbeSetFreeze.Id AND
+                      ProbeSetXRef.DataId = ProbeSetData.Id AND
+                      ProbeSetData.StrainId = Strain.Id
+                    Order BY Strain.Name
+
++-------+-------+-------+----------+
+| Name  | value | error | Id       |
++-------+-------+-------+----------+
+| SM001 |  38.3 |  NULL | 25309550 |
+| SM001 |   2.7 |  NULL | 25309520 |
+| SM001 |  20.3 |  NULL | 25309507 |
+| SM001 | 125.8 |  NULL | 25309511 |
+| SM001 |   8.2 |  NULL | 25309534 |
++-------+-------+-------+----------+
+5 rows in set (22.28 sec)
+```
+
+# ProbeSetFreeze
+
+```
+select * from ProbeSetFreeze limit 5;
++----+---------------+-------+-------------+---------------------------------+---------------------------------------------+-------------------------+------------+-----------+--------+-----------------+-----------------+-----------+
+| Id | ProbeFreezeId | AvgID | Name        | Name2                           | FullName                                    | ShortName               | CreateTime | OrderList | public | confidentiality | AuthorisedUsers | DataScale |
++----+---------------+-------+-------------+---------------------------------+---------------------------------------------+-------------------------+------------+-----------+--------+-----------------+-----------------+-----------+
+|  1 |             3 |     1 | Br_U_0803_M | BXDMicroArray_ProbeSet_August03 | UTHSC Brain mRNA U74Av2 (Aug03) MAS5        | Brain U74Av2 08/03 MAS5 | 2003-08-01 |      NULL |      0 |               0 | NULL            | log2      |
+|  2 |            10 |     1 | Br_U_0603_M | BXDMicroArray_ProbeSet_June03   | UTHSC Brain mRNA U74Av2 (Jun03) MAS5        | Brain U74Av2 06/03 MAS5 | 2003-06-01 |      NULL |      0 |               0 | NULL            | log2      |
+|  3 |             8 |     1 | Br_U_0303_M | BXDMicroArray_ProbeSet_March03  | UTHSC Brain mRNA U74Av2 (Mar03) MAS5        | Brain U74Av2 03/03 MAS5 | 2003-03-01 |      NULL |      0 |               0 | NULL            | log2      |
+|  4 |             5 |     1 | Br_U_0503_M | BXDMicroArray_ProbeSet_May03    | UTHSC Brain mRNA U74Av2 (May03) MAS5        | Brain U74Av2 05/03 MAS5 | 2003-05-01 |      NULL |      0 |               0 | NULL            | log2      |
+|  5 |             4 |     1 | HC_U_0303_M | GNFMicroArray_ProbeSet_March03  | GNF Hematopoietic Cells U74Av2 (Mar03) MAS5 | GNF U74Av2 03/03 MAS5   | 2003-03-01 |      NULL |      0 |               0 | NULL            | log2      |
++----+---------------+-------+-------------+---------------------------------+---------------------------------------------+-------------------------+------------+-----------+--------+-----------------+-----------------+-----------+
+```
+
+# ProbeSetXRef
+
+```
+select * from ProbeSetXRef limit 5;
++------------------+------------+--------+------------+--------------------+------------+-------------------+---------------------+-----------------+--------------------+--------+----------------------+------+
+| ProbeSetFreezeId | ProbeSetId | DataId | Locus_old  | LRS_old            | pValue_old | mean              | se                  | Locus           | LRS                | pValue | additive             | h2   |
++------------------+------------+--------+------------+--------------------+------------+-------------------+---------------------+-----------------+--------------------+--------+----------------------+------+
+|                1 |          1 |      1 | 10.095.400 |   13.3971627898894 |      0.163 |  5.48794285714286 | 0.08525787814808819 | rs13480619      | 12.590069931048001 |  0.269 |          -0.28515625 | NULL |
+|                1 |          2 |      2 | D15Mit189  | 10.042057464356201 |      0.431 |  9.90165714285714 |  0.0374686634976217 | CEL-17_50896182 |   10.5970737900941 |  0.304 | -0.11678333333333299 | NULL |
+|                1 |          3 |      3 | D5Mit139   |   5.43678531742749 |      0.993 |  7.83948571428571 |  0.0457583416912569 | rs13478499      |    6.0970532702754 |  0.988 |    0.112957489878542 | NULL |
+|                1 |          4 |      4 | D1Mit511   |   9.87815279480766 |      0.483 | 8.315628571428569 |  0.0470396593931327 | rs6154379       | 11.774867551173099 |  0.286 |   -0.157113725490196 | NULL |
+|                1 |          5 |      5 | D16H21S16  | 10.191723834264499 |      0.528 |  9.19345714285714 |  0.0354801718293322 | rs4199265       | 10.923263374016202 |  0.468 |  0.11476470588235299 | NULL |
++------------------+------------+--------+------------+--------------------+------------+-------------------+---------------------+-----------------+--------------------+--------+----------------------+------+
+```
+
+
+Note that the following unlimited search is very slow:
+
+select max(value) from ProbeSetData;
+
+```
++------------+
+| max(value) |
++------------+
+|   26436006 |
++------------+
+1 row in set (2 min 16.31 sec)
+```
+
+which is in some form is used in the search page, see [[https://github.com/genenetwork/genenetwork2_diet/blob/master/wqflask/wqflask/do_search.py#L811][the search code]].
+
+
+*** Comments
+
+I think the ProbeSetData table should be generalized to a 'phenotypes' table with an 'sample_id' column and a 'value' column.
+
+A new table 'samples' will link each sample against an 'experiment', an 'individual' and which in turn can link to a 'strain'.
+
+Experiment is here in a wide sense, GTex can be one - I don't want to use dataset ;)
+
+This means a (slight) reordering:
+
+```
+phenotypes:  (id), sample_id, value
+samples:     experiment_id, individual_id
+experiments: name, version
+individual:  strain_id
+strains:     species_id
+species:     ...
+```
+
+ProbeData is also interesting, because it has the same structure as ProbeSetData, but only contains microarrays. This tables should be one (when we clear up the cross-referencing) as they both contain phenotype values. Both are large tables.
+
+PublishData is another phenotype table with values only which can be merged into that same table. This data does not require the annotations of probesets(!)
+
+=> https://genenetwork.org/show_trait?trait_id=10031&dataset=BXDPublish
+
+So we have phenotype data in 3 tables with exactly the same
+layout. There is also TissueProbeSet*, but we'll ignore those for
+now. I think we should merge these into one and have the sample ref
+refer to the type of data (probeset, probe, metabolomics,
+whatever). These are all phenotype values and by having them split
+into different tables they won't play well when looking for
+correlations.
+
+ProbeSet contains the metadata on the probes and should (eventually)
+move into NoSQL. There is plenty redundancy in that table now.
+
+I know it is going to be a pain to reorganize the database, but if we
+want to use it in the long run we are going to have to simplify it.
+
+# ProbeSetFreeze and ProbeFreeze (/dataset/name.json)
+
+GN_SERVER: /dataset/HC_M2_0606_P.json
+
+ProbesetFreeze contains DataSet information, such as name, fullname of
+datasets, as well as whether they are public and how the data is
+scaled:
+
+```
+select * from ProbeSetFreeze;
+| Id  | ProbeFreezeId | AvgID | Name         | Name2                              | FullName                                      | ShortName                                     | CreateTime | OrderList | public | confidentiality | AuthorisedUsers | DataScale |
+| 112 |            30 |     2 | HC_M2_0606_P | Hippocampus_M430_V2_BXD_PDNN_Jun06 | Hippocampus Consortium M430v2 (Jun06) PDNN    | Hippocampus M430v2 BXD 06/06 PDNN             | 2006-06-23 |      NULL |      2 |               0 | NULL            | log2      |
+```
+
+Another table contains a tissue reference and a back reference to the cross
+type:
+
+```
+select * from ProbeFreeze;
+| Id  | ProbeFreezeId | ChipId | TissueId | Name                                        | FullName | ShortName | CreateTime | InbredSetId |
+|  30 |            30 |      4 |        9 | Hippocampus Consortium M430v2 Probe (Jun06) |          |           | 2006-07-07 |           1 |
+```
+
+NOTE: these tables can probably be merged into one.
+
+```
+show indexes from ProbeSetFreeze;
++----------------+------------+-----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| Table          | Non_unique | Key_name  | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
++----------------+------------+-----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| ProbeSetFreeze |          0 | PRIMARY   |            1 | Id          | A         |           2 |     NULL | NULL   |      | BTREE      |         |               |
+| ProbeSetFreeze |          0 | FullName  |            1 | FullName    | A         |           2 |     NULL | NULL   |      | BTREE      |         |               |
+| ProbeSetFreeze |          0 | Name      |            1 | Name        | A         |           2 |     NULL | NULL   | YES  | BTREE      |         |               |
+| ProbeSetFreeze |          1 | NameIndex |            1 | Name2       | A         |           2 |     NULL | NULL   |      | BTREE      |         |               |
++----------------+------------+-----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+```
+
+# ProbeSetSE
+
+```
+select * from ProbeSetSE limit 5;
++--------+----------+----------+
+| DataId | StrainId | error    |
++--------+----------+----------+
+|      1 |        1 | 0.681091 |
+|      1 |        2 | 0.361151 |
+|      1 |        3 | 0.364342 |
+|      1 |        4 | 0.827588 |
+|      1 |        5 | 0.303492 |
++--------+----------+----------+
+```
+
+# More information
+
+For the other tables, you may check the GN2/doc/database.org document (the starting point for this document).
+
+# Contributions regarding data upload to the GeneNetwork webserver
+* Ideas shared by the GeneNetwork team to facilitate the process of uploading data to production
+
+## Quality check and integrity of the data to be uploaded to gn2
+
+* A note to add (from Arthur): Some datasets have the following identifiers: ProbeSet IDs {chr_3020701, chr_3020851, etc}. This is not an acceptable way to name the probeset IDs. So, the data provider needs to understand what format is needed for gn2 to accept the ProbeSet IDs in their dataset
+* Also, for the annotation file, among other important columns, it is crucial that there are descriptions, aliases, and location columns. And the formatting should be exactly as found in the public repositories such as NCBI, Ensembl, etc. For instance, for description: `X-linked Kx blood group related 4`, and Aliases: ` XRG4; Gm210; mKIAA1889` as in
+=> https://www.ncbi.nlm.nih.gov/gene/497097
+
+## Valid ProbeSetIDs
+
+* The official ProbeSetIDs would be the one from the vendor. This would also constitute the platform used to generate data {Novogene-specific platform}, for instance; `NovaSeqPE150` for the MBD UTHSC mice seq dataset
+* NB; in this case, if the vendor does not provide the official names as expected, we can use the platform + the numbering order of the file to generate probeset IDs. For instance; `NseqPE150_000001 to NseqPE150_432694` for samples 1 to 432694
+* Avoid IDs with meaning, e.g. =chr1_3020701= → Chromosome 1 at 3020701 base pairs. Prefer IDs with no meaning
+
+## The importance of having unique identifiers within a platform
+
+* Unique identifiers solve the hurdles that come with having duplicate genes. So, the QA tools in place should ensure the uploaded dataset adheres to the requirements mentioned
+* However, newer RNA-seq data sets generated by sequencing do not usually have an official vendor identifier. The identifier is usually based on the NCBI mRNA model (NM_XXXXXX) that was used to evaluate an expression and on the sequence that is involved, usually the start and stop nucleotide positions based on a specific genome assembly or just a suffix to make sure it is unique. In this case, you are looking at mRNA assays for a single transcript, but different parts of the transcript that have different genome coordinates. We now typically use ENSEMBL identifiers.
+* The mouse version of the sonic hedgehog gene as an example: `ENSMUST00000002708` or `ENSMUSG00000002633` sources should be fine. The important thing is to know the provenance of the ID—who is in charge of that ID type?
+* When a mRNA assay is super precise (one exon only or a part of the 5' UTR), then we should use exon identifiers from ENSEMBL probably.
+* Ideally, we should enter the sequence's first and last 100 nt in GeneNetwork for verification and  alignment. We did this religiously for arrays, but have started to get lazy now. The sequence is the ultimate identifier
+* For methylation arrays and CpG assays, we can use this format `cg14050475` as seen in MBD UTHSC Ben's data
+* For metabolites like isoleucine—the ID we have been using is the mass-to-charge (MZ) ratio such as `130.0874220_MZ`
+* For protein and peptide identifiers we have used the official Protein ID followed by an underscore character and then some or all of the sequence. This is then followed by another underscore and a number. Evan to confirm, but the suffix number is the charge state if I remember correctly
+```
+Q9JHJ3_LLHTADVCQLEVALVGASPR_3
+A2A8E1_TIVEFECR_2
+A2A8E1_ATLENVTNLRPVGEDFR_3
+A2A8E1_ENSIDILSSTIK_2
+```
+* But in older protein expression databases Evan and the team used a different method
+```
+abcb10_q9ji39_t311
+abcb10_q9ji39_t312
+```
+* The above is just the gene symbol then the protein ID and not so sure what t311 and t312 mean
+* Ideally these IDs are explained to some extent when they embed some information
+
+
+
+## BXD individuals
+
+* Basically groups (represented by the InbredSet tables) are primarily defined by their list of samples/strains (represented by the Strain tables). When we create a new group, it's because we have data with a distinct set of samples/strains from any existing groups.
+* So when we receive data for BXD individuals, as far as the database is concerned they are a completely separate group (since the list of samples is new/distinct from any other existing groups). We can choose to also enter it as part of the "generic" BXD group (by converting it to strain means/SEs using the strain of each individual, assuming it's provided like in the files Arthur was showing us).
+* This same logic could apply to other groups as well - we could choose to make one group the "strain mean" group for another set of groups that contain sample data for individuals. But the database doesn't reflect the relationship between these groups*
+* As far as the database is concerned, there is no distinction between strain means and individual sample data - they're all rows in the ProbeSetData/PublishData tables. The only difference is that strain mean data will probably also have an SE value in the ProbeSetSE/PublishSE tables and/or an N (number of individuals per strain) value in the NStrain table
+* As for what this means for the uploader - I think it depends on whether Rob/Arthur/etc wants to give users the ability to simultaneously upload both strain mean and individual data. For example, if someone uploads some BXD individuals' data, do we want the uploader to both create a new group for this (or add to an existing BXD individuals group) and calculate the strain means/SE and enter it into the "main" BXD group? My personal feeling is that it's probably best to postpone that for later and only upload the data with the specific set of samples indicated in the file since it would insert some extra complexity to the uploading process that could always be added later (since the user would need to select "the group the strains are from" as a separate option)
+* The relationship is sorta captured in the CaseAttribute and CaseAttributeXRefNew tables (which contain sample metadata), but only in the form of the metadata that is sometimes displayed as extra columns in the trait page table - this data isn't used in any queries/analyses currently (outside of some JS filters run on the table itself) and isn't that important as part of the uploading process (or at least can be postponed)
+
+## Individual Datasets and Derivatives datasets in gn2
+* Individual dataset reflects the actual data provided or submitted by the investigator (user). Derivative datasets include the processed information from the individual dataset, as in the case of the average datasets.
+* An example of an individual dataset would look something like; (MBD dataset)
+```
+#+begin_example
+sample, strain, Sex, Age,…
+FEB0001,BXD48a,M,63,…
+FEB0002,BXD48a,M,15,…
+FEB0003,BXD48a,F,22,…
+FEB0004,BXD16,M,39,…
+FEB0005,BXD16,F,14,…
+⋮
+#+end_example
+```
+* The strain column above has repetitive values. Each value has a one-to-many relationship with values on sample column. From this dataset, there can be several derivatives. For example;
+- Sex-based categories
+- Average data (3 sample values averaged to one strain value)
+- Standard error table computed for the averages
+
+## Saving data to database
+* Strain table schema
+```
+#+begin_src sql
+  MariaDB [db_webqtl]> DESC Strain;
+  +-----------+----------------------+------+-----+---------+----------------+
+  | Field     | Type                 | Null | Key | Default | Extra          |
+  +-----------+----------------------+------+-----+---------+----------------+
+  | Id        | int(20)              | NO   | PRI | NULL    | auto_increment |
+  | Name      | varchar(100)         | YES  | MUL | NULL    |                |
+  | Name2     | varchar(100)         | YES  |     | NULL    |                |
+  | SpeciesId | smallint(5) unsigned | NO   |     | 0       |                |
+  | Symbol    | varchar(20)          | YES  | MUL | NULL    |                |
+  | Alias     | varchar(255)         | YES  |     | NULL    |                |
+  +-----------+----------------------+------+-----+---------+----------------+
+  6 rows in set (0.00 sec)
+#+end_src
+```
+* For the *individual data*, the =sample= field would be saved as =Name= and the =strain= would be saved as =Name2=. These records would then all be linked to an inbredset group (population?) in the =InbredSet= table via the =StrainXRef= table, whose schema is as follows:
+```
+#+begin_src sql
+  MariaDB [db_webqtl]> DESC StrainXRef;
+  +------------------+----------------------+------+-----+---------+-------+
+  | Field            | Type                 | Null | Key | Default | Extra |
+  +------------------+----------------------+------+-----+---------+-------+
+  | InbredSetId      | smallint(5) unsigned | NO   | PRI | 0       |       |
+  | StrainId         | int(20)              | NO   | PRI | NULL    |       |
+  | OrderId          | int(20)              | YES  |     | NULL    |       |
+  | Used_for_mapping | char(1)              | YES  |     | N       |       |
+  | PedigreeStatus   | varchar(255)         | YES  |     | NULL    |       |
+  +------------------+----------------------+------+-----+---------+-------+
+  5 rows in set (0.00 sec)
+#+end_src
+```
+* Where the =InbredSetId= comes from the =InbredSet= table and the =StrainId= comes from the =Strain= table. The *individual data* would be linked to an inbredset group that is for individuals
+* For the *average data*, the only value to save would be the =strain= field, which would be saved as =Name= in the =Strain= table and linked to an InbredSet group that is for averages
+*Question 01*: How do we distinguish the inbredset groups?
+*Answer*: The =Family= field is useful for this.
+
+*Question 02*: If you have more derived "datasets", e.g. males-only, females-only, under-10-years, 10-to-25-years, etc. How would the =Strains= table handle all those differences?
+
+## Metadata
+* The data we looked at had =gene id= and =gene symbol= fields. These fields were used to fetch the *Ensembl ID* and *descriptions* from [[https://www.ncbi.nlm.nih.gov/][NCBI]] and the [[https://useast.ensembl.org/][Ensembl Genome Browser]]
+
+## Files for mapping
+* Files used for mapping need to be in =bimbam= or =.geno= formats. We would need to do conversions to at least one of these formats where necessary
+
+## Annotation files
+* Consider the following schema of DB tables
+#+begin_src sql
+  MariaDB [db_webqtl]> DESC InbredSet;
+  +-----------------+----------------------+------+-----+---------+----------------+
+  | Field           | Type                 | Null | Key | Default | Extra          |
+  +-----------------+----------------------+------+-----+---------+----------------+
+  | Id              | smallint(5) unsigned | NO   | PRI | NULL    | auto_increment |
+  | InbredSetId     | int(5) unsigned      | NO   |     | NULL    |                |
+  | InbredSetName   | varchar(100)         | YES  |     | NULL    |                |
+  | Name            | char(30)             | NO   |     |         |                |
+  | SpeciesId       | smallint(5) unsigned | YES  |     | 1       |                |
+  | FullName        | varchar(100)         | YES  |     | NULL    |                |
+  | public          | tinyint(3) unsigned  | YES  |     | 2       |                |
+  | MappingMethodId | char(50)             | YES  |     | 1       |                |
+  | GeneticType     | varchar(255)         | YES  |     | NULL    |                |
+  | Family          | varchar(100)         | YES  |     | NULL    |                |
+  | FamilyOrder     | int(5)               | YES  |     | NULL    |                |
+  | MenuOrderId     | double               | NO   |     | NULL    |                |
+  | InbredSetCode   | varchar(5)           | YES  |     | NULL    |                |
+  | Description     | longtext             | YES  |     | NULL    |                |
+  +-----------------+----------------------+------+-----+---------+----------------+
+  ⋮
+  MariaDB [db_webqtl]> DESC Strain;
+  +-----------+----------------------+------+-----+---------+----------------+
+  | Field     | Type                 | Null | Key | Default | Extra          |
+  +-----------+----------------------+------+-----+---------+----------------+
+  | Id        | int(20)              | NO   | PRI | NULL    | auto_increment |
+  | Name      | varchar(100)         | YES  | MUL | NULL    |                |
+  | Name2     | varchar(100)         | YES  |     | NULL    |                |
+  | SpeciesId | smallint(5) unsigned | NO   |     | 0       |                |
+  | Symbol    | varchar(20)          | YES  | MUL | NULL    |                |
+  | Alias     | varchar(255)         | YES  |     | NULL    |                |
+  +-----------+----------------------+------+-----+---------+----------------+
+  ⋮
+  MariaDB [db_webqtl]> DESC StrainXRef;
+  +------------------+----------------------+------+-----+---------+-------+
+  | Field            | Type                 | Null | Key | Default | Extra |
+  +------------------+----------------------+------+-----+---------+-------+
+  | InbredSetId      | smallint(5) unsigned | NO   | PRI | 0       |       |
+  | StrainId         | int(20)              | NO   | PRI | NULL    |       |
+  | OrderId          | int(20)              | YES  |     | NULL    |       |
+  | Used_for_mapping | char(1)              | YES  |     | N       |       |
+  | PedigreeStatus   | varchar(255)         | YES  |     | NULL    |       |
+  +------------------+----------------------+------+-----+---------+-------+
+#+end_src
+
+* The =StrainXRef= table creates a link between the Samples/cases/individuals (stored in the =Strain= table) to the group (population?) they belong to in the =InbredSet= table
+* Steps to prepare the TSV file for entering samples/cases into the database are:
+- Clean up =Name= of the samples/cases/individuals in the file:
+  - Names should have no spaces
+  - Names should be the same length of characters: pad those that are shorter e.g. *SampleName12* → *SampleName012* to fit in with other names if, say, the samples range from 1 to 999. In a similar vein, you'd rename *SampleName1* to *SampleName001*
+- Order samples by the names
+- Create a new column, say, =orderId= in the TSV, and assign the order *1, 2, 3, …, n* for the rows, from the first to the "n^{th}" row. The order of the strains is very important and must be maintained
+- retrieve the largest current =Id= value  in the =Strain= table
+- Increment by one (1) and assign that to the first row of your ordered data
+  - Assign subsequent rows, the subsequent values for the ID e.g. Assuming the largest =Id= value in the =Strain= table was *23*, the first row of the new data would have the id *24*. The second row would have *25*, the third, *26* and so on
+- Get the =InbredSetId= for your samples' data. Add a new column in the data and copy this value for all rows
+- Enter data into the =Strain= table
+- Using the previously computed strain ID values, and the =InbredSetId= previously copied, enter data into the =StrainXRef= table
+
+* Some notes on the data:
+- The =Symbol= field in the =Strain= table corresponds to the =Strain= field in the annotation file
+- The =used_for_mapping= field should be set to ~Y~ unless otherwise informed
+- The =PedigreeStatus= field is unknown to us for now: set to ~NULL~
+
+* Annotation file format
+The important fields are:
+- =ChipId=: The platform that the data was collected from/with
+Consider the following table;
+#+begin_src sql
+    MariaDB [db_webqtl]> DESC GeneChip;
+    +---------------+----------------------+------+-----+---------+----------------+
+    | Field         | Type                 | Null | Key | Default | Extra          |
+    +---------------+----------------------+------+-----+---------+----------------+
+    | Id            | smallint(5) unsigned | NO   | PRI | NULL    | auto_increment |
+    | GeneChipId    | int(5)               | YES  |     | NULL    |                |
+    | GeneChipName  | varchar(200)         | YES  |     | NULL    |                |
+    | Name          | char(30)             | NO   |     |         |                |
+    | GeoPlatform   | char(15)             | YES  |     | NULL    |                |
+    | Title         | varchar(100)         | YES  |     | NULL    |                |
+    | SpeciesId     | int(5)               | YES  |     | 1       |                |
+    | GO_tree_value | varchar(50)          | YES  |     | NULL    |                |
+    +---------------+----------------------+------+-----+---------+----------------+
+  #+end_src
+ Some of the important fields that were highlighted were:
+ - =GeoPlatform=: Links the details of the platform in our database with NCBI's [[https://www.ncbi.nlm.nih.gov/geo/][Gene Ontology Omnibus (GEO)]] system. This is not always possible, but where we can, it would be nice to have this field populated
+ - =GO_tree_value=:  This is supposed to link the detail we have with some external system "GO". I have not figured this one out on my own and will need to follow up on it.
+ - =Name=: The name corresponds to the =ProbeSetId=, and we want this to be the same value as the identifier on the [[https://www.ensembl.org][Ensembl genome browser]], e.g. For a gene, say =Shh=, for *mouse*, we want the =Name= value to be a variation on [[https://useast.ensembl.org/Mus_musculus/Gene/Summary?db=core;g=ENSMUSG00000002633;r=5:28661813-28672254;t=ENSMUST00000002708][*ENSMUSG00000002633*]]
+ - =Probe_set_Blat_Mb_start=/=Probe_set_Blat_Mb_end=: In Byron's and Beni's data, these correspond to the =geneStart= and =geneEnd= fields respectively. These are the positions, in megabasepairs, that the gene begins and ends at, respectively.
+ - =Mb=: This is the =geneStart=/=Probe_set_Blat_Mb_start= value divided by *1000000*. (*Note to self*: Maybe the Probe_set_Blat_Mb_* fields above might not be in megabase pairs — please confirm)
+ - =Strand_Probe= and =Strand_Gene=: These fields' values are simply ~+~ or ~-~. If these values are missing, you can [[https://ftp.ncbi.nih.gov/gene/README][retrieve them from NCBI]], specifically from the =orientation= field of seemingly any text file with the field
+ - =Chr=: This is the chromosome on which the gene is found
+
+* The final annotation file will have (at minimum) the following fields (or their
+analogs):
+- =StrainName=
+- =OrderId=
+- =StrainId=: from the database
+- =InbredSetId=: from the database
+- =Symbol=: This could be named =Strain=
+- =GeneChipId=: from the database
+- =EnsemblId=: from the Ensembl genome browser
+- =Probe_set_Blat_Mb_start=: possible analogue is =geneStart=
+- =Probe_set_Blat_Mb_end=: possible analogue is =geneEnd=
+- =Mb=
+- =Strand_Probe=
+- =Strand_Gene=
+- =Chr=
+
+*  =.geno= Files
+- The =.geno= files have sample names, not the strain/symbol. The =Locus= field in the =.geno= file corresponds to the **marker**. =.geno= files are used with =QTLReaper=
+- The sample names in the ~.geno~ files *MUST* be in the same order as the
+strains/symbols for that species. For example;
+Data format is as follows;
+```
+#+begin_example
+SampleName,Strain,…
+⋮
+BJCWI0001,BXD40,…
+BJCWI0002,BXD40,…
+BJCWI0003,BXD33,…
+BJCWI0004,BXD50,…
+BJCWI0005,BXD50,…
+⋮
+#+end_example
+```
+and the order of strains is as follows;
+```
+#+begin_example
+…,BXD33,…,BXD40,…,BXD50,…
+#+end_example
+```
+then, the ~.geno~ file generated by this data should have a form such as shown
+below;
+```
+#+begin_example
+…,BJCWI0003,…,BJCWI0001,BJCWI0002,…,BJCWI0004,BJCWI0005,…
+#+end_example
+```
+The order of samples that belong to the same strain is irrelevant - they share the same data, i.e. the order below is also valid;
+```
+#+begin_example
+…,BJCWI0003,…,BJCWI0002,BJCWI0001,…,BJCWI0004,BJCWI0005,…
+#+end_example
+```
+* =BimBam= Files
+- Used with =GEMMA=
+*  Case Attributes
+- These are metadata about every case/sample/individual in an InbredSet group. The metadata is any data that has nothing to do with phenotypes (e.g. height, weight, etc) that is useful for researchers to have in order to make sense of the data.
+- Examples of case attributes:
+ - Treatment
+ - Sex (Really? Isn't sex an expression of genes?)
+ - batch
+ - Case ID, etc
+
+* Summary steps to load data to the database
+- [x] Create *InbredSet* group (think population)
+- [x] Load the strains/samples data
+- [x] Load the sample cross-reference data to link the samples to their
+ InbredSet group
+- Load the case-attributes data
+- [x] Load the annotation (data into ProbeSet table)
+- [x] Create the study for the data (At around this point, the InbredSet group
+  will show up in the UI).
+- [x] Create the Dataset for the data
+- [x] Load the *Log2* data (ProbeSetData and ProbeSetXRef tables)
+- [x] Compute means (an SQL query was used — this could be pre-computed in code
+  and entered along with the data)
+- [x] Run QTLReaper

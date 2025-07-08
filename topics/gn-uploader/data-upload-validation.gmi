@@ -1,0 +1,81 @@
+# Data Upload Process
+
+## Tags
+
+* assigned: priscilla
+* keywords: documentation, gn-uploader
+
+The process of uploading data to the GeneNetwork platform began with retrieving the dataset from the Gene Network page:
+
+=> https://genenetwork.org/show_trait?trait_id=24668&dataset=BXDPublish BXDPublish
+
+which comprised a phenotype matrix of the BXD mouse group identified by the phenotype ID: BXD_24668. This research paper associated with this dataset is titled "Novel pre-clinical model to identify genetic modifiers of triple negative breast cancer," accessible at:
+
+=> https://aacrjournals.org/cancerres/article/81/13_Supplement/2919/668784/Abstract-2919-Novel-pre-clinical-model-to-identify.
+
+This dataset contained both "standard error" and "average" values. To begin upload of the data to the uploader at:
+
+=> https://staging-uploader.genenetwork.org/ Staging GN Uploader
+
+I selected the suitable file type from the expression data options, whether average or standard error. Following this, I selected the species - mouse, platform - 54- Affymetrix Clariom S Array Mouse, created a new study - "UTHSC BXD Mice Group for Breast Cancer Dataset", group - BXD family, type - mammary gland mRNA and defined the dataset - "BXD Mice Group Study for Breast Cancer Dataset".
+
+# Challenges Faced and Solutions
+
+During the data upload process, I encountered several challenges that required solutions. One challenge was identified as a database schema bug: a bug in which the "ProbeSetSE" has the column "StrainId" but with a different size integer (smaller) than that in table "Strain" which could cause errors when inserting data, if the strain exceeds the value 65535. The solution to this was to run a query to correct it against the database.
+
+Another error surfaced during the dataset upload process:
+
+```
+ERROR: no annotations found for platform 54 and dataset 1068. Quiting
+```
+
+
+To address this, I verified that both the average and standard error files were properly linked to the same platform, study, and dataset otherwise the system would reject the data as invalid.
+
+# Data Format and Modifications
+
+The original format of the data was in an Excel file which contained 8 columns, namely "index", "name", "value," "SE," "status," "RRID," "epoch," and "SeqCvge.".
+
+## Modifications
+
+* To clean up the data, I used Python to remove the metadata fields: "index", "status," "RRID," "epoch," and "SeqCvge." in order to remain with only the relevant fields "name", "value" and "SE".
+
+* I ensured the first row in the matrix contains the headings to so that the dataset complies with the system requirements.
+
+* I also separated the files into two separate standard error and values files so that they can each be uploaded individually into the system.
+
+* I converted the dataset into a txt file which is a file format acceptable by the uploader.
+
+# Examples of Invalid Data
+
+In the standard error files, examples of invalid data included figures that did not possess six decimal places as well as standard error files that were not properly linked to the same platform, study, and dataset as the averages values. For the averages file, figures lacking three decimal places were considered invalid. Data that was not in the correct, acceptable formats which are tsv,csv, or txt or contained metadata fields are also considered invalid.
+
+# Examples of Valid Data
+
+Valid data in the standard error file would consist of values with precisely six decimal places, ensuring compliance with system standards. Valid data in the average file would consist of values with precisely three decimal places.
+
+# Data Validation Process
+
+For the data uploaded, it is necessary to validate that the data is present on the server.
+
+I utilized the GeneNetwork API endpoints as documented in this resource:
+
+=> https://github.com/genenetwork/gn-docs/blob/master/api/GN2-REST-API.md
+
+with
+
+=> https://staging.genenetwork.org/
+
+The API endpoints listed in this document give the data back, mostly in Json format, which can be used to compare with data in the original files and verify that the data is the same.
+
+Utilizing the endpoints, I used the curl command-line tool to fetch data from the API.
+
+The specific code used for fetching data from the API endpoints was:
+
+```
+curl -k https://staging.genenetwork.org/api/v_pre1/datasets/bxd
+```
+
+The "-k" option in this command permits insecure SSL connections, while the provided API endpoint “datasets/bxd’ fetches information about the specific BXD dataset.
+
+The information retrieved by accessing the specified API endpoint included fields such as create time, ProbeFreeze Id, Id, public, confidentiality, full name, short name, long abbreviation, short abbreviation and data scale, confirming the data has been successfully uploaded.

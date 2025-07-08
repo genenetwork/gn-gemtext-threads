@@ -1,0 +1,70 @@
+# GN3 Setup on tux01 - Non-Deterministic Behavior
+
+## Tags
+
+* assigned: bonfacem, zachs
+* priority: high
+* type: ops, guix
+* keywords: gn3
+* status: closed
+
+## Description
+
+Zach and Munyoki attempted to set up GN3 on tux01 following the provided channels file:
+
+```
+(list (channel
+       (name 'gn-bioinformatics)
+       (url "https://git.genenetwork.org/guix-bioinformatics")
+       (branch "master")
+       (commit
+	"25cb9ad70155a08c088ff28bf54c06e12293105b"))
+      (channel
+       (name 'guix-forge)
+       (url "https://git.systemreboot.net/guix-forge/")
+       (branch "main")
+       (introduction
+	(make-channel-introduction
+	 "0432e37b20dd678a02efee21adf0b9525a670310"
+	 (openpgp-fingerprint
+	  "7F73 0343 F2F0 9F3C 77BF  79D3 2E25 EE8B 6180 2BB3")))))
+
+```
+
+...  and execution steps:
+
+```
+source /var/guix/profiles/per-user/aruni/current-guix/etc/profile
+
+guix pull -C channels.scm -p ~/.guix-extra-profiles/genenetwork
+
+.  .guix-extra-profiles/genenetwork/etc/profile
+
+guix install genenetwork3 genenetwork2 -p ~/.guix-extra-profiles/genenetwork
+
+git clone https://github.com/genenetwork/genenetwork3.git
+
+cd genenetwork3/
+
+/export2/local/home/zas1024/gn3-zach/genenetwork3/run_dev.sh run --port=8090
+```
+
+Despite our efforts, attempting a CURL on GN3 using Zach's username consistently resulted in an empty response.
+
+Even when Zach switched to my user (bonfacem) and repeated the steps with my ".guix-extra-profile", the CURL still produced an empty result.  We tried various troubleshooting steps, such as running the commands in a shell with no specific environment set up and using su to switch to bonfacem from Zach's userspace, but the issue persists.
+
+## Resolution
+
+The error caused was due to missing SSL certificates.  This was resolved by exporting the right SSL paths before starting the server.  The simple fix was adding:
+
+```
+export SSL_CERT_DIR="$GUIX_PROFILE/etc/ssl/certs"
+export SSL_CERT_FILE="$GUIX_PROFILE/etc/ssl/certs/ca-certificates.crt"
+export GIT_SSL_CAINFO="$SSL_CERT_FILE"
+```
+
+Also, debugging was difficult because of poor logging.  This is being tracked here:
+
+=> issues/add-logging-to-rdf-endpoints.gmi
+
+* closed

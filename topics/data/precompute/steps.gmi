@@ -1,0 +1,115 @@
+# Precompute steps
+
+At this stage precompute fetches a trait from the DB and runs GEMMA. Next it tar balls up the vector for later use. It also updates the database with the latest info.
+
+To actually kick off compute on machines that do not access the DB I realize now we need a step-wise approach. Basically you want to shift files around without connecting to a DB. And then update the DB whenever it is convenient. So we are going to make it a multi-step procedure. I don't have to write all code because we have a working runner. I just need to chunk the work.
+
+We will track precompute steps here. We will have:
+
+* [X] steps g: genotype archives (first we only do BXD-latest, include BXD.json)
+* [X] steps k: kinship archives (first we only do BXD-latest)
+* [X] steps p: trait archives (first we do p1-3)
+
+Trait archives will have steps for
+
+* [X] step p1: list-traits-to-compute
+* [X] step p2: gemma-lmm9-loco-output: Compute standard GEMMA lmm9 LOCO vector with gemma-wrapper
+* [X] step p3: gemma-to-lmdb: create a clean vector
+
+Start precompute
+
+* [ ] Fetch traits on tux04
+* [ ] Set up runner on tux04 and others
+* [ ] Run on Octopus
+
+Work on published data
+
+* [ ] Fetch traits
+
+The DB itself can be updated from these
+
+* [ ] step p4: updated-db-v1: update DB using single LOD score, number of samples and
+
+Later
+
+* [ ] Rqtl2: Compute Rqtl2 vector
+* [ ] bulklmm: Compute bulklmm vector
+
+Interestingly this work coincides with Arun's work on CWL. Rather than trying to write a workflow in bash, we'll use ccwl and accompanying tools to scale up the effort.
+
+# Tags
+
+* assigned: pjotrp
+* type: precompute, gemma
+* status: in progress
+* priority: high
+* keywords: ui, correlations
+
+# Tasks
+
+* [ ] Check Artyoms LMDB version for kinship and maybe add LOCO
+* [+] Create JSON metadata controller for every compute incl. type of content
+* [X] Create genotype archive
+* [X] Create kinship archive
+* [+] Create trait archives
+* [X] Kick off lmm9 step
+* [ ] Update DB step v1
+
+# Step p1: list traits to compute
+
+In the first phenotype step p1 we iterate through all datasets and fetch the traits. We limit the number of SQL calls by chunking up on dataset IDs. At this point we just have to make sure we are actually computing for BXD. See
+
+=> https://git.genenetwork.org/gn-guile/tree/scripts/precompute/list-traits-to-compute.scm
+
+The current implementation selects all BXD datasets and has to test for strains containing 'BXD' string in the name because the database includes HXB for strain 1, for example. We memoize this query, see
+
+=> https://git.genenetwork.org/gn-guile/tree/gn/data/strains.scm
+
+Fetching 1000 IDs takes about 10s. That is good enough to start writing phenotype files. I added batch processing and it appears that fetching 500 items from the DB works best. That way we have a balance between a SQL DB return and using assoc lists - it may be we replace them with proper hashes down the line if we need the speed.
+
+In the next step we write the phenotypes as a single JSON file. That way we can easily track metadata related to the traits and their computations. The JSON files are essentially the precompute database and can be loaded into a SQL database on demand. This is all to be able to distribute data and make sure we only compute once.
+
+At this point we can write
+
+```
+{"2":9.40338,"3":10.196,"4":10.1093,"5":9.42362,"6":9.8285,"7":10.0808,"8":9.17844,"9":10.1527,"10":10.1167,"11":9.88551,"13":9.58127,"15":9.82312,"17":9.88005,"19":10.0761,"20":10.2739,"21":9.54171,"22":10.1056,"23":10.5702,"25":10.1433,"26":9.68685,"28":9.98464,"29":10.132,"30":9.96049,"31":10.2055,"35":10.1406,"36":9.94794,"37":9.96864,"39":9.31048}
+```
+
+Note that it (potentially) includes the parents and that is corrected when generating the phenotype file for GEMMA. Also the strain-id is a string and we may want to plug in the strain name. To allow for easy comparison downstream. Finally we may want to store a checksum of sorts. In Guile this can be achieved with:
+
+```scheme
+(use-modules  (rnrs bytevectors)
+              (hashing sha-2))
+
+(sha-256->string (sha-256 #vu8(1 53 204)))
+```
+
+from guile-hashing and guile-gcrypt modules.
+
+In the next step we have to check the normal distribution of the trait values and maybe winsorize outliers.
+Actually we should brute force the default first.
+Be interesting to see the effect of handling outliers and normalisation of phenotypes.
+
+# Step p2: run GEMMA lmm9 + LOCO
+
+Last week I checked out Arun's CCWL. Anything more complicated that a few steps can go into CCWL. It will also handle cluster work loads using, for example, toil. We will use trait files + genotypes as inputs for gemma-wrapper initially.
+
+p1: Workflow 1:
+
+```
+batch traits from DB
+```
+
+p2+p3: Workflow 2:
+
+```
+batched traits, genotypes ->
+  gemma-wrapper ->
+    lmdb'ize
+```
+
+p4: Workflow 3:
+
+```
+Update DB
+```

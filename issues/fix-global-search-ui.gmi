@@ -1,0 +1,24 @@
+# Fix Broken Global Search UI
+
+## Tags
+
+* Assigned: alexm, zsloan
+* Priority: high
+* status: in progress
+* Keyword : search, UI, bug, Refactor
+* Type: UI, bug
+
+## Description
+
+The Global search  UI layout is broken on certain browser versions.
+This issue was reported to occur  for  **Firefox Version 128.3.1** ESR Version.
+The root cause of the problem is unclear,
+but after reviewing the global search UI code,
+the following changes need to be implemented (see tasks below):
+
+
+
+## Tasks
+
+* [ ] Remove custom layout CSS and replace it with the Bootstrap layout for better uniformity and easier debugging.
+* [ ] Modify the navbar to extend across the full width of the page on medium and small devices.

@@ -1,0 +1,22 @@
+# Paths in Flask Application
+
+## Tags
+
+* type: doc, docs, documentation
+* assigned: fredm
+* keywords: application paths, flask, absolute path, relative path
+
+## Content
+
+Always build and use absolute paths for the resources you use in your application. Assuming that the application will always be run with the root of the application's repository/package as the working directory is a recipe for failure.
+
+To demonstrate, see the following issue:
+=> /issues/genenetwork2/haley-knott-regression-mapping-error
+
+In this case, the path issue was not caught in the CI/CD environment since it runs the application with the repository root as its working directory. This issue will also not show up in most development environments since it is easier to run the application from the root of the repository than have to set up the PYTHONPATH variables.
+
+In the new containers making use of the "(genenetwork services genenetwork)" module in gn-machines[fn:1], the working directory where the application is invoked has no relation with the application's package — in fact, the working directory is actually the root of the containers file system ("/").
+
+# Footnotes
+
+[fn:1] https://git.genenetwork.org/gn-machines/

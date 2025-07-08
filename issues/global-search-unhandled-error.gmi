@@ -1,0 +1,21 @@
+# Global Search: Unhandled Error
+
+## Tags
+
+* assigned: aruni, fredm
+* priority: high
+* type: bug
+* status: closed
+* keywords: global search, gn2, genenetwork2
+
+## Description
+
+=> https://github.com/genenetwork/genenetwork2/blob/testing/gn2/wqflask/gsearch.py#L31-L34 These lines
+assume the request will always be successful. This is not always the case, as can be seen with
+=> https://test3.genenetwork.org/gsearch?type=gene&terms=Priscilla here (as of 2024-03-04T11:25+03:00UTC).
+
+Possible errors should be checked for and handled before attempting to read and/or process expected data.
+
+## Closing Comments
+
+This issue is closed as obsoleted. The issue is really old (>=7 months). Closing it for now. To be reopened if the issue happens again.

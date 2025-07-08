@@ -1,0 +1,62 @@
+# test1-auth.genenetwork.org Can't Find Templates
+
+## Tags
+
+* assigned: fredm, aruni
+* priority: critical
+* status: closed, completed, fixed
+* type: bug
+* keywords: gn-auth, deployment, test1
+
+## Description
+
+The new (as of 2024-02-03T14:20+03:00UTC) deployment of gn-auth cannot find the Jinja2 templates it used to render its UI, leading to HTTP/500 errors.
+
+From the logs:
+
+```
+︙
+2024-03-02 01:39:53     raise TemplateNotFound(template)
+2024-03-02 01:39:53 jinja2.exceptions.TemplateNotFound: admin/login.html
+2024-03-02 01:39:53 Exception on /auth/admin/login [GET]
+︙
+```
+
+Checking the install:
+
+```
+$ fredm@tux02:~$ guix gc -R /usr/local/bin/genenetwork-container | grep gn-auth
+/gnu/store/58inxkgpb4b3qm1ms49a72valyqwlcwx-gn-auth-1.0.0
+/gnu/store/9dh00m806z7facqdfjfhkw1krkrphrxk-shepherd-gunicorn-gn-auth.scm
+/gnu/store/2q386g5qyqngfsb7z7p70zb3qdmj12n6-gn-auth.conf
+/gnu/store/199f7awjvx831x2d67dp0xdj083vmdis-gunicorn-gn-auth-pola-wrapper
+/gnu/store/0pchkh477lhh8win2alnx7pzyy6fg61c-shepherd-gunicorn-gn-auth.go
+$
+$  ls /gnu/store/58inxkgpb4b3qm1ms49a72valyqwlcwx-gn-auth-1.0.0/lib/python3.10/site-packages/gn_auth/
+__init__.py  __pycache__  auth  commands.py  errors.py  jobs.py  json_encoders_decoders.py  migrations.py  misc_views.py  session.py  settings.py
+```
+
+We were missing:
+
+* /gn_auth/templates directory
+* /gn_auth/static directory
+
+Fixed by using MANIFEST.in to force inclusion of files
+=> https://setuptools.pypa.io/en/latest/userguide/miscellaneous.html MANIFEST.in docs
+
+We then had to update the commit of gn-auth in guix-bioinformatics, pull and rebuild the container.
+
+Now gn-auth runs, but we are getting new errors when we try to sign-in from GN2:
+
+```
+︙
+2024-03-02 13:59:04     return self._query_client(client_id)
+2024-03-02 13:59:04   File "/gnu/store/aiqdb6hky6gvfjld9iymi6cgn6cvmhdl-profile/lib/python3.10/site-packages/gn_auth/auth/authentication/oauth2/server.py", line 28, in __query_client__
+2024-03-02 13:59:04     the_client = client(conn, client_id).maybe(
+2024-03-02 13:59:04   File "/gnu/store/aiqdb6hky6gvfjld9iymi6cgn6cvmhdl-profile/lib/python3.10/site-packages/gn_auth/auth/authentication/oauth2/models/oauth2client.py", line 136, in client
+2024-03-02 13:59:04     cursor.execute(
+2024-03-02 13:59:04 sqlite3.OperationalError: no such table: oauth2_clients
+︙
+```
+
+while clearly, the table "oauth2_clients" exists.

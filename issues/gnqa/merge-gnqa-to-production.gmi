@@ -1,0 +1,16 @@
+# Merge GNQA to Production
+
+## Tags
+
+* assigned: alexm,
+* keywords: production, GNQA, integration
+
+## Description
+
+GNQA is currently in continuous development and needs to
+be pushed to production. We need to allow only logged-in users to access the services.
+
+## Tasks
+
+* [] Integrate GN-auth for the service
+* [] Push production to the current commit

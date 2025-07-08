@@ -1,14 +1,21 @@
 # Deploy GeneNetwork
 
+## Tags
+
+* type: doc, docs, documentation
+* keywords: deploy, deployment, deploying, guix, guix container, guix system container
+* status: in progress
+
 # Description
 
 This page attempts to document the deployment process we have for GeneNetwork. We use Guix system containers for deployment of CI/CD and the Guix configuration for the CI/CD container should be considered the authoritative reference.
 
-=> https://github.com/genenetwork/genenetwork-machines/blob/main/genenetwork-development.scm
+=> https://git.genenetwork.org/gn-machines/tree/genenetwork-development.scm
 
 See also
 
 => ./guix-system-containers-and-how-we-use-them
+=> ./configuring-nginx-on-host
 
 ## genenetwork2
 

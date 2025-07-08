@@ -2,9 +2,9 @@
 
 Here we capture some common actions
 
-To install Mariadb (as a container) see
+To install Mariadb (as a container) see below and
 
-=> setting-up-local-development-database.gmi
+=> topics/deploy/installation
 
 # Tags
 
@@ -16,6 +16,8 @@ To install Mariadb (as a container) see
 Start the client and:
 
 ```
+mysql
+show databases
 MariaDB [db_webqtl]> show binary logs;
 +-----------------------+-----------+
 | Log_name              | File_size |
@@ -39,9 +41,9 @@ To get a log with some stuff filtered out try
 mysql -p -u webqtlout db_webqtl -e "SHOW BINLOG EVENTS IN 'gn0-binary-log.000014';" -r -s |grep -v -e "Access\|GTID\|INSERT_ID\|COMMIT\|Temp\|lastlogin\|LITERA\|flush\|ROLLBACK"
 ```
 
-# Update MariaDB on penguin2 to the latest production database
+# Update MariaDB to the latest production database using borg recovery
 
-The MariaDB instance running on penguin2 needs to be periodically updated to the latest version of the database running on production. We do this by restoring backups of the production database stored on penguin2 into the penguin2 MariaDB database directory. Here's how.
+The MariaDB instance needs to be periodically updated to the latest version of the database running on production. We do this by restoring backups of the production database into MariaDB database directory. Here's how.
 
 Backups are managed using Borg as the ibackup user. First, become the ibackup user.
 ```
@@ -60,4 +62,11 @@ Stop the running mariadb-guix.service. Restore the latest backup archive and ove
 => https://www.borgbackup.org/ Borg
 => https://borgbackup.readthedocs.io/en/stable/ Borg documentation
 
-#
+# Upgrade mariadb
+
+It is wise to upgrade mariadb once in a while. In a disaster recovery it is better to move forward in versions too.
+Before upgrading make sure there is a decent backup of the current setup.
+
+See also
+
+=> issues/systems/tux04-disk-issues.gmi

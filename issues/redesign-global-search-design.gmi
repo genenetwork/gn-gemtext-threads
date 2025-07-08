@@ -1,0 +1,23 @@
+# Redesign Global Search Design
+
+## Tags
+* assigned: alexm, zac
+* keywords: global search, design, HTML
+* type: enhancement
+* status: closed, completed, done
+
+## Description
+Rob suggested we model the global search on the NCBI PubMed interface. We should remove the `?` button, which seems to be confusing for users, and have a  better  user guide.
+
+## Tasks
+
+* [x] Redesign the global search to fit the NCBI PubMed model.
+* [x] Replace the "?" button that acts as a user guide
+
+## Related issues:
+
+=> https://issues.genenetwork.org/issues/cleanup-base-file-gn2
+
+## Notes
+PR that seeks to address this issue:
+=> https://github.com/genenetwork/genenetwork2/pull/880

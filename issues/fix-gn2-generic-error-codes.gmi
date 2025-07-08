@@ -1,0 +1,17 @@
+# Bug: Incorrect code for GN2 generic error handler
+
+## Tags
+
+* type: bug
+* priority: medium
+* status: closed
+* assigned: alexm
+* keywords: errors, Exceptions, gn2, Bug
+
+## Description
+The GN2 generic error handler returns a `200` status code for exceptions
+raised at the application level when returning a response object, which is incorrect.
+
+This commit fixes this issue:
+
+=> https://github.com/genenetwork/genenetwork2/commit/c9543343c92f7282992d61ff51b50101d66dc059

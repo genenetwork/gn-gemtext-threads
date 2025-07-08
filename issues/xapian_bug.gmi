@@ -1,0 +1,19 @@
+# Fix Xapian search bug
+
+## Tags
+
+* assigned: zsloan
+* priority: high
+* type: search
+* status: closed
+* keywords: xapian, gn2, gn3
+
+## Description
+
+Currently all Xapian searches that aren't just simple individual terms fail.
+
+For example, this works (search for just "liver"):
+https://genenetwork.org/gsearch?type=phenotype&terms=liver
+
+While this fails (search for "liver AND group:BXD"):
+https://genenetwork.org/gsearch?type=phenotype&terms=group%3ABXD+AND+liver

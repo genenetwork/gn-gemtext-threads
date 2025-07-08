@@ -1,0 +1,72 @@
+# UM-HET3 Timing: Slow
+
+## Tags
+
+* type: bug
+* status: open
+* assigned: fredm
+* priority: critical
+* interested: fredm, pjotrp, zsloan
+* keywords: production, container, tux04, UM-HET3
+
+## Description
+
+In email from @robw:
+
+```
+> >    Not sure why. Am I testing the wrong way?
+> >    Are we using memory and RAM in the same way on the two machines?
+> >    Here are data on the loading time improvement for Tux2:
+> >    I tested this using a "worst case" trait that we know when—the 25,000
+> >    UM-HET3 samples:
+> >    [1]https://genenetwork.org/show_trait?trait_id=10004&dataset=HET3-ITPPu
+> >    blish
+> >    Tux02: 15.6, 15.6, 15.3 sec
+> >    Fallback: 37.8, 38.7, 38.5 sec
+> >    Here are data on Gemma speed/latency performance:
+> >    Also tested "worst case" performance using three large BXD data sets
+> >    tested in this order:
+> >    [2]https://genenetwork.org/show_trait?trait_id=10004&dataset=BXD-Longev
+> >    ityPublish
+> >    [3]https://genenetwork.org/show_trait?trait_id=10003&dataset=BXD-Longev
+> >    ityPublish
+> >    [4]https://genenetwork.org/show_trait?trait_id=10002&dataset=BXD-Longev
+> >    ityPublish
+> >    Tux02: 107.2, 329.9 (ouch), 360.0 sec (double ouch) for 1004, 1003, and
+> >    1002 respectively. On recompute (from cache) 19.9, 19.9 and 20.0—still
+> >    too slow.
+> >    Fallback: 154.1, 115.9 for the first two traits (trait 10002 already in
+> >    the cache)
+> >    On recompute (from cache) 59.6, 59.0 and 59.7. Too slow from cache.
+> >    PROBLEM 2: Tux02 is unable to map UM-HET3. I still get an nginx 413
+> >    error: Entity Too Large.
+>
+> Yeah, Fred should fix that one. It is an nginx setting - we run 2x
+> nginx. It was reported earlier.
+>
+> >    I need this to work asap. Now mapping our amazing UM-HET3 data. I can
+> >    use Fallback, but it is painfully slow and takes about 214 sec. I hope
+> >    Tux02 gets that down to a still intolerable slow 86 sec.
+> >    Can we please fix and confirm by testing. The Trait is above for your
+> >    testing pleasure.
+> >    Even 86 secs is really too slow and should motivate us (or users like
+> >    me) to think about how we are using all of those 24 ultra-fast cores on
+> >    the AMD 9274F. Why not put them all to use for us and users. It is not
+> >    good enough just to have "it work". It has to work in about 5–10
+> >    seconds.
+> >    Here are my questions for you guys:  Are we able to use all 24 cores
+> >    for any one user? How does each user interact with the CPU? Can we
+> >    handle a class of 24 students with 24 cores, or is it "complicated"?
+> >    PROBLEM 3:  Zach, Fred. Are we computing render time or transport
+> >    latency correctly? Ideally the printout at the bottom of mapping pages
+> >    would be true latency as experienced by the user. As far as I can tell
+> >    with a stop watch our estimates of time are incorrect by as much as 3
+> >    secs. And note that the link
+> >    to [5]http://joss.theoj.org/papers/10.21105/joss.00025 is not working
+> >    correctly in the footer (see image below). Oddly enough it works fine
+> >    on Tux02
+>
+> Fred, take a note.
+```
+
+Figure out what this is about and fix it.

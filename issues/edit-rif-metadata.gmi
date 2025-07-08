@@ -1,0 +1,121 @@
+# Edit RIF Metadata in GN2
+
+## Tags
+
+* assigned: bonfacem, jnduli
+* priority: high
+* status: closed
+
+## Tasks
+
+### Viewing
+* [X] API: Get WIKI/RIF by symbol from rdf.
+
+> GET /wiki/<symbol>
+
+```
+[{
+    "symbol": "XXXX",
+    "reason": "XXXX",
+    "species": "XXXX",
+    "pubmed_ids": ["XXXX", "XXXX"], // empty array when non-existent
+    "web_url": "XXXX" // Optional
+    "comment": "XXXX",
+    "email": "XXXX",
+    "categories": ["XXXX", "XXXX"], // Enumeration
+    "version": "XXXX",
+    "initial": "XXXX", // Optional user or project code or your initials.
+}]
+```
+
+* [X] UI: Modify traits page to have "GN2 (GeneWiki)"
+* [X] UI: Integrate with API
+
+### Editing
+
+* [X] API: Edit comment by id in mysql/rdf: modifies GeneRIF and GeneRIFXRef tables.
+* [X] API: Modify edit comments by id to include RDF changes.
+
+> POST /wiki/<comment-id>/edit
+
+```
+{
+    "symbol": "XXXX",
+    "reason": "XXXX",
+    "species": "XXXX",
+    "pubmed_ids": ["XXXX", "XXXX"], // Optional
+    "web_url": "XXXX" // Optional
+    "comment": "XXXX",
+    "email": "XXXX",
+    "categories": ["XXXX", "XXXX"], // Enumeration
+    "initial": "XXXX", // Optional user or project code or your initials.
+}
+```
+* [X] UI: Add buttons that edit various relevant sections.
+* [X] UI: Edit page needs to fetch categories from GeneCategory table.  When comment write fails, alert with error.  When comment write success, update the comment on the page, and alert with success.
+* [X] API: Modify edit comments by id to include RDF changes.
+* [X] GN auth integration
+
+### History
+
+* [X] API: End-point to fetch all the historical data
+* [X] UI: Page that contains history for how comments changes.
+
+> GET /wiki/<comment-id>/history
+
+```
+[{
+    "symbol": "XXXX",
+    "reason": "XXXX",
+    "species": "XXXX",
+    "pubmed_ids": ["XXXX", "XXXX"], // Optional
+    "web_url": "XXXX" // Optional
+    "comment": "XXXX",
+    "email": "XXXX",
+    "categories": ["XXXX", "XXXX"], // Enumeration
+    "version": "XXXX",
+    "initial": "XXXX", // Optional user or project code or your initials.
+}]
+```
+
+### Misc ToDos:
+
+* [X] Review performance of query used in 72d9a24e8e65 [Genenetwork3]
+
+### Ops
+
+* [X] RDF synchronization with SQL (gn-machines).
+* [X] Update RDF in tux02.
+* [X] UI: Add "edit" button after testing.
+
+### Resolution
+
+Genenetwork2:
+=> https://github.com/genenetwork/genenetwork2/pull/858 UI/fetch rif using recent apis #858
+=> https://github.com/genenetwork/genenetwork2/pull/864 Add comment history page. #864
+=> https://github.com/genenetwork/genenetwork2/pull/865 Add support for auth in Rif Edit #865
+=> https://github.com/genenetwork/genenetwork2/pull/866 Add a page for searching GeneWiki by symbol. #866
+=> https://github.com/genenetwork/genenetwork2/pull/881 Add display page for NCBI RIF metadata. #881
+=> https://github.com/genenetwork/genenetwork2/pull/881 Add display page for NCBI RIF metadata. #881
+=> https://github.com/genenetwork/genenetwork2/pull/882 GN editting UI improvements #882
+
+
+GeneNetwork3:
+=> https://github.com/genenetwork/genenetwork3/pull/180 Update script that updates Generif_BASIC table #180
+=> https://github.com/genenetwork/genenetwork3/pull/181 Add case insensitive prefixes for rif wiki #181
+=> https://github.com/genenetwork/genenetwork3/pull/184 Api/get wiki from rdf #184
+=> https://github.com/genenetwork/genenetwork3/pull/185 feat: add api calls to get categories and last comment #185
+=> https://github.com/genenetwork/genenetwork3/pull/186 Api/fetch the latest wiki by versionid #186
+=> https://github.com/genenetwork/genenetwork3/pull/187 Api/get end point to fetch all historical data #187
+=> https://github.com/genenetwork/genenetwork3/pull/189 Add auth to edit RIF api call #189
+=> https://github.com/genenetwork/genenetwork3/pull/190 Api/update rif queries #190 
+=> https://github.com/genenetwork/genenetwork3/pull/193 Api/edit rif endpoint #193
+=> https://github.com/genenetwork/genenetwork3/pull/194 Fix C0411/C0412 pylint errors in gn3.api.metadata.api.wiki. #194
+=> https://github.com/genenetwork/genenetwork3/pull/195 Add rif tests #195
+=> https://github.com/genenetwork/genenetwork3/pull/196 Handle missing GN3_SECRETS for CI testing. #196
+=> https://github.com/genenetwork/genenetwork3/pull/197 Rif edit atomicity #197
+=> https://github.com/genenetwork/genenetwork3/pull/198 Run tests against Virtuoso that is spun locally. #198
+=> https://github.com/genenetwork/genenetwork3/pull/199  Add rdf-tests after the check phase. #199
+=> https://github.com/genenetwork/genenetwork3/pull/200 Api/ncbi metadata #200
+
+* closed

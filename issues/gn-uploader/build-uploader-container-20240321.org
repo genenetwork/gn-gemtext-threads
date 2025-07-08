@@ -1,0 +1,632 @@
+#+STARTUP: content
+#+TITLE: Building Uploader Container (2024-03-21)
+#+AUTHOR: Frederick Muriuki Muriithi
+#+OPTIONS: ^:{}
+
+* Log
+
+Fix the [[https://git.genenetwork.org/gn-uploader/commit/?id=3958ce457f621f1b75fa8843ba859d8e6015a6c7][channel introduction documentation]] on =gn-uploader=
+
+On =tux02= do:
+#+BEGIN_SRC shell
+$ guix pull -p ~/opt/guix -C channels.scm
+#+END_SRC
+where =channels.scm= has the following content
+
+#+BEGIN_SRC scheme
+  (list
+   (channel
+    (name 'guix-bioinformatics)
+    (url "https://git.genenetwork.org/guix-bioinformatics/")
+    (branch "master"))
+   (channel
+    (name 'guix-forge)
+    (url "https://git.systemreboot.net/guix-forge/")
+    (branch "main")
+    (introduction
+     (make-channel-introduction
+      "0432e37b20dd678a02efee21adf0b9525a670310"
+      (openpgp-fingerprint
+       "7F73 0343 F2F0 9F3C 77BF  79D3 2E25 EE8B 6180 2BB3"))))
+   (channel
+    (name 'guix-past)
+    (url "https://gitlab.inria.fr/guix-hpc/guix-past")
+    (introduction
+     (make-channel-introduction
+      "0c119db2ea86a389769f4d2b9c6f5c41c027e336"
+      (openpgp-fingerprint
+       "3CE4 6455 8A84 FDC6 9DB4  0CFB 090B 1199 3D9A EBB5"))))
+   (channel
+    (name 'gn-auth)
+    (url "https://git.genenetwork.org/gn-auth")
+    (branch "main"))
+   (channel
+    (name 'gn-uploader)
+    (url "https://git.genenetwork.org/gn-uploader")
+    (branch "main")
+    (introduction
+     (make-channel-introduction
+      "93c77842315d304abbfc27d78d98b7d42da32a61"
+      (openpgp-fingerprint
+       "F370 F409 854B 90E3 52F3  AB01 362B 0BB8 B81D 5A42")))))
+#+END_SRC
+
+Pull was successful!
+
+After that, we get the following on =tux02=:
+#+BEGIN_SRC shell
+  $ ~/opt/guix/bin/guix describe --format=channels
+  hint: Consider installing the `glibc-locales' package and defining
+  `GUIX_LOCPATH', along these lines:
+  
+       guix install glibc-locales
+       export GUIX_LOCPATH="$HOME/.guix-profile/lib/locale"
+  
+  See the "Application Setup" section in the manual, for more info.
+  
+  (list (channel
+          (name 'gn-uploader)
+          (url "https://git.genenetwork.org/gn-uploader")
+          (branch "main")
+          (commit
+            "3958ce457f621f1b75fa8843ba859d8e6015a6c7")
+          (introduction
+            (make-channel-introduction
+              "93c77842315d304abbfc27d78d98b7d42da32a61"
+              (openpgp-fingerprint
+                "F370 F409 854B 90E3 52F3  AB01 362B 0BB8 B81D 5A42"))))
+        (channel
+          (name 'gn-auth)
+          (url "https://git.genenetwork.org/gn-auth")
+          (branch "main")
+          (commit
+            "ade6c76208bd45c24cdd0e73bf3570e6a2bfa131"))
+        (channel
+          (name 'guix-forge)
+          (url "https://git.systemreboot.net/guix-forge/")
+          (branch "main")
+          (commit
+            "6c622a67051c22eeefe37eedb17d427fbb70c99b")
+          (introduction
+            (make-channel-introduction
+              "0432e37b20dd678a02efee21adf0b9525a670310"
+              (openpgp-fingerprint
+                "7F73 0343 F2F0 9F3C 77BF  79D3 2E25 EE8B 6180 2BB3"))))
+        (channel
+          (name 'guix-bioinformatics)
+          (url "https://git.genenetwork.org/guix-bioinformatics/")
+          (branch "master")
+          (commit
+            "2fdbf2445e5293ba9a12b154c58774e73dfeabe5"))
+        (channel
+          (name 'guix)
+          (url "https://git.savannah.gnu.org/git/guix.git")
+          (branch "master")
+          (commit
+            "b0b988c41c9e0e591274495a1b2d6f27fcdae15a")
+          (introduction
+            (make-channel-introduction
+              "9edb3f66fd807b096b48283debdcddccfea34bad"
+              (openpgp-fingerprint
+                "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))
+        (channel
+          (name 'guix-past)
+          (url "https://gitlab.inria.fr/guix-hpc/guix-past")
+          (branch "master")
+          (commit
+            "921f845dc0dec9f052dcda479a15e787f9fd5b0a")
+          (introduction
+            (make-channel-introduction
+              "0c119db2ea86a389769f4d2b9c6f5c41c027e336"
+              (openpgp-fingerprint
+                "3CE4 6455 8A84 FDC6 9DB4  0CFB 090B 1199 3D9A EBB5")))))
+#+END_SRC
+
+Now, build the container:
+#+BEGIN_SRC shell
+  env PATH="/home/fredm/opt/guix/bin:${PATH}" ./uploader-deploy.sh
+  ︙
+  successfully built /gnu/store/0fwp30li4ngfmradkiyc81cdmapm04bf-gn-uploader-0.0.1-a4ed5d82.drv
+  ︙
+  /gnu/store/4rfwx4d376kbql9y31cfldf3prcfrvx2-run-container
+  ︙
+#+END_SRC
+
+Restart the container
+#+BEGIN_SRC shell
+  $ sudo systemctl stop genenetwork-uploader-container.service
+  $ sudo systemctl start genenetwork-uploader-container.service
+  $ sudo systemctl status genenetwork-uploader-container.service
+#+END_SRC
+
+Check logs in =/export2/guix-containers/genenetwork/uploader/var/log/gunicorn-genenetwork2.log=
+
+Still getting:
+#+BEGIN_EXAMPLE
+︙
+2024-03-21 02:18:29     from gn2.wqflask.oauth2.checks import user_logged_in
+2024-03-21 02:18:29   File "/gnu/store/2qhgkf5j649kv57nw4lzsbwlnb1790vq-profile/lib/python3.10/site-packages/gn2/wqflask/oauth2/checks.py", line 10, i
+n <module>
+2024-03-21 02:18:29     from .client import authserver_uri, oauth2_clientid, oauth2_clientsecret
+2024-03-21 02:18:29 ImportError: cannot import name 'authserver_uri' from partially initialized module 'gn2.wqflask.oauth2.client' (most likely due to
+ a circular import) (/gnu/store/2qhgkf5j649kv57nw4lzsbwlnb1790vq-profile/lib/python3.10/site-packages/gn2/wqflask/oauth2/client.py)
+2024-03-21 02:18:29 [2024-03-21 02:18:29 +0000] [9] [INFO] Worker exiting (pid: 9)
+︙
+#+END_EXAMPLE
+
+When we verify where this comes from:
+#+BEGIN_SRC shell
+  $ ls -l /gnu/store/2qhgkf5j649kv57nw4lzsbwlnb1790vq-profile/lib/python3.10/site-packages/ | grep gn2
+  lrwxrwxrwx 1 root root  104 Dec 31  1969 gn2 -> /gnu/store/vfa2zdla7ixbb2l5i7k6xnlh5d1rshz9-genenetwork2-3.11-4.1e81c74/lib/python3.10/site-packages/gn2
+#+END_SRC
+
+We see that the code being run is from [[https://github.com/genenetwork/genenetwork2/commit/1e81c74ee8752ad2913b4e610ba7575638755385][GeneNetwork2: commit 1e81c74]] from
+05^{th} March 2024. In [[https://git.genenetwork.org/guix-bioinformatics/tree/gn/packages/genenetwork.scm?id=2fdbf2445e5293ba9a12b154c58774e73dfeabe5#n190][=guix-bioinformatics=, however]], we have specified a newer
+[[https://github.com/genenetwork/genenetwork2/commit/b9e04ad79e0039edba25d58f8bc03e4d2a17583b][commit b9e04ad7]] from 07^{th} March 2024.
+
+  Stop uploader service and delete logs:
+#+BEGIN_SRC shell
+  $ sudo systemctl stop genenetwork-uploader-container.service
+  $ sudo rm -fv /export2/guix-containers/genenetwork/uploader/var/log/gunicorn-g*
+  removed '/export2/guix-containers/genenetwork/uploader/var/log/gunicorn-genenetwork2.log'
+  removed '/export2/guix-containers/genenetwork/uploader/var/log/gunicorn-genenetwork3.log'
+  removed '/export2/guix-containers/genenetwork/uploader/var/log/gunicorn-gn-auth.log'
+  removed '/export2/guix-containers/genenetwork/uploader/var/log/gunicorn-gn-uploader.log'
+  $ ls /export2/guix-containers/genenetwork/uploader/var/log/
+  debug            gunicorn-genenetwork2.log  mcron.log       messages       mysqld.log  nscd.log  secure.1.gz   wtmp
+  guix-daemon.log  maillog                    mcron.log.1.gz  messages.1.gz  nginx       secure    virtuoso.log
+#+END_SRC
+
+The file =/export2/guix-containers/genenetwork/uploader/var/log/gunicorn-genenetwork2.log= is still showing up.
+
+Stop all containers for good measure:
+#+BEGIN_SRC shell
+  $ sudo systemctl stop genenetwork-uploader-container.service
+  $ sudo systemctl stop genenetwork-container.service
+  $ sudo systemctl stop genenetwork-development-container.service
+  $ sudo rm -fv /export2/guix-containers/genenetwork/uploader/var/log/gunicorn-g*
+  removed '/export2/guix-containers/genenetwork/uploader/var/log/gunicorn-genenetwork2.log'
+  $ ls /export2/guix-containers/genenetwork/uploader/var/log/
+  debug            gunicorn-genenetwork2.log  mcron.log       messages       mysqld.log  nscd.log  secure.1.gz   wtmp
+  guix-daemon.log  maillog                    mcron.log.1.gz  messages.1.gz  nginx       secure    virtuoso.log
+#+END_SRC
+
+The file =/export2/guix-containers/genenetwork/uploader/var/log/gunicorn-genenetwork2.log= is still showing up.
+
+Something else is running and recreating the file and I have no idea what it is.
+
+Restart all containers:
+#+BEGIN_SRC shell
+  $ sudo systemctl start genenetwork-uploader-container.service
+  $ sudo systemctl start genenetwork-container.service
+  $ sudo systemctl start genenetwork-development-container.service
+#+END_SRC
+
+* Log 2024-03-21T14:57+03:00UTC
+
+** Reset profile
+
+List installed packages
+#+begin_src shell
+  /usr/local/guix-profiles/guix-daemon/bin/guix \
+      package -p ~/opt/guix --list-installed
+#+end_src
+
+which gave:
+#+begin_example
+guix-past           921f845 out /gnu/store/7sljixsgvsgdiafshqybdrl8m0f2j8v5-guix-past
+guix                b0b988c out /gnu/store/dhisx07fngb69qkj4gnlzz5iyakw25zy-guix-b0b988c41
+guix-bioinformatics 2fdbf24 out /gnu/store/4vgrwfaxbvixh1jpsq9wqnm5jc7rhd0r-guix-bioinformatics
+guix-forge          6c622a6 out /gnu/store/5bc8079iyd8z3n4l3np09yqgqhdzailv-guix-forge
+gn-auth             ade6c76 out /gnu/store/l52qdmn3c3liz0pywkndn9j49a9axh6i-gn-auth
+gn-uploader         3958ce4 out /gnu/store/adqg6vxq9z2ds0y6a275yqaijv3vslpw-gn-uploader
+#+end_example
+
+remove all installed packages
+#+begin_src shell
+  /usr/local/guix-profiles/guix-daemon/bin/guix \
+      package -p ~/opt/guix -r guix-past guix guix-bioinformatics guix-forge \
+      gn-auth gn-uploader
+#+end_src
+
+Verify everything was uninstalled by listing packages again as done previously.
+
+Now list generations:
+#+begin_src shell
+  /usr/local/guix-profiles/guix-daemon/bin/guix \
+      package -p ~/opt/guix --list-generations
+#+end_src
+
+which gave (truncated for readability):
+#+begin_example
+Generation 7 Nov 12 2023 20:45:25
+  guix-past          1e25b23 out /gnu/store/91yjvk23arknxlavd1m7rbva3qnrx6fp-guix-past
+  guix               330b94e out /gnu/store/rsb6nqychig8qdan23rj6w5m7q2kha22-guix-330b94e8b
+  ︙
+ ,- guix              b0b988c out /gnu/store/8qrhzflvlp71ijsg6wv13fpcsxxq0n52-guix-b0b988c41
+
+Generation 16 Mar 21 2024 07:04:36 (current)
+ ,- gn-uploader       3958ce4 out /gnu/store/adqg6vxq9z2ds0y6a275yqaijv3vslpw-gn-uploader
+ ,- gn-auth           ade6c76 out /gnu/store/l52qdmn3c3liz0pywkndn9j49a9axh6i-gn-auth
+ ,- guix-forge        6c622a6 out /gnu/store/5bc8079iyd8z3n4l3np09yqgqhdzailv-guix-forge
+ ,- guix-bioinformatics 2fdbf24 out /gnu/store/4vgrwfaxbvixh1jpsq9wqnm5jc7rhd0r-guix-bioinformatics
+ ,- guix              b0b988c out /gnu/store/dhisx07fngb69qkj4gnlzz5iyakw25zy-guix-b0b988c41
+ ,- guix-past         921f845 out /gnu/store/7sljixsgvsgdiafshqybdrl8m0f2j8v5-guix-past
+#+end_example
+
+Delete all generations except latest
+#+begin_src shell
+  /usr/local/guix-profiles/guix-daemon/bin/guix \
+      package -p ~/opt/guix --delete-generations=7..16
+#+end_src
+
+giving
+#+begin_example
+guix package: warning: not removing generation 16, which is current
+deleting /home/fredm/opt/guix-7-link
+deleting /home/fredm/opt/guix-8-link
+deleting /home/fredm/opt/guix-9-link
+deleting /home/fredm/opt/guix-10-link
+deleting /home/fredm/opt/guix-11-link
+deleting /home/fredm/opt/guix-12-link
+deleting /home/fredm/opt/guix-13-link
+deleting /home/fredm/opt/guix-14-link
+deleting /home/fredm/opt/guix-15-link
+︙
+#+end_example
+
+Now delete symlinks to ensure next ~guix gc~ cleans up correctly
+#+begin_src shell
+  rm -fv ~/opt/guix*
+#+end_src
+
+Now recreate a new profile with minimal channels:
+
+#+begin_src shell
+    /usr/local/guix-profiles/guix-daemon/bin/guix \
+        pull -p ~/opt/guix -C minimal-channels.scm
+#+end_src
+
+Where =minimal-channels.scm= has the following content:
+
+#+begin_src scheme
+  (list
+   (channel
+    (name 'guix-bioinformatics)
+    (url "https://git.genenetwork.org/guix-bioinformatics/")
+    (branch "master"))
+   (channel
+    (name 'guix-past)
+    (url "https://gitlab.inria.fr/guix-hpc/guix-past")
+    (introduction
+     (make-channel-introduction
+      "0c119db2ea86a389769f4d2b9c6f5c41c027e336"
+      (openpgp-fingerprint
+       "3CE4 6455 8A84 FDC6 9DB4  0CFB 090B 1199 3D9A EBB5")))))
+#+end_src
+
+Let's see what the new profile has:
+#+begin_src shell
+  ~/opt/guix/bin/guix describe
+#+end_src
+
+which gives:
+#+begin_example
+Generation 1 Mar 21 2024 07:34:58 (current)
+  guix-bioinformatics 2fdbf24
+    repository URL: https://git.genenetwork.org/guix-bioinformatics/
+    branch: master
+    commit: 2fdbf2445e5293ba9a12b154c58774e73dfeabe5
+  guix-past 921f845
+    repository URL: https://gitlab.inria.fr/guix-hpc/guix-past
+    branch: master
+    commit: 921f845dc0dec9f052dcda479a15e787f9fd5b0a
+  guix b0b988c
+    repository URL: https://git.savannah.gnu.org/git/guix.git
+    branch: master
+    commit: b0b988c41c9e0e591274495a1b2d6f27fcdae15a
+#+end_example
+
+Awesome. Now, let's add the profile to the front of the path and build the container afresh:
+#+begin_src shell
+  $ cd /home/fredm/gn-machines
+  $ export PATH="/home/fredm/opt/guix/bin:${PATH}"
+  $ ./uploader-deploy.sh
+#+end_src
+
+I get:
+#+begin_example
+guix system: error: failed to load 'uploader.scm':
+ice-9/boot-9.scm:3330:6: In procedure resolve-interface:
+no code for module (forge acme)
+#+end_example
+
+ I need the =guix-forge= channel too. Add it to the channels:
+
+#+begin_src scheme
+  ;; minimal-channels.scm
+  (list
+   (channel
+    (name 'guix-bioinformatics)
+    (url "https://git.genenetwork.org/guix-bioinformatics/")
+    (branch "master"))
+   (channel
+    (name 'guix-past)
+    (url "https://gitlab.inria.fr/guix-hpc/guix-past")
+    (introduction
+     (make-channel-introduction
+      "0c119db2ea86a389769f4d2b9c6f5c41c027e336"
+      (openpgp-fingerprint
+       "3CE4 6455 8A84 FDC6 9DB4  0CFB 090B 1199 3D9A EBB5"))))
+   (channel
+    (name 'guix-forge)
+    (url "https://git.systemreboot.net/guix-forge/")
+    (branch "main")
+    (introduction
+     (make-channel-introduction
+      "0432e37b20dd678a02efee21adf0b9525a670310"
+      (openpgp-fingerprint
+       "7F73 0343 F2F0 9F3C 77BF  79D3 2E25 EE8B 6180 2BB3")))))
+
+#+end_src
+
+Pull guix with new =minimal-channels.scm=, and check to see what the profile contains:
+#+begin_src shell
+  ~/opt/guix/bin/guix describe
+#+end_src
+giving
+#+begin_example
+Generation 2    Mar 21 2024 07:49:01    (current)
+  guix-bioinformatics 2fdbf24
+    repository URL: https://git.genenetwork.org/guix-bioinformatics/
+    branch: master
+    commit: 2fdbf2445e5293ba9a12b154c58774e73dfeabe5
+  guix-past 921f845
+    repository URL: https://gitlab.inria.fr/guix-hpc/guix-past
+    branch: master
+    commit: 921f845dc0dec9f052dcda479a15e787f9fd5b0a
+  guix-forge 6c622a6
+    repository URL: https://git.systemreboot.net/guix-forge/
+    branch: main
+    commit: 6c622a67051c22eeefe37eedb17d427fbb70c99b
+  guix b0b988c
+    repository URL: https://git.savannah.gnu.org/git/guix.git
+    branch: master
+    commit: b0b988c41c9e0e591274495a1b2d6f27fcdae15a
+#+end_example
+
+Attempt to rebuild the container:
+#+begin_src shell
+  ./uploader-deploy.sh
+#+end_src
+
+Success!!!
+
+Stop the currently running container
+#+begin_src shell
+  sudo systemctl stop genenetwork-uploader-container.service
+#+end_src
+
+Delete logs and check they are gone:
+#+begin_src shell
+  $ sudo rm -fv /export2/guix-containers/genenetwork/uploader/var/log/gunicorn-g*.log
+  $ ls /export2/guix-containers/genenetwork/uploader/var/log/
+#+end_src
+
+= /export2/guix-containers/genenetwork/uploader/var/log/gunicorn-genenetwork2.log=
+still rears its ugly head 😭.
+
+Start the container for now:
+#+begin_src shell
+  sudo systemctl start genenetwork-uploader-container.service
+#+end_src
+
+
+* Log 2024-03-22T11:24+03:00UTC
+
+Verify guix is clean:
+#+begin_src shell
+  /usr/local/guix-profiles/guix-daemon/bin/guix describe
+#+end_src
+giving:
+#+begin_example
+Generation 4 Mar 21 2024 05:04:28 (current)
+  guix 69951a6
+    repository URL: https://git.savannah.gnu.org/git/guix.git
+    branch: master
+    commit: 69951a61a1d8f1f2135ea2dc836738be282b97bc
+#+end_example
+
+Now clone/pull all relevant repositories
+#+begin_src shell
+  $ cd /home/fredm/gn-machines/ && git pull origin define-gn-uploader
+  $ cd /home/fredm/guix-bioinformatics/ && git pull origin master
+  $ cd /home/fredm/ && git clone https://gitlab.inria.fr/guix-hpc/guix-past
+#+end_src
+ all those succeeded.
+
+ Cloning =guix-forge= failed:
+ #+begin_src shell
+   $ cd /home/fredm/ && git clone https://git.systemreboot.net/guix-forge/
+   Cloning into 'guix-forge'...
+   fatal: unable to access 'https://git.systemreboot.net/guix-forge/': server certificate verification failed. CAfile: /etc/ssl/certs/ca-certificates.crt CRLfile: none
+ #+end_src
+looks like *tux02* does not trust the certificates from systemreboot.net
+
+Clone =guix-forge= with no verification
+ #+begin_src shell
+   $ cd /home/fredm/ && env GIT_SSL_NO_VERIFY=1 git clone https://git.systemreboot.net/guix-forge/
+ #+end_src
+
+ Success!!!
+
+ Now stop uploader container:
+ #+begin_src shell
+   sudo systemctl stop genenetwork-uploader-container.service
+ #+end_src
+
+Delete existing logs:
+#+begin_src shell
+  sudo rm -fv /export2/guix-containers/genenetwork/uploader/var/log/gunicorn-g*.log
+#+end_src
+
+Find out the process related to the annoying log file:
+#+begin_src shell
+  sudo lsof /export2/guix-containers/genenetwork/uploader/var/log/gunicorn-genenetwork2.log
+#+end_src
+and we get:
+#+begin_example
+COMMAND    PID USER   FD   TYPE DEVICE SIZE/OFF    NODE NAME
+shepherd 94815 root   15w   REG  259,8  2322452 9830599 /export2/guix-containers/genenetwork/uploader/var/log/gunicorn-genenetwork2.log
+#+end_example
+
+Get into the container and check the container name:
+#+begin_src shell
+  $ sudo /usr/local/guix-profiles/guix-daemon/bin/guix container exec 94815 /run/current-system/profile/bin/bash --login
+  root@genenetwork /# hostname 
+  genenetwork
+#+end_src
+
+Aha! Looks like I might have run the build for the uploader container on *tux02*
+before I had changed the hostnames and paths!
+
+Check PID(s) of production container:
+#+begin_src shell
+  $ ps -u root -f --forest | grep -A4 '/usr/local/bin/genenetwork-container'
+#+end_src
+which gives:
+#+begin_example
+root      61415      1  0 Mar20 ?        00:00:00 /gnu/store/1gd9nsy4cps8fnrd1avkc9l01l7ywiai-guile-3.0.9/bin/guile --no-auto-compile /usr/local/bin/genenetwork-container
+root      61436  61415  0 Mar20 ?        00:15:27  \_ /gnu/store/bhynhk0c6ssq3fqqc59fvhxjzwywsjbb-guile-3.0.9/bin/guile --no-auto-compile /gnu/store/06mz0yjkghi7r6d7lmhvv7gryipljhdd-shepherd-0.10.3/bin/shepherd --config /gnu/store/gg29j35fvsx04xc41yb3zx7zgd09519a-shepherd.conf
+root      61488  61436  0 Mar20 ?        00:00:00      \_ /gnu/store/gbz5y54xi3bxc843azjsssmv6n5p8kj3-eudev-3.2.11/sbin/udevd
+root      61533  61436  0 Mar20 ?        00:00:00      \_ /gnu/store/lx54pvb5523v45i6c3axzcjlvl6z18wz-guix-1.4.0-16.aeb4943/bin/guix-daemon --build-users-group guixbuild --max-silent-time 3600 --timeout 86400 --log-compression gzip --discover=no --substitute-urls https://ci.guix.gnu.org https://bordeaux.guix.gnu.org --disable-chroot
+root      61567  61436  0 Mar20 ?        00:00:16      \_ /gnu/store/6i3bj0j8m97rmgdsg2vgrx38crpmnwan-inetutils-2.3/libexec/syslogd --rcfile=/etc/syslog.conf
+#+end_example
+
+So the container that is shouting into the log file is not the production container! Awesome! We can safely kill the process.
+
+First off, let's try and figure out the parent PID for the process:
+#+begin_src shell
+  ps -f --forest -p 94815
+#+end_src
+
+which gives:
+#+begin_example
+UID         PID   PPID  C STIME TTY          TIME CMD
+root      94815      1 13 Mar12 pts/31   1-08:33:46 /gnu/store/bhynhk0c6ssq3fqqc59fvhxjzwywsjbb-guile-3.0.9/bin/guile --no-auto-compile /gnu/store/06m
+#+end_example
+
+There are no other related processes! Looks like an orphaned process from a possibly older container…
+
+Kill it!
+#+begin_src shell
+  sudo kill -s SIGKILL 94815
+#+end_src
+
+Check whether production (test1.genenetwork.org) is still online
+#+begin_src
+  systemctl status genenetwork-container.service
+#+end_src
+
+Yep! We are good!
+
+Now delete the log file again and check that it is not recreated:
+#+begin_src shell
+  $ sudo rm -f /export2/guix-containers/genenetwork/uploader/var/log/gunicorn-g*.log
+  $ ls /export2/guix-containers/genenetwork/uploader/var/log/
+#+end_src
+and we get
+#+begin_example
+debug            maillog    mcron.log.1.gz  messages.1.gz  nginx     secure       virtuoso.log
+guix-daemon.log  mcron.log  messages        mysqld.log     nscd.log  secure.1.gz  wtmp
+#+end_example
+
+Great success!!! 🎉🎉
+
+Now, let us build the container with the pristine guix
+#+begin_src shell
+  $ echo $PATH
+  /usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
+  $ export PATH="/usr/local/guix-profiles/guix-daemon/bin:${PATH}"
+  $ echo $PATH
+  /usr/local/guix-profiles/guix-daemon/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
+  $ cd /home/fredm/gn-machines/
+  $ ./uploader-deploy.sh /home/fredm/guix-forge /home/fredm/guix-past /home/fredm/guix-bioinformatics
+#+end_src
+
+The upload step fails with
+#+begin_example
+===== Auxilliary module load paths =====
+-L /home/fredm/guix-forge/guix
+-L /home/fredm/guix-past
+-L /home/fredm/guix-bioinformatics
+===== END: Auxilliary module load paths =====
+hint: Consider installing the `glibc-locales' package and defining
+`GUIX_LOCPATH', along these lines:
+
+     guix install glibc-locales
+     export GUIX_LOCPATH="$HOME/.guix-profile/lib/locale"
+
+See the "Application Setup" section in the manual, for more info.
+
+guix system: warning: Consider running 'guix pull' followed by
+'guix system reconfigure' to get up-to-date packages and security updates.
+
+Backtrace:
+In guix/store.scm:
+  2065:12 19 (_ #<store-connection 256.100 7fae2bd9bd70>)
+  1382:11 18 (map/accumulate-builds #<store-connection 256.100 7fae…> …)
+   1300:8 17 (call-with-build-handler #<procedure 7fae2b7a4bd0 at g…> …)
+  2180:25 16 (run-with-store #<store-connection 256.100 7fae2bd9bd70> …)
+In guix/gexp.scm:
+   914:13 15 (_ _)
+In guix/store.scm:
+   2008:8 14 (_ _)
+In guix/gexp.scm:
+   299:22 13 (_ _)
+In guix/store.scm:
+  2052:38 12 (_ #<store-connection 256.100 7fae2bd9bd70>)
+In gnu/system.scm:
+   1632:9 11 (_ _)
+In guix/store.scm:
+  2180:25 10 (run-with-store #<store-connection 256.100 7fae2bd9bd70> …)
+In gnu/system.scm:
+  1299:19  9 (_ _)
+   836:11  8 (operating-system-services #<<operating-system> kernel:…>)
+In gnu/system/linux-container.scm:
+   174:27  7 (services _)
+In ice-9/eval.scm:
+   191:35  6 (_ #(#(#<module (#{ g709}#) 7fae2f601640>) #<<operati…>))
+   173:55  5 (_ #(#(#<module (#{ g709}#) 7fae2f601640>) #<<operati…>))
+   196:35  4 (_ #(#(#<module (#{ g709}#) 7fae2f601640>) #<<operati…>))
+   223:20  3 (proc #(#(#<module (#{ g709}#) 7fae2f601640>) #<<oper…>))
+In unknown file:
+           2 (%resolve-variable (7 . genenetwork-service-type) #<mod…>)
+In ice-9/boot-9.scm:
+  1685:16  1 (raise-exception _ #:continuable? _)
+  1685:16  0 (raise-exception _ #:continuable? _)
+
+ice-9/boot-9.scm:1685:16: In procedure raise-exception:
+error: genenetwork-service-type: unbound variable
+#+end_example
+
+😭😭😭
+
+Reset path, and first build with non-pristine guix:
+#+begin_src shell
+  $ export PATH=""
+  $ env PATH="/home/fredm/opt/guix/bin:${PATH}" ./uploader-deploy.sh
+#+end_src
+Success!
+
+Start the container
+#+begin_src shell
+  sudo systemctl start genenetwork-uploader-container.service
+#+end_src
+
+Check GN2 log for former weirdness
+#+begin_src shell
+  sudo cat /export2/guix-containers/genenetwork/uploader/var/log/gunicorn-genenetwork2.log
+#+end_src
+
+No more of the errors from the wrong profile!

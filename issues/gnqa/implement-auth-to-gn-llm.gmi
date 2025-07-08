@@ -1,0 +1,14 @@
+# Integrating gn-auth with gn-llm
+
+## Tags
+
+* assigned: alexm, Shelby
+* keywords: llm, auth
+* type: feature
+* priority: high
+* status: done, completed, closed
+
+## Description
+
+The main objective is to integrate gn-authentication with gn-llm. This feature will ensure that only
+logged-in users can access the functionality, thereby preventing misuse by bots and unauthorized users.

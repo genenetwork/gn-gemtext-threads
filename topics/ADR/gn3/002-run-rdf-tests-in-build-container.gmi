@@ -1,0 +1,32 @@
+# [gn3/ADR-002] Move RDF Test Cases to Build Container
+
+* author: bonfacem
+* status: accepted
+* reviewed-by: jnduli
+
+## Context
+
+GN3 RDF tests are run against the CD's virtuoso instance.  As such, we need to set special parameters when running tests:
+
+```
+SPARQL_USER = "dba"
+SPARQL_PASSWORD = "dba"
+SPARQL_AUTH_URI="http://localhost:8890/sparql-auth/"
+SPARQL_CRUD_AUTH_URI="http://localhost:8890/sparql-graph-crud-auth"
+FAHAMU_AUTH_TOKEN="XXXXXX"
+```
+
+This extra bootstrapping when running tests needs care, and locks tests to CD or special configuration when running locally.  This leads to fragile tests that cause CD to break.  Moreover, to add tests to CD, we would have to add extra g-exp to gn-machines.
+
+This ADR is related to:
+
+=> /topics/ADR/gn3/000-add-test-cases-for-rdf.gmi gn3/ADR-000.
+
+## Decision
+
+Move tests to the test build phase of building the genenetwork3 package.  These tests are added in the ".guix/genenetwork3-all-tests.scm" file instead of the main "genenetwork3" package definition in guix-bioinformatics.  This way, we have all our "light" tests I.e. unit tests running in guix-bioinformatics, while having all our heavier tests, in this case, RDF tests, running in CD.
+
+## Consequences
+
+* Extra bootstrapping to gn3's .guix/genenetwork3-package.scm to get tests working.
+* GN3 RDF tests refactoring to use a virtuoso instance running in the background while tests are running.

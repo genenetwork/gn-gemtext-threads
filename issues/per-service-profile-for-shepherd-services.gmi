@@ -1,10 +1,16 @@
 # Each shepherd service needs its own guix profile.
 
-Currently there are a bunch of shepherd services (on Penguin2, as user shepherd) who are using the global shepherd guix profile and loading guix-bioinformatics at service start time to start their services. This is bad because:
+UPDATE: genecup is now running as a container on tux02. This is a model for getting rid of guix profiles. Note that we
+do need to fixate guix-bioinformatics and guix-past channels *per* service. Otherwise updates are impossible.
+
+In time we may move to hosting these services in a guix system container (a VM).
+
+Currently there are a bunch of shepherd services (on tux02, as user shepherd) who are using the global shepherd guix profile and loading guix-bioinformatics at service start time to start their services. This is bad because:
 
 * we aren't using per-service guix-bioinformatics worktrees, so the branch changes between service refreshes
 * service start times are high because we have to rebuild the service (due to above)
 * services which are restarted are in an "untested" state until they work
+
 
 ## Services which need to be migrated:
 
@@ -22,6 +28,9 @@ Currently there are a bunch of shepherd services (on Penguin2, as user shepherd)
 
 ## Services which already have their own profile:
 
+Note that the profiles essentially just contain the guix binary, acting like a time machine. It is
+used to fire up a guix shell/environment:
+
 * bnw
 * cronjob-gitea
 * cronjob-pubmed (genecup)
@@ -34,8 +43,8 @@ Currently there are a bunch of shepherd services (on Penguin2, as user shepherd)
 
 ## Tags
 
-* assigned: efraim
+* assigned: efraim, pjotrp
 * type: bug
-* status: unclear
+* status: in progress
 * priority: high
 * keywords: shepherd, system administration

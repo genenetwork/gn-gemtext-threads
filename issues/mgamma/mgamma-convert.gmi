@@ -1,0 +1,35 @@
+# MGAMMA Convert
+
+MGamma can convert between different formats.
+
+# Tags
+
+* assigned: pjotrp, artyom
+* type: feature
+* priority: high
+
+# Tasks
+
+* [X] Store genotypes as floats instead of doubles in lmdb
+* [X] Required for the above: rework the type system in guile-gsl to allow float vectors/matrices
+* [ ] Add annotations to genotype lmdb format - probably as the first named columns
+* [X] Provide a metadata header in JSON that tracks such info and a version
+
+```
+{type: "geno", version:0.01, float: true, anno:["name","chr","pos"]}
+```
+* [ ] Convert genotypes from strings using Rqtl2 CSV and metadata-JSON version of the control format, see
+
+=> https://kbroman.org/qtl2/assets/vignettes/input_files.html
+
+* [X] Write kinship lmdb as floats (half size)
+* [X] Add individual names as first column in kinship rows (implemented as plain unsigned ints for now)
+* [ ] Somehow find the names for individuals? Is there a file format for that?
+* [X] If symmetric only store half the data
+* [X] Add JSON meta header to track that information
+
+```
+{type: "GRM", version:0.01, float: true, symmetric: true}
+```
+* [ ] Support genodb database format:
+=> ../../topics/database/genotype-database.gmi See the genotype-database topic

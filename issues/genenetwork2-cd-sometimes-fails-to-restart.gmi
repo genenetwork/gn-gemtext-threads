@@ -10,4 +10,7 @@ A reminder that CD logs are publicly accessible on tux02.
 => /topics/cd-logs
 
 ## Resolution
+
 This issue has been re-opened.  Originally, we believed that the restart failures were due to occasional breakage in GN code, and were not a problem with the CI/CD system itself.  This will need further investigation to figure out what the root cause is.
+
+* closed

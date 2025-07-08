@@ -1,0 +1,174 @@
+# Python Requests Error in Container
+
+## Tags
+
+* type: bug
+* assigned: fredm
+* priority: critical
+* status: closed, completed, fixed
+* interested: alexk, aruni, bonfacem, pjotrp, zsloan
+* keywords: production, container, tux04, python, requests
+
+## Description
+
+Building the container with the
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=eb7beb340a9731775e8ad177e47b70dba2f2a84f upgraded guix definition
+leads to python's requests library failing.
+
+```
+2024-10-30 16:04:13 OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/ssl/certs/ca-certificates.crt
+```
+
+If you login to the container itself, however, you find that the file `/etc/ssl/certs/ca-certificates.crt` actually exists and has content.
+
+Possible fixes suggested are to set up correct envvars for the requests library, such as `REQUESTS_CA_BUNDLE`
+
+See
+=> https://requests.readthedocs.io/en/latest/user/advanced/#ssl-cert-verification
+
+### Troubleshooting Logs
+
+Try reproducing the issue locally:
+
+```
+$ guix --version
+hint: Consider installing the `glibc-locales' package and defining `GUIX_LOCPATH', along these lines:
+
+     guix install glibc-locales
+     export GUIX_LOCPATH="$HOME/.guix-profile/lib/locale"
+
+See the "Application Setup" section in the manual, for more info.
+
+guix (GNU Guix) 2394a7f5fbf60dd6adc0a870366adb57166b6d8b
+Copyright (C) 2024 the Guix authors
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+$
+$ guix shell --container --network python python-requests coreutils
+[env]$ ls "${GUIX_ENVIRONMENT}/etc"
+ld.so.cache  profile
+```
+
+We see from the above that there are no certificates in the environment with just python and python-requests.
+
+Okay. Now let's write a simple python script to test things out with:
+
+```
+import requests
+
+resp = requests.get("https://github.com")
+print(resp)
+```
+
+and run it!
+
+```
+$ guix shell --container --network python python-requests coreutils -- python3 test.py
+Traceback (most recent call last):
+  File "/tmp/test.py", line 1, in <module>
+    import requests
+  File "/gnu/store/b6ny4p29f32rrnnvgx7zz1nhsms2zmqk-profile/lib/python3.10/site-packages/requests/__init__.py", line 164, in <module>
+    from .api import delete, get, head, options, patch, post, put, request
+  File "/gnu/store/b6ny4p29f32rrnnvgx7zz1nhsms2zmqk-profile/lib/python3.10/site-packages/requests/api.py", line 11, in <module>
+    from . import sessions
+  File "/gnu/store/b6ny4p29f32rrnnvgx7zz1nhsms2zmqk-profile/lib/python3.10/site-packages/requests/sessions.py", line 15, in <module>
+    from .adapters import HTTPAdapter
+  File "/gnu/store/b6ny4p29f32rrnnvgx7zz1nhsms2zmqk-profile/lib/python3.10/site-packages/requests/adapters.py", line 81, in <module>
+    _preloaded_ssl_context.load_verify_locations(
+FileNotFoundError: [Errno 2] No such file or directory
+```
+
+Uhmm, what is this new error?
+
+Add `nss-certs` and try again.
+
+```
+$ guix shell --container --network python python-requests nss-certs coreutils
+[env]$ ls ${GUIX_ENVIRONMENT}/etc/ssl/
+certs
+[env]$ python3 test.py
+Traceback (most recent call last):
+  File "/tmp/test.py", line 1, in <module>
+    import requests
+  File "/gnu/store/17dw8qczqqz9fmj2kxzsbfqn730frqd7-profile/lib/python3.10/site-packages/requests/__init__.py", line 164, in <module>
+    from .api import delete, get, head, options, patch, post, put, request
+  File "/gnu/store/17dw8qczqqz9fmj2kxzsbfqn730frqd7-profile/lib/python3.10/site-packages/requests/api.py", line 11, in <module>
+    from . import sessions
+  File "/gnu/store/17dw8qczqqz9fmj2kxzsbfqn730frqd7-profile/lib/python3.10/site-packages/requests/sessions.py", line 15, in <module>
+    from .adapters import HTTPAdapter
+  File "/gnu/store/17dw8qczqqz9fmj2kxzsbfqn730frqd7-profile/lib/python3.10/site-packages/requests/adapters.py", line 81, in <module>
+    _preloaded_ssl_context.load_verify_locations(
+FileNotFoundError: [Errno 2] No such file or directory
+[env]$
+[env]$ export REQUESTS_CA_BUNDLE="${GUIX_ENVIRONMENT}/etc/ssl/certs/ca-certificates.crt"
+[env]$ $ python3 test.py
+Traceback (most recent call last):
+  File "/tmp/test.py", line 1, in <module>
+    import requests
+  File "/gnu/store/17dw8qczqqz9fmj2kxzsbfqn730frqd7-profile/lib/python3.10/site-packages/requests/__init__.py", line 164, in <module>
+    from .api import delete, get, head, options, patch, post, put, request
+  File "/gnu/store/17dw8qczqqz9fmj2kxzsbfqn730frqd7-profile/lib/python3.10/site-packages/requests/api.py", line 11, in <module>
+    from . import sessions
+  File "/gnu/store/17dw8qczqqz9fmj2kxzsbfqn730frqd7-profile/lib/python3.10/site-packages/requests/sessions.py", line 15, in <module>
+    from .adapters import HTTPAdapter
+  File "/gnu/store/17dw8qczqqz9fmj2kxzsbfqn730frqd7-profile/lib/python3.10/site-packages/requests/adapters.py", line 81, in <module>
+    _preloaded_ssl_context.load_verify_locations(
+FileNotFoundError: [Errno 2] No such file or directory
+```
+
+Welp! Looks like this error is a whole different thing.
+
+Let us try with the genenetwork2 package.
+
+```
+$ guix shell --container --network genenetwork2 coreutils
+[env]$ ls "${GUIX_ENVIRONMENT}/etc"
+bash_completion.d  jupyter  ld.so.cache  profile
+```
+
+This does not seem to have the certificates in place either, so let's add nss-certs
+
+```
+$ guix shell --container --network genenetwork2 coreutils nss-certs
+[env]$ ls "${GUIX_ENVIRONMENT}/etc"
+bash_completion.d  jupyter  ld.so.cache  profile  ssl
+[env]$ python3 test.py
+Traceback (most recent call last):
+  File "/tmp/test.py", line 3, in <module>
+    resp = requests.get("https://github.com")
+  File "/gnu/store/qigjz4i0dckbsjbd2has0md2dxwsa7ry-profile/lib/python3.10/site-packages/requests/api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "/gnu/store/qigjz4i0dckbsjbd2has0md2dxwsa7ry-profile/lib/python3.10/site-packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/gnu/store/qigjz4i0dckbsjbd2has0md2dxwsa7ry-profile/lib/python3.10/site-packages/requests/sessions.py", line 587, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/gnu/store/qigjz4i0dckbsjbd2has0md2dxwsa7ry-profile/lib/python3.10/site-packages/requests/sessions.py", line 701, in send
+    r = adapter.send(request, **kwargs)
+  File "/gnu/store/qigjz4i0dckbsjbd2has0md2dxwsa7ry-profile/lib/python3.10/site-packages/requests/adapters.py", line 460, in send
+    self.cert_verify(conn, request.url, verify, cert)
+  File "/gnu/store/qigjz4i0dckbsjbd2has0md2dxwsa7ry-profile/lib/python3.10/site-packages/requests/adapters.py", line 263, in cert_verify
+    raise OSError(
+OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/ssl/certs/ca-certificates.crt
+```
+
+We get the expected certificates error! This is good. Now define the envvar and try again.
+
+```
+[env]$ export REQUESTS_CA_BUNDLE="${GUIX_ENVIRONMENT}/etc/ssl/certs/ca-certificates.crt"
+[env]$ python3 test.py
+<Response [200]>
+```
+
+Success!!!
+
+Adding nss-certs and setting the `REQUESTS_CA_BUNDLE` fixes things. We'll need to do the same for the container, for both the genenetwork2 and genenetwork3 packages (and any other packages that use requests library).
+
+### Fixes
+
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=fec68c4ca87eeca4eb9e69e71fc27e0eae4dd728
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=c3bb784c8c70857904ef97ecd7d36ec98772413d
+The two commits above add nss-certs package to all the flask apps, which make use of the python-requests library, which requires a valid CA certificates bundle in each application's environment.
+
+=> https://git.genenetwork.org/gn-machines/commit/?h=production-container&id=04506c4496e5ca8b3bc38e28ed70945a145fb036
+The commit above defines the "REQUESTS_CA_BUNDLE" environment variable for all the flask applications that make use of python's requests library.

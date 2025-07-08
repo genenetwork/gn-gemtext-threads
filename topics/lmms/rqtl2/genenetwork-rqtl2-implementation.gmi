@@ -1,0 +1,71 @@
+# Implementation of QTL Analysis Using r-qtl2 in GeneNetwork
+## Tags
+
+* Assigned: alexm
+* Keywords: RQTL, GeneNetwork2, implementation
+* Type: Feature
+* Status: In Progress
+
+## Description
+
+This document outlines the implementation of a QTL analysis tool in GeneNetwork using r-qtl2 (see docs: https://kbroman.org/qtl2/) and explains what the script does.  
+This PR contains the implementation of the r-qtl2 script for genenetwork:  
+=> https://github.com/genenetwork/genenetwork3/pull/201
+
+## Tasks
+
+The script currently aims to achieve the following:
+
+* [x] Parsing arguments required for the script
+* [x] Data validation for the script
+* [x] Generating the cross file
+* [x] Reading the cross file
+* [x] Calculating genotype probabilities
+* [x] Performing Geno Scan (scan1) using HK, LOCO, etc.
+* [x] Finding LOD peaks
+* [x] Performing permutation tests
+* [x] Conducting QTL analysis for multiparent populations
+* [ ] Generating required plots
+
+## How to Run the Script
+
+The script requires an input file containing all the necessary data to generate the control file. Example:
+
+```json
+{
+    "crosstype": "riself",
+    "geno_file": "grav2_geno.csv",
+    "geno_map_file": "grav2_gmap.csv",
+    "pheno_file": "grav2_pheno.csv",
+    "phenocovar_file": "grav2_phenocovar.csv"
+}
+
+```
+In addition other parameters required are
+
+* output file (A file path of where the output for the script will be generated)
+* --directory ( A workspace of where to generate the control file)
+
+Optional parameters include
+* --output_file: The file path where the output for the script will be generated.
+* --directory: The workspace directory where the control file will be generated.
+
+Optional parameters:
+
+* --cores: The number of cores to use (set to 0 for using all cores).
+* --method: The scanning method to use (e.g., Haley-Knott, Linear Mixed Model, or LMM with Leave-One-Chromosome-Out).
+* --pstrata: Use permutation strata.
+* --threshold: Minimum LOD score for a peak.
+
+
+An example of how to run the script:
+
+```sh
+
+Rscript rqtl2_wrapper.R --input_file [file_path] --directory [workspace_dir] --output_file [file_path] --nperm 100 --cores 3
+
+```
+## Related issues:
+https://issues.genenetwork.org/topics/lmms/rqtl2/using-rqtl2
+=> ./using-rqtl2
+=> ./gn-rqtl-design-implementation

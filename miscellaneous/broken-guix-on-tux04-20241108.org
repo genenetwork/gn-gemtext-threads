@@ -1,0 +1,162 @@
+* Broken Guix on Tux04 Troubleshooting Log
+
+Noticed at arount 15:30 (UTC-0500) that guix broke for no apparent reason and I
+could no longer do ~guix pull~ without a "Segmentation fault" error.
+
+I could not even do a ~guix search~ without the error.
+
+Began today (2024-11-08UTC-0500) by attempting a pull, and still got the Segmentation fault.
+
+Try checking out an older generation
+
+#+begin_src sh
+  $ /home/fredm/opt/guix/bin/guix -p ~/opt/guix --list-generations
+  ⋮
+  $ /home/fredm/opt/guix/bin/guix -p ~/opt/guix --delete-generations=46
+  ⋮
+  Segmentation fault
+  $ /home/fredm/opt/guix/bin/guix -p ~/opt/guix --delete-generations=40..47
+  ⋮
+  Segmentation fault
+#+end_src
+
+Try pulling with someone else's guix:
+
+#+begin_src bash
+  /var/guix/profiles/per-user/aruni/current-guix/bin/guix --profile=/export3/local/home/fredm/opt/guix --channels=channels.scm
+#+end_src
+
+#+begin_example
+(repl-version 0 1 1)
+Backtrace:
+           1 (primitive-load "/gnu/store/2lpf5rl0dhq1v8wjfnfmglvr0p2?")
+In ice-9/boot-9.scm:
+   2007:7  0 (error _ . _)
+
+ice-9/boot-9.scm:2007:7: In procedure error:
+inferior failed "/gnu/store/5rac7n9ya6qrpbz42gpn96sa47dkz7rj-guix-2394a7f5f"
+#+end_example
+
+Fine, maybe the issue is my profile: delete all links and do a ~guix gc~ to clear any issues.
+
+Upgrade guix daemon
+
+#+begin_src bash
+  $ sudo -i /var/guix/profiles/per-user/aruni/current-guix/bin/guix pull
+  ⋮
+  $ sudo systemctl stop guix-daemon.service
+  $ sudo systemctl start guix-daemon.service
+  $ sudo systemctl status guix-daemon.service
+#+end_src
+
+Try again: No success.
+
+Try:
+#+begin_src shell
+  $ /var/guix/profiles/per-user/aruni/current-guix/bin/guix describe --format=channels > channels-aruni.scm
+  $ /var/guix/profiles/per-user/aruni/current-guix/bin/guix pull -C channels-aruni.scm -p /home/fredm/opt/guix
+  $ /home/fredm/opt/guix/bin/guix search python-requests
+#+end_src
+
+Okay, now that gives me an output!
+
+Try pulling latest channels:
+
+#+begin_src shell
+  $ /home/fredm/opt/guix/bin/guix pull -C channels.scm -p ~/opt/guix
+  ⋮
+  Building from these channels:
+  guix-bioinformaticshttps://git.genenetwork.org/guix-bioinformatics    3659ecd
+  guix-forgehttps://git.systemreboot.net/guix-forge/    9864821
+  guix-past https://gitlab.inria.fr/guix-hpc/guix-past  5fb77cc
+  guix      https://git.savannah.gnu.org/git/guix.git   2394a7f
+  ⋮
+  building /gnu/store/gzm7jb7hj2bmfhdjzsprar8lacz34ncr-guix-past.drv...
+  -builder for `/gnu/store/gzm7jb7hj2bmfhdjzsprar8lacz34ncr-guix-past.drv' failed with exit code 1
+  build of /gnu/store/gzm7jb7hj2bmfhdjzsprar8lacz34ncr-guix-past.drv failed
+  View build log at '/var/log/guix/drvs/gz/m7jb7hj2bmfhdjzsprar8lacz34ncr-guix-past.drv.gz'.
+  cannot build derivation `/gnu/store/rwarhjfc9kymw5k5wvl0pz658bmmmqvh-profile.drv': 1 dependencies couldn't be built
+  guix pull: error: build of `/gnu/store/rwarhjfc9kymw5k5wvl0pz658bmmmqvh-profile.drv' failed
+#+end_src
+
+Okay, view the logs:
+#+begin_src sh
+  $ gunzip -kc /var/log/guix/drvs/gz/m7jb7hj2bmfhdjzsprar8lacz34ncr-guix-past.drv.gz
+  (repl-version 0 1 1)
+  Backtrace:
+             1 (primitive-load "/gnu/store/2lpf5rl0dhq1v8wjfnfmglvr0p2?")
+  In ice-9/boot-9.scm:
+     2007:7  0 (error _ . _)
+  
+  ice-9/boot-9.scm:2007:7: In procedure error:
+  inferior failed "/gnu/store/5rac7n9ya6qrpbz42gpn96sa47dkz7rj-guix-2394a7f5f"
+#+end_src
+
+Oh boy!
+
+How about  we start with @aruni's channels and pin everything except
+=guix-bioinformatics= in the code below:
+#+begin_src scheme
+  (list (channel
+         (name 'guix-bioinformatics)
+         (url "https://git.genenetwork.org/guix-bioinformatics")
+         (branch "master"))
+        (channel
+         (name 'guix-forge)
+         (url "https://git.systemreboot.net/guix-forge/")
+         (branch "main")
+         (commit
+          "9864821f976b3de355138c12f287a19fdced67df")
+         (introduction
+          (make-channel-introduction
+           "0432e37b20dd678a02efee21adf0b9525a670310"
+           (openpgp-fingerprint
+            "7F73 0343 F2F0 9F3C 77BF  79D3 2E25 EE8B 6180 2BB3"))))
+        (channel
+         (name 'guix-past)
+         (url "https://gitlab.inria.fr/guix-hpc/guix-past")
+         (branch "master")
+         (commit
+          "5fb77cce01f21a03b8f5a9c873067691cf09d057")
+         (introduction
+          (make-channel-introduction
+           "0c119db2ea86a389769f4d2b9c6f5c41c027e336"
+           (openpgp-fingerprint
+            "3CE4 6455 8A84 FDC6 9DB4  0CFB 090B 1199 3D9A EBB5"))))
+        (channel
+         (name 'guix)
+         (url "https://git.savannah.gnu.org/git/guix.git")
+         (branch "master")
+         (commit
+          "b0b988c41c9e0e591274495a1b2d6f27fcdae15a")
+         (introduction
+          (make-channel-introduction
+           "9edb3f66fd807b096b48283debdcddccfea34bad"
+           (openpgp-fingerprint
+            "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))))
+#+end_src
+Put the code above in =channels.scm= and retry:
+
+#+begin_src sh
+  $ /home/fredm/opt/guix/bin/guix pull -C channels.scm -p ~/opt/guix
+  ⋮
+  Building from these channels:
+    guix-bioinformaticshttps://git.genenetwork.org/guix-bioinformatics    3659ecd
+    guix-forgehttps://git.systemreboot.net/guix-forge/    9864821
+    guix-past https://gitlab.inria.fr/guix-hpc/guix-past  5fb77cc
+    guix      https://git.savannah.gnu.org/git/guix.git   b0b988c
+  ⋮
+#+end_src
+
+Success!
+
+Okay, now, try rebuilding the container:
+#+begin_src sh
+  $ env PATH="/home/fredm/opt/guix/bin:${PATH}" ./production-deploy.sh
+#+end_src
+
+Success!
+
+Check that https://gn2-fred.genenetwork.org/ is up and running: Yes!
+
+Okay. We are back!

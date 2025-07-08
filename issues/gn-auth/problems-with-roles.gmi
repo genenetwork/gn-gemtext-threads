@@ -1,0 +1,42 @@
+# Problem With Roles: Privilege Escalation
+
+## Tags
+
+* type: bug
+* priority: critical
+* assigned: fredm, zachs
+* status: closed, completed, fixed
+* keywords: gn-auth, authorisation, authorization, roles, privileges
+
+## Description
+
+The current implementation of `gn2.wqflask.oauth2.roles.create_role(…)` function is broken and can lead to possibly unbounded privilege escalation.
+
+What it currently does is that it fetches all the roles a user has, on all resources, regardless of type and/or ownership, then allows the user to create a role from that. As such, a user with write access to ResourceA and no write access to ResourceB could hypothetically gain write access to ResourceB, by say:
+
+* Create a new throw-away account
+* Creating a new role, that includes the write access from ResourceA
+* Assign new role to throw-away account on ResourceB
+* Do unapproved writes on ResourceB with throw-away account
+
+The implementation should instead, tie the roles to the specific resource, rather than group. This means, then, that the user cannot create a role on any resource that exceeds their access level for that resource — thus no privilege escalation is possible.
+
+### Plan of Action
+
+* [x] Remove the `….create_action` function: raise exception when used
+* [x] Remove the "Roles" page on the UI
+* [x] migration: Remove `group:role:[create|delete|edit]-role` privileges from `group-leader` role
+* [x] migration: Add `resource:role:[create|delete|edit]-role` privileges to `resource-owner` role
+* [x] migration: Create new `resource_roles` db table linking each resource to roles that can act on it, and the user that created the role
+* [x] migration: Drop table `group_roles` deleting all data in the table: data here could already have privilege escalation in place
+* [x] Create a new "Roles" section on the "Resource-View" page, or a separate "Resource-Roles" page to handle the management of that resource's roles
+* [x] Ensure user can only assign roles they have created - maybe?
+
+### Fixes
+
+=> https://github.com/genenetwork/genenetwork2/commit/7d0c5cf8d2ab49f6a98c0a15189da5b7fa1695fd
+=> https://github.com/genenetwork/genenetwork2/commit/c1af1940cca1ae54d424632e8c5f06b55cae071a
+=> https://git.genenetwork.org/gn-auth/commit/?h=handle-role-privilege-escalation&id=5d34332f356164ce539044f538ed74b983fcc706
+=> https://git.genenetwork.org/gn-auth/commit/?h=handle-role-privilege-escalation&id=f691603a8e7a1700783b2be6f855f30d30f645f1
+=> https://git.genenetwork.org/gn-auth/commit/?h=handle-role-privilege-escalation&id=2363842cc81132a2592d5cda98e6ebf1305e8482
+=> https://github.com/genenetwork/genenetwork2/commit/a7a8754a57594e5705fea8e5bbea391a09e8f64c

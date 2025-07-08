@@ -1,0 +1,42 @@
+# R/qtl2 Maps Error
+
+## Tags
+
+* type: bug
+* status: open
+* priority: high
+* assigned: alexm, zachs, fredm
+* keywords: R/qtl2, R/qtl2 Maps, gn3, genetwork3, genenetwork 3
+
+## Reproduce
+
+* Go to https://genenetwork.org/
+* In the "Get Any" field, enter "synap*" and press the "Enter" key
+* In the search results, click on the "1435464_at" trait
+* Expand the "Mapping Tools" accordion section
+* Select the "R/qtl2" option
+* Click "Compute"
+* In the "Computing the Maps" page that results, click on "Display System Log"
+
+### Observed
+
+A traceback is observed, with an error of the following form:
+
+```
+⋮
+FileNotFoundError: [Errno 2] No such file or directory: '/opt/gn/tmp/gn3-tmpdir/JL9PvKm3OyKk.txt'
+```
+
+### Expected
+
+The mapping runs successfully and the results are presented in the form of a mapping chart/graph and a table of values.
+
+### Debug Notes
+
+The directory "/opt/gn/tmp/gn3-tmpdir/" exists, and is actually used by other mappings (i.e. The "R/qtl" and "Pair Scan" mappings) successfully.
+
+This might imply a code issue: Perhaps
+* a path is hardcoded, or
+* the wrong path value is passed
+
+The same error occurs on https://cd.genenetwork.org but does not seem to prevent CD from running the mapping to completion. Maybe something is missing on production — what, though?

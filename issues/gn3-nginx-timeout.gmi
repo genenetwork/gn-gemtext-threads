@@ -1,0 +1,39 @@
+# GN3 NGINX Timeout
+
+## Tags
+
+* Assigned: alexm
+* Keywords: CD, GN3
+* Status: closed
+* Priority: Medium
+* Type: Bug
+
+## Description
+
+The issue is that some requests to the GN3 API result in an nginx 504 Gateway Time-out error. This may not necessarily be a bug, but encountering a request timeout within 30 seconds is a short timeframe. Previously, we had a related issue where the Gunicorn server would timeout. A fix was introduced by increasing the timeout.
+
+For reference, see the issue:
+=> issues/cd-gn3-configurations
+
+An example is when querying the Fahamu API to get non-empty results; one might have to wait up to 2 minutes. To test this on CD:
+
+```bash
+curl --json @json_data.txt https://cd.genenetwork.org/api3/llm/gnqna
+```
+
+The JSON file:
+
+```json
+"querygnqa": "describe what genetics are"
+```
+
+Results:
+
+```html
+<head><title>504 Gateway Time-out</title></head>
+<body>
+<center><h1>504 Gateway Time-out</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+```

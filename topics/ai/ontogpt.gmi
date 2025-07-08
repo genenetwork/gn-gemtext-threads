@@ -1,0 +1,7 @@
+# OntoGPT
+
+python3 -m venv ~/opt/ontogpt
+~/opt/ontogpt/bin/python3 -m pip install ontogpt
+
+
+runoak set-apikey -e openai

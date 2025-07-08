@@ -1,0 +1,26 @@
+# Handle Invalid Login Errors Correctly
+
+* type: bug
+* status: closed, completed
+* priority: high
+* assigned: fredm
+* keywords: gn-auth, issue, login
+
+## Description
+
+* Go to https://cd.genenetwork.org/
+* Click on "Sign in"
+* Provide the following credentials: for email "no@such.user", for password "nosuchpassword"
+* Click "Authorise"
+
+### Expected
+
+The system should show the user a message about the credentials being invalid, then provide the user with the opportunity to sign in again.
+
+### Actual
+
+We get a generic "400 Bad Request" server error page.
+
+### Resolution
+
+=> https://git.genenetwork.org/gn-auth/commit/?id=a19ad9852945fe882be1231b727b6687bccd0b37

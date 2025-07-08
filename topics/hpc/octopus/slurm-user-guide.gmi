@@ -1,0 +1,51 @@
+# Slurm User Guide on Octopus HPC
+
+The Octopus HPC uses slurm. There are many online resources for using slurm on HPC, including
+
+=> https://servicedesk.surf.nl/wiki/display/WIKI/SLURM+batch+system
+=> https://www.carc.usc.edu/user-information/user-guides/hpc-basics/slurm-cheatsheet/
+
+In this document we discuss where differences may occur. For one, Octopus is one of the busiest HPCs in the world, no kidding, because of the large scale pangenome effort at UTHSC.
+As a user you will likely notice that. When you plan to fire up large jobs please discuss this on our matrix channel, otherwise jobs may get banned. Also Octopus is run by its users, pretty much in the form of a do-ocracy. Please respect our efforts.
+
+Important warning: Octopus is non-HIPAA. Octopus is not designed to handle sensitive data. Running clinical data without the right permissions is punishable by law. Use designated HIPAA systems for that type of data and analysis.
+
+# Useful commands
+
+sinfo tells you about the slurm nodes:
+
+```
+sinfo -i
+sinfo -R # show node state
+```
+
+squeue gives info about the job queue
+
+```
+squeue -l
+```
+
+sbatch allows you to submit a batch job
+
+```
+sbatch
+```
+
+To get a shell prompt on one of the nodes (useful for testing your environment)
+
+```
+srun -N 1 --mem=32G --pty /bin/bash
+```
+
+
+# Differences
+
+## Guix (look ma, no modules)
+
+No modules: Octopus does not use the venerable module system to support deployment. In contrast it uses the modern Guix packaging system. In the future we may add Nix support too.
+
+An example of using R with guix is described here:
+
+=> ../../hpc/guix/R
+
+If you choose, you can still use conda, brew, spack, Python virtualenv, and what not. Userland tools will work. Even Docker or singularity may work as they work from Guix.

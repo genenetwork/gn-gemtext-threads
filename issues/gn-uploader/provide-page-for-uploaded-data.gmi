@@ -1,0 +1,22 @@
+# Provide Page/Link for/to Uploaded Data
+
+## Tags
+
+* status: open
+* assigned: fredm
+* priority: medium
+* type: feature, feature request, feature-request
+* keywords: gn-uploader, uploader, data dashboard
+
+## Description
+
+Once a user has uploaded their data, provide them with a landing page/dashboard for the data they have uploaded, with details on what that data is.
+
+* Should we provide a means to edit the data here (mostly to add metadata and the like)?
+* Maybe the page should actually be shown on GN2?
+
+## Blockers
+
+Depends on
+
+=> /issues/gn-uploader/link-authentication-authorisation

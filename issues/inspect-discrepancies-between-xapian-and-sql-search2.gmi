@@ -1,0 +1,11 @@
+# Inspect Discrepancies Between Xapian and SQL Search.
+
+* assigned: bonfacem, rookie101
+
+## Description
+
+When we type BXD_21526 in xapian search we should find 
+
+=> https://genenetwork.org/search?species=mouse&group=BXD&type=Phenotypes&dataset=BXDPublish&search_terms_or=BXD_21526&search_terms_and=&accession_id=None&FormID=searchResult
+
+This is not the case right now.

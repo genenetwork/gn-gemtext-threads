@@ -1,0 +1,1014 @@
+# Permutations
+
+Currently we use gemma-wrapper to compute the significance level - by shuffling the phenotype vector 1000x.
+As this is a lengthy procedure we have not incorporated it into the GN web service. The new bulklmm may work
+in certain cases (genotypes have to be complete, for one).
+
+Because of many changes gemma-wrapper is not working for permutations. I have a few steps to take care of:
+
+* [X] read R/qtl2 format for phenotype
+
+# R/qtl2 and GEMMA formats
+
+See
+
+=> data/R-qtl2-format-notes
+
+# One-offs
+
+## Phenotypes
+
+For a study Dave handed me phenotype and covariate files for the BXD. Phenotypes look like:
+
+```
+
+Record ID,21526,21527,21528,21529,21530,21531,21532,21537,24398,24401,24402,24403,24404,24405,24406,24407,24408,24412,27513,27514,27515,27516,
+27517
+BXD1,18.5,161.5,6.5,1919.450806,3307.318848,0.8655,1.752,23.07,0.5,161.5,18.5,6.5,1919.450806,3307.318848,0.8655,1.752,0.5,32,1.5,1.75,2.25,1.
+25,50
+BXD100,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x
+BXD101,20.6,176.199997,4.4,2546.293945,4574.802734,1.729,3.245,25.172001,0.6,176.199997,20.6,4.4,2546.294189,4574.802734,1.7286,3.2446,0.6,32,
+1.875,2.375,2.75,1.75,38
+BXD102,18.785,159.582993,6.167,1745.671997,4241.505859,0.771,2.216,22.796667,0.25,159.583328,18.785,6.166667,1745.672485,4241.506348,0.770667,
+2.216242,0.25,28.08333,1.5,2,2.875,1.5,28.5
+...
+```
+
+which is close to the R/qtl2 format. GEMMA meanwile expects a tab delimited file where x=NA. You can pass in the column number with the -n switch. One thing GEMMA lacks it the first ID which has to align with the genotype file. The BIMBAM geno format, again, does not contain the IDs. See
+
+=> http://www.xzlab.org/software/GEMMAmanual.pdf
+
+What we need to do is create and use R/qtl2 format files because they can be error checked on IDs and convert those, again, to BIMBAM for use by GEMMA. In the past I wrote Python converters for gemma2lib:
+
+=> https://github.com/genetics-statistics/gemma2lib
+
+I kinda abandoned the project, but you can see a lot of functionality, e.g.
+
+=> https://github.com/genetics-statistics/gemma2lib/blob/master/gemma2/format/bimbam.py
+
+We also have bioruby-table as a generic command line tool
+
+=> https://github.com/pjotrp/bioruby-table
+
+which is an amazingly flexible tool and can probably do the same. I kinda abandoned that project too. You know, bioinformatics is a graveyard of projects :/
+
+OK, let's try. The first step is to convert the phenotype file to something GEMMA can use. We have to make sure that the individuals align with the genotype file(!). So, because we work with GN's GEMMA files, the steps are:
+
+* [X] Read the JSON layout file - 'sample_list' is essentially the header of the BIMBAM geno file
+* [X] Use the R/qtl2-style phenotype file to write a correct GEMMA pheno file (multi column)
+* [X] Compare results with GN pheno output
+
+Running GEMMA by hand it complained
+
+```
+## number of total individuals = 235
+## number of analyzed individuals = 26
+## number of covariates = 1
+## number of phenotypes = 1
+## number of total SNPs/var        =    21056
+## number of analyzed SNPs         =    21056
+Calculating Relatedness Matrix ...
+rsm10000000001, X, Y, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0.5, 0, 1, 0, 1, 0.5, 0, 1, 0, 0, 0, 1, 1, 0, 0.5, 1, 1, 0.5, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0.5, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0.5, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0.5, 0, 0, 0.5, 0, 1, 0, 1, 0, 0, 1, 0.5, 0, 1, 0, 0.5, 1, 1, 1, 1, 0.5, 0, 0, 0.5, 1, 0.5, 0.5, 0.5, 1, 0.5, 1, 0.5, 0.5, 0, 0, 0, 0.5, 1, 0.5, 0, 0, 0.5, 0, 0, 1, 0, 0.5, 1, 0.5, 0.5, 0.5, 1, 0.5, 0.5, 0.5
+237 != 235
+WARNING: Columns in geno file do not match # individuals in phenotypes
+ERROR: Enforce failed for not enough genotype fields for marker in src/gemma_io.cpp at line 1470 in BimbamKin
+```
+
+GEMMA on production is fine. So, I counted BXDs. For comparison, GN's pheno outputs 241 BXDs. Daves pheno file has 241 BXDs (good). But when using my script we get 235 BXDs. Ah, apparently they are different from what we use on GN because GN does not use the parents and the F1s for GEMMA. So, my script should complain when a match is not made. Turns out the JSON file only contains 235 'mappable' BXDs and refers to BXD.8 which is from Apr 26, 2023. The header says `BXD_experimental_DGA_7_Dec_2021` and GN says WGS March 2022. So which one is it? I'll just go with latest, but genotype naming is problematic and the headers are not updated.
+
+> MOTTO: Always complain when there are problems!
+
+Luckily GEMMA complained, but the script should have also complained. The JSON file with 235 genometypes is not representing the actual 237 genometypes. We'll work on that in the next section.
+
+Meanwhile let's add this code to gemma-wrapper. The code can be found here:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/rqtl2-pheno-to-gemma.py
+
+## Genotypes
+
+The pheno script now errors with
+
+```
+ERROR: sets differ {'BXD065xBXD102F1', 'C57BL/6J', 'DBA/2J', 'BXD077xBXD065F1', 'D2B6F1', 'B6D2F1'}
+```
+
+Since these are parents and F1s, and are all NAs in Dave's phenotypes, they are easy to remove. So, now we have 235 samples in the phenotype file and 237 genometypes in the genotype file (according to GEMMA). A quick check shows that BXD.geno has 236 genometypes. Same for the bimbam on production. We now have 3 values: 235, 236 and 237. Question is why these do not overlap.
+
+### Genotype probabilities for GEMMA
+
+Another problem on production is that we are not using the standard GEMMA values. So GEMMA complains with
+
+```
+WARNING: The maximum genotype value is not 2.0 - this is not the BIMBAM standard and will skew l_lme and effect sizes
+```
+
+This explains why we divide the effect size by 2 in the GN production code. Maybe it is a better idea to fix then geno files!
+
+* [X] Generate BIMBAM file from GENO .geno files (via R/qtl2)
+* [X] Check bimbam files on production
+
+So we need to convert .geno files as they are the current source of genotypes in GN and contain the sample names that we need to align with pheno files. For this we'll output two files - one JSON file with metadata and sample names and the actual BIMBAM file GEMMA requires. I notice that I actually never had the need to parse a geno file! Zach wrote a tool `gn2/maintenance/convert_geno_to_bimbam.py` that also writes the GN JSON file and I'll take some ideas from that. We'll also need to convert to R/qtl2 as that is what Dave can use and then on to BIMBAM. So, let's add that code to gemma-wrapper again.
+
+This is another tool at
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/gn-geno-to-gemma.py
+
+where the generated JSON file helps create the pheno file. We ended up with 237 genometypes/samples to match the genotype file and all of Dave's samples matched. Also, now I was able to run GEMMA successfully and passed in the pheno column number with
+
+```
+gemma -gk -g BXD-test.txt -p BXD_pheno_Dave-GEMMA.txt -n 5
+gemma -lmm 9 -g BXD-test.txt -p BXD_pheno_Dave-GEMMA.txt -k output/result.cXX.txt -n 5
+```
+
+the pheno file can include the sample names as long as there are no spaces in them. For marker rs3718618 we get values -9  0 X Y 0.317 7.930689e+02  1.779940e+02  1.000000e+05  7.532662e-05. The last value translates to
+
+```
+-Math.log10(7.532662e-05) => 4.123051519468808
+```
+
+and that matches GN's run of GEMMA w.o. LOCO.
+
+The next step is to make the -n switch run with LOCO on gemma-wrapper.
+
+```
+./bin/gemma-wrapper --loco --json --  -gk -g BXD-test.txt -p BXD_pheno_Dave-GEMMA.txt -n 5 -a BXD.8_snps.txt > K.json
+./bin/gemma-wrapper --keep --force --json --loco --input K.json -- -lmm 9 -g BXD-test.txt -p BXD_pheno_Dave-GEMMA.txt -n 5 -a BXD.8_snps.txt > GWA.json
+```
+
+Checking the output we get
+
+```
+-Math.log10(3.191755e-05) => 4.495970452606926
+```
+
+and that matches Dave's output for LOCO and marker rs3718618. All good, so far. Next step permute.
+
+## Permute
+
+Now we have gemma-wrapper working we need to fix it to work with the latest type of files.
+
+* [X] randomize phenotypes using -n switch
+* [X] Permute gemma and collect results
+* [X] Unseed randomizer or make it an option
+* [X] Fix tmpdir
+* [X] Show final score
+* [X] Compare small and large BXD set
+
+For the first one, the --permutate-phenotype switch takes the input pheno file. Because we pick a column with gemma we can randomize all input lines together. So, in the above example, we shuffle BXD_pheno_Dave-GEMMA.txt. Interestingly it looks like we are already shuffling by line in gemma-wrapper.
+
+The good news is that it runs, but the outcome is wrong:
+
+```
+["95 percentile (significant) ", 1000.0, -3.0]
+["67 percentile (suggestive)  ", 1000.0, -3.0]
+```
+
+Inspecting the phenotype files they are shuffled, e.g.
+
+```
+BXD073xBXD065F1 NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
+BXD49 NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
+BXD86 NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA  NA
+BXD161  15.623  142.908997  4.0 2350.637939 3294.824951 1.452 2.08  20.416365 0.363636  142.909088  15.622727 4.0 2350.638672 3294.825928 1.45
+1636  2.079909  0.363636  33.545448 2.125 2.0 2.375 1.25  44.5
+BXD154  20.143  195.5 4.75  1533.689941 4568.76416  0.727 2.213748  27.9275 0.75  195.5 20.142857 4.75  1533.690796 4568.76416  0.72675 2.2137
+48  0.75  54.5  0.75  1.75  3.0 1.5 33.0
+```
+
+which brings out an interesting point. Most BXDs in the genotype file are missing from this experiment. We are computing LOD scores as if we have a full BXD population. So, what we are saying here is that if we have all BXD genotypes and we randomly assign phenotypes against a subset, what is the chance we get a hit at random. I don't think this is a bad assumption, but it not exactly what Gary Churchill had in mind in his 1994 paper:
+
+=> https://pubmed.ncbi.nlm.nih.gov/7851788/ Empirical threshold values for quantitative trait mapping
+
+The idea is to shuffle genotypes against phenotypes. If there is a high correlation we get a result. The idea is to break the correlation and that should work for both the large and the small BXD set. Scoring the best 'random' result out of 1000 permutations at, say 95% highest, sets the significance level.
+With our new precompute we should be able to show the difference. Anyway, that is one problem, the other is that the stats somehow do not add up to the final result. Score min is set at
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/7769f209bcaff2472ba185234fad47985e59e7a3/bin/gemma-wrapper#L667
+
+The next line says 'if false'. Alright, that explains part of it at least as the next block was disabled for slurm and is never run. I should rip the slurm stuff out, actually, as Arun has come up with a much better solution. But that is for later.
+
+Disabling that permutation stopped with
+
+```
+Add parallel job: time -v /bin/gemma -loco X -k 02fe8482913a998e6e9559ff5e3f1b89e904d59d.X.cXX.txt.cXX.txt -o 55b49eb774f638d16fd267313d8b4d1d6d2a0a25.X.assoc.txt -p phenotypes-1 -lmm 9 -g BXD-test.txt -n 5 -a BXD.8_snps.txt -outdir /tmp/d20240823-4481-xfrnp6
+DEBUG: Reading 55b49eb774f638d16fd267313d8b4d1d6d2a0a25.X.assoc.txt.1.assoc.txt
+./bin/gemma-wrapper:672:in `foreach': No such file or directory @ rb_sysopen - 55b49eb774f638d16fd267313d8b4d1d6d2a0a25.X.assoc.txt.1.assoc.txt (Errno::ENOENT)
+```
+
+so it created a file, but can't find it because outdir is not shared. Now tmpdir is in the outer block so the file should still exist. For troubleshooting the first step is to seed the randomizer (seed) so we get the same run every time.
+It turns out there are a number of problems. First of all the permutation output was numbered and the result was not found. Fixing that gave a first result without the -parallel switch:
+
+```
+[0.0008489742, 0.03214928, 0.03426648, 0.0351207, 0.0405179, 0.04688354, 0.0692488, 0.1217158, 0.1270747, 0.1880325]
+["95 percentile (significant) ", 0.0008489742, 3.1]
+["67 percentile (suggestive)  ", 0.0351207, 1.5]
+```
+
+That is pleasing and it suggests that we have a significant result for the trait of interest: `volume of the first tumor that developed`. Running LOCO withouth parallel is slow (how did we survive in the past!).
+
+The 100 run shows
+
+```
+[0.0001626146, 0.0001993085, 0.000652191, 0.0007356249, 0.0008489742, 0.0009828207, 0.00102203, 0.001091924, 0.00117823, 0.001282312, 0.001471041, 0.001663572, 0.001898194, 0.003467039, 0.004655921, 0.005284387, 0.005628393, 0.006319995, 0.006767502, 0.007752473, 0.008757406, 0.008826192, 0.009018125, 0.009735282, 0.01034488, 0.01039465, 0.0122644, 0.01231366, 0.01265093, 0.01317425, 0.01348443, 0.013548, 0.01399461, 0.01442383, 0.01534904, 0.01579931, 0.01668551, 0.01696015, 0.01770371, 0.01838937, 0.01883068, 0.02011034, 0.02234977, 0.02362105, 0.0242342, 0.02520063, 0.02536663, 0.0266905, 0.02932001, 0.03116032, 0.03139836, 0.03176087, 0.03214928, 0.03348359, 0.03426648, 0.0351207, 0.03538503, 0.0354338, 0.03609931, 0.0371134, 0.03739827, 0.03787489, 0.04022586, 0.0405179, 0.04056273, 0.04076034, 0.04545012, 0.04588635, 0.04688354, 0.04790254, 0.05871501, 0.05903692, 0.05904868, 0.05978341, 0.06103624, 0.06396175, 0.06628317, 0.06640048, 0.06676557, 0.06848021, 0.0692488, 0.07122914, 0.07166011, 0.0749728, 0.08174019, 0.08188341, 0.08647539, 0.0955264, 0.1019648, 0.1032776, 0.1169525, 0.1182405, 0.1217158, 0.1270747, 0.1316735, 0.1316905, 0.1392859, 0.1576149, 0.1685975, 0.1880325]
+["95 percentile (significant) ", 0.0009828207, 3.0]
+["67 percentile (suggestive)  ", 0.01442383, 1.8]
+```
+
+Not too far off!
+
+The command was
+
+```
+./bin/gemma-wrapper --debug --no-parallel --keep --force --json --loco --input K.json --permutate 100 --permute-phenotype BXD_pheno_Dave-GEMMA.txt -- -lmm 9 -g BXD-test.txt -n 5 -a BXD.8_snps.txt
+```
+
+It is fun to see that when I did a second run the
+
+```
+[100, ["95 percentile (significant) ", 0.0002998286, 3.5], ["67 percentile (suggestive)  ", 0.01167864, 1.9]]
+```
+
+significance value was 3.5. Still, our hit is whopper - based on this.
+
+## Run permutations in parallel
+
+Next I introduced and fixed parallel support for permutations, now we can run gemma LOCO with decent speed - about 1 permutation per 3s! That is one trait in an hour on my machine.
+
+=> https://github.com/genetics-statistics/gemma-wrapper/commit/a8d3922a21c7807a9f20cf9ffb62d8b16f18c591
+
+Now we can run 1000 permutations in an hour, rerunning above we get
+
+```
+["95 percentile (significant) ", 0.0006983356, 3.2]
+["67 percentile (suggestive)  ", 0.01200505, 1.9]
+```
+
+which proves that 100 permutations is not enough. It is a bit crazy to think that 5% of randomized phenotypes will get a LOD score of 3.2 or higher!
+
+Down the line I can use Arun's CWL implementation to fire this on a cluster. Coming...
+
+## Reduce genotypes for permutations
+
+In the next phase we need to check if shuffling the full set of BXDs makes sense for computing permutations. Since I wrote a script for this exercise to transform BIMBAM genotypes I can reuse that:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/a8d3922a21c7807a9f20cf9ffb62d8b16f18c591/bin/gn-geno-to-gemma.py#L31
+
+If we check the sample names we can write a reduced genotype matrix. Use that to compute the GRM. Next permute with the smaller BXD sample set and genotypes.
+
+Instead of modifying above script I decided to add another one
+
+```
+bimbam-filter.py --json BXD.geno.json --sample-file BXD_pheno_Dave-GEMMA-samples.txt BXD_geno.txt > BXD_geno-samples.txt
+```
+
+which takes as inputs the json file from gn-geno-to-gemma and the GEMMA input file. This is not to mix targets and keeping the code simple. Now create the GRM with
+
+```
+./bin/gemma-wrapper --loco --json --  -gk -g BXD_geno-samples.txt -p BXD_pheno_Dave-GEMMA-samples.txt -n 5 -a BXD.8_snps.txt > K-samples.json
+./bin/gemma-wrapper --keep --force --json --loco --input K-samples.json -- -lmm 9 -g BXD_geno-samples.txt -p BXD_pheno_Dave-GEMMA-samples.txt -n 5 -a BXD.8_snps.txt > GWA-samples.json
+```
+
+Now the hit got reduced:
+
+```
+-Math.log10(1.111411e-04)
+=> 3.9541253091741235
+```
+
+and with 1000 permutations
+
+```
+./bin/gemma-wrapper --debug --parallel --keep --force --json --loco --input K-samples.json --permutate 1000 --permute-phenotype BXD_pheno_Dave-GEMMA-samples.txt -- -lmm 9 -g BXD_geno-samples.txt -n 5 -a BXD.8_snps.txt
+["95 percentile (significant) ", 0.0004184217, 3.4]
+["67 percentile (suggestive)  ", 0.006213012, 2.2]
+```
+
+we are still significant. Though the question is now why results differ so much, compared to using the full BXD genotypes.
+
+## Why do we have a difference with the full BXD genotypes?
+
+GEMMA strips out the missing phenotypes in a list. Only the actual phenotypes are used. We need to check how the GRM is used and what genotypes are used by GEMMA. For the GRM the small genotype file compares vs the large:
+
+```
+Samples           small    large
+BXD1  <->  BXD1   0.248    0.253
+BXD24 <->  BXD24  0.255    0.248
+BXD1  <->  BXD24 -0.040   -0.045
+BXD1  <->  BXD29  0.010    0.009
+```
+
+You can see there is a small difference in the computation of K even though it looks pretty close. This is logical because with the full BXD set all genotypes are used. With a smaller BXD set only those genotypes are used. We expect a difference in values, but not much of a difference in magnitude (shift). The only way to prove that K impacts the outcome is to take the larger matrix and reduce it to the smaller one using those values. I feel another script coming ;)
+
+Above numbers are without LOCO. With LOCO on CHR18
+
+```
+Samples            small    large
+BXD1  <->  BXD1    0.254    0.248
+BXD1  <->  BXD24  -0.037    -0.042
+```
+
+again a small shift. OK, let's try computing with a reduced matrix and compare results for rs3718618. Example:
+
+```
+gemma -gk -g BXD-test.txt -p BXD_pheno_Dave-GEMMA.txt -n 5 -a BXD.8_snps.txt -o full-bxd
+gemma -lmm 9 -k output/full-bxd.cXX.txt -g BXD-test.txt -p BXD_pheno_Dave-GEMMA.txt -n 5 -a BXD.8_snps.txt -o full-bxd
+```
+
+we get three outcomes where full-bxd is the full set,
+```
+output/full-bxd.assoc.txt:18              rs3718618 7.532662e-05
+output/full-reduced-bxd.assoc.txt:18      rs3718618 2.336439e-04
+output/small-bxd.assoc.txt:18             rs3718618 2.338226e-04
+```
+
+even without LOCO you can see a huge jump for the full BXD kinship matrix, just looking at our hit rs3718618:
+
+```
+-Math.log10(7.532662e-05)
+=> 4.123051519468808
+-Math.log10(2.338226e-04)
+=> 3.631113514641496
+```
+
+With LOCO the difference may be even greater.
+
+So, which one to use? Truth is that the GRM is a blunt instrument. Essentially every combination of two samples/strains/genometypes gets compressed into a single number that gives a distance between the genomes. This number represents a hierarchy of relationships computed in differences in DNA (haplotypes) between those individuals. The more DNA variation is represented in the calculation, the more 'fine tuned' this GRM matrix becomes. Instinctively the larger matrix, or full BXD population, is a better estimate of distance between the individuals than just using a subset of DNA.
+
+So, I still underwrite using the full BXD for computing the GRM. To run GEMMA, I have just proven we can use the reduced GRM which will be quite a bit faster too, as the results are the same. For permutations we *should* use the reduced form of the full BXD GRM as it does not make sense to shuffle phenotypes against BXDs we don't use. So I need to recompute that.
+
+## Recomputing significance with the reduced GRM matrix
+
+* [ ] Recomute significance with reduced GRM
+
+I can reuse the script I wrote for the previous section.
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/grm-filter.py
+
+So, the idea is to rerun permutations with the small set, but with the reduced GRM from the full BXD population. That ought to be straightforward by using the new matrix as an input for GWA. Only problem is that LOCO generates a GRM for every chromosome, so we need to make gemma-wrapper aware about the matrix reduction. As the reduction is fast we can do it for every run of gemma-wrapper and destroy it automatically with tmpdir. So:
+
+* [X] Compute the full GRM for every LOCO (if not cached) - already part of gemma-wrapper
+* [X] Run through GRMs and reduce them in tmpdir
+* [X] Plug new GRM name into computations - which really updates the JSON file that is input for GWA
+
+The interesting bit is that GEMMA requires input of phenotypes, but does not use them to compute the GRM.
+
+After giving it some thought we want GRM reduction to work in production GN because of the speed benefit. That means modifying gemma-wrapper to take a list of samples/genometypes as input - and we'll output that with GN. It is a good idea anyhow because it can give us some improved error feedback down the line.
+
+We'll use the --input switch to gemma-wrapper by providing the full list of genometypes that are used to compute the GRM and the 'reduced' list of genometypes that are used to reduce the GRM and compute GWA after.
+So the first step is to create this JSON input file. We already created the "gn-geno-to-gemma" output that has a full list of samples as parsed from the GN .geno file. Now we need a script to generate the reduced samples JSON and merge that to "gn-geno-to-gemma-reduced" by addind a "samples-reduced" vector.
+
+The rqtl2-pheno-to-gemma.py script I wrote above already takes the "gn-geno-to-gemma" JSON. It now adds to the JSON:
+
+```
+  "samples-column": 2,
+  "samples-reduced": {
+    "BXD1": 18.5,
+    "BXD24": 27.510204,
+    "BXD29": 17.204,
+    "BXD43": 21.825397,
+    "BXD44": 23.454,
+    "BXD60": 22.604,
+    "BXD63": 19.171,
+    "BXD65": 21.607,
+    "BXD66": 17.056999,
+    "BXD70": 17.962999,
+    "BXD73b": 20.231001,
+    "BXD75": 19.952999,
+    "BXD78": 19.514,
+    "BXD83": 18.031,
+    "BXD87": 18.258715,
+    "BXD89": 18.365,
+    "BXD90": 20.489796,
+    "BXD101": 20.6,
+    "BXD102": 18.785,
+    "BXD113": 24.52,
+    "BXD124": 21.762142,
+    "BXD128a": 18.952,
+    "BXD154": 20.143,
+    "BXD161": 15.623,
+    "BXD210": 23.771999,
+    "BXD214": 19.533117
+  },
+  "numsamples-reduced": 26
+```
+
+which is kinda cool because now I can reduce and write the pheno file in one go. Implementation:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/rqtl2-pheno-to-gemma.py
+
+OK, we are going to input the resulting JSON file into gemma-wrapper. At the GRM stage we ignore the reduction but we need to add these details to the outgoing JSON. So the following commands can run:
+
+```
+./bin/gemma-wrapper --loco --json --input BXD_pheno_Dave-GEMMA.txt.json -- -gk -g BXD-test.txt -p BXD_pheno_Dave-GEMMA.txt -n 5 -a BXD.8_snps.txt > K.json
+```
+
+where K.json has a json["input"] which essentially is above structure.
+
+```
+./bin/gemma-wrapper --keep --force --json --loco --input K.json -- -lmm 9 -g BXD-test.txt -p BXD_pheno_Dave-GEMMA.txt -n 5 -a BXD.8_snps.txt > GWA.json
+```
+
+Now I have to deal with phenotype files as they are rewritten. We should still cater for `-p` for GEMMA. We already have `--permute-phenotypes filen` for gemma-wrapper. Now we are adding `--phenotypes` to gemma-wrapper which replaces both!
+Note that we can use -p if --phenotypes is NOT defined. Problem is we have a few paths now:
+
+* [X] Check phenotypes are directly passed into GEMMA with -p switch
+* [X] Check phenotypes are passed in as a file with --phenotypes switch
+* [X] Check phenotypes are coming in using the JSON file
+
+Fixed the first one with
+
+=> https://github.com/genetics-statistics/gemma-wrapper/commit/2b7570a7f0ba0d1080c730b208823c0622dd8f2c
+
+though that does not do caching (yet). Next stop doing LOCO I notice xz is phenomenally slow. Turns out it was not xz, but when using `tar -C` we switch into the path and somehow xz kept growing its output.
+
+At this point David told me that we don't have to do epoch or covariates. So it is just the traits. After getting side-tracked by a slow running python program for haplotype assessment we start up again.
+
+So, now we can pass in a trait using JSON. This is probably not a great idea when you have a million values, but for our purposes it will do. K.json contains the reduced samples. Next GWA is run on that. I had to fix minor niggles and get `parallel' to give more useful debug info.
+
+Next write the pheno file and pass it in!
+
+```
+./bin/gemma-wrapper  --debug --verbose --force  --loco --json --lmdb --input K.json -- -g test/data/input/BXD_geno.txt.gz  -a test/data/input/BXD_snps.txt  -lmm 9 -maf 0.05 -n 2 -debug
+```
+
+note the '-n 2' switch to get the second generated column in the phenotype file. We had our first successful run! To run permutations I get:
+
+```
+./bin/gemma-wrapper:722:in `<main>': You should supply --permute-phenotypes with gemma-wrapper --permutate (RuntimeError)
+```
+
+and, of course, as this reduced file is generated it not available yet. That was an easy fix/hack. Next I got
+
+```
+./bin/gemma-wrapper:230:in `block in <main>': Do not use the GEMMA -p switch with gemma-wrapper if you are using JSON phenotypes!
+```
+
+Hmm. This is a bit harder. The call to GWAS takes a kinship matrix and it gets reduced with every permutation. That is probably OK because it runs quickly, but I'll need to remove the -p switch... OK. Done that and permutations are running in a second for 28 BXD! That implies computing significance in the web service comes into view - especially if we use a cluster on the backend.
+
+It is interesting to see that 60% of time is spent in the kernel - which means still heavy IO on GEMMA's end - even with the reduced data:
+
+```
+%Cpu0  : 39.1 us, 51.0 sy
+%Cpu1  : 34.0 us, 54.8 sy
+%Cpu2  : 35.8 us, 54.5 sy
+%Cpu3  : 37.5 us, 49.8 sy
+%Cpu4  : 36.0 us, 53.3 sy
+%Cpu5  : 29.5 us, 57.9 sy
+%Cpu6  : 42.7 us, 44.7 sy
+%Cpu7  : 35.9 us, 52.2 sy
+%Cpu8  : 27.0 us, 60.7 sy
+%Cpu9  : 24.5 us, 63.2 sy
+%Cpu10 : 29.8 us, 58.9 sy
+%Cpu11 : 25.3 us, 62.7 sy
+%Cpu12 : 28.1 us, 58.9 sy
+%Cpu13 : 34.2 us, 52.8 sy
+%Cpu14 : 34.6 us, 52.2 sy
+%Cpu15 : 37.5 us, 51.8 sy
+```
+
+There is room for more optimization.
+
+The good news is for a peak we have we find that it is statistically significant:
+
+```
+["95 percentile (significant) ", 0.0004945423, 3.3]
+["67 percentile (suggestive)  ", 0.009975183, 2.0]
+```
+
+Even though it was low permutations there was actually a real bug. It turns out I only picked the values from the X chromosome (ugh!). It looks different now.
+
+For the peaks of
+
+=> https://genenetwork.org/show_trait?trait_id=21526&dataset=BXDPublish
+
+after 1000 permutations (I tried a few times) the significance threshold with MAF 0.05 ends up at approx.
+
+["95 percentile (significant) ", 1.434302e-05, 4.8]
+["67 percentile (suggestive)  ", 0.0001620244, 3.8]
+
+If it is it means that for this trait BXD_21526 the peaks on chr 14 at LOD 3.5 are not significant, but close to suggestive (aligning with Dave's findings and comments). It is interesting to see the numbers quickly stabilize by 100 permutations (see attached). Now, this is before correcting for epoch effects and other covariates. And I took the data from Dave as is (the distribution looks fairly normal). Also there is a problem with MAF I have to look into:
+
+GEMMA in GN2 shows the same result when setting MAF to 0.05 or 0.1 (you can try that). The GN2 GEMMA code for LOCO does pass in -maf (though I see that non-LOCO does not - ugh again). I need to run GEMMA to see if the output should differ and I'll need to see the GN2 logs to understand what is happening. Maybe it just says that the hits are haplotype driven - and that kinda makes sense because there is a range of them.
+
+That leads me to think that we only need to check for epoch when we have a single *low* MAF hit, say 0.01 for 28 mice. As we actively filter on MAF right now we won't likely see an epoch hit.
+
+
+## Protocol for permutations
+
+First we run GEMMA just without LOCO using default settings that GN uses
+
+```
+# Convert the GN geno file to BIMBAM geno file
+./bin/gn-geno-to-gemma.py BXD.geno > BXD.geno.txt
+# Match pheno file
+./bin/rqtl2-pheno-to-gemma.py BXD_pheno_Dave.csv --json BXD.geno.json > BXD_pheno_matched.txt
+  Wrote GEMMA pheno 237 from 237 with genometypes (rows) and 24 collections (cols)!
+gemma -gk -g BXD.geno.txt -p BXD_pheno_matched.txt -n 5
+gemma -lmm 9 -g BXD.geno.txt -p BXD_pheno_matched.txt -k output/result.cXX.txt -n 5
+```
+
+So far the output is correct.
+
+```
+-Math.log10(7.532460e-05)
+=> 4.123063165904243
+```
+
+Try with gemma-wrapper
+
+```
+./bin/gemma-wrapper --json -- -gk -g BXD.geno.txt -p BXD_pheno_matched.txt -n 5 -a BXD.8_snps.txt > K.json
+cp output/bab43175329bd14d485e582b7ad890cf0ec28915.cXX.txt /tmp
+```
+
+Works, but the following failed without the -n switch:
+
+```
+./bin/gemma-wrapper --debug --verbose --force --json --lmdb --input K.json -- -g BXD.geno.txt -a BXD.8_snps.txt -lmm 9 -p BXD_pheno_matched.txt -n 5
+```
+
+and worked with. That is logical, if you see output like
+
+```
+19      rs30886715      46903165        0       X       Y       0.536   0.000000e+00    0.000000e+00    1.000000e-05    1.000000e+00
+19      rs6376540       46905638        0       X       Y       0.536   0.000000e+00    0.000000e+00    1.000000e-05    1.000000e+00
+19      rs50610897      47412184        0       X       Y       0.538   0.000000e+00    0.000000e+00    1.000000e-05    1.000000e+00
+```
+
+It means the phenotype column that was parsed has empty values. In this case the BXD strain names. GEMMA should show a meaningful error.
+
+Now that works we can move to a full LOCO
+
+
+```
+./bin/gemma-wrapper --loco --json -- -gk -g BXD.geno.txt -p BXD_pheno_matched.txt -n 5 -a BXD.8_snps.txt > K.json
+./bin/gemma-wrapper --debug --verbose --force --loco --json --lmdb --input K.json -- -g BXD.geno.txt -a test/data/input/BXD_snps.txt -lmm 9 -maf 0.05 -p BXD_pheno_matched.txt -n 5
+./bin/./bin/view-gemma-mdb --sort /tmp/test/ca55b05e8b48fb139179fe09c35cff0340fe13bc.mdb
+```
+
+and we get
+
+```
+18,69216071,rs3718618,0.635,-195.5784,82.1243,100000.0,0.0,4.5
+18,69825784,rs50446650,0.635,-195.5784,82.1243,100000.0,0.0,4.5
+18,68189477,rs29539715,0.596,-189.7332,79.7479,100000.0,0.0,4.49
+```
+
+When we converted BXD.geno to its BIMBAM BXD.geno.txt we also got a BXD.geno.json file which contains a list of the individuals/genometypes that were used in the genotype file.
+
+Now we reduce the traits file to something GEMMA can use for permutations - adding the trait number and output BXD_pheno_Dave.csv.json
+
+```sh
+./bin/rqtl2-pheno-to-gemma.py BXD_pheno_Dave.csv --json BXD.geno.json -n 5 > BXD_pheno_matched-5.txt
+```
+
+The matched file should be identical to the earlier BXD_pheno_matched.txt file. Meanwhile, if you inspect the JSON file you should see
+
+```
+jq < BXD_pheno_Dave.csv.json
+  "samples-column": 5,
+  "trait": "21529",
+  "samples-reduced": {
+    "BXD1": 1919.450806,
+    "BXD101": 2546.293945,
+    "BXD102": 1745.671997,
+```
+
+So far we are OK!
+
+At this point we have a reduced sample set, a BIMBAM file and a phenotype file GEMMA can use!
+
+```
+./bin/gemma-wrapper --loco --json --input BXD_pheno_Dave.csv.json -- -gk -g BXD.geno.txt -p BXD_pheno_matched.txt -a BXD.8_snps.txt -n 5 > K.json
+```
+
+Note that at this step we actually create a full GRM. Reducing happens in the next mapping stage.
+
+```
+./bin/gemma-wrapper --debug --verbose --force --loco --json --lmdb --input K.json -- -g BXD.geno.txt  -a test/data/input/BXD_snps.txt -lmm 9 -maf 0.05
+```
+
+Note the use of '-n' switch. We should change that.
+
+```
+./bin/./bin/view-gemma-mdb /tmp/test/8599834ee474b9da9ff39cc4954d662518a6b5c8.mdb --sort
+```
+
+Look for rs3718618 at 69216071 and I am currently getting the wrong result for trait 21529 and it is not clear why that is:
+
+```
+chr,pos,marker,af,beta,se,l_mle,l_lrt,-logP
+16,88032783,?,0.538,-134.1339,75.7837,0.0,0.0009,3.02
+16,88038734,?,0.538,-134.1339,75.7837,0.0,0.0009,3.02
+(...)
+18,69216071,?,0.462,10.8099,93.3936,0.0,0.8097,0.09
+```
+
+The failing command is:
+
+```
+/bin/gemma -loco 18 -k /tmp/test/reduced-GRM-18.txt.tmp -o 69170e8a2d2f08905daa14461eca1d82a676b4c4.18.assoc.txt -p /tmp/test/reduced-pheno.txt.tmp -n 2 -g BXD.geno.txt -a test/data/input/BXD_snps.txt -lmm 9 -maf 0.05 -outdir /tmp/test
+```
+
+produces
+
+```
+18  rs3718618       69216071        0       X       Y       0.462   -2.161984e+01   9.339365e+01    1.000000e-05    8.097026e-01
+```
+
+The pheno file looks correct, so it has to be the reduced GRM. And this does not look good either:
+
+```
+number of SNPS for K            =     7070
+number of SNPS for GWAS         =      250
+```
+
+When running GEMMA on genenetwork.org we get a peak for LOCO at that position for rs3718618. I note that the non-LOCO version at 4.1 vs 4.5 for LOCO has a higher peak. We should compute the significance for both!
+
+Now, when I run the non-LOCO version by hand I get
+
+```
+-Math.log10(7.532460e-05)
+=> 4.123063165904243
+```
+
+## Finally
+
+So, we rolled back to not using reduced phenotypes for now.
+
+For trait 21529 after 1000 permutations we get for LOCO:
+
+```
+["95 percentile (significant) ", 1.051208e-05, 5.0]
+["67 percentile (suggestive)  ", 0.0001483188, 3.8]
+```
+
+which means our GWA hit is at 4.5 is not so close to being significant.
+
+Next I made sure the phenotypes got shuffled against the BXD used - which is arguably the right thing to do.
+It should not have a huge impact because the BXDs share haplotypes - so randomized association should end up in the same ball park. The new result after 1000 permutations is:
+
+```
+["95 percentile (significant) ", 8.799303e-06, 5.1]
+["67 percentile (suggestive)  ", 0.0001048443, 4.0]
+```
+
+## More for Dave
+
+
+Run and permute:
+
+```
+./bin/gemma-wrapper --lmdb --debug --phenotypes BXD_pheno_matched.txt --verbose --force --loco  --json --input K.json -- -g BXD.geno.txt -a BXD.8. -lmm 9 -maf 0.05 -n 2 -p BXD_pheno_matched.txt
+./bin/gemma-wrapper --debug --phenotypes BXD_pheno_matched.txt --permutate 1000 --phenotype-column 2 --verbose --force --loco --json --input K.json -- -g BXD.geno.txt -a test/data/input/BXD_snps.txt -lmm 9 -maf 0.05
+```
+
+```
+21526 How old was the mouse when a tumor was first detected?
+chr,pos,marker,af,beta,se,l_mle,l_lrt,-logP
+14,99632276,?,0.462,-0.6627,0.3322,100000.0,0.0003,3.56
+14,99694520,?,0.462,-0.6627,0.3322,100000.0,0.0003,3.56
+17,80952261,?,0.538,0.6528,0.3451,100000.0,0.0005,3.31
+["95 percentile (significant) ", 6.352578e-06, 5.2]
+["67 percentile (suggestive)  ", 0.0001007502, 4.0]
+```
+
+```
+24406 What was the weight of the first tumor that developed, at death?
+chr,pos,marker,af,beta,se,l_mle,l_lrt,-logP
+11,9032629,?,0.536,0.1293,0.0562,100000.0,0.0,4.36
+11,9165457,?,0.536,0.1293,0.0562,100000.0,0.0,4.36
+11,11152439,?,0.5,0.126,0.0562,100000.0,0.0001,4.21
+11,11171143,?,0.5,0.126,0.0562,100000.0,0.0001,4.21
+11,11525458,?,0.5,0.126,0.0562,100000.0,0.0001,4.21
+11,8786241,?,0.571,0.1203,0.0581,100000.0,0.0002,3.78
+11,8836726,?,0.571,0.1203,0.0581,100000.0,0.0002,3.78
+11,19745817,?,0.536,0.1183,0.061,100000.0,0.0003,3.46
+11,19833554,?,0.536,0.1183,0.061,100000.0,0.0003,3.46
+["95 percentile (significant) ", 1.172001e-05, 4.9]
+["67 percentile (suggestive)  ", 0.0001175644, 3.9]
+```
+
+```
+27515 No description
+chr,pos,marker,af,beta,se,l_mle,l_lrt,-logP
+4,103682035,?,0.481,-0.1653,0.0585,100000.0,0.0,5.57
+4,103875085,?,0.481,-0.1653,0.0585,100000.0,0.0,5.57
+4,104004372,?,0.481,-0.1653,0.0585,100000.0,0.0,5.57
+4,104156915,?,0.481,-0.1653,0.0585,100000.0,0.0,5.57
+4,104166428,?,0.481,-0.1653,0.0585,100000.0,0.0,5.57
+4,104584276,?,0.481,-0.1653,0.0585,100000.0,0.0,5.57
+4,103634906,?,0.519,-0.1497,0.0733,100000.0,0.0002,3.67
+4,103640707,?,0.519,-0.1497,0.0733,100000.0,0.0002,3.67
+["95 percentile (significant) ", 7.501004e-06, 5.1]
+["67 percentile (suggestive)  ", 7.804668e-05, 4.1]
+```
+
+## Dealing with significance
+
+Now the significance thresholds appear to be a bit higher than we expect. So, let's see what is going on. First I check the randomization of the phenotypes. That looks great. There are 1000 different phenotype files and they randomized only the BXD we used. Let's zoom in on our most interesting 27515. When running in GN2 I get more hits - they are at the same level, but somehow SNPs have dropped off. In those runs our SNP of interest shows only a few higher values:
+
+```
+./6abd89211d93b0d03dc4281ac3a0abe7fc10da46.4.assoc.txt.assoc.txt:4      rs28166983      103682035       0       X       Y       0.481   -2.932957e-01 7.337327e-02    1.000000e+05    2.700506e-04
+./b6e58d6092987d0c23ae1735d11d4a293782c511.4.assoc.txt.assoc.txt:4      rs28166983      103682035       0       X       Y       0.481   -2.413067e-01 6.416133e-02    1.000000e+05    5.188637e-04
+./4266656951ab0c5f3097ddb4bf917448d7542dd5.4.assoc.txt.assoc.txt:4      rs28166983      103682035       0       X       Y       0.481   2.757074e-01  6.815899e-02    1.000000e+05    2.365318e-04
+./265e44a4c078d2a608b7117bbdcb9be36f56c7de.4.assoc.txt.assoc.txt:4      rs28166983      103682035       0       X       Y       0.481   2.358494e-01  5.743872e-02    1.000000e+05    1.996261e-04
+napoli:/export/local/home/wrk/iwrk/opensource/code/genetics/gemma-wrapper/tmp/test$ rg 103682035 .|grep 5$
+./b29f08a4b1061301d52f939087f1a4c1376256f0.4.assoc.txt.assoc.txt:4      rs28166983      103682035       0       X       Y       0.481   -2.841255e-01 6.194426e-02    1.000000e+05    5.220922e-05
+./3e5b12e9b7478b127b47c23ccdfba2127cf7e2b2.4.assoc.txt.assoc.txt:4      rs28166983      103682035       0       X       Y       0.481   -2.813968e-01 6.379554e-02    1.000000e+05    8.533857e-05
+```
+
+but none as high as the original hit of 5.57
+
+```
+irb(main):001:0> -Math.log10(2.700506e-04)
+=> 3.5685548534637
+irb(main):002:0> -Math.log10(5.220922e-05)
+=> 4.282252795052573
+irb(main):003:0> -Math.log10(8.533857e-05)
+=> 4.06885463879464
+```
+
+All good. This leaves two things to look into. First, I see less hits than with GN2(!). Second, qnorm gives a higher peak in GN2.
+
+* [X] Check for number of SNPs
+
+The number of SNPs is not enough:
+
+```
+GEMMA 0.98.6 (2022-08-05) by Xiang Zhou, Pjotr Prins and team (C) 2012-2022
+Reading Files ...
+## number of total individuals = 237
+## number of analyzed individuals = 26
+## number of covariates = 1
+## number of phenotypes = 1
+## leave one chromosome out (LOCO) =        1
+## number of total SNPs/var        =    21056
+## number of SNPS for K            =     6684
+## number of SNPS for GWAS         =      636
+## number of analyzed SNPs         =    21056
+```
+
+Even when disabling MAF filtering we still see a subset of SNPs. I am wondering what GN2 does here.
+
+## Missing SNPs
+
+In our results we miss SNPs that are listed on GN2, but do appear in our genotypes, e.g.
+
+```
+BXD.8_snps.txt
+19463:rsm10000013598, 69448067, 18
+```
+
+First of all we find we used a total of 6360 SNPs out of the original 21056. For this SNP the genotype files show:
+
+```
+BXD_geno.txt
+19463:rsm10000013598, X, Y, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1, 1, 0.5, 1, 1, 1, 1, 0, 1, 0, 1, 0.5, 0, 0, 0, 1, 0.5, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0.5, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0.5, 1, 0, 0, 0, 1, 1, 1, 0.5, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0.5, 0.5, 0, 0.5, 0.5, 0.5, 0, 0.5, 0.5, 0.5, 0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1, 0.5, 1, 0.5, 0.5, 1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0, 0.5, 1, 0.5, 0, 0.5
+```
+
+and in our updated
+
+```
+BXD.geno.txt
+rsm10000013598,X,Y,2,0,2,0,2,0,2,0,0,0,0,0,0,2,2,2,0,0,0,0,2,2,2,2,2,0,0,0,0,2,0,2,2,2,0,0,0,0,2,0,2,2,2,2,0,0,2,0,0,0,2,2,0,2,0,0,2,2,2,0,0,2,2,2,2,2,2,2,2,2,2,0,0,2,2,0,2,2,2,2,0,2,2,2,2,2,2,2,0,0,2,2,0,2,0,0,2,2,2,0,2,2,2,0,1,1,1,1,1,1,2,2,1,2,2,2,2,0,2,0,2,1,0,0,0,2,1,0,2,2,2,2,2,0,0,2,2,0,2,2,0,2,2,2,2,2,2,2,2,0,2,2,2,2,2,0,0,0,0,0,2,0,0,2,0,2,1,0,2,0,0,0,0,0,0,0,0,1,2,0,0,0,2,2,2,1,0,2,2,2,2,0,2,0,0,0,2,2,2,2,1,1,0,1,1,1,0,1,1,1,0,1,1,1,1,1,1,1,1,2,1,2,1,1,2,1,1,1,1,1,1,0,1,2,1,0,1
+```
+
+That looks good. Turns out we need the annotation file(?!)
+
+I figured out where the missing SNPs went. Turns out that, if you pass in an annotation file, and if it is not complete, GEMMA drops the non-annotated SNPs unceremoniously. Getting the right annotation file fixed it. GEMMA should obviously not behave like that ;). Anyway, I am in sync with GN2 now. Unfortunately, with permutations, the significance threshold did not change much (which kinda makes sense).
+
+I want to see why gemma is giving this number. If I can't find it fast I'll try to run bulklmm or R/qtl2 lmm instead and see if they disagree with gemma and if we can get close to what Rob expects.
+
+
+```
+gemma -gk -g BXD.geno.txt -p BXD_pheno_matched.txt -n 22
+gemma -lmm 9 -g BXD.geno.txt -p BXD_pheno_matched.txt -k output/result.cXX.txt -n 22
+```
+
+Now that works we can move to a full LOCO
+
+```
+./bin/gemma-wrapper --loco --json -- -gk -g BXD.geno.txt -p BXD_pheno_matched.txt -n 5  -a BXD.8_snps.txt > K.json
+./bin/gemma-wrapper --debug --verbose --force --loco --json --lmdb --input K.json -- -g BXD.geno.txt -a BXD.8_snps.txt -lmm 9 -maf 0.05 -p BXD_pheno_matched.txt -n 5
+./bin/./bin/view-gemma-mdb --sort /tmp/test/ca55b05e8b48fb139179fe09c35cff0340fe13bc.mdb
+```
+
+and we get
+
+```
+chr,pos,marker,af,beta,se,l_mle,l_lrt,-logP
+18,69216071,rs3718618,0.635,-195.5784,82.1243,100000.0,0.0,4.5
+18,69448067,rsm10000013598,0.635,-195.5784,82.1243,100000.0,0.0,4.5
+18,69463065,rsm10000013599,0.635,-195.5784,82.1243,100000.0,0.0,4.5
+18,69803489,rsm10000013600,0.635,-195.5784,82.1243,100000.0,0.0,4.5
+18,69825784,rs50446650,0.635,-195.5784,82.1243,100000.0,0.0,4.5
+18,69836387,rsm10000013601,0.635,-195.5784,82.1243,100000.0,0.0,4.5
+18,68188822,rsm10000013579,0.596,-189.7332,79.7479,100000.0,0.0,4.49
+18,68189477,rs29539715,0.596,-189.7332,79.7479,100000.0,0.0,4.49
+18,68195226,rsm10000013580,0.596,-189.7332,79.7479,100000.0,0.0,4.49
+18,68195289,rsm10000013581,0.596,-189.7332,79.7479,100000.0,0.0,4.49
+18,68195758,rsm10000013582,0.596,-189.7332,79.7479,100000.0,0.0,4.49
+18,68454446,rs30216358,0.596,-189.7332,79.7479,100000.0,0.0,4.49
+18,68514475,rs6346101,0.596,-189.7332,79.7479,100000.0,0.0,4.49
+18,68521138,rsm10000013583,0.596,-189.7332,79.7479,100000.0,0.0,4.49
+18,68526029,rs29984158,0.596,-189.7332,79.7479,100000.0,0.0,4.49
+18,68542739,rsm10000013584,0.596,-189.7332,79.7479,100000.0,0.0,4.49
+18,68543456,rsm10000013585,0.596,-189.7332,79.7479,100000.0,0.0,4.49
+18,68564736,rsm10000013586,0.596,-189.7332,79.7479,100000.0,0.0,4.49
+18,68565230,rsm10000013587,0.596,-189.7332,79.7479,100000.0,0.0,4.49
+```
+
+which is in line with GN2.
+
+Run and permute:
+
+```
+./bin/gemma-wrapper --debug --phenotypes BXD_pheno_matched.txt --permutate 1000 --phenotype-column 2 --verbose --force --loco --json --input K.json -- -g BXD.geno.txt -a BXD.8_snps.txt -lmm 9 -maf 0.05
+```
+
+* [X] Test significance effect for higher and lower MAF than 0.05
+
+Lower MAF increases significance thresholds?
+
+```
+0.05?
+["95 percentile (significant) ", 6.268117e-06, 5.2]
+["67 percentile (suggestive)  ", 7.457537e-05, 4.1]
+
+0.01
+["95 percentile (significant) ", 5.871237e-06, 5.2]
+["67 percentile (suggestive)  ", 7.046853e-05, 4.2]
+```
+
+* [ ] Check distribution of hits with permutations
+
+## What about significance
+
+What we are trying to do here is to decide on a significance level that says that the chance of a hit caused by a random event is less that 1 in a thousand. We are currently finding levels of 5.0 and from earlier work it should be less than 4.0. We are essentially following Gary Churchill's '94 paper: ``Empirical threshold values for quantitative trait mapping''. The significance level depends on the shape of the data - i.e., the shape of both genotypes and the trait under study. If the significance level is 5.0 it means that we can expect alpha=0.05 or 5% of random trait vectors can be expected to show a LOD score of 5 or higher.
+
+What GEMMA does is look for a correlation between a marker, e.g.
+
+```
+BXD.geno.txt
+rsm10000013598,X,Y,2,0,2,0,2,0,2,0,0,0,0,0,0,2,2,2,0,0,0,0,2,2,2,2,2,0,0,0,0,2,0,2,2,2,0,0,0,0,2,0,2,2,2,2,0,0,2,0,0,0,2,2,0,2,0,0,2,2,2,0,0,2,2,2,2,2,2,2,2,2,2,0,0,2,2,0,2,2,2,2,0,2,2,2,2,2,2,2,0,0,2,2,0,2,0,0,2,2,2,0,2,2,2,0,1,1,1,1,1,1,2,2,1,2,2,2,2,0,2,0,2,1,0,0,0,2,1,0,2,2,2,2,2,0,0,2,2,0,2,2,0,2,2,2,2,2,2,2,2,0,2,2,2,2,2,0,0,0,0,0,2,0,0,2,0,2,1,0,2,0,0,0,0,0,0,0,0,1,2,0,0,0,2,2,2,1,0,2,2,2,2,0,2,0,0,0,2,2,2,2,1,1,0,1,1,1,0,1,1,1,0,1,1,1,1,1,1,1,1,2,1,2,1,1,2,1,1,1,1,1,1,0,1,2,1,0,1
+```
+
+and a trait that is measured for a limited number against these individuals/strains/genometypes. We also correct for kinship between the individuals, but that is tied to the individuals, so we can ignore that for now. So you get a vector of:
+
+```
+marker rsm10000013598
+ind  trait
+0     8.1
+0     7.9
+2     12.3
+2     13.4
+```
+
+We permute the data after breaking the correlation between left and right columns. When running 1000 permutations for this particular hit we find that the shuffled never gets a higher value then for our main run. That is comforting because random permutations are always less correlated (for this marker).
+
+If we do this genome-wide we also see a randomly positioned highest hit across all chromosomes after shuffling the trait vector and our hit never appears the highest. E.g.
+
+```
+[10, ["2", "rs13476914", "170826974"], ["95 percentile (significant) ", 1.870138e-05, 4.7], ["67 percentile (suggestive)  ", 6.3797e-05, 4.2]]
+[11, ["6", "rsm10000004149", "25227945"], ["95 percentile (significant) ", 1.870138e-05, 4.7], ["67 percentile (suggestive)  ", 6.3797e-05, 4. 2]]
+[12, ["9", "rsm10000006852", "81294046"], ["95 percentile (significant) ", 1.555683e-05, 4.8], ["67 percentile (suggestive)  ", 4.216931e-05, 4.4]]
+[13, ["2", "rsm10000001382", "57898368"], ["95 percentile (significant) ", 1.555683e-05, 4.8], ["67 percentile (suggestive)  ", 6.3797e-05, 4. 2]]
+[14, ["1", "rsm10000000166", "94030054"], ["95 percentile (significant) ", 1.555683e-05, 4.8], ["67 percentile (suggestive)  ", 6.3797e-05, 4. 2]]
+[15, ["X", "rsm10000014672", "163387262"], ["95 percentile (significant) ", 1.555683e-05, 4.8], ["67 percentile (suggestive)  ", 6.3797e-05, 4 .2]]
+```
+
+### Shuffling a normally distributed trait
+
+
+So the randomization works well. Still, or 95% is close to 5.0 and that is by chance. What happens when we change the shape of the data? Let's create a new trait, so the distribution is random and normal:
+
+```
+> rnorm(25, mean = 10, sd = 2)
+ [1] 10.347116  9.475156 11.747876 10.969742 11.374611 12.283834 11.499779
+ [8] 11.123520 10.830300 11.640049 10.392085 11.586836 11.540470 10.700869
+[15]  8.802858 10.238498 11.099536  8.832104  6.463636 10.347956 11.222558
+[22]  8.658024  7.796304 10.684967  9.540483
+```
+
+These random trait values renders a hit of -Math.log10(8.325683e-04) = 3.0! Now we permute and we get:
+
+["95 percentile (significant) ", 5.22093e-06, 5.3]
+["67 percentile (suggestive)  ", 7.303966e-05, 4.1]
+
+So the shape of a normally distribute trait gives a higher threshold - it is easier to get a hit by chance.
+
+### Genotypes
+
+So 95% of random shuffled trait runs still gives us 5.x. So this has to be a property of the genotypes in conjunction with the method GEMMA applies. With regard to genotypes, the BXD are not exactly random because they share markers from two parents which run along haplotypes. I.e. we are dealing with a patchwork of similar genotypes. You may expect that would suppress the chance of finding random hits. Let's try to prove that by creating fully random genotypes and an extreme haplotype set. And, for good measure something in between.
+
+* [X] Fully random genotypes
+
+In the next phase we are going to play a bit with the haplotypes. First we fully randomize the genotype matrix. This way we break all haplotypes. As BIMBAM is a simple format we'll just modify an existing BIMBAM file. It looks like
+
+```
+rs3677817,X,Y,1.77,0.42,0.18,0.42,1.42,0.34,0.69,1.57,0.52,0.1,0.37,1.27,0.62,1.87,1.71,1.65,1.83,0.04,1.05,0.52,1.92,0.57,0.61,0.11,1.49,1.07,1.48,1.7,0.5,1.75,1.74,0.29,0.37,1.78,1.91,1.37,1.64,0.32,0.09,1.21,1.58,0.4,1.0,0.62,1.1,0.7,0.35,0.86,0.7,0.46,1.14,0.04,1.87,1.96,0.61,1.34,0.63,1.04,1.95,0.22,0.54,0.31,0.14,0.95,1.45,0.93,0.37,0.79,1.37,0.87,1.79,0.41,1.73,1.25,1.49,1.57,0.39,1.61,0.37,1.85,1.83,1.71,1.5,1.78,1.34,1.29,1.41,1.54,1.05,0.3,0.87,1.85,0.5,0.19,1.54,0.53,0.26,1.47,0.67,0.84,0.18,0.79,0.68,1.48,0.4,1.83,1.76,1.09,0.2,1.48,0.24,0.53,0.41,1.24,1.38,1.31,1.73,0.52,1.86,1.21,0.58,1.68,0.79,0.4,1.41,0.07,0.57,0.42,0.47,0.49,0.05,0.77,1.33,0.15,1.41,0.03,0.24,1.66,1.39,2.0,0.23,1.4,1.05,0.79,0.51,0.66,1.24,0.29,1.12,0.46,0.92,1.12,1.53,1.78,1.22,1.35,0.1,0.43,0.41,1.89,0.09,0.13,1.04,0.24,1.4,1.25,0.24,0.26,0.31,0.36,0.31,1.34,1.23,1.91,0.7,0.08,1.43,0.17,1.9,0.06,1.42,1.94,0.43,0.54,1.96,1.29,0.64,0.82,1.85,1.63,0.23,1.79,0.52,1.65,1.43,0.95,1.13,0.59,0.07,0.66,1.79,0.92,1.89,1.2,0.51,0.18,0.96,0.44,0.46,0.88,0.39,0.89,1.68,0.07,1.46,1.61,1.73,0.56,1.33,1.67,0.16,1.78,0.61,1.55,0.88,0.15,1.98,1.96,0.61,0.04,0.12,1.4,1.65,0.71,1.3,1.85,0.49
+```
+
+We'll stick in the old hit for good measure and run our genotypes:
+
+```
+./bin/gemma-wrapper --loco --json -- -gk -g BXD.geno.rand.txt -p BXD_pheno_matched.txt -n 5  -a BXD.8_snps.txt > K.json
+./bin/gemma-wrapper --debug --verbose --force --loco --json --lmdb --input K.json -- -g BXD.geno.rand.txt -a BXD.8_snps.txt -lmm 9 -maf 0.05 -p BXD_pheno_matched.txt -n 22
+./bin/./bin/view-gemma-mdb --sort /tmp/test/ca55b05e8b48fb139179fe09c35cff0340fe13bc.mdb
+./bin/view-gemma-mdb /tmp/e279abbebee8e41d7eb9dae...-gemma-GWA.tar.xz --anno BXD.8_snps.txt|head -20
+chr,pos,marker,af,beta,se,l_mle,l_lrt,-logP
+X,139258413,rsm10000014629,0.496,0.2248,0.093,100000.0,0.0,4.58
+6,132586518,rsm10000003691,0.517,0.2399,0.1068,100000.0,0.0001,4.17
+2,161895805,rs27350606,0.585,-0.2303,0.1059,100000.0,0.0001,4.0
+X,47002415,rsm10000014323,0.562,-0.1904,0.0877,100000.0,0.0001,3.99
+3,32576363,rsm10000001568,0.468,-0.2251,0.104,100000.0,0.0001,3.97
+14,19281191,rs52350512,0.5,-0.2454,0.1154,100000.0,0.0001,3.88
+7,111680092,rs32385258,0.536,0.2022,0.0968,100000.0,0.0002,3.79
+4,151267320,rsm10000002095,0.604,-0.2257,0.1102,100000.0,0.0002,3.69
+2,157353289,rs27323024,0.455,0.2188,0.1072,100000.0,0.0002,3.67
+19,56503719,rsm10000013894,0.617,0.2606,0.1302,100000.0,0.0003,3.58
+```
+
+Interestingly our trait did not do that well:
+
+```
+18,69448067,rsm10000013598,0.635,0.0941,0.0774,100000.0,0.0167,1.78
+```
+
+It shows how large the impact of the GRM is. We can run our permutations.
+
+```
+./bin/gemma-wrapper --debug --phenotypes BXD_pheno_matched.txt --permutate 1000 --phenotype-column 22 --verbose --force --loco --json --input K.json -- -g BXD.geno.rand.txt -a BXD.8_snps.txt -lmm 9 -maf 0.05
+["95 percentile (significant) ", 1.478479e-07, 6.8]
+["67 percentile (suggestive)  ", 1.892087e-06, 5.7]
+```
+
+Well that went through the roof :). It makes sense when you think about it. Randomizing genotypes of 21K SNPs gives you a high chance of finding SNPs that correlate with the trait. Let's go the other way and give 20% of indidivuals the exact same haplotypes, basically copying
+
+```
+rsm10000013598,X,Y,2,0,2,0,2,0,2,0,0,0,0,0,0,2,2,2,0,0,0,0,2,2,2,2,2,0,0,0,0,2,0,2,2,2,0,0,0,0,2,0,2,2,2,2,0,0,2,0,0,0,2,2,0,2,0,0,2,2,2,0,0,2,2,2,2,2,2,2,2,2,2,0,0,2,2,0,2,2,2,2,0,2,2,2,2,2,2,2,0,0,2,2,0,2,0,0,2,2,2,0,2,2,2,0,1,1,1,1,1,1,2,2,1,2,2,2,2,0,2,0,2,1,0,0,0,2,1,0,2,2,2,2,2,0,0,2,2,0,2,2,0,2,2,2,2,2,2,2,2,0,2,2,2,2,2,0,0,0,0,0,2,0,0,2,0,2,1,0,2,0,0,0,0,0,0,0,0,1,2,0,0,0,2,2,2,1,0,2,2,2,2,0,2,0,0,0,2,2,2,2,1,1,0,1,1,1,0,1,1,1,0,1,1,1,1,1,1,1,1,2,1,2,1,1,2,1,1,1,1,1,1,0,1,2,1,0,1
+```
+
+```
+./bin/bimbam-rewrite.py --inject inject.geno.txt BXD.geno.txt --perc=20 > BXD.geno.20.txt
+rg -c "2,0,2,0,2,0,2,0,0,0,0,0,0,2,2,2,0,0,0,0,2,2,2,2,2,0,0,0,0,2,0,2,2,2,0,0,0,0,2,0,2,2,2,2,0,0,2,0,0,0,2,2,0,2,0,0,2,2,2,0,0,2,2,2,2,2,2,2,2,2,2,0,0,2,2,0,2,2,2,2,0,2,2,2,2,2,2,2,0,0,2,2,0,2,0,0,2,2,2,0,2,2,2,0,1,1,1,1,1,1,2,2,1,2,2,2,2,0,2,0,2,1,0,0,0,2,1,0,2,2,2,2,2,0,0,2,2,0,2,2,0,2,2,2,2,2,2,2,2,0,2,2,2,2,2,0,0,0,0,0,2,0,0,2,0,2,1,0,2,0,0,0,0,0,0,0,0,1,2,0,0,0,2,2,2,1,0,2,2,2,2,0,2,0,0,0,2,2,2,2,1,1,0,1,1,1,0,1,1,1,0,1,1,1,1,1,1,1,1,2,1,2,1,1,2,1,1,1,1,1,1,0,1,2,1,0,1" BXD.geno.20.txt
+4276
+```
+
+so 4K out of 20K SNPs has identical haplotypes which correlate with our trait of interest:
+
+```
+["95 percentile (significant) ", 5.16167e-06, 5.3]
+["67 percentile (suggestive)  ", 6.163728e-05, 4.2]
+```
+
+and at 40% haplotype injection we get
+
+```
+["95 percentile (significant) ", 3.104788e-06, 5.5]
+["67 percentile (suggestive)  ", 7.032406e-05, 4.2]
+```
+
+* [X] Haplotype equal genotypes 20% and 40%
+
+All looks interesting, but does not help.
+
+Also when we halve the number of SNPs the results are similar too.
+
+```
+["95 percentile (significant) ", 6.026549e-06, 5.2]
+["67 percentile (suggestive)  ", 8.571557e-05, 4.1]
+```
+
+Even though the threshold is high, it is kind of interesting to see that no matter what you do you end up similar levels. After a meeting with Rob and Saunak the latter pointed out that these numbers are not completely surprising. For LMMs we need to use an adaptation - i.e. shuffle the trait values after rotation and transformation and then reverse that procedure. There is only the assumption of normality that Churchill does not require. The good news is that BulkLMM contains that method and thresholds will be lower. The bad news is that I'll have to adapt it because it does not handle missing data.
+
+Oh yes, rereading the Churchill paper from 1994 I now realise he also suggests an at marker significance method that will end lower - we saw that already in an earlier comparison. Saunak, however, says that we *should* do experiment-wide.
+
+## BulkLMM
+
+* [ ] Run bulklmm
+
+
+## Dealing with epoch
+
+Rob pointed out that the GRM does not necessarily represent epoch and that may influence the significance level. I.e. we should check for that. I agree that the GRM distances are not precise enough (blunt instrument) to capture a few variants that appeared in a new epoch of mice. I.e., the mice from the 90s may be different from the mice today in a few DNA variants that won't be reflected in the GRM.
+
+* [ ] Deal with epoch
+
+We have two or more possible solutions to deal with hierarchy in the population.
+
+## Covariates
+
+* [ ] Try covariates Dave
+
+## Later
+
+* [ ] Check running or trait without LOCO with both standard and random GRMs
+* [ ] Test non-loco effect for rsm10000013598 - looks too low and does not agree with GN2
+* [X] Try qnorm run
+* [ ] Fix non-use of MAF in GN for non-LOCO
+* [ ] Fix running of -p switch when assoc cache exists (bug)
+
+Quantile-Based Permutation Thresholds for Quantitative Trait Loci Hotspots
+https://academic.oup.com/genetics/article/191/4/1355/5935078
+by Karl, Ritsert et al. 2012

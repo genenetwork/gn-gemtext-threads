@@ -1,0 +1,56 @@
+# StrainId wrong
+
+# Tags
+* assigned: arthurc
+* type: bug
+* status: unknown
+
+# Info
+
+When I do:
+
+```
+MariaDB [db_webqtl]> SELECT StrainId,Strain.Name FROM Strain, StrainXRef WHERE StrainXRef.StrainId = Strain.Id AND StrainXRef.InbredSetId = 1;
+```
+
+I get a list of BXDs (good), but also
+
+```
+|      333 | BXH2              |
+|      334 | BXH3              |
+|      336 | BXH5              |
+|      342 | BXH11             |
+|      343 | BXH12             |
+|    43879 | BXH12a            |
+|    43880 | BXH13             |
+|    43881 | HXB1              |
+|    43882 | HXB2              |
+|    43883 | HXB3              |
+|    43884 | HXB4              |
+```
+
+This is probably wrong?
+
+
+```
+MariaDB [db_webqtl]> select * from InbredSet where InbredSetId=1 limit 3;
++----+-------------+---------------+------+-----------+------------+--------+-----------------+-------------+---------------------------------
+-----------------+-------------+-------------+---------------+
+| Id | InbredSetId | InbredSetName | Name | SpeciesId | FullName   | public | MappingMethodId | GeneticType | Family
+                 | FamilyOrder | MenuOrderId | InbredSetCode |
++----+-------------+---------------+------+-----------+------------+--------+-----------------+-------------+---------------------------------
+-----------------+-------------+-------------+---------------+
+|  1 |           1 | BXD           | BXD  |         1 | BXD Family |      2 | 1               | riset       | Reference Populations (replicate
+ average, SE, N) |           1 |           0 | BXD           |
++----+-------------+---------------+------+-----------+------------+--------+-----------------+-------------+---------------------------------
+-----------------+-------------+-------------+---------------+
+
+MariaDB [db_webqtl]> select * from StrainXRef where InbredSetId=1 and StrainID=43889 limit 3;
++-------------+----------+---------+------------------+----------------+
+| InbredSetId | StrainId | OrderId | Used_for_mapping | PedigreeStatus |
++-------------+----------+---------+------------------+----------------+
+|           1 |    43889 |    1247 | N                | NULL           |
++-------------+----------+---------+------------------+----------------+
+```
+
+Not a BXD. Not even a mouse.

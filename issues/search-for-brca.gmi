@@ -1,10 +1,31 @@
-# Search for brca
+# Search Improvements: capital insensitive search for RIF+WIKI; Examples
 
-* assigned: arun
+## Tags
 
-Search for brca does not return results for brca1 and brca2. It should.
-=> https://cd.genenetwork.org/gsearch?type=gene&terms=brca
+* assigned: bonfacem, rookie101
+* priority: high
+* type: ops
+* keywords: virtuoso
 
-The xapian stemmer does not stem brca1 to brca. That's why when one searches for brca, results for brca1 are not returned.
+## Description
 
-Perhaps we should write a custom stemmer that stems brca1 to brca. But, at the same time, we should be wary of stemming terms like p450 to p. Pjotr suggests the heuristic that we look for at least 2 or 3 alphabetic characters at the beginning. Another approach is to hard-code a list of candidates to look for.
+RIF search is finally working on production:
+
+> rif:Brca2 and group:BXD
+
+and capital insentive search too for the BXD.  See:
+
+=> https://github.com/genenetwork/genenetwork3/commit/4b2e9f3fb3383421d7a55df5399aab71e0cc3b4f Stem group field regardless of case.
+=> https://github.com/genenetwork/genenetwork3/commit/a37622b466f9f045db06a6f07e88fcf81b176f91 Stem all the time.
+
+## Questions:
+
+* How do we search genewiki data?
+
+* rif:Brca2 should also be RIF:Brca2 (prefer the latter if we have to
+choose as that is what people will try)
+
+* Can we continue giving examples at
+
+=> https://genenetwork.org/search-syntax search syntax
+

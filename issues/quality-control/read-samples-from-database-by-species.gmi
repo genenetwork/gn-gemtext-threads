@@ -1,0 +1,32 @@
+# Read Samples/Cases/Individuals From Database
+
+## Tags
+
+* type: bug
+* priority: critical
+* assigned: fredm, acenteno
+* keywords: QC, quality control, samples, strains, cases, gn-uploader
+* status: closed, completed
+
+## Description
+
+I discovered a
+=> https://gitlab.com/fredmanglis/gnqc_py/-/blob/6200a60eb6f04a5d50bfe0ad366674dc49a08119/scripts/validate_file.py#L98 critical flaw in my code.
+
+This code always reads
+=> https://gitlab.com/fredmanglis/gnqc_py/-/tree/6200a60eb6f04a5d50bfe0ad366674dc49a08119/etc/strains.csv the strains file in the repository
+rather than reading the samples/cases data from the database.
+
+This bug is even "encoded" in
+=> https://gitlab.com/fredmanglis/gnqc_py/-/blob/6200a60eb6f04a5d50bfe0ad366674dc49a08119/README.org#L26 the original specifications.
+
+> - check strain headers against a source of truth (see strains.csv)
+
+The strains file linked to above contains a selection of strains from mice, which means that the checks will never pass for anything other than mice, and even then, for the samples that existed at the time the strains file was generated.
+
+This was a myopic view of the data uploader, and needs to be expanded significantly. The user will need to specify the species for the data they wish to upload before being allowed to upload. That implies a rework of the UI, and underlying code.
+
+## Notes
+
+Fixed with this commit:
+=> https://gitlab.com/fredmanglis/gnqc_py/-/commit/cdd4dc456e56bb4eb055e1cb7f2518d45fb3bfb9

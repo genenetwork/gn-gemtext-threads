@@ -1,0 +1,38 @@
+# Fetch Pubmed data to GNQA
+
+## Tags
+
+* assigned: alexm
+* keywords: llm, pubmed, api, references
+* type: enhancements
+* status: completed, closed
+
+## Description
+
+The task is to integrate PubMed references into the GNQA system by querying the PubMed API using GNQA publication titles. Then, display the data as reference information, which will provide users with more valuable details.
+
+
+## Tasks
+
+* [x] Connect to the PubMed API and perform HTTP requests.
+
+* [x] Query the API with the publication titles.
+
+* [x] Display the PubMed information as reference information on the GN2 user interface.
+
+* [x] dump the results to a DB e.g sqlite,lmdb
+
+* [x] If references are not found, perform a lossy search or list the closest three papers.
+
+* [x] reimplement the reference ui to render the references as modal objects
+
+
+For lossy search, see:
+=> https://github.com/pjotrp/bioruby-bioinformatics-impact/blob/master/bin/pubmed2bib.rb
+
+see link to main  issue:
+=> https://issues.genenetwork.org/topics/lmms/llm-metadata
+
+
+
+

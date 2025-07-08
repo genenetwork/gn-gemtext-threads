@@ -1,0 +1,48 @@
+# Next steps
+
+Wednesday we had a wrap-up meeting of the gn-learning efforts.
+
+## Data uploading
+
+The goal of these meetings was to learn how to upload data into GN. In the process Felix has become the de facto uploader, next to Arthur. A C. elegans dataset was uploaded and Felix is preparing
+
+* More C. elegans
+* HSRat
+* Kilifish
+* Medaka
+
+Updates are here:
+
+=> https://issues.genenetwork.org/tasks/felixl
+
+We'll keep focussing on that work and hopefully we'll get more parties interested in doing some actual work down the line.
+
+## Hosting GN in Wageningen
+
+Harm commented that he thought these meetings were valuable, particularly we learnt a lot about GN ins and outs. Harm suggests we focus on hosting GN in Wageningen for C. elegans and Arabidopsis.
+Pjotr says that is a priority this year, even if we start on a privately hosted machine in NL. Wageningen requires Docker images and Bonface says that is possible - with some work. So:
+
+* Host GN in NL
+* Make GN specific for C.elegans and Arabidopsis - both trim and add datasets
+* Create Docker container
+* Host Docker container in Wageningen
+* Present to other parties in Wageningen
+
+Having above datasets will help this effort succeed.
+
+## AI
+
+Harm is also very interested in the AI efforts and wants to pursue that in the context of above server - i.e., functionality arrives when it lands in GN.
+
+## Wormbase
+
+Jameson suggest we can work with Wormbase and the Caender folks once we have a running system. Interactive data analysis is very powerful and could run in conjunction with those sites.
+
+=> https://caendr.org/
+=> https://wormbase.org/
+
+Other efforts are Flybase and Arabidopsis Magic which we can host, in principle.
+
+## Mapping methods
+
+Jameson will continue with his work on risiduals.

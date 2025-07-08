@@ -1,0 +1,35 @@
+# Implementing Efficient Database Caching for Query Responses in GN-LLM system
+
+
+## Tags:
+
+* assigned: alexm,shelby
+* keywords: llm,caching,database,query,response
+* type: enhancements
+
+* status: closed, done, completed
+
+
+## Description:
+
+This implementation task aims to enhance the performance and responsiveness of our GN-LLM (Large Language Model) system by incorporating a robust database caching mechanism. The focus will be on utilizing a database to store queries along with their corresponding answers and references, ensuring quicker retrieval and reduced computational load. Users can go back in time and see their search results at a given time.
+
+
+
+
+## Task
+
+* [x] implement endpoint for user caching 
+
+* [x] implement UI for QNQA search
+
+* [x] More customization features  like e.g user clearing their history
+
+See main issue:
+
+=> topics/lmms/llm-metadata
+
+## Note for commits See:
+
+=> https://github.com/genenetwork/genenetwork3/pull/165
+

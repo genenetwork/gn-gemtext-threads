@@ -4,8 +4,8 @@
 
 * assigned: fredm, zsloan
 * priority: high
-* status: open
-* keywords: authentication, authorisation, oauth2, temp-traits
+* status: closed, completed
+* keywords: authentication, authorisation, oauth2, temp-traits, gn-auth
 * type: bug
 
 ## Description

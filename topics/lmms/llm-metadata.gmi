@@ -15,10 +15,12 @@ This development will be done in stages:
 * [-] 5.5 - Get feedback from testers of GNQA
 * [ ] 6 - Improve GNQA after evaluating feedback
 * [ ] 6.5 - Add reference rating to GNQA
-* [-] 7 - create UI for Q&A window that fits into current GN framework
-* [ ] 8 - create CI/CD tests for new module
-* [ ] 9 - integrate new functionality into GN{2-3}
-
+* [X] 7 - create UI for Q&A window that fits into current GN framework
+* [X]  8 - put GNQA GN UI on cd.genenetwork.org for internal researcher access 
+* [ ] 9 - create CI/CD tests for new module
+* [-] 10 - integrate new functionality into GN{2-3}
+* [ ] 11 - Use db to save querys with answers and references for users
+ 
 ## Tasks for Priscilla
 * [X] 1 - Acquire 1000 research documents w.r.t. Genetics, genomics research on diabetes
 * [X] 2 - Acquire 1000 more research documents w.r.t GeneNetwork.org
@@ -26,6 +28,7 @@ This development will be done in stages:
 
 ## Task for collaborator
 * [X] Build feedback into api for qualifying/rating references and answers
+* [X] Associate references with their titles rather than their document ids
 * [] Build better document referencing using a documents bibliography information
 
 ## Add GN metadata

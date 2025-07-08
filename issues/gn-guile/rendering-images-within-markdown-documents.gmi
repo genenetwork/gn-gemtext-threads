@@ -1,0 +1,22 @@
+# Rendering Images Linked in Markdown Documents
+
+## Tags
+
+* status: open
+* priority: high
+* type: bug
+* assigned: alexm, bonfacem, fredm
+* keywords: gn-guile, images, markdown
+
+## Description
+
+Rendering images linked within markdown documents does not work as expected — we cannot render images if they have a relative path.
+As an example see the commit below:
+=> https://github.com/genenetwork/gn-docs/commit/783e7d20368e370fb497974f843f985b51606d00
+
+In that commit, we are forced to use the full github uri to get the images to load correctly when rendered via gn-guile. This, has two unfortunate consequences:
+
+* It makes editing more difficult, since the user has to remember to find and use the full github URL for their images.
+* It ties the data and code to github
+
+This needs to be fixed, such that any and all paths relative to the markdown file are resolved at render time automatically.

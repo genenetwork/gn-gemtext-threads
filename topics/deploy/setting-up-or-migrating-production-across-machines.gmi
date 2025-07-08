@@ -1,0 +1,58 @@
+# Setting Up or Migrating Production Across Machines
+
+## Tags
+
+* type: documentation, docs, doc
+* status: in-progress
+* assigned: fredm
+* priority: undefined
+* keywords: migration, production, genenetwork
+* interested-parties: pjotrp, zachs
+
+## Introduction
+
+Recent events (Late 2024 and early 2025) have led to us needing to move the production system from one machine to the other several time, due to machine failures, disk space, security concerns, and the like.
+
+In this respect, a number of tasks rise to the front as necessary to accomplish for a successful migration. Each of the following sections will detail a task that's necessary for a successful migration.
+
+## Set Up the Database
+
+* Extract: detail this — link to existing document in this repo. Also, probably note that we symlink the extraction back to `/var/lib/mysql`?
+* Configure: detail this — link to existing document in this repo
+
+## Set Up the File System
+
+* TODO: List the necessary directories and describe what purpose each serves. This will be from the perspective of the container — actual paths on the host system are left to the builders choice, and can vary wildly.
+* TODO: Prefer explicit binding rather than implicit — makes the shell scripts longer, but no assumptions have to be made, everything is explicitly spelled out.
+
+## Redis
+
+We currently (2025-06-11) use Redis for:
+
+- Tracking user collection (this will be moved to SQLite database)
+- Tracking background jobs (this is being moved out to SQLite databases)
+- Tracking running-time (not sure what this is about)
+- Others?
+
+We do need to copy over the redis save file whenever we do a migration, at least until the user collections and background jobs features have been moved completely out of Redis.
+
+## Container Configurations: Secrets
+
+* TODO: Detail how to extract/restore the existing secrets configurations in the new machine
+
+## Build Production Container
+
+* TODO: Add notes on building
+* TODO: Add notes on setting up systemd
+
+## NGINX
+
+* TODO: Add notes on streaming and configuration of it thereof
+
+## SSL Certificates
+
+* TODO: Add notes on acquisition and setup of SSL certificates
+
+## DNS
+
+* TODO: Migrate DNS settings

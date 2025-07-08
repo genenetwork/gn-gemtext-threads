@@ -1,0 +1,87 @@
+# GeneNetwork2: Account Registration Error
+
+## Tags
+
+* type: bug
+* priority: critical
+* assigned: zachs, zsloan, fredm
+* status: closed, completed
+* keywords: genenetwork2, account management, user, registration
+
+## Description
+
+When one attempts to register a new user account on
+=> https://genenetwork.org the production server
+the following error is raised:
+
+```
+      GeneNetwork 2.11-rc2  http://genenetwork.org/oauth2/user/register (11:12AM UTC Mar 19, 2024) 
+Traceback (most recent call last):
+  File "/home/zas1024/opt/gn-latest-20240112/lib/python3.10/site-packages/requests/models.py", line 971, in json
+    return complexjson.loads(self.text, **kwargs)
+  File "/home/zas1024/opt/gn-latest-20240112/lib/python3.10/site-packages/simplejson/__init__.py", line 525, in loads
+    return _default_decoder.decode(s)
+  File "/home/zas1024/opt/gn-latest-20240112/lib/python3.10/site-packages/simplejson/decoder.py", line 370, in decode
+    obj, end = self.raw_decode(s)
+  File "/home/zas1024/opt/gn-latest-20240112/lib/python3.10/site-packages/simplejson/decoder.py", line 400, in raw_decode
+    return self.scan_once(s, idx=_w(s, idx).end())
+simplejson.errors.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/zas1024/opt/gn-latest-20240112/lib/python3.10/site-packages/flask/app.py", line 1523, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/zas1024/opt/gn-latest-20240112/lib/python3.10/site-packages/flask/app.py", line 1509, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+  File "/home/gn2/production/gene/gn2/wqflask/oauth2/users.py", line 146, in register_user
+    results = response.json()
+  File "/home/zas1024/opt/gn-latest-20240112/lib/python3.10/site-packages/requests/models.py", line 975, in json
+    raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
+requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+```
+
+This error does not show up on the following systems:
+
+=> https://cd.genenetwork.org/ CD Test Server
+=> https://test1.genenetwork.org/ Arun's Production Facsimile Server
+
+It does, however, show up on
+=> https://staging.genenetwork.org/ GeneNetwork Staging server with Uploader
+
+The logs indicate:
+
+```
+2024-03-19 11:31:04   File "/gnu/store/2qhgkf5j649kv57nw4lzsbwlnb1790vq-profile/lib/python3.10/site-packages/gn2/wsgi.py", line 1, in <module>
+2024-03-19 11:31:04     from gn2.run_gunicorn import app as application  # expect application as a name
+2024-03-19 11:31:04   File "/gnu/store/2qhgkf5j649kv57nw4lzsbwlnb1790vq-profile/lib/python3.10/site-packages/gn2/run_gunicorn.py", line 12, in <module
+>
+2024-03-19 11:31:04     from gn2.gn2_main import app
+2024-03-19 11:31:04   File "/gnu/store/2qhgkf5j649kv57nw4lzsbwlnb1790vq-profile/lib/python3.10/site-packages/gn2/gn2_main.py", line 3, in <module>
+2024-03-19 11:31:04     from gn2.wqflask import app
+2024-03-19 11:31:04   File "/gnu/store/2qhgkf5j649kv57nw4lzsbwlnb1790vq-profile/lib/python3.10/site-packages/gn2/wqflask/__init__.py", line 21, in <mo
+dule>
+2024-03-19 11:31:04     from gn2.wqflask.group_manager import group_management
+2024-03-19 11:31:04   File "/gnu/store/2qhgkf5j649kv57nw4lzsbwlnb1790vq-profile/lib/python3.10/site-packages/gn2/wqflask/group_manager.py", line 15, i
+n <module>
+2024-03-19 11:31:04     from gn2.wqflask.decorators import login_required
+2024-03-19 11:31:04   File "/gnu/store/2qhgkf5j649kv57nw4lzsbwlnb1790vq-profile/lib/python3.10/site-packages/gn2/wqflask/decorators.py", line 14, in <
+module>
+2024-03-19 11:31:04     from gn2.wqflask.oauth2 import client
+2024-03-19 11:31:04   File "/gnu/store/2qhgkf5j649kv57nw4lzsbwlnb1790vq-profile/lib/python3.10/site-packages/gn2/wqflask/oauth2/client.py", line 14, i
+n <module>
+2024-03-19 11:31:04     from gn2.wqflask.oauth2.checks import user_logged_in
+2024-03-19 11:31:04   File "/gnu/store/2qhgkf5j649kv57nw4lzsbwlnb1790vq-profile/lib/python3.10/site-packages/gn2/wqflask/oauth2/checks.py", line 10, i
+n <module>
+2024-03-19 11:31:04     from .client import authserver_uri, oauth2_clientid, oauth2_clientsecret
+2024-03-19 11:31:04 ImportError: cannot import name 'authserver_uri' from partially initialized module 'gn2.wqflask.oauth2.client' (most likely due to
+ a circular import) (/gnu/store/2qhgkf5j649kv57nw4lzsbwlnb1790vq-profile/lib/python3.10/site-packages/gn2/wqflask/oauth2/client.py)
+```
+
+which is weird since
+=> https://github.com/genenetwork/genenetwork2/commit/b14fefe25f1536e2376efa6b0dba9dce33609725 this commit fixes the circular import issue.
+
+The following two commits are somewhat related to that above:
+=> https://github.com/genenetwork/genenetwork2/commit/b63b91cf52c148c6f7091e3845bb3fdb11052d62
+=> https://github.com/genenetwork/genenetwork2/commit/ec480af2769fd17acac95dc4473ca4128a46279b

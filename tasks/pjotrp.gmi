@@ -1,81 +1,129 @@
 # Pjotr tasks
 
-## Tags
+# Tags
 
 * kanban: pjotrp
 * assigned: pjotrp
 * status: in progress
 
-## Notes
+# Current
 
-The tasks here should probably be broken out into appropriately tagged issues, where they have not - they can be found and filtered out with tissue (formerly gnbug).
+## 1U01HG013760
 
-=> https://issues.genenetwork.org
+* Prefix-Free Parsing Compressed Suffix Tree (PFP) for tokenization
+* Mempang
 
-## Tasks
+* [+] create backup server with @fredm
+* [+] RAG with Shelby and Bonz
+* [+] Moni builds 1U01HG013760
+* [+] test framework wfmash - vertebrate tree and HPC compute?
+*     -  wfmash - wgatools -> PAF + FASTA to VCF
+*     - wfmash arch=native build
+* [ ] gbam - data compression with Nick and Hasithak
+* [X] accelerate wfmash with @santiago and team
+* [+] package wfmash and Rust wfa2-lib
+* [ ] add Ceph for distributed network storage 1U01HG013760
+* [ ] Work on pangenome genotyping 1U01HG013760
+* [ ] update freebayes into Debian (version #)
+*     - [ ] static build and prepare for conda
+* [ ] update vcflib into Debian (version #)
+*     - [ ] static build and prepare for conda
+* [ ] pangenome as a 1st class input for GEMMA
+* kilifish pangenome with Paul and Dario
 
-### Meta-tasks
+## Systems
+
+* [+] jumpshiny
+* [ ] pluto
+* [ ] Backup production databases on Tux04
+*     - [+] Dump containers w. databases
+*     - [X] Dump mariadb
+*     - [ ] backup remote
+*     - [ ] borg-borg
+*     - [ ] fix root scripts
+* [ ] make sure production is up to scratch (see stable below)
+* [ ] synchronize git repos for public, CD, fallback and production using sheepdog and document
+* [ ] drop tux02 backups on balg01
+* [X] Small database public
+
+## Ongoing tasks (current/urgent)
+
+* [ ] ~Felix, Alex, Rahul as friends of UTHSC
+* [ ] Precompute with GEMMA
+  + [ ] Store N
+  + [ ] Store significance levels
+  + [ ] Check genotype input data
+  + [ ] Imputation
+  + [ ] Do same with bulkLMM
+  + [ ] Generate lmdb output
+  + [ ] Hook into Xapian
+  + [ ] Hook into correlations
+
+* [ ] Check email setup tux04
+* [ ] jbrowse plugin code - https://genenetwork.trop.in/mm10
+* [+] bulklmm Julia as part of GN3 deployment
+  - precompute & Julia
+=> https://github.com/GregFa/TestSysimage
+   Here the repo with BulkLMMSysimage:
+=> https://github.com/GregFa/BulkLMMSysimage
+=> /topics/deploy/julia.gmi
+* [X] Set up stable GeneNetwork server instance with new hardware (see below)
+=> /topics/systems/fire-up-genenetwork-system-container.gmi
+
+# Tasks
+
+## Meta-tasks
 
 Now (X=done +=WIP _=kickoff ?=?)
 
+* [ ] ~Test GEMMA/bulklmm speedups & paper
+* [ ] GEMMA batch run and precompute
+=> ../issues/gemma/lmm-precomputed-scores
+* [ ] Genotyping and sparse VCF
+* [ ] GeneNetwork consortium (paper & CTC)
+
 * [+] Build leadership team
-* [X] Build junior team
-* [+] Build GN consortium
 * [+] gBAM
-* [+] Set up stable GeneNetwork server instance with new hardware (see below)
-* [ ] Complete Octopus setup with Erik, Andrea and Efraim - adding all machines
-* [ ] Audit DB security
 * [ ] p-value global search
+* [+] Xapian search add tags, notmuch style (with @bonfacem and @zachs)
 
 => ../issues/systems/octopus
 
-* [ ] GEMMA batch run and precompute
-
-=> ../issues/gemma/lmm-precomputed-scores
-
-* [ ] GEMMA/bulklmm speedups
-
-* [ ] Add R/qtl2 and multi-parent support with Karl (DO and Magic populations)
-* [ ] Fix slow search on Mariadb?
-* [+] Shelby's application (fall)
+* [+] Add R/qtl2 and multi-parent support with Karl (DO and Magic populations)
+* [+] Fix slow search on Mariadb? Moving to xapian
 * [.] GeneNetwork paper
 *     + [ ] add FAIR statement
 * [ ] RISC-V trials
-* [ ] Guix project server
 
 Longer term
 
-* [+] Aging grant application w. Rob (fall)
 * [ ] Drive for stability of GN tools (particularly GEMMA OOMP)
 * [+] AraQTL and WormQTL2 embedding
 * [+] Work on REST API
 
 Later
 
+* [ ] Mempang25 1U01HG013760
+  + [X] Invites
+  + [ ] Payments
+  + [ ] Rooms
+  + [ ] Catering
+
+* [ ] Remove ttf files GN2 git repo
 * [+] DOI support GN
-* [+] Tree of life w. Andrea
 * [ ] Hao's idea for counting cis-qtl
 * [ ] Improve search for significant and suggestive hits
 * [ ] Include dominance matrix results in gemma (gene expression and transcript isophorms)
-* [ ] UCSC browser and big wig files
-* [ ] Jbrowse2 browser
-
-### Ongoing tasks
+* [-] UCSC browser and big wig files (no longer applicable)
+* [+] Jbrowse2 browser
 
 ### Set up stable server instance with new hardware
 
-* [ ] R/qtl2 with Karl
-* [ ] Set up opensmtpd as a service
-  + [ ] Add package dependency
-  + [ ] Test on open port 25
-  + [ ] Add public-inbox (Arun)
+* [ ] ssh-shell access for git markdown
+* [+] R/qtl2 with Karl and Alex, see [alex.gmi]
 
 => ./machine-room.gmi machine room
 
-* [+] move backup dirs on tux01 to a larger partition (from export3 to export2)
-* [.] Check Tony's list and improve search for SNPs and Hs
-* [ ] GeneNetwork consortium (paper & CTC)
-* [+] Complete vcflib work in Zig and release
 * [ ] Fix issues:
 => https://genenetwork.org/show_trait?trait_id=10441&dataset=HSNIH-PalmerPublish slow mapping
 => http://gn1.genenetwork.org/webqtl/main.py?FormID=sharinginfo&GN_AccessionId=2
@@ -85,6 +133,12 @@ Later
 
 ### Done
 
+* [X] add drives to Octopus 1U01HG013760
+* [X] mount NFS bacchus on octopus 1U01HG013760
+* [X] Guix project server
+* [X] Build junior team
+* [X] Complete Octopus setup with Erik, Andrea and Efraim - adding all machines
+* [X] Aging grant application w. Rob (fall)
 * [X] Update facilities with new machines
 * [X] Machine room security and access for bonz, fred, shelby, others...
 * [X] Support pluto notebooks with Efraim
@@ -93,3 +147,13 @@ Later
 * [X] Set up cgit as a service
 * [X] Fix mariadb index search - need to upgrade mariadb to convert final utf8mb4, see
   => ../issues/slow-sql-query-for-xapian-indexing.gmi
+* [X] Debian/free software issues incl. vcflib work in Zig and release
+* [X] Set up opensmtpd as a service
+
+# Notes
+
+The tasks here should probably be broken out into appropriately tagged issues, where they have not - they can be found and filtered out with tissue (formerly gnbug).
+
+=> https://issues.genenetwork.org
+
+Generally work applies to NIH/R073237482 and other grants.

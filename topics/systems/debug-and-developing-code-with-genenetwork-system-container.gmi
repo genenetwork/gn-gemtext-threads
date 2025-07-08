@@ -1,0 +1,265 @@
+# Debugging and developing code
+
+Once we get to the stage of having a working system container it would be nice to develop code against it. The idea is to take an existing running system container and start modifying code *inside* the container by brining in an external path.
+
+First build and start a guix system container as described in
+
+=> /topics/guix/guix-system-containers-and-how-we-use-them.gmi
+
+The idea is to do less `guix pull' and system container builds, so as to speed up development. The advantage of using an existing system container is that the full deployment is the same on our other running systems! No more path hacks, in other words.
+
+# GN3 in system container
+
+The easiest one is GN3 because it is meant to give a quick turnaround on debugging and testing. Login to the container using nsenter or equal. Doing a `ps xau` should show the gn3 config used, e.g.
+
+```
+guile --no-auto
+-compile /gnu/store/zm5cxkhy0gx6b7vyyr54dh99gk8zbncn-gunicorn-genenetwork3-pola-wrapper --workers 20 --timeout 1200 --bind 127.0.0.1:8893 --env GN3_CONF=/gnu/store/8lmjj0vv0616cgwy2dx56pg30rkvgsj0-gn3.conf --env GN3_SECRETS=/etc/genenetwork/gn3-secrets.py --env HOME=/tmp gn3.app:create_app()
+```
+
+the config file may contain something like
+
+```
+AUTH_DB = "/export/data/genenetwork-sqlite/auth.db"
+DATA_DIR = "/export/data/genenetwork"
+SPARQL_ENDPOINT = "http://localhost:8892/sparql"
+SQL_URI = "mysql://webqtlout:webqtlout@localhost/db_webqtl"
+XAPIAN_DB_PATH = "/export/data/genenetwork-xapian"
+```
+
+When building the container you can add a source path that is shared with the host machine. We can use that to share the source directory for GN3 with the path in the guix deploy script:
+
+```
+--share=/export/source/fallback-debug
+```
+
+in that directory we clone the genenetwork3 repo and rebuild the machine. After restarting the machine the path should be visible. E.g.
+
+```
+nsenter -at 1359047 /run/current-system/profile/bin/bash --login
+root@genenetwork /# ls /export/source/fallback-debug/
+  genenetwork3/
+```
+
+Another useful command is running a command from outside the VM:
+
+```
+nsenter -at 1359047 /run/current-system/profile/bin/tail -f /var/log/gunicorn-genenetwork3.log
+```
+
+Next, after making a note of the port and paths with `ps xau`, we stop the running GN3 instance with
+
+```
+herd stop gunicorn-genenetwork3
+```
+
+Now we can start GN3 properly. We can reuse the gunicorn setup above, but for debugging it may be better to run a single threaded flask server on the same port. The wrapper contains all paths and PYTHON modules, so let's reuse that:
+
+```
+/gnu/store/1gd9nsy4cps8fnrd1avkc9l01l7ywiai-guile-3.0.9/bin/guile --no-auto-compile /gnu/store/zm5cxkhy0gx6b7vyyr54dh99gk8zbncn-gunicorn-genenetwork3-pola-wrapper --workers 1 --timeout 1200 --bind 127.0.0.1:8893 --env GN3_CONF=/gnu/store/8lmjj0vv0616cgwy2dx56pg30rkvgsj0-gn3.conf --env GN3_SECRETS=/etc/genenetwork/gn3-secrets.py --env HOME=/tmp "gn3.app:create_app()"
+```
+
+Note the added quotes. The command will fail with 'No module named gn3'. Good! Now to load the source dir we need to make it visible. We'll use $SOURCES for that.
+
+Through above shepherd command find the profile in use by printing pola-wrapper. You can use a local Ruby command, such as
+
+```
+/gnu/store/7ri578qarmn1cj2inl243xar6p7j1vxh-ruby-3.1.4/bin/ruby -n -e '$_ =~ /(\"\S+-profile)/; p $1 if $1' < /gnu/store/d7idvpad0d49l7647ci046w3xiz58xym-gunicorn-genenetwork3-pola-wrapper
+"\"/gnu/store/yi76sybwqql4ky60yahv91z57srb2fr0-profile
+```
+
+and set the profile to match
+
+```
+export PROFILE=/gnu/store/yi76sybwqql4ky60yahv91z57srb2fr0-profile
+```
+
+> Note: you can find ruby in /gnu/store in the VM as it shares with the host
+
+This worked running gunicorn directly and loading the PYTHONPATH worker source path with `--chdir`!
+
+```
+herd stop gunicorn-genenetwork3
+
+root@genenetwork: cd /export/source/fallback-debug/genenetwork3
+PYTHONPATH=$PROFILE/lib/python3.10/site-packages /gnu/store/hhn20xg4vag4xiib2d7d4c1vkm09dcav-gunicorn-20.1.0/bin/gunicorn --workers 1 --timeout 1200 --bind 127.0.0.1:8893 --env GN3_CONF=/gnu/store/592bscjpr6xyz8asn743iqzgczg8l947-gn3.conf --env GN3_SECRETS=/etc/genenetwork/gn3-secrets.py --chdir /export/source/fallback-debug/genenetwork3 --log-level debug --reload --env HOME=/tmp gn3.app:create_app\(\)
+```
+
+Make sure you are loading gn3 code from your source dir (e.g. by introducing an error). The commit for sharing sources is at
+
+=> https://git.genenetwork.org/gn-machines/commit/?id=0d551870499c886f900a5b87b2040db25e9a00cc
+
+Anyway, at this stage I can edit GN3 code outside the container and it will update with gunicorn. It leads to solving the shared path issue. But first we want to also run GN2 inside the system container.
+
+# GN2 in a system container
+
+We clone genenetwork2 in the source path, next we take a hint from shepherd:
+
+```
+/gnu/store/1gd9nsy4cps8fnrd1avkc9l01l7ywiai-guile-3.0.9/bin/guile --no-auto-compile /gnu/store/vg8q4kdnkzy7skv04z57ngm8rqn7kvhd-gunicorn-genenetwork2-pola-wrapper --workers 20 --timeout 1200 --bind 127.0.0.1:8892 --env GN2_PROFILE=/gnu/store/jl6x90wdbwbs7c7zxnyz2kfd0qx8bf5h-profile --env GN2_SETTINGS=/gnu/store/gn9pr6kvmf1zlaskd1bqn1dssx4sy5lw-gn2.conf --env HOME=/tmp gn2.wsgi
+```
+
+and we tell herd to stop genenetwork2.
+
+```
+herd stop gunicorn-genenetwork2
+ PYTHONPATH=/gnu/store/yi76sybwqql4ky60yahv91z57srb2fr0-profile/lib/python3.10/site-packages /gnu/store/1gd9nsy4cps8fnrd1avkc9l01l7ywiai-guile-3.0.9/bin/guile --no-auto-compile /gnu/store/vg8q4kdnkzy7skv04z57ngm8rqn7kvhd-gunicorn-genenetwork2-pola-wrapper --workers 20 --timeout 1200 --bind 127.0.0.1:8892 --env GN2_PROFILE=/gnu/store/jl6x90wdbwbs7c7zxnyz2kfd0qx8bf5h-profile --env GN2_SETTINGS=/gnu/store/gn9pr6kvmf1zlaskd1bqn1dssx4sy5lw-gn2.conf --chdir /export/source/fallback-debug/genenetwork2 --env HOME=/tmp gn2.wsgi
+```
+
+and we get an Error: can't chdir to '/export/source/fallback-debug/genenetwork2'. Now I banged my head against the wall for a while and realized, after a back-and-forth with Arun, that guile starts a container without that path being visible! So we run GN2 and GN3 as *containers* inside a guix system container (a VM). OK, that means, next to specifying the path in the build, we also have to specify the source path inside the container definition. The upside is being explicit. The downside may be performance - we'll have to look into that later. This link suggests running a container in a VM is 40% slower:
+
+=> https://blog.nestybox.com/2020/09/23/perf-comparison.html
+
+But, we'll have to look into such optimizations later.
+
+After adding the source dir and changing the permissions of the secrets file I can
+
+```
+export PROFILE=/gnu/store/d77wrqsb11igma3ay5mykc57mnzwc76q-profile
+/export/source/fallback-debug/genenetwork2# /gnu/store/1gd9nsy4cps8fnrd1avkc9l01l7ywiai-guile-3.0.9/bin/guile --no-auto-compile /gnu/store/47vplgxkcwd7vk3r71qvvfkwr9rcqlsl-gunicorn-genenetwork2-pola-wrapper --workers 1 --timeout 1200 --bind 127.0.0.1:8892 --env GN2_PROFILE=$PROFILE --env GN2_SETTINGS=/gnu/store/gn9pr6kvmf1zlaskd1bqn1dssx4sy5lw-gn2.conf  --chdir /export/source/fallback-debug/genenetwork2 --pythonpath=$PROFILE/lib/python3.10/site-packages  --log-level debug --reload --env HOME=/tmp  gn2.wsgi
+```
+
+Note that we need the --pythonpath. I pick up that profile from pola-wrapper, as well as the R path etc with
+
+```
+export PROFILE=/gnu/store/v1nv6nnfsmvsi5aangj580f46741nvx6-profile
+root@genenetwork /export/source/fallback-debug/genenetwork3# PATH=$PATH:$PROFILE/bin R_LIBS_USER=$PROFILE/site-library PYTHONPATH=$PROFILE/lib/python3.10/site-packages /gnu/store/hhn20xg4vag4xiib2d7d4c1vkm09dcav-gunicorn-20.1.0/bin/gunicorn --workers 1 --timeout 1200 --bind 127.0.0.1:8893 --env GN3_CONF=/gnu/store/592bscjpr6xyz8asn743iqzgczg8l947-gn3.conf --env GN3_SECRETS=/etc/genenetwork/gn3-secrets.py --chdir /export/source/fallback-debug/genenetwork3 --log-level debug --reload --env HOME=/tmp gn3.app:create_app\(\)
+```
+
+To run the tests you can do something like
+
+```
+export PROFILE=/gnu/store/v1nv6nnfsmvsi5aangj580f46741nvx6-profile
+export AUTHLIB_INSECURE_TRANSPORT=true
+export OAUTH2_ACCESS_TOKEN_GENERATOR="tests.unit.auth.test_token.gen_token"
+PATH=$PATH:$PROFILE/bin R_LIBS_USER=$PROFILE/site-library PYTHONPATH=$PROFILE/lib/python3.10/site-packages pytest
+```
+
+# Locating scripts and fonts
+
+In Guix VMs we can not assume the start dir is the base of the source code - as we do in development. Paths may need to be written and that happens at the package level. E.g.
+
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=6303fe046b944a380704eb02144cca777fee689b
+
+The great thing is that, once it is done, it will always work with Guix! It is also a security feature that the full store is hard coded.
+
+For fonts we have
+
+```
+gn2/utility/Plot.py
+44:VERDANA_FILE = "./gn2/wqflask/static/fonts/verdana.ttf"
+45:COUR_FILE = "./gn2/wqflask/static/fonts/courbd.ttf"
+```
+
+and rewrite them with
+
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=1a6522f3a5a7d0990e50fe5dd91f286f62e083e7
+
+# Fixing shared paths
+
+By default both GN2 and GN3 run as containers. We pass temporary files through the file sytem, so let's try and fix that first. The good news is that they only have to share the TMPDIR. First we share a new directory under /var/tmp for the system container. Next we have to tell GN2 and GN3 system containers to use /var/tmp/gn2. This was done in commit
+
+=> https://git.genenetwork.org/gn-machines/commit/?id=831cf86b4fbf7b054640fa46eede6040ad01340f
+
+# Showing debug output
+
+Flask typically runs in a gunicorn. To have debug output the simple thing is to print to stderr with
+
+```
+sys.stderr.write("Example error output shows in gunicorn log")
+```
+
+Once the flask app runs it has its own logger settings. What we can do is set the app logging locally
+
+```
+from flask import current_app
+current_app.logger.setLevel(logging.DEBUG) # Force debug level since we assume we are using it!
+current_app.logger.debug("%s: %s", title_vals, value)
+```
+
+I have forced that in gn3/debug.py for now. Putting __pk__ around rqtl_cmd it turned out the script was not defined. The file it should be calling is ./scripts/rqtl_wrapper.R. There are some confusing settings in GN3.
+
+```
+rqtl_wrapper = current_app.config["RQTL_WRAPPER"]
+```
+
+http://127.0.0.1:8893/api/menu/generate/json
+
+# Speeding up channel builds
+
+The routine of `guix pull` for channel builds is quite elaborate in a development phase. Also, for every change you'll have to update the remote guix-bioinformatics repository - and that is not so great either. One solution is to *remove* the guix-bioinformatics channel and use the -L switch on a local repo instead.
+
+```
+git clone https://git.genenetwork.org/guix-bioinformatics/
+```
+
+Now you need to remove guix-bioinformatics from `.config/guix/channels.scm` and now do a guix pull using the local repo:
+
+```
+guix pull -p ~/opt/guix-dev
+```
+
+To get a channel list from an existing guix try `guix describe -f channel`. That can be pasted into a channels file. Anyway, you should end up with something like this:
+
+```
+~/opt/guix-dev/bin/guix describe
+Generation 1    Apr 02 2024 10:13:37    (current)
+  guix b0b988c
+    repository URL: https://git.savannah.gnu.org/git/guix.git
+    branch: master
+    commit: b0b988c41c9e0e591274495a1b2d6f27fcdae15a
+  guix-forge 6c622a6
+    repository URL: https://git.systemreboot.net/guix-forge/
+    branch: main
+    commit: 6c622a67051c22eeefe37eedb17d427fbb70c99b
+  guix-past 921f845
+    repository URL: https://gitlab.inria.fr/guix-hpc/guix-past
+    branch: master
+    commit: 921f845dc0dec9f052dcda479a15e787f9fd5b0a
+```
+
+Now we can use guix bioinformatics with
+
+```
+~/opt/guix-dev/bin/guix search -L ~/guix-bioinformatics genenetwork
+```
+
+and it should show the genenetwork stack. Now you can build a machine using -L. See for example:
+
+=> https://git.genenetwork.org/gn-machines/tree/specials/gndev-deploy.sh
+
+# Scripts
+
+## Get a login on the VM
+
+e.g. guix-vm-login $pid
+
+```
+guix-vm-login:
+  #! /bin/bash
+  echo "Login to guix container"
+  pid=$1
+  shift
+  cmd="nsenter -at $pid /run/current-system/profile/bin/bash --login $*"
+  echo $cmd
+  $cmd
+```
+
+e.g. guix-vm-run $pid tail -f /var/log/gunicorn-genenetwork3.log
+
+```
+guix-vm-run:
+  #! /bin/bash
+  echo "Login to guix container"
+  pid=$1
+  shift
+  cmd="nsenter -at $pid /run/current-system/profile/bin/$*"
+  echo $cmd
+  $cmd
+```
+
+# Troubleshooting
+
+## Updating the VM does not show latest fixes
+
+It may be another service is using the port(s) of your VM. Check /var/log/gunicorn-$name.log. Another possibility is that you are checking the wrong URL - both things happened to me ;)

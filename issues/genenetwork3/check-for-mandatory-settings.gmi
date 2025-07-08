@@ -1,0 +1,40 @@
+# Check for Mandatory Settings
+
+## Tags
+
+* status: open
+* priority: high
+* type: bug, improvement
+* interested: fredm, bonz
+* assigned: jnduli, rookie101
+* keywords: GN3, gn3, genenetwork3, settings, config, configs, configurations
+
+## Explanation
+
+Giving defaults to some important settings leads to situations where the correct configuration is not set up correctly leading at best to failure, and at worst, to subtle failures that can be difficult to debug: e.g. When a default URI to a server points to an active domain, just not the correct one.
+
+We want to make such (arguably, sensitive) configurations explicit, and avoid giving them defaults. We want to check that they are set up before allowing the application to run, and fail loudly and obnoxiously if they are not provided.
+
+Examples of configuration variables that should be checked for:
+
+* All external URIs (external to app/repo under consideration)
+* All secrets (secret keys, salts, tokens, etc)
+
+We should also eliminate from the defaults:
+
+* Computed values
+* Calls to get values from ENVVARs (`os.environ.get(…)` calls)
+
+### Note on ENVVARs
+
+The environment variables should be used for overriding values under specific conditions, therefore, it should both be explicit and the last thing loaded to ensure they actually override settings. 
+
+=> https://git.genenetwork.org/gn-auth/tree/gn_auth/__init__.py?id=3a276642bea934f0a7ef8f581d8639e617357a2a#n70 See this example for a possible way of allowing ENVVARs to override settings.
+
+The example above could be improved by maybe checking for environment variables starting with a specific value, e.g. the envvar `GNAUTH_SECRET_KEY` would override the `SECRET_KEY` configuration. This allows us to override settings without having to change the code.
+
+## Tasks
+
+* [ ] Explicitly check configs for ALL external URIs
+* [ ] Explicitly check configs for ALL secrets
+* [ ] Explicitly load ENVVARs last to override settings

@@ -1,43 +1,45 @@
 # Machine room tasks
 
-## Tags
+# Tags
 
 * assigned: pjotrp
 * priority: medium
 * type: system administration
 * keywords: system administration, octopus, gateway, tux02, tux01, tux03
 
-## Tasks
+# Tasks
 
-### UTHSC
+## GN
 
-* [ ] fix www.genenetwork.org and gn2.genenetwork.org https
-* [ ] tux02 certbot failing
-* [ ] get data from summer211.uthsc.edu (access machine room)
-* [ ] VPN access and FoUT
-* [ ] penguin2 has 32TB of space we can use on NFS/backups
+* [ ] penguin2 has 90TB of space we can use on NFS/backups
+* [ ] Script to replace reaper with GEMMA
+* [ ] Transfer nervenet.org to dnsimple
+* [+] Trait vectors for Johannes
+* [X] grub on tux04
+* [ ] nft on tux04
+* [ ] !!Organize pluto, update Julia and add apps to GN menu Jupyter notebooks
+* [+] !!Xusheng jumpshiny services
+* [ ] Fix apps and create system containers for herd services - see issues/systems/apps
+* [ ] Slurm+ravanan on production for GEMMA speedup
+* [ ] Embed R/qtl2 (Alex)
+* [ ] Hoot in GN2 (Andrew)
+* [ ] tux02 certbot failing (manual now)
 
-Network:
+## Octopus:
 
-* [ ] wire up machines so they talk with each other over fiber
+* [X] Fix Tux05 badblocks on /dev/sdb2   1050624  47925247 46874624 22.4G Linux filesystem
+  - see add-boot-partition
+* [+] Copy linux partition on tux04, tux05, tux02 and test reboot
+* [ ] !!Ceph on Tuxes
+* [ ] Centralized user management system
+* [ ] Monitor nodes
+* [ ] Check machines so they talk with each other over fiber
 
-Lambda:
+## Backups & storage:
 
-* [X] racked up and runs
-* [+] add network (Roger)
-    link/ether 7c:c2:55:11:9c:ac brd ff:ff:ff:ff:ff:ff
-    inet 172.23.18.212/21 brd 172.23.23.255 scope global dynamic eno1
-* [ ] get service tag Tamara (with Erik?)
-* [X] install ubuntu (with Erik)
-* [ ] remote access? (with Erik)
-  * [X] get BMC password
-* [X] get fiber working
-* [ ] add to Octopus HPC
-
-Backups & storage:
-
-* [+] Order storage and caddies (w. Tamara)
-* [_] data warehousing
+* [ ] Create and check backups of tux04 etc etc.
+* [ ] set up zero to backup tux02 and report to redis
+* [ ] reintroduce borg-borg on zero
 * [+] run sheepdog as root: redis password error; introduce SHEEPDOG_CONF
 * [ ] tux01 has unused 4TB spinning disk
 * [ ] tux02 has unused 2x4TB spinning disks and 2TB nvme /dev/nvme0n1 on adapter
@@ -46,24 +48,34 @@ Backups & storage:
       fwupdmgr get-devices
       fwupdmgr update
       The previously problematic Samsung 980 Pro was basically using the 3B2QGXA7, and now Samsung has introduced a new 5B2QGXA7 firmware to fix the problem. The problem mainly affects the 2TB version of the 980 Pro
-* [ ] Check backups of etc etc.
 
 Security:
 
 * [ ] Limit idrac access
-* [X] space server out-of-band access
 
-### Spice
+## Spice
 
-* [ ] Run GN off balg01
-* [X] Firewall out of band
+* [ ] Add 2nd boot partition on balg01
 * [ ] Add firewall test to sheepdog
-* [X] Add storage
-* [ ] Convert balg02 to Guix server
-* [ ] VM for student team
 
-### Done
+## Done
 
+* [X] describe machines with Rick Stripes
+* [X] get bacchus back on line
+* [X] fix www.genenetwork.org and gn2.genenetwork.org https
+* [-] get data from summer211 (access machine room)
+* [X] VPN access and FoUT
+* [X] lambda: get fiber working
+* [X] lambda: add to Octopus HPC
+* [X] lambda: racked up and runs
+* [X] lambda: add network (Roger)
+    link/ether 7c:c2:55:11:9c:ac brd ff:ff:ff:ff:ff:ff
+    inet 172.23.18.212/21 brd 172.23.23.255 scope global dynamic eno1
+* [X] lambda: get service tag Tamara (with Erik?)
+* [X] lambda: install ubuntu (with Erik)
+* [X] Order storage and caddies (w. Tamara)
+* [X] Spice: Firewall out of band
+* [X] Spice: Add storage
 * [X] Tux01 and Tux02 disk space issues
 * [X] Reinstate backup drops on tux02, rabbit, &space and &epysode; reduce incoming IP
 * [X] Pluto tool with Zach & Efraim
@@ -80,3 +92,10 @@ Security:
 * [X] tux07 has no fiber
 * [X] tux08 has no fiber
 * [X] tux09 has no fiber
+### Lambda
+* [X] remote access? (with Erik)
+  * [X] get BMC password
+* [X] space server out-of-band access
+### Spice
+* [X] Run GN off balg01
+* [X] Convert balg02 to Guix server

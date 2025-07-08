@@ -7,7 +7,7 @@ Tux01 ran out of steam.
 * assigned: pjotrp, zsloan
 * type: systems
 * keywords: database
-* status: unclear
+* status: closed
 * priority: medium
 
 ## Tasks

@@ -1,0 +1,41 @@
+# Move GN Racket Rest API to GNU Guile
+
+## Tags
+
+* assigned: bonfacem
+* priority: medium
+* type: API, metadata
+* keywords: API
+* status: stalled
+
+## Description
+
+Currently, gene aliases retrieval relies on querying the outdated GN3 Rest Server written in Racket:
+
+=> https://github.com/genenetwork/gn3 GeneNetwork3 Racket REST API
+
+For example, using CURL:
+
+```
+curl https://genenetwork.org/gn3/gene/aliases/Nr3c1
+```
+
+Notable, the same request fails in CD:
+
+```
+curl https://cd.genenetwork.org/gn3/gene/aliases/Nr3c1
+```
+
+The issue arises from the old, unmaintained service running on tux01 with the following Nginx configuration:
+
+```
+      location /gn3 {
+	      rewrite /gn3/(.*) /$1 break;
+	      proxy_pass        http://127.0.0.1:8000/;
+	      proxy_redirect    off;
+	      proxy_set_header  Host $host;
+      }
+```
+
+The suggested action is to migrate this setup to the GNU Guile codebase for improved maintenance and compatibility.
+

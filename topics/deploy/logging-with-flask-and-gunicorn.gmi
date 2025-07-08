@@ -1,0 +1,110 @@
+# Logging with Flask and Gunicorn
+
+## Tags
+
+* type: documentation
+* keywords: deploy, deployment, logging, flask, gunicorn
+
+## Logging with Flask and Gunicorn
+
+Flask has its own output logger, `flask.logger`, which is an extension of python's logging[1] module. With this, you can access the debug(…), info(…), warning(…), error(…) and critical(…) function that you can use for logging out information, e.g. in some module of your application you can do something like:
+
+```
+# some/module.py
+︙
+from flask import current_app as app
+︙
+
+def some_function(arg00, arg01, …):
+    """Some pseudo-code to demonstrate possible usage of logging"""
+    app.logger.debug("Only visible with log-level 'DEBUG'.")
+    app.logger.info("Visible with log-levels 'DEBUG' and 'INFO'.")
+    app.logger.warning("Visible with log-levels 'DEBUG', 'INFO' and 'WARNING'.")
+    app.logger.error("Visible with log-levels 'DEBUG', 'INFO', 'WARNING', and 'ERROR'.")
+    app.logger.critical("Visible with log-levels 'DEBUG', 'INFO', 'WARNING', and 'ERROR' and 'CRITICAL'.")
+    ︙
+```
+
+Knowing this, most developers then set their log-level with something like:
+
+```
+# __init__.py
+︙
+from flask import Flask
+
+def create_app(…):
+    app = Flask(__name__)
+    ︙
+    # Some app initialisation goes here: loading configs, parsing values, etc.
+    ︙
+    app.logger.setLevel(app.config["LOG_LEVEL"])
+    ︙
+    return app
+```
+
+which works for the development environment. Unfortunately, however, this will not work as well once you deploy your application under a WSGI server[2]. Why?
+
+Your WSGI server of choice will (probably) have it's own logger(s), whose log-level(s) are controlled separately from your application. Your Flask[3] application, on the other hand is not aware of the WSGI server's logger(s).
+
+We need to make use of the WSGI server's loggers to log out our information
+
+### Hooking into the WSGI Server's Logger(s)
+
+For this, we will use gunicorn[4] to demonstrate.
+
+At your application's entry point (say wsgi.py), we do something like:
+
+```
+# wsgi.py
+from logging import getLogger
+
+from app import create_app
+
+app = create_app(…)
+
+if __name__ != "__main__": # running via WSGI server: gunicorn in this case.
+    wsgi_server_logger = getLogger("gunicorn.error")
+    for handler in wsgi_server_logger.handlers:
+        app.logger.addHandler(handler)
+
+    app.logger.setLevel(gunicorn_logger.level)
+```
+
+The code above adds the WSGI server's loggers to your application's loggers. You could instead replace your application's loggers with something like:
+
+```
+︙
+    wsgi_server_logger = getLogger("gunicorn.error")
+    app.logger.handlers = wsgi_server_logger.handlers
+︙
+```
+
+Now, whatever you log with your application's logger should show up in the WSGI server's logs (depending on the log-level set for the WSGI server).
+
+
+## A Word on the Entry Point
+
+In the code above we use `wsgi.py` which tends to be at the root of the project repository. This presents two main problems for our deployments, that make use of GNU Guix[5]:
+
+=> 1. The `/wsgi.py` module/file is not installed with the rest of the application by default
+=> 2. The name `wsgi.py` is not unique, and would create conflicts if installed anyway
+
+I propose putting the entry-point module in, say, the "scripts" package, under the application's module path - so, instead of the entry point being `/wsgi.py` it becomes something like `/scripts/gn_uploader/wsgi.py`. When the application is installed, since the entry point is now within the scripts package, it is installed along with the rest of the code and is available in the environment for use.
+
+With that, you can launch the application with:
+
+```
+gunicorn --log-level debug … scripts.gn_uploader.wsgi:app
+```
+
+This works consistently both under the development environment and when deployed elsewhere.
+
+
+## References
+
+=> https://docs.python.org/3/library/logging.html#module-logging 1. Python's logging module
+=> https://wsgi.readthedocs.io/en/latest/servers.html 2. Python's WSGI Servers
+=> https://flask.palletsprojects.com/en/3.0.x/ 3. Flask Web-Application Framework
+=> https://gunicorn.org/ 4. Green Unicorn (gunicorn) WSGI Server
+=> https://guix.gnu.org/ 5. GNU Guix
+=> https://trstringer.com/logging-flask-gunicorn-the-manageable-way/ Logging, Flask, and Gunicorn... the Manageable Way

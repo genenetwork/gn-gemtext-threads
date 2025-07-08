@@ -14,9 +14,9 @@ We are going to move production to tux02 - tux01 will be the staging machine. Th
 
 * [X] update guix guix-1.3.0-9.f743f20
 * [X] set up nginx (Debian)
-* [X] test ipmi console (172.23.30.40)
+* [X] test ipmi console
 * [X] test ports (nginx)
-* [?] set up network for external tux02e.uthsc.edu (128.169.4.52)
+* [?] set up network for external tux02
 * [X] set up deployment evironment
 * [X] sheepdog copy database backup from tux01 on a daily basis using ibackup user
 * [X] same for GN2 production environment

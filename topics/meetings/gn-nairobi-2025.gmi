@@ -1,0 +1,17 @@
+# Meeting Notes
+
+## 2024-01-10
+* @flisso: Prepare gn-uploader presentation for KEMRI.
+* @flisso: Put c-elegans dataset to staging.
+* @flisso: PHEWAS --- extract phenotypes from genenetwork and analyse them using PHEWAS.
+* @alexm: Clean up R/Qtl 1.
+* @alexm: Add R/Qtl 2 in gn.
+* @alexm: Fix UI issues around GN AI.
+* @bonfacem: Fix UI for group pages.
+* @bonfacem: Add git hooks to cd container for self-hosted repositories.
+* @bonfacem: Share developer work container and have Alex test it out.
+* @bonfacem: Prepare RDF presentation for KEMRI.
+
+Nice to have:
+* @bonfacem: Start dataset metadata editing work.
+* @flisso: Write PhD concept note.

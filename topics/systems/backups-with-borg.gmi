@@ -1,0 +1,220 @@
+# Borg backups
+
+We use borg for backups. Borg is an amazing tool and after 25+ years of making backups it just feels right.
+With the new tux04 production install we need to organize backups off-site. The first step is to create a
+borg runner using sheepdog -- sheepdog we use for monitoring success/failure.
+Sheepdog essentially wraps a Unix command and sends a report to a local or remote redis instance.
+Sheepdog also includes a web server for output:
+
+=> http://sheepdog.genenetwork.org/sheepdog/status.html
+
+which I run on one of my machines.
+
+# Tags
+
+* assigned: pjotrp
+* keywords: systems, backup, sheepdog, database
+
+# Install borg
+
+Usually I use a version of borg from guix. This should really be done as the borg user (ibackup).
+
+```
+mkdir ~/opt
+guix package -i borg ~/opt/borg
+tux04:~$ ~/opt/borg/bin/borg --version
+  1.2.2
+```
+
+# Create a new backup dir and user
+
+The backup should live on a different disk from the things we backup, so when that disk fails we have another.
+
+The SQL database lives on /export and the containers live on /export2. /export3 is a largish slow drive, so perfect.
+
+By convention I point /export/backup to the real backup dir on /export3/backup/borg/ Another convention is that we use an ibackup user which has the backup passphrase in ~/.borg-pass. As root:
+
+```
+mkdir /export/backup/borg
+chown ibackup:ibackup /export/backup/borg
+chown ibackup:ibackup /home/ibackup/.borg-pass
+su ibackup
+```
+
+Now you should be able to load the passphrase and create the backup dir
+
+```
+id
+  uid=1003(ibackup)
+. ~/.borg-pass
+cd /export/backup/borg
+~/opt/borg/bin/borg init --encryption=repokey-blake2 genenetwork
+```
+
+Now we can run our first backup. Note that ibackup should be a member of the mysql and gn groups
+
+```
+mysql:x:116:ibackup
+```
+
+# First backup
+
+Run the backup the first time:
+
+```
+id
+  uid=1003(ibackup) groups=1003(ibackup),116(mysql)
+~/opt/borg/bin/borg create --progress --stats genenetwork::first-backup /export/mysql/database/*
+```
+
+You may first need to update permissions to give group  access
+
+```
+chmod g+rx -R /var/lib/mysql/*
+```
+
+When that works borg reports:
+
+```
+Archive name: first-backup
+Archive fingerprint: 376d32fda9738daa97078fe4ca6d084c3fa9be8013dc4d359f951f594f24184d
+Time (start): Sat, 2025-02-08 04:46:48
+Time (end):   Sat, 2025-02-08 05:30:01
+Duration: 43 minutes 12.87 seconds
+Number of files: 799
+Utilization of max. archive size: 0%
+------------------------------------------------------------------------------
+                       Original size      Compressed size    Deduplicated size
+This archive:              534.24 GB            238.43 GB            237.85 GB
+All archives:              534.24 GB            238.43 GB            238.38 GB
+                       Unique chunks         Total chunks
+Chunk index:                  200049               227228
+------------------------------------------------------------------------------
+```
+
+50% compression is not bad. borg is incremental so it will only backup differences next round.
+
+Once borg works we could run a CRON job. But we should use the sheepdog monitor to make sure backups keep going without failure going unnoticed.
+
+# Using the sheepdog
+
+=> https://github.com/pjotrp/deploy sheepdog code
+
+## Clone sheepdog
+
+=> https://github.com/pjotrp/deploy#install sheepdog install
+
+Essentially clone the repo so it shows up in ~/deploy
+
+```
+cd /home/ibackup
+git clone https://github.com/pjotrp/deploy.git
+/export/backup/scripts/tux04/backup-tux04.sh
+```
+
+## Setup redis
+
+All sheepdog messages get pushed to redis. You can run it locally or remotely.
+
+By default we use redis, but syslog and others may also be used. The advantage of redis is that it is not bound to the same host, can cross firewalls using an ssh reverse tunnel, and is easy to query.
+
+=> https://github.com/pjotrp/deploy#install sheepdog install
+
+In our case we use redis on a remote host and the results get displayed by a webserver. Also some people get E-mail updates on failure. The configuration is in
+
+```
+/home/ibackup# cat .config/sheepdog/sheepdog.conf .
+{
+  "redis": {
+    "host"  : "remote-host",
+    "password": "something"
+  }
+}
+```
+
+If you see localhost with port 6377 it is probably a reverse tunnel setup:
+
+=> https://github.com/pjotrp/deploy#redis-reverse-tunnel
+
+Update the fields according to what we use. Main thing is that is the definition of the sheepdog->redis connector. If you also use sheepdog as another user you'll need to add a config.
+
+Sheepdog should show a warning when you configure redis and it is not connecting.
+
+## Scripts
+
+Typically I run the cron job from root CRON so people can find it. Still it is probably a better idea to use an ibackup CRON. In my version a script is run that also captures output:
+
+```cron root
+0 6 * * * /bin/su ibackup -c /export/backup/scripts/tux04/backup-tux04.sh >> ~/cron.log 2>&1
+```
+
+The script contains something like
+
+```bash
+#! /bin/bash
+if [ "$EUID" -eq 0 ]
+  then echo "Please do not run as root. Run as: su ibackup -c $0"
+  exit
+fi
+rundir=$(dirname "$0")
+# ---- for sheepdog
+source $rundir/sheepdog_env.sh
+cd $rundir
+sheepdog_borg.rb -t borg-tux04-sql --group ibackup -v -b /export/backup/borg/genenetwork /export/mysql/database/*
+```
+
+and the accompanying sheepdov_env.sh
+
+```
+export GEM_PATH=/home/ibackup/opt/deploy/lib/ruby/vendor_ruby
+export PATH=/home/ibackup/opt/deploy/deploy/bin:/home/wrk/opt/deploy/bin:$PATH
+```
+
+If it reports
+
+```
+/export/backup/scripts/tux04/backup-tux04.sh: line 11: /export/backup/scripts/tux04/sheepdog_env.sh: No such file or directory
+```
+
+you need to install sheepdog first.
+
+If all shows green (and takes some time) we made a backup. Check the backup with
+
+```
+ibackup@tux04:/export/backup/borg$ borg list genenetwork/
+first-backup                         Sat, 2025-02-08 04:39:50 [58715b883c080996ab86630b3ae3db9bedb65e6dd2e83977b72c8a9eaa257cdf]
+borg-tux04-sql-20250209-01:43-Sun    Sun, 2025-02-09 01:43:23 [5e9698a032143bd6c625cdfa12ec4462f67218aa3cedc4233c176e8ffb92e16a]
+```
+and you should see the latest. The contents with all files should be visible with
+
+```
+borg list genenetwork::borg-tux04-sql-20250209-01:43-Sun
+```
+
+Make sure you not only see just a symlink.
+
+# More backups
+
+Our production server runs databases and file stores that need to be backed up too.
+
+# Drop backups
+
+Once backups work it is useful to copy them to a remote server, so when the machine stops functioning we have another chance at recovery. See
+
+=> ./backup-drops.gmi
+
+# Recovery
+
+With tux04 we ran into a problem where all disks were getting corrupted(!) Probably due to the RAID controller, but we still need to figure that one out.
+
+Anyway, we have to assume the DB is corrupt. Files are corrupt AND the backups are corrupt. Borg backup has checksums which you can
+
+```
+borg check repo
+```
+
+it has a --repair switch which we needed to remove some faults in the backup itself:
+
+```
+borg check --repair repo
+```

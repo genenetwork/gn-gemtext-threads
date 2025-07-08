@@ -1,0 +1,121 @@
+# Deploying Your Flask Application Under a URL Prefix With GUnicorn
+
+## TAGS
+
+* type: doc, documentation, docs
+* author: fredm, zachs
+* keywords: flask, gunicorn, SCRIPT_NAME, URL prefix
+
+## Introduction
+
+You have your application and are ready to deploy it, however, for some reason, you want to deploy it under a URL prefix, rather than at a top-level-domain.
+
+This short article details the things you need to set up.
+
+## Set up Your WebServer (Nginx)
+
+You need to tell your webserver to serve the application under a particular url prefix. You do this using that particular webserver's reverse-proxying configurations: For this article, we will use Nginx as the server.
+
+Normally, you'd simply do something like:
+
+```
+server {
+    server_name your.server.domain
+
+    ⋮
+
+    location /the-prefix/ {
+        proxy_pass    http://127.0.0.1:8080/;
+        proxy_set_header Host $host;
+        ⋮
+    }
+
+    ⋮
+}
+```
+
+Here, your top-level domain will be https://your.server.domain and you therefore want to access your shiny new application at https://your.server.domain/the-prefix/
+
+For a simple application, with no sessions or anything, this should work, somewhat, though you might run into trouble with things like static files (e.g. css, js, etc) if the application does not use the same ones as that one on the TLD.
+
+If you are using sessions, you might also run into an issue where there is an interaction in the session management of both applications, especially if the application on the TLD makes use of services from the application at the url prefix. This is mostly due to redirects from the url-prefix app getting lost and hitting the TLD app.
+
+To fix this, we change the configuration above to:
+
+```
+server {
+    server_name your.server.domain
+
+    ⋮
+
+    location /the-prefix/ {
+        proxy_pass    http://127.0.0.1:8080/the-prefix/;
+        proxy_set_header Host $host;
+        ⋮
+    }
+
+    ⋮
+}
+```
+
+but now, you get errors, since there is no endpoint in your shiny new app that in at the route /the-prefix/***.
+
+Enter Gunicorn!
+   
+
+## Setting up SCRIPT_NAME for GUnicorn
+
+### The "Hacky" Way
+
+At the point of invocation of GUnicorn, we set the SCRIPT_NAME environment variable to the value "/the-prefix" — note that there is no trailing slash; this is very important. You should now have something like:
+
+```
+$ export SCRIPT_NAME="/the-prefix"
+$ gunicorn --bind 0.0.0.0:8082 --workers …
+```
+
+The first line tells GUnicorn what the URL prefix is. It will use this to compute what URL to pass to the flask application.
+
+Example, say you try accessing the endpoint
+
+```
+https://your.server.domain/the-prefix/auth/authorise?response_type=code&client_id=some-id&redirect_uri=some-uri
+```
+
+Gunicorn will split that URL into 2 parts using the value of the SCRIPT_NAME environment variable, giving you:
+
+* https://your.server.domain
+* /auth/authorise?response_type=code&client_id=some-id&redirect_uri=some-uri
+
+It will then pass on the second part to flask. This is why the value of SCRIPT_NAME should not have a trailing slash.
+
+Note that using the SCRIPT_NAME environment variable is a convenience feature provided by GUnicorn, not a WSGI feature. If you ever change your WSGI server, there is no guarantee this fix will work.
+
+### Using WSGI Routing MiddleWare
+
+A better way is to make use of a WSGI routing middleware. You could do this by defining a separate WSGI entry point in your application's repository.
+
+```
+# wsgi_url_prefix.py
+from werkzeug.wrappers import Response
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
+
+from app import create_app
+
+def init_prefixed_app(theapp):
+    theapp.wsgi_app = DispatcherMiddleware(
+        Response("Not Found", 404),
+        {
+            "/the-prefix": the_app.wsgi_app
+        })
+    return theapp
+
+
+app = init_prefixed_app(create_app())
+```
+
+## References
+
+=> https://docs.gunicorn.org/en/latest/faq.html#how-do-i-set-script-name
+=> https://dlukes.github.io/flask-wsgi-url-prefix.html
+=> https://www.reddit.com/r/Python/comments/juwj3x/comment/gchdsld/

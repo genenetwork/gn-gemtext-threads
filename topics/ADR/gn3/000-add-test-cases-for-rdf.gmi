@@ -1,0 +1,21 @@
+# [gn3/ADR-000] Add RDF Test Cases
+
+* author: bonfacem
+* status: proposed
+* reviewed-by: jnduli
+
+## Context
+
+We have no way of ensuring the integrity of our SPARQL queries in GN3.  As such, GN3 is fragile to breaking changes when the TTL files are updated.
+
+## Decision
+
+In Virtuoso, we load all our data to a default named graph: <http://genenetwork.org>.  For SPARQL/RDF tests, we should upload test ttl files to a test named graph: <http://cd-test.genenetwork.org>, and run our RDF unit tests against that named graph.
+
+## Consequences
+
+* Extra bootstrapping to load ttl files when running the test.
+* Extra documentation to GN developers on how to run virtuoso locally to get the tests running.
+* Testing against gn-machines to make sure that all things run accordingly.
+* Extra maintenance costs to keep the TTL files in lockstep with the latest RDF changes during re-modeling.
+* Improvement in GN3 reliability.

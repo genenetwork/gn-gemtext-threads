@@ -1,0 +1,97 @@
+# Invoking SQLite3: CLI
+
+## Tags
+
+* status:
+* assigned:
+* priority:
+* type: documentation
+* keywords: doc, documentation, sqlite, sqlite3
+
+## TLDR
+
+At minimum, always invoke sqlite with "PRAGMA foreign_keys = ON;" as follows:
+
+```
+sqlite3 -header -cmd "PRAGMA foreign_keys = ON;" </path/to/sqlite3.db>
+```
+
+where "</path/to/sqlite3.db>" is an actual path to the SQLite3 database file.
+
+
+## Introduction
+
+In the case where one finds themselves needing to connect to the SQLite3 database from the command-line interface (CLI), there are a number of options and commands the user can run to ensure certain SQLite3 features are turned on to make using the database a better experience.
+
+To see the list of available options, on your CLI, type:
+
+```
+sqlite3 --help
+```
+
+Some options I have found handy are the "-header", "-init" and "-cmd" options.
+
+The "-header" option turns on the table headers, so that when you query, your query results include the table columns names.
+
+The "-init" option lets you have multiple, frequently used dot commands, and certain initialisation statements in a file that you can load at the invocation of SQLite3.
+
+The "-cmd" allows us to run certain commands that activate/deactivate specific SQLite3 features.
+
+
+## Enabling Referential Integrity with Foreign Keys
+
+One of the important features of databases in general is the use of foreign keys to link data in multiple tables. SQLite3 has this feature, but it is
+=> https://www.sqlite.org/pragma.html#pragma_foreign_keys disabled by default as of version 3.6.19
+
+We need this feature turned on for our SQLite3 databases, thus we invoke SQLite3 with the "PRAGMA foreign_key=ON;" directive as follows:
+
+```
+sqlite3 -cmd "PRAGMA foreign_keys = ON;" </path/to/sqlite3.db>
+```
+
+where "</path/to/sqlite3.db>" is an actual path to the SQLite3 database file.
+
+## Nice UI/Output Enhancements
+
+The following dot commands help enhance the outputs of your queries:
+
+### Headers
+
+To turn the table headers on, use the the "-header" option at invocation:
+```
+sqlite3 -header </path/to/sqlite3.db>
+```
+
+or the ".headers on" dot command:
+```
+sqlite3 </path/to/sqlite3.db>
+SQLite version 3.40.0 2022-11-16 12:10:08
+Enter ".help" for usage hints.
+sqlite> .headers on
+︙
+```
+
+### Output Mode
+
+You can set the output modes to make the output of your queries more readable. You do this with the appropriate options at the CLI invocation, or using the ".mode" dot command.
+
+To see a list of available modes, do:
+```
+$ sqlite3
+SQLite version 3.40.0 2022-11-16 12:10:08
+Enter ".help" for usage hints.
+Connected to a transient in-memory database.
+Use ".open FILENAME" to reopen on a persistent database.
+sqlite> .help mode
+.mode MODE ?OPTIONS?     Set output mode
+   MODE is one of:
+     ascii       Columns/rows delimited by 0x1F and 0x1E
+     box         Tables using unicode box-drawing characters
+     csv         Comma-separated values
+     column      Output in columns.  (See .width)
+     ︙
+```
+
+I have found the "box", "table" and "markdown" modes to be nice for outputs intended for users to read.
+
+Outputs such as "json", "csv", "tsv" and the like are useful for use with scripts.

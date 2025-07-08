@@ -4,6 +4,10 @@ To make backups we use a combination of sheepdog, borg, sshfs, rsync. sheepdog i
 
 This system proves pretty resilient over time. Only on the synology server I can't get it to work because of some CRON permission issue.
 
+For doing the actual backups see
+
+=> ./backups-with-borg.gmi
+
 # Tags
 
 * assigned: pjotrp
@@ -13,7 +17,7 @@ This system proves pretty resilient over time. Only on the synology server I can
 
 ## Borg backups
 
-It is advised to use a backup password and not store that on the remote.
+Despite our precautions it is advised to use a backup password and *not* store that on the remote.
 
 ## Running sheepdog on rabbit
 
@@ -59,14 +63,14 @@ where remote can be an IP address.
 
 Warning: if you introduce this `AllowUsers` command all users should be listed or people may get locked out of the machine.
 
-Next create a special key on the backup machine's ibackup user (just hit enter):
+Next create a special password-less key on the backup machine's ibackup user (just hit enter):
 
 ```
 su ibackup
 ssh-keygen -t ecdsa -f $HOME/.ssh/id_ecdsa_backup
 ```
 
-and copy the public key into the remote /home/bacchus/.ssh/authorized_keys
+and copy the public key into the remote /home/bacchus/.ssh/authorized_keys.
 
 Now test it from the backup server with
 
@@ -82,13 +86,20 @@ On the drop server you can track messages by
 tail -40 /var/log/auth.log
 ```
 
+or on recent linux with systemd
+
+```
+journalctl -r
+```
+
 Next
 
 ```
 ssh -v -i ~/.ssh/id_ecdsa_backup bacchus@dropserver
 ```
 
-should give a Broken pipe(!). In auth.log you may see something like
+should give a Broken pipe(!) or -- more recently -- it says `This service allows sftp connections only`.
+When running sshd with a verbose switch you may see something like
 
 fatal: bad ownership or modes for chroot directory component "/export/backup/"
 
@@ -110,7 +121,34 @@ chown bacchus.bacchus backup/bacchus/drop/
 chmod 0700 backup/bacchus/drop/
 ```
 
+Another error may be:
+
+```
+fusermount3: mount failed: Operation not permitted
+```
+
+This means you need to set the suid on the fusermount3 command. Bit nasty in Guix.
+
+```
+apt-get install fuse(3) sshfs
+chmod 4755 /usr/bin/fusermount
+```
+
 If auth.log says error: /dev/pts/11: No such file or directory on ssh, or received disconnect (...) disconnected by user we are good to go!
+
+Note: at this stage it may pay to track the system log with
+
+```
+journalctl -u ssh -f
+```
+
+and, in a pinch, increase DEBUG output in sshd_config with
+
+```
+LogLevel DEBUG3
+```
+
+In my case I had to disable PAM!
 
 Next try sshfs
 
@@ -123,6 +161,10 @@ touch ~/mnt/dropserver/drop/HELLO
 ```
 
 And the remote directory should be ready for dropping files!
+
+```
+rsync  -vrltDP  /export2/backup/borg/borg-tux01 ~/mnt/balg01/drop/ --delete
+```
 
 To unmount the dir
 
@@ -153,3 +195,5 @@ sshfs -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,IdentityFile=~/.
 The recent scripts can be found at
 
 => https://github.com/genenetwork/gn-deploy-servers/blob/master/scripts/tux01/backup_drop.sh
+
+# borg-borg

@@ -1,0 +1,52 @@
+# Troubleshoot https://luna.genenetwork.org/ai/ asking questions
+
+## Tags
+
+* assigned: bonfacem, soloshelby
+* priority: high
+* type: llm
+* keywords: llm
+* status: closed
+
+## Description
+
+We have the following stack-trace in https://luna.genenetwork.org/ai/ when trying to ask a question:
+
+```
+Traceback (most recent call last):
+
+File "/gnu/store/6sb4qzhkck3kwpl6wwjyrhjrvbysy81s-profile/lib/python3.10/site-packages/flask/app.py", line 2077, in wsgi_app response = self.full_dispatch_request()
+
+File "/gnu/store/6sb4qzhkck3kwpl6wwjyrhjrvbysy81s-profile/lib/python3.10/site-packages/flask/app.py", line 1525, in full_dispatch_request
+
+rv = self.handle_user_exception(e) File "/gnu/store/6sb4qzhkck3kwpl6wwjyrhjrvbysy81s-profile/lib/python3.10/site-packages/flask/app.py", line 1523, in full_dispatch_request rv
+= self.dispatch_request() File "/gnu/store/6sb4qzhkck3kwpl6wwjyrhjrvbysy81s-profile/lib/python3.10/site-packages/flask/app.py", line 1509, in dispatch_request return
+self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args) File "/export5/data/shelbys/code/GN-LLMs/material-flask/apps/authentication/routes.py", line 113, in gnqa answer, refs = getGNQA(query)
+File "/export5/data/shelbys/code/GN-LLMs/material-flask/apps/apihandler/process.py", line 78, in getGNQA
+
+res, task_id = apiClient.ask('?ask=' + query)
+
+File "/export5/data/shelbys/code/GN-LLMs/material-flask/apps/apihandler/client.py", line 81, in ask
+
+res = self.custom_request('POST', askUrl, *args, **kwargs)
+
+File "/export5/data/shelbys/code/GN-LLMs/material-flask/apps/apihandler/client.py", line 108, in custom_request
+
+return self.process_response(response)
+
+File "/export5/data/shelbys/code/GN-LLMs/material-flask/apps/apihandler/client.py", line 117, in process_response
+
+response.raise_for_status()
+
+File "/gnu/store/6sb4qzhkck3kwpl6wwjyrhjrvbysy81s-profile/lib/python3.10/site-packages/requests/models.py", line 1021, in raise_for_status
+
+raise HTTPError(http_error_msg, response=self)
+
+requests.exceptions.HTTPError: 500 Server Error: Internal Server Error for url: https://genenetwork.fahamuai.com/api/tasks? ask=Give%20me%20a%20dataset%20related%20to%20diabetes%20in%20GeneNetwork.org.
+```
+
+## Resolution
+
+There was a small typo with the Bearer Token: api.config.json.  Fixing this resolved this issue.
+
+* closed

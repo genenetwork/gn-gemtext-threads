@@ -1,0 +1,18 @@
+# [gn-guile/ADR-000] Extend Markdown Editor to push to Git Bare Repo
+
+* author: bonfacem
+* status: accepted
+* reviewed-by: alexm, jnduli
+
+## Context
+
+The gn-guile markdown editor currently reads from normal git repositories.  However, for GN's self-hosted git repository, we use bare repositories.  Bare repositories only store the git objects, therefore we can't edit files directly.
+
+## Decision
+
+gn-guile and the cgit instance run in the same server.  We will have one normal repository, and the bare repository, configurable by: "CURRENT_REPO_PATH", which has the normal raw files; and "CGIT_REPO_PATH" which is the bare repository.  We will make edits to the normal repository, and once that is done, push locally to the cgit instance.
+
+## Consequences
+
+* When creating the gn-guile container, this introduces extra complexity in that will have to make sure that the container has the correct write access to the bare repository in the container.
+* With this, we are coupled to our GN git set-up.

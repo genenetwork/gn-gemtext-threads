@@ -1,0 +1,17 @@
+# Error when loading GN2 with old pre-update session
+
+## Tags
+
+* status: closed
+* priority: medium
+* type: bug
+* assigned: zsloan, fredm
+* keywords: gn-auth, gn2
+
+## Description
+
+Something about the recent updates (and by "recent" it could be anything from the last 3-5 months) caused old "anonymous" sessions to cause an error if they were still active after updating production GN2.
+
+This issue can be fixed on the client's end by deleting cookies, but ideally there would be some way to prevent this.
+
+Probably not super high priority, but it would still be good if the website could deal with an issue like this without completely shutting down (ideally if something goes from with the session/cookie it would simply behave as if you weren't logged in).

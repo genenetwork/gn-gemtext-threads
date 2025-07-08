@@ -1,0 +1,17 @@
+# Explanation of how Sample Lists are handled in GN2 (and may be handled moving forward)
+
+## Tags
+
+* status: open
+* assigned: fredm, zsloan
+* priority: medium
+* type: documentation
+* keywords: strains, gn-uploader
+
+## Description
+
+Regarding the order of samples/strains, it can basically be whatever we decide it is. It just needs to stay consistent (like if there are multiple genotype files). It only really affects how the strains are displayed, and any other genotype files we use for mapping needs to share the same order.
+
+I think this is the case regardless of whether it's strains or individuals (and both the code and files make no distinction). Sometimes it just logically makes sense to sort them in a particular way for display purposes (like BXD1, BXD2, etc), but technically everything would still work the same if you swapped those columns across all genotype files. Users would be confused about why BXD2 is before BXD1, but everything would still work and all calculations would give the same results.
+
+zsloan's proposal for handling sample lists in the future is to just store them in a JSON file in the genotype_files/genotype directory.

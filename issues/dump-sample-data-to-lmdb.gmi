@@ -2,7 +2,7 @@
 
 * assigned: bonfacem
 * priority: high
-* status: in progress
+* status: stalled
 * keywords: lmdb, rdf
 
 ## Tasks
@@ -14,7 +14,7 @@ Dump data and add relevant RDF Metadata for LMDB for:
 * [ ] GN2/3 Integration
 
 For RDF:
-
+https://issues.genenetwork.org/search?query=assigned%3ABonfaceKilz+AND+tag%3Ain-progress+AND+priority%3Ahigh+AND+is%3Aopen&type=open-issue
 * [ ] Have files and named files available through RDF
 
 ## Description

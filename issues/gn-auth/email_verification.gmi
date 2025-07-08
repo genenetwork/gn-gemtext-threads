@@ -1,0 +1,21 @@
+# E-Mail Verification
+
+## Tags
+
+* status: closed, completed
+* priority: medium
+* type: enhancement
+* assigned: fredm, zsloan
+* keywords: gn-auth, oauth2, email
+
+## Description
+
+When setting up e-mail verification, the following configurations should be set for gn-auth:
+
+SMTP_HOST = "smtp.uthsc"
+SMTP_PORT = 25 (not 587, which is what we first tried)
+SMTP_TIMEOUT = 200 # seconds
+
+Not sure about username/password yet. We tried UNKNOWN/UNKNOWN and my own (Zach's) username/password
+
+Note that this host is only visible on the internal network of UTHSC. It won't work for tux02.

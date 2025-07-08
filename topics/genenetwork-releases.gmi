@@ -1,0 +1,77 @@
+# GeneNetwork Releases
+
+## Tags
+
+* status: open
+* priority:
+* assigned:
+* type: documentation
+* keywords: documentation, docs, release, releases, genenetwork
+
+## Introduction
+
+The sections that follow will be note down the commits used for various stable (and stable-ish) releases of genenetwork.
+
+The tagging of the commits will need to distinguish repository-specific tags from overall system tags.
+
+In this document, we only concern ourselves with the overall system tags, that shall have the template:
+
+```
+genenetwork-system-v<major>.<minor>.<patch>[-<commit>]
+```
+
+the portions in angle brackets will be replaced with the actual version numbers.
+
+## genenetwork-system-v1.0.0
+
+This is the first, guix-system-container-based, stable release of the entire genenetwork system.
+The commits involved are:
+
+=> https://github.com/genenetwork/genenetwork2/commit/314c6d597a96ac903071fcb6e50df3d9e88935e9 GN2: 314c6d5
+=> https://github.com/genenetwork/genenetwork3/commit/0d902ec267d96b87648669a7a43b699c8a22a3de GN3: 0d902ec
+=> https://git.genenetwork.org/gn-auth/commit/?id=8e64f7f8a392b8743a4f36c497cd2ec339fcfebc: gn-auth: 8e64f7f
+=> https://git.genenetwork.org/gn-libs/commit/?id=72a95f8ffa5401649f70978e863dd3f21900a611: gn-libs: 72a95f8
+
+The guix channels used for deployment of the system above are as follows:
+
+```
+(list (channel
+       (name 'guix-bioinformatics)
+       (url "https://git.genenetwork.org/guix-bioinformatics/")
+       (branch "master")
+       (commit
+        "039a3dd72c32d26b9c5d2cc99986fd7c968a90a5"))
+      (channel
+       (name 'guix-forge)
+       (url "https://git.systemreboot.net/guix-forge/")
+       (branch "main")
+       (commit
+        "bcb3e2353b9f6b5ac7bc89d639e630c12049fc42")
+       (introduction
+        (make-channel-introduction
+         "0432e37b20dd678a02efee21adf0b9525a670310"
+         (openpgp-fingerprint
+          "7F73 0343 F2F0 9F3C 77BF  79D3 2E25 EE8B 6180 2BB3"))))
+      (channel
+       (name 'guix-past)
+       (url "https://gitlab.inria.fr/guix-hpc/guix-past")
+       (branch "master")
+       (commit
+        "5fb77cce01f21a03b8f5a9c873067691cf09d057")
+       (introduction
+        (make-channel-introduction
+         "0c119db2ea86a389769f4d2b9c6f5c41c027e336"
+         (openpgp-fingerprint
+          "3CE4 6455 8A84 FDC6 9DB4  0CFB 090B 1199 3D9A EBB5"))))
+      (channel
+       (name 'guix)
+       (url "https://git.savannah.gnu.org/git/guix.git")
+       (branch "master")
+       (commit
+        "2394a7f5fbf60dd6adc0a870366adb57166b6d8b")
+       (introduction
+        (make-channel-introduction
+         "9edb3f66fd807b096b48283debdcddccfea34bad"
+         (openpgp-fingerprint
+          "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))))
+```

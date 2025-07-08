@@ -1,0 +1,27 @@
+# QC: Fix Integration Tests
+
+## Tags
+
+* assigned: fredm
+* priority: medium
+* status: closed, completed
+* keywords: quality control, qc, tests, gn-uploader
+* type: bug
+
+## Description
+
+Tests that require that Redis be present in order to run, fail due to the statement
+```
+command = [shutil.which("redis-server"), "--port", str(port)]
+```
+=> https://gitlab.com/fredmanglis/gnqc_py/-/blob/6200a60eb6f04a5d50bfe0ad366674dc49a08119/tests/conftest.py#L32 in "tests/conftest.py".
+
+This is because the `shutil.which("redis-server")` call returns `None` in the newer code, due to removal of redis (the server) from the list of dependencies.
+
+To work around the issue, I suggest the use of an explicit, albeit temporary, redis database for testing, by modifying the `REDIS_URL` value in the tests sessions. The modification will simply change the URL to point to a new database for the test session, enabling the tests to run unhindered, but also without tainting the production redis databases.
+
+### Update 2024-02-27
+
+The system was updated to use prefixed keys, and the full tests now run correctly.
+
+=> /issues/gn-uploader/rework-tests-remove-redis-as-test-dependency related issue

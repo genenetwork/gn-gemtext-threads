@@ -1,0 +1,15 @@
+# Xapian to Text Transformer
+
+## Tags
+* assigned: alexm, jnduli
+* keywords: llm, genenetwork2, xapian, transform
+* type: feature
+* status: in-progress
+
+## Description:
+
+Given a Xapian search query, e.g., "CYTOCHROME AND P450" or "CYTOCHROME NEAR P450," we need to convert the text to a format with no Xapian keywords. In this case, the transformed text would be "CYTOCHROME P450."
+
+
+This issue is a part of the main issue below.
+=> https://issues.genenetwork.org/issues/gn_llm_integration_using_cached_searches

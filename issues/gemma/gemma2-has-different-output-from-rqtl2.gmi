@@ -1,0 +1,80 @@
+# GEMMA output differs from R/qtl2
+
+# Tags
+
+* assigned: pjotrp, davea
+* priority: high
+* type: bug, enhancement
+* status: closed
+* keywords: database, gemma, reaper, rqtl2
+
+# Description
+
+When running trait BXD_21526 results differ significantly.
+
+=> https://genenetwork.org/show_trait?trait_id=21526&dataset=BXDPublish
+=> https://genenetwork.org/show_trait?trait_id=21529&dataset=BXDPublish
+
+So I confirm I am getting the same results as Dave in GN for GEMMA (see Conclusion below).
+
+# Tasks
+
+## GeneNetwork
+
+I run GEMMA for precompute on the command line and that I confirmed to
+be the same as what we see in the browser. This suggests either data
+or method is different with Dave's approach.
+
+I confirmed that gemma in GN matches Dave's results. It is interesting
+to see that running without LOCO has some impact, but not as bad as
+the R/qtl2 difference. First we should check the genotype files to see
+if they match. I checked that the phenotypes match.
+
+Our inputs are different if I count genotypes (first yours, the other
+on production):
+
+```
+     1  2184941 B
+     2  2132744 D
+     3   628980 H
+     1  2195662 B
+     2  2142959 D
+     3   650168 H
+```
+
+The number of rows/markers is the same. So we probably added some
+genometypes, but if we miss one that would matter. Dave you can find
+the file in /home/wrk/BXD.geno on tux02 if you want to look.
+
+I notice that we don't use H in the R/qtl2 control file. That
+might make a difference though it probably won't explain what we see
+now. BTW I also correlated the LOD scores from GEMMA and R/qtl2 in
+the spreadsheet and at 0.7 that is too low.  So it is probably not
+just a magnitude problem. The results differ a lot in your
+spreadsheet.
+
+Next step is that I need to run R/qtl2 using the script in your
+dropbox and see what Karl's code does. The exercise does not hurt
+because it will help us bring R/qtl2 to GN.
+
+## R/qtl2
+
+R/qtl2 is packaged in guix and can be run in a shell with
+
+```
+guix shell -C r r-qtl2
+> library(qtl2)
+> bxd <- read_cross2(file = "bxd_cancer_new_GN_July_2024.json")
+Warning messages:
+1: In recode_geno(sheet, genotypes) :
+  630519 genotypes treated as missing: "H", "U"
+2: In matrix(as.numeric(unlist(pheno)), ncol = nc) :
+  NAs introduced by coercion
+3: In check_cross2(output) : Physical map out of order on chr 1, 2, 11, 19
+```
+
+The first warning matches above. If data is missing it may be filtered out. We'll have to check for that. The third warning I am not sure about. Probably a ranking of markers.
+
+# Conclusion
+
+It turned out that R/qtl was running HK - so it was a QTL mapping rather than an LMM.

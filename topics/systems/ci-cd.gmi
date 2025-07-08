@@ -1,8 +1,6 @@
 # CI/ CD for genetwork projects
 
-We need to figure out/ discuss and document how to go about doing the whole automated testing and deployment, from pushing code to deployment to production.
-
-For a first, we need various levels of tests to be run, from unit tests to the more complicated ones like integration, performance, regression, etc tests, and of course, they cannot all be run for each and every commit, and will thus need to be staggered across the entire deployment cycle to help with quick iteration of the code.
+We need various levels of tests to be run, from unit tests to the more complicated ones like integration, performance, regression, etc tests, and of course, they cannot all be run for each and every commit, and will thus need to be staggered across the entire deployment cycle to help with quick iteration of the code.
 
 ## Tags
 
@@ -11,6 +9,7 @@ For a first, we need various levels of tests to be run, from unit tests to the m
 * status: in progress
 * priority: high
 * type: enhancement
+* status: closed
 
 ## Tasks
 
@@ -32,7 +31,7 @@ Arun has figured out the CI part. It runs a suitably configured laminar CI servi
 
 CD hasn't been figured out. Normally, Guix VMs and containers created by `guix system` can only access the store read-only. Since containers don't have write access to the store, you cannot `guix build' from within a container or deploy new containers from within a container. This is a problem for CD. How do you make Guix containers have write access to the store?
 
-Another alternative for CI/ CID were to have the quick running tests, e.g unit tests, run on each commit to branch "main". Once those are successful, the CI/CD system we choose should automatically pick the latest commit that passed the quick running tests for for further testing and deployment, maybe once an hour or so. Once the next battery of tests is passed, the CI/CD system will create a build/artifact to be deployed to staging and have the next battery of tests runs against it. If that passes, then that artifact could be deployed to production, and details on the commit and
+Another alternative for CI/ CD were to have the quick running tests, e.g unit tests, run on each commit to branch "main". Once those are successful, the CI/CD system we choose should automatically pick the latest commit that passed the quick running tests for for further testing and deployment, maybe once an hour or so. Once the next battery of tests is passed, the CI/CD system will create a build/artifact to be deployed to staging and have the next battery of tests runs against it. If that passes, then that artifact could be deployed to production, and details on the commit and
 
 #### Possible Steps
 
@@ -91,3 +90,49 @@ This contains a check-list of things that need to be done:
 => /topics/systems/orchestration Orchestration
 
 => /issues/broken-cd  Broken-cd (Resolved)
+
+## Adding a web-hook
+
+### Github hooks
+
+IIRC actions run artifacts inside github's infrastracture.  We use webhooks: e.g.
+
+Update the hook at
+
+=> https://github.com/genenetwork/genenetwork3/settings/hooks
+
+=> ./screenshot-github-webhook.png
+
+To trigger CI manually, run this with the project name:
+
+```
+curl https://ci.genenetwork.org/hooks/example-gn3
+```
+
+For gemtext we have a github hook that adds a forge-project and looks like
+
+```lisp
+(define gn-gemtext-threads-project
+  (forge-project
+   (name "gn-gemtext-threads")
+   (repository "https://github.com/genenetwork/gn-gemtext-threads/")
+   (ci-jobs (list (forge-laminar-job
+                   (name "gn-gemtext-threads")
+                   (run (with-packages (list nss-certs openssl)
+                          (with-imported-modules '((guix build utils))
+                            #~(begin
+                                (use-modules (guix build utils))
+
+                                (setenv "LC_ALL" "en_US.UTF-8")
+                                (invoke #$(file-append tissue "/bin/tissue")
+                                        "pull" "issues.genenetwork.org"))))))))
+   (ci-jobs-trigger 'webhook)))
+```
+
+Guix forge can be found at
+
+=> https://git.systemreboot.net/guix-forge/
+
+### git.genenetwork.org hooks
+
+TBD

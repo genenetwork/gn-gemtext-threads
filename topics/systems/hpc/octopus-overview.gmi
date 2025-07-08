@@ -1,0 +1,9 @@
+# Octopus HPC
+
+We run the Octopus HPC service described on
+
+=> https://genenetwork.org/facilities
+
+Here we aggregate some common topics.
+
+=> ../../topics/hpc/guix/R Running R

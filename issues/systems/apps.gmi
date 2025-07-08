@@ -1,0 +1,207 @@
+# Apps
+
+GeneNetwork.org retains a number of apps. Currently they are managed by shepherd as `guix shell` services, but we should really move them to system containers.
+
+# Tags
+
+* assigned: pjotrp
+* type: enhancement
+* status: in progress
+* priority: medium
+* keywords: system, sheepdog, shepherd
+
+# Tasks
+
+* [ ] Get services running
+* [ ] Move guix shell into containers
+* [ ] Make sure the container starts up on reboot and/or migrate to a new host
+
+# List of apps
+
+Current apps managed by shepherd/systemd on tux02/balg01 are
+
+=> https://genecup.org/
+* [+] genecup [shell] (hao)
+* [X] - fire up service
+* [X] - add sheepdog monitor
+* [ ] - add link in GN2
+* [X] - add banner for GeneNetwork
+* [ ] - create system container
+* [X] - create guix root
+* [ ] - make sure it works on reboot (systemd)
+=> https://bnw.genenetwork.org/
+* [+] bnw [container] (yan cui and rob)
+* [X] - fire up service
+* [X] - add sheepdog monitor
+* [X] - add link in GN2
+* [ ] - add banner for GeneNetwork
+* [ ] - update system container
+* [X] - create guix root
+* [ ] - make sure it works on reboot (systemd)
+=> http://hrdp.genenetwork.org
+* [+] hrdp-project (hao?)
+* [X] - fire up service
+* [X] - add sheepdog monitor
+* [ ] - https
+* [ ] - add link in GN2
+* [ ] - add banner for GeneNetwork
+* [ ] - create system container
+* [ ] - create guix root
+* [ ] - make sure it works on reboot (systemd)
+=> https://pluto.genenetwork.org/
+* [+] pluto (saunak)
+* [X] - fire up service
+* [X] - add sheepdog monitor
+* [ ] - add link in GN2
+* [ ] - add banner for GeneNetwork
+* [ ] - create system container
+* [ ] - create guix root
+* [ ] - make sure it works on reboot (systemd)
+=> https://power.genenetwork.org/
+* [+] power app (dave)
+* [X] - fire up service
+* [X] - add sheepdog monitor
+* [ ] - add link in GN2
+* [ ] - add banner for GeneNetwork
+* [ ] - create system container
+* [X] - create guix root
+* [ ] - make sure it works on reboot (systemd)
+* [ ] root?
+=> http://longevity-explorer.genenetwork.org/
+* [+] Longevity explorer [container balg01] (dave)
+* [X] - fire up service
+* [X] - add sheepdog monitor
+* [ ] - https
+* [ ] - add link in GN2
+* [ ] - add banner for GeneNetwork
+* [ ] - create system container
+* [ ] - create guix root
+* [ ] - make sure it works on reboot (systemd)
+=> http://jumpshiny.genenetwork.org/
+* [+] jumpshiny app (xusheng)
+* [+] - fire up service (still some dependencies)
+* [X] - add sheepdog monitor
+* [ ] - https
+* [ ] - add link in GN2
+* [ ] - add banner for GeneNetwork
+* [ ] - create system container
+* [ ] - create guix root
+* [ ] - make sure it works on reboot (systemd)
+=> https://hegp.genenetwork.org/
+* [+] hegp (pjotr)
+* [X] - fire up service
+* [X] - add sheepdog monitor
+* [ ] - add link in GN2
+* [ ] - add banner for GeneNetwork
+* [ ] - create system container
+* [ ] - create guix root
+* [X] - make sure it works on reboot (systemd)
+
+* [-] singlecell (siamak)
+* [-] rn6app (hao - remove)
+* [-] genome-browser (defunct)
+
+To fix them we need to validate the sheepdog monitor and make sure they are working in either shepherd (+), or as a system container (X).
+
+Sheepdog monitor is at
+
+=> http://sheepdog.genenetwork.org/sheepdog/status.html
+
+# Info
+
+## BNW
+
+The app is already a Guix system container! To make it part of the startup I had to move it away from shepherd (which runs in userland) and:
+
+```
+/home/shepherd/guix-profiles/bnw/bin/guix system container /home/shepherd/guix-bioinformatics/gn/services/bnw-container.scm --share=/home/shepherd/logs/bnw-server=/var/log --network
+ln -s /gnu/store/0hnfb9ynnxsig3yyprwxmg5h6c9g8mry-run-container /usr/local/bin/bnw-app-container
+```
+
+systemd service:
+
+```
+root@tux02:/etc/systemd/system# cat bnw-app-container.service
+[Unit]
+Description = Run genenetwork BNW app container
+[Service]
+ExecStart = /usr/local/bin/bnw-app-container
+[Install]
+WantedBy = multi-user.target
+```
+
+We need to make sure the garbace collector does not destroy the container, add the --root switch
+
+```
+/home/shepherd/guix-profiles/bnw/bin/guix system container /home/shepherd/guix-bioinformatics/gn/services/bnw-container.scm --share=/home/shepherd/logs/bnw-server=/var/log --network --root=/usr/local/bin/bnw-app-container
+```
+
+Check with
+
+```
+root@tux02:/home/shepherd# /home/shepherd/guix-profiles/bnw/bin/guix gc --list-roots |grep bnw
+  /usr/local/bin/bnw-app-container
+```
+
+## R/shiny apps
+
+The R/shiny apps were showing a tarball mismatch:
+
+```
+building /gnu/store/rjnw7k56z955v4bl07flm9pjwxx5vs0r-r-minimal-4.0.2.drv...
+downloading from http://cran.r-project.org/src/contrib/Archive/KernSmooth/KernSmooth_2.23-17.tar.gz ...
+- 'configure' phasesha256 hash mismatch for /gnu/store/n05zjfhxl0iqx1jbw8i6vv1174zkj7ja-KernSmooth_2.23-17.tar.gz:
+  expected hash: 11g6b0q67vasxag6v9m4px33qqxpmnx47c73yv1dninv2pz76g9b
+  actual hash:   1ciaycyp79l5aj78gpmwsyx164zi5jc60mh84vxxzq4j7vlcdb5p
+  hash mismatch for store item '/gnu/store/n05zjfhxl0iqx1jbw8i6vv1174zkj7ja-KernSmooth_2.23-17.tar.gz'
+```
+
+Guix checks and it is not great CRAN allows for changing tarballs with the same version number!! Luckily building with a more recent version of Guix just worked (TM). Now we create a root too:
+
+```
+/home/wrk/opt/guix-pull/bin/guix pull -p ~/guix-profiles/guix-for-r-shiny
+```
+
+Note I did not have to pull in guix-bioinformatics channel
+
+## Singlecell
+
+Singlecell is an R/shiny app. It starts with an error after above upgrade:
+
+```
+no slot of name "counts" for this object of class
+```
+
+and the code needs to be updated:
+
+=> https://github.com/satijalab/seurat/issues/8804
+
+The 4 year old code lives at
+
+=> https://github.com/genenetwork/singleCellRshiny
+
+and it looks like lines like these need to be updated:
+
+=> https://github.com/genenetwork/singleCellRshiny/blob/6b2a344dd0d02f65228ad8c350bac0ced5850d05/app.R#L167
+
+Let me ask the author Siamak Yousefi. I think we'll drop it.
+
+## longevity
+
+Package definition is at
+
+=> https://git.genenetwork.org/guix-bioinformatics/tree/gn/packages/mouse-longevity.scm
+
+Container is at
+
+=> https://git.genenetwork.org/guix-bioinformatics/tree/gn/services/bxd-power-container.scm
+
+## jumpshiny
+
+Jumpshiny is hosted on balg01. Scripts are in tux02 git.
+
+```
+root@balg01:/home/j*/gn-machines# . /usr/local/guix-profiles/guix-pull/etc/profile
+guix system container --network -L . -L ../guix-forge/guix/ -L ../guix-bioinformatics/ -L ../guix-past/modules/ --substitute-urls='https://ci.guix.gnu.org https://bordeaux.guix.gnu.org https://cuirass.genenetwork.org' test-r-container.scm -L ../guix-forge/guix/gnu/store/xyks73sf6pk78rvrwf45ik181v0zw8rx-run-container
+/gnu/store/6y65x5jk3lxy4yckssnl32yayjx9nwl5-run-container
+```

@@ -41,7 +41,12 @@ Setting up mariadb in a Guix container is the preferred and easier method. But, 
 ```
 $ sudo $(./containers/db-container.sh)
 ```
-You should now be able to connect to the database using
+By default, mariadb allows passwordless login for root only on the local machine. So, enter the container using guix container exec and set the root password to a blank.
+```
+$ mysql -u root
+MariaDB [(none)]> SET PASSWORD = PASSWORD("");
+```
+You should now be able to connect to the database from outside the container using
 ```
 $ mysql --protocol tcp -u root
 ```

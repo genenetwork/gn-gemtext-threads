@@ -1,0 +1,70 @@
+# Working with Virtuoso for Local Development
+
+* author: bonfacem
+* reviewed-by: jnduli
+
+Using guix, install the Virtuoso server:
+
+```
+guix install virtuoso-ose # or any other means to install virtuoso
+cd /path/to/virtuoso/database/folder
+cp $HOME/.guix-profile/var/lib/virtuoso/db/virtuoso.ini ./virtuoso.ini
+# modify the virtuoso.ini file to save files to the folder you'd prefer
+virtuoso-t +foreground +wait +debug
+```
+
+## Common Virtuoso Operations
+
+Use isql to load up data:
+
+```
+isql
+# subsquent commands run in isql prompt
+# this folder is relative to the folder virtuoso was started from
+ld_dir ('path/to/folder/with/ttls', '*.ttl', 'http://genenetwork.org');
+rdf_loader_run();
+checkpoint;
+```
+
+Add data using HTTP:
+
+```
+# Replace dba:dba with <user>:<password>
+curl --digest --user 'dba:dba' --verbose --url\
+"http://localhost:8890/sparql-graph-crud-auth?graph=http://genenetwork.org"\
+-T test-data.ttl
+```
+
+Delete data using HTTP:
+
+```
+# Replace dba:dba with <user>:<password>
+curl --digest --user 'dba:dba' --verbose --url\
+"http://localhost:8890/sparql-graph-crud-auth?graph=http://genenetwork.org" -X DELETE
+```
+
+Query the graph data:
+
+```
+curl --verbose --url\
+"http://localhost:8890/sparql-graph-crud?graph=http://genenetwork.org"
+```
+
+Check out more cURL examples here:
+
+=> https://vos.openlinksw.com/owiki/wiki/VOS/VirtGraphProtocolCURLExamples SPARQL 1.1 Graph Store HTTP Protocol cURL Exampple Collection
+
+## Setting Passwords
+
+Virtuoso's default user is "dba" and its default password is "dba".  To change a password, use isql to run:
+
+```
+set password "dba" "dba";
+CHECKPOINT;
+```
+
+## More
+
+Read a fuller more complete tutorial on Virtuoso here:
+
+=> https://issues.genenetwork.org/topics/systems/virtuoso Virtuoso

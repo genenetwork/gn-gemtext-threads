@@ -1,0 +1,17 @@
+# Julia Deployment
+
+GN deploys Julia, first for a pluto notebook container and second for computing linear mixed models (LMM).
+h
+=> https://github.com/sens/FaSTLMM.jl
+
+# Tasks
+
+* [ ] Compile FaSTLMM using a Guix container (pjotrp)
+* [ ] Embed Julia in a GN3 container (pjotrp)
+* [ ] Test FastLMM for precompute (pjotrp)
+* [ ] Write REST API in GN3 (zachs, pjotrp, gregf)
+* [ ] Write UI in GN2 (zachs)
+
+# Info
+
+## Julia

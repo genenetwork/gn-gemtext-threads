@@ -1,0 +1,250 @@
+# Fire up system container for GN
+
+# Tags
+
+* assigned: pjotrp
+* priority: medium
+* type: system administration
+* keywords: system administration, GN, tux01, tux02, tux04, balg01
+
+# Tasks
+
+We have the following check list
+
+* [ ] Create a system definition
+* [ ] Fire up container and get a shell inside using nsenter
+* [ ] Start mariadb (container or host)
+* [ ] Start redis (container or host)
+* [ ] Xapian search index
+* [ ] Set up sqlite auth.db
+* [ ] Genotype files
+
+# Create container
+
+## Create a system definition
+
+We create
+
+=> https://git.genenetwork.org/gn-machines/tree/fallback.scm
+
+and the accompanying shell script.
+
+To build the system container you need to add channels. Check the setup with `guix describe'. It should show something like
+
+```
+Generation 1    Mar 01 2024 17:01:22    (current)
+  gn-bioinformatics 5fa3e2b
+    repository URL: https://git.genenetwork.org/guix-bioinformatics
+    branch: master
+    commit: 5fa3e2bcaafb498ec3bca51f72545f5a16b5a527
+  guix-forge 6c622a6
+    repository URL: https://git.systemreboot.net/guix-forge/
+    branch: main
+    commit: 6c622a67051c22eeefe37eedb17d427fbb70c99b
+  guix-past 921f845
+    repository URL: https://gitlab.inria.fr/guix-hpc/guix-past
+    branch: master
+    commit: 921f845dc0dec9f052dcda479a15e787f9fd5b0a
+  guix aeaa390
+    repository URL: https://git.savannah.gnu.org/git/guix.git
+    branch: master
+    commit: aeaa390b71a15335bef03f83bd9dc946fa535398
+```
+
+after fetching the latest channels with `git pull` defining ~/.config/guix/channels.scm:
+
+```
+(list (channel
+       (name 'gn-bioinformatics)
+       (url "https://git.genenetwork.org/guix-bioinformatics")
+       (branch "master"))
+      (channel
+       (name 'guix-forge)
+       (url "https://git.systemreboot.net/guix-forge/")
+       (branch "main")
+       (introduction
+  (make-channel-introduction
+   "0432e37b20dd678a02efee21adf0b9525a670310"
+   (openpgp-fingerprint
+    "7F73 0343 F2F0 9F3C 77BF  79D3 2E25 EE8B 6180 2BB3")))))
+```
+
+Now make sure the right guix gets fired up (the one you built) and run a container script as defined in gn-machines.
+
+```
+which guix
+./fallback-deploy.sh
+```
+
+To get a shell inside the system container try
+
+```
+nsenter -at 399307 /run/current-system/profile/bin/bash --login
+herd status
+```
+
+Note that mysql and virtuoso are running inside the container. It is important that these daemons do not share files with other daemons(!)
+
+## https certificates
+
+On the host we need to tell nginx to forward to the system container. This is done with the nginx streaming library.
+
+Note we use the stream feature of nginx. This requires on debian
+
+```
+apt-get install libnginx-mod-stream
+```
+
+Inside the contianer, the first time you may check the certificates
+
+```
+/usr/bin/acme renew
+```
+
+After that you should be able to run
+
+```
+wget localhost:8891
+ERROR 400
+```
+
+because there is no upstream python server yet.
+
+## Start mariadb
+
+Herd will tell you that mariadb is running and if you use the client from the store you can see there is no GN database yet.
+
+```
+/gnu/store/xj4bfqch8zs3sfzvj65ykbvnpprwaj7f-mariadb-10.10.2/bin/mysql -e 'show databases'
+```
+
+mariadb initialized a new database in /var/lib/msyql. We need to stop the container and use an existing database on the host. Make sure not to share it with the host daemon! Disable mariadb in systemd if it is enabled.
+
+On restart the permissions in the container were not mysql.mysql user. So I had to do
+
+```
+chown mysql:mysql -R /var/lib/mysql/
+herd enable mysql
+herd start mysql
+/gnu/store/xj4bfqch8zs3sfzvj65ykbvnpprwaj7f-mariadb-10.10.2/bin/mysql -uwebqtlout -pwebqtlout -e 'show databases'
++---------------------------+
+| Database                  |
++---------------------------+
+| db_GeneOntology           |
+| db_webqtl                 |
+| db_webqtl_s               |
++---------------------------+
+```
+
+Once I got this working, however, I decided to run mariadb on the base system instead (outside the container). The same with redis (see below).
+If /run/mysqld is mounted correctly we should be able to see mariadb on the base system.
+
+## Start redis
+
+After adding the default redis-service make sure the database is mounted on /var/lib/redis. `herd status` in the container will tell redis is running.
+
+Note that, again, file permissions may prevent redis from running. Debug output appears in /var/log/messages.
+
+The way to deal with this is chown in the activation stage. The alternative is to run a service directly on the host machine.
+
+To test redis
+
+```
+redis-cli PING
+PONG
+```
+
+and similarly in the container:
+
+```
+/gnu/store/pglq03ffx9b26ky057171g50m1nl9iw9-redis-7.0.12/bin/redis-cli PING
+PONG
+```
+
+Try also INFO memory and the size should be in GBs.
+
+Note I got a `Failed opening the temp RDB file temp error` on the host redis. This turned out to be a systemd setting
+
+```
+[system]
+ReadWritePaths=-/export2/redis
+  # recommended that you remove/comment this line:
+ReadWriteDirectories=-/etc/redis
+```
+
+## Xapian index
+
+Search in GN3 uses xapian. To update the index there is a script in genenetwork3/scripts/index-genenetwork.
+
+Inside the container you can do something like
+
+```
+ /gnu/store/ysmyk5r15n1794m7j34wp9d4ixs16plm-genenetwork3-0.1.0-5.6bb4a5f/bin/index-genenetwork /export/data/genenetwork-xapian/new mysql://webqtlout:webqtlout@127.0.0.1:3306/db_webqtl
+```
+
+and then move the .glass files from new into its parent.
+
+## Genotype files
+
+This is a directory containing bimbam files etc.
+
+## Mapping nginx on host
+
+The host needs to be told that certain connections get mapped to the system container. On tux02 we have, for example
+
+```
+server {
+    server_name test1.genenetwork.org test1-auth.genenetwork.org;
+    listen 80;
+    location / {
+        proxy_pass http://localhost:8890;
+        proxy_set_header Host $host;
+    }
+}
+```
+
+which maps two outside addresses into the container nginx setup. Note that the domains are handled inside the system container.
+
+Meanwhile nginx.conf on the host contains
+
+```
+  # We forward several HTTPS connections into various Guix containers.
+  # We do not decrypt the traffic.  TLS termination, certificates,
+  # etc. reside purely inside the Guix containers.
+stream {
+    upstream genenetwork {
+        server 127.0.0.1:8891;
+    }
+    upstream host-https {
+        server 127.0.0.1:8443;
+    }
+
+    map $ssl_preread_server_name $upstream {
+        test1.genenetwork.org genenetwork;
+        test1-auth.genenetwork.org genenetwork;
+        default host-https;
+    }
+
+    server {
+        listen 443;
+        proxy_pass $upstream;
+        ssl_preread on;
+    }
+}
+```
+
+So, the first forwards port 80 and the second 443. Certificates are (automagically) handled inside the system container (see acme above).
+
+In our case the ports are 8890 (http) and 8891 (https), reflected in fallback.scm.
+
+# Troubleshooting
+
+## Where are the logs?
+
+Inside the container you'll find the error logs in /var/log.
+
+## Debugging and developing code
+
+see
+
+=> debug-and-developing-code-with-genenetwork-system-container

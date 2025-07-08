@@ -6,35 +6,72 @@
 * assigned: bonfacem
 * status: in progress
 
-## October
-* [ ] Create a UI frontend for Pubi
-
 ## Tasks
+
+### Note
+- GN-auth dashboard fixes.  Follow up with Fred.
+- Case-attributes used in co-variates.
+- Encourage FahamuAI to be open.
+
+### This week
+* [+] Case Attributes (Do a diagnostic and delegate)
+*     - Git blame.  Add tests.
+*     - Error when checking the history.
+*     - Reach out to Zach.
+*     - Disable diff in the UI.
+* [ ] Distinct admin and dev user.
+* [ ] Adapter to LMDB into a cross object.
+*     - Try computations with R/qtl2.
+*     - Look at R LMDB libraries.
+*     - Look at functions that read the files.
+*     - PJ: LMDB adapter in R and cross-type files.
+* [ ] Send Arun an e-mail on how to go about upgrading shepherd.
+* [ ] Dump all genotypes from production to LMDB.
+*     - PJ sync tux01 genotypes with tux02/04.
+* [+] Correlations hash.
+*     - Add dataset count to RDF.
+* [ ] Spam + LLMs
+*     - RateLimiting for Rif Editing.
+*     - Honep Pot approach.
+* [+] Help Alex with SSL certification container error.
+*     - Put the changes in the actual scm files.
+* [X] Python Fahamu.
+* [X] Memvid - brief look.
+
+### Later
+* [ ] Dockerise GN container.   For Harm.
+* [ ] Send emails when job fail.
+* [ ] Look at updating gn-auth/gn-libs to PYTHONPATH for gn2/3.
+* [ ] Sample/individual/strain/genometype counts for PublishData only - ProbeSetData? https://github.com/genenetwork/genenetwork2/blob/testing/scripts/sample_count.py - mirror in RDF and use global search
+*     - search for all traits that have more than X samples
+* [ ] Add case attributes to RDF and share with Felix (depends on @felixl)
+* [ ] xapian search, add dataset size keys, as well as GN accession id, trait id, and date/year
+*     - Improve xapian markdown docs to show all used fields/keys with examples
+*     - genewiki search (link in table? check with Rob)
+*     - base line with GN1 search - add tests
+*     - Fix missing search term for sh* - both menu search and global search
+*     - Use GN1 as a benchmark for search results (mechanical Rob?)
+*     - Xapian ranges for markers
+
+### Even later
+
+* [ ] Rest API for precompute output (mapping with GEMMA)
+* [ ] GNQA add GN metadata (to RAG)
+*     - Focus on RIF
+*     - triple -> plain text
+*     - bob :fatherof nancy -> Bob is the father of Nancy.
+
+## Later
+
+* [ ] AI improvements
+
 ### On going tasks
 
-=> https://issues.genenetwork.org/search?query=assigned%3ABonfaceKilz+AND+is%3Aopen&type=open-issue All in-progress tasks
-
-Rank-ordered list of on-going tasks:
-
-=> https://issues.genenetwork.org/search?query=assigned%3ABonfaceKilz+AND+tag%3Ain-progress+AND+priority%3Ahigh+AND+is%3Aopen&type=open-issue High Priority
-
-=> https://issues.genenetwork.org/search?query=assigned%3ABonfaceKilz+AND+tag%3Ain-progress+AND+priority%3Amedium+AND+is%3Aopen&type=open-issue Medium Priority
-
-
-=> https://issues.genenetwork.org/search?query=assigned%3ABonfaceKilz+AND+tag%3Ain-progress+AND+priority%3Alow+AND+is%3Aopen&type=open-issue Low Priority
+=> https://issues.genenetwork.org/search?query=assigned%3ABonfaceKilz+AND+is%3Aopen+AND+status%3Ain-progress&type=all All in-progress tasks
 
 ### Stalled (To Be Done/Completed)
 
-=> https://issues.genenetwork.org/search?query=assigned%3ABonfaceKilz+AND+tag%3Astalled+AND+is%3Aopen&type=open-issue All stalled taskse that are to be promoted to in-progress
-
-Rank-ordered list of stalled tasks:
-
-=> https://issues.genenetwork.org/search?type=open-issue&query=assigned%3ABonfaceKilz%20AND%20tag%3Astalled%20AND%20priority%3Ahigh%20AND%20is%3Aopen%20AND%20NOT%20in-progress High Priority
-
-=> https://issues.genenetwork.org/search?type=open-issue&query=assigned%3ABonfaceKilz%20AND%20tag%3Astalled%20AND%20priority%3Amedium%20AND%20is%3Aopen%20AND%20NOT%20in-progress Medium Priority
-
-=> https://issues.genenetwork.org/search?type=open-issue&query=assigned%3ABonfaceKilz%20AND%20tag%3Astalled%20AND%20priority%3Alow%20AND%20is%3Aopen%20AND%20NOT%20in-progress Low Priority
-
+=> https://issues.genenetwork.org/search?query=assigned%3ABonfaceKilz+AND+tag%3Astalled+AND+is%3Aopen&type=open-issueo All stalled taskse that are to be promoted to in-progress
 
 ### Unclear Issues
 
@@ -50,3 +87,47 @@ Should something in one of these closed issues be amiss, we can always and shoul
 Currently closed issues are:
 
 => https://issues.genenetwork.org/search?type=closed-issue&query=assigned%3ABonfaceKilz%20AND%20type%3Aissue%20AND%20is%3Aclosed Closed Issues
+
+* [X] Indexing generif data / Improve Local Search
+* [X] lmdb publishdata output and share with Pjotr and Johannes
+
+## Done
+
+* [X] Add lmdb output hashes with index and export LMDB_DATA_DIRECTORY
+* [X] Share small database with @pjotrp and @felixl
+* [X] With Alex get rqtl2 demo going in CD (for BXD)
+* [X] Set up meeting with ILRI
+*     - Zasper https://news.ycombinator.com/item?id=42572057 - Alan
+* [X] Migrate fahamuai RAG to VPS and switch tokens to GGI OpenAI account
+*     1. Running AI server using (our) VPS and our tokens
+*        + Pjotr gives API key - OpenAI - model?
+*     2. Read the code base - Elixir is plumbing incl. authentication, Python processing text etc.
+*     3. Try ingestion and prompt (REST API) - check out postgres tables
+*     4. Backup state from production Elixir
+*     5. Assess porting it to Guix (don't do any work) - minimum version Elixir
+*     6. Get docs from Shelby/Brian
+* [X] Set-up grobit on balg01
+*     - guix docker/native
+*     - recent breaking changes
+* [X] GeneRIF
+*     - Merge recent changes first.  Ping Rob.
+*     - Brainstorm ideas around log-in.
+*     - Unlimited tokens that don't expire.
+*     - Sync prod with CD -- sqlite.
+*     - Add deletion
+* [X] Describe Generif/wikidata access for Rob in an email with test account on CD
+*     1. Send email to Rob
+*     2. Work on production w. Fred
+* [X] Distinguish CD from production -- banners/buttons/colors.
+* [X] Use aider - give a presentation in the coming weeks
+* [X] gn-auth fixes
+* [X] Assess Brian's repo for deployment.
+* [X] Finish container work
+* - View diffs in BXD: Edit case attributes throws an error.
+* [X] Check small db from: https://files.genenetwork.org/database/
+* [X] Changes to Production + (Alex)
+* [X] File issue with syslog
+* [X] LMDB database.
+*     - Simplify (focus on small files).  Don't over-rely on Numpy.
+* [X] Assess adding GeneRIF to LLM.
+* [X] Referrer headers -- a way of preventing bots beyond rate-limiting. 

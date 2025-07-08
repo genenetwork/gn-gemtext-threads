@@ -4,7 +4,7 @@
 
 * assigned: alex
 * type: ui, enhancement
-* status: stalled
+* status: closed, completed
 * priority: medium
 * keywords: ui, guix
 
@@ -14,9 +14,9 @@
 
 ## Tasks
 
-- [x] Package `jquery-ui`.
-- [x] Replace `jquery-ui` cdn with a link from the GNU Guix profile.
-- [ ] Check and report if there are other js files we load from a CDN.
+* [x] Package `jquery-ui`.
+* [x] Replace `jquery-ui` cdn with a link from the GNU Guix profile.
+* [x] Check and report if there are other js files we load from a CDN.
 
 ## Notes 28/9/22
 
@@ -35,3 +35,20 @@ new  packages being loaded with cdn
 => https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js
 => https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.css
 => https://cdn.jsdelivr.net/npm/uikit@3.7.4/dist/css/uikit.min.css
+
+## Notes 12/02/24
+
+new package:
+
+=> https://github.com/sampsyo/emfed.git
+
+
+
+## Notes 28/02/24
+
+
+=> https://github.com/genenetwork/genenetwork2/pull/834
+
+PR above replaced any JS/CSS external code remaining in  GN2
+Marking the issue as closed since it has been resolved
+

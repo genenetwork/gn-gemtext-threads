@@ -1,0 +1,16 @@
+# Setup Mailing on Tux04
+
+## Tags
+
+* type: bug
+* status: closed
+* assigned: fredm
+* priority: critical
+* interested: pjotrp, zsloan
+* keywords: production, container, tux04
+
+## Description
+
+We use emails to verify user accounts and allow changing of user passwords. We therefore need to setup a way to send emails from the system.
+
+I updated the configurations to use UTHSC's mail server

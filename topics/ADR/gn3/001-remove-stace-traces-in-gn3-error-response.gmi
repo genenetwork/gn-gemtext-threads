@@ -1,0 +1,49 @@
+# [gn3/ADR-001] Remove Stack Traces in GN3
+
+* author: bonfacem
+* status: rejected
+* reviewed-by: jnduli, zach, pjotr, fredm
+
+## Context
+
+Currently, GN3 error responses include stack traces:
+
+```
+def add_trace(exc: Exception, jsonmsg: dict) -> dict:
+    """Add the traceback to the error handling object."""
+    return {
+        **jsonmsg,
+        "error-trace": "".join(traceback.format_exception(exc))
+    }
+
+
+def page_not_found(pnf):
+    """Generic 404 handler."""
+    current_app.logger.error("Handling 404 errors", exc_info=True)
+    return jsonify(add_trace(pnf, {
+        "error": pnf.name,
+        "error_description": pnf.description
+    })), 404
+
+
+def internal_server_error(pnf):
+    """Generic 404 handler."""
+    current_app.logger.error("Handling internal server errors", exc_info=True)
+    return jsonify(add_trace(pnf, {
+        "error": pnf.name,
+        "error_description": pnf.description
+    })), 500
+```
+
+
+## Decision
+
+Stack traces have the potential to allow malicious actors compromise our system by providing more context.  As such, we should send a useful description of what went wrong; and log our stack traces in our logs, and send an appropriate error status code.  We can use the logs to troubleshoot our system.
+
+## Consequences
+
+* Lockstep update in GN2 UI on how we handle GN3 errors.
+
+## Rejection Rationale
+
+The proposal to remove stack traces from error responses was rejected because they are essential for troubleshooting, especially when issues are difficult to reproduce or production logs are inaccessible.  Stack traces provide immediate error context, and removing them would complicate debugging by requiring additional effort to link logs with specific requests; a trade-off we are not willing to make at the moment.

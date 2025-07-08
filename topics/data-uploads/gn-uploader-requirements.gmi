@@ -1,0 +1,281 @@
+# GeneNetwork Uploader Requirements
+
+*OR*: "Reattaching the Head on Frederick's Headless-Chicken Development :-)"
+
+## Tags
+
+* assigned: fredm, flisso
+* type: doc, requirements
+* priority: high
+* status: open
+* keywords: data uploads, gn-uploader, uploader, data uploader
+* interested: acenteno, pjotrp, zsloan, robw, bonfacekilz
+
+## Introduction
+
+I (Frederick M. Muriithi) have been building the
+=> https://git.genenetwork.org/gn-uploader/ GeneNetwork Data Uploader
+project.
+
+As part of that work, we have come across a number of both implicit and explicit requirements to facilitate the end-goal of allowing users to upload new data to the system. This document discusses these requirements, while also offering up some possible solutions for some of the requirements.
+
+NOTE: This is an evolving document, and will change as the requirements, technology and understanding changes.
+
+### Direction
+
+The purpose of the system is to allow users to upload their data and be able to analyse it with the system.
+
+There are two major schools of thought regarding this:
+
+* Basic upload of data for testing and analysis, with (a) curation step(s) later to make it conform to standards
+* Upload with strict checks to ensure data conforms to standards before upload is successful
+
+The first of the schools of thought will allow the users to upload data and play around with it, correcting any errors before it is finally acceptable enough to upload to the main database. This implies use of a data staging area, or even a separate testing database to hold the data. There might need to be a GeneNetwork system with access to the staging area or testing database to allow the user(s) to do analysis of these "incomplete" data.
+
+The second school of thought requires that the data the user uploads be complete, i.e. the numerical data is correct and there is complete accompanying metadata for the data, including descriptions that fulfil all requirements. We might need a curation step here too.
+
+## General Notes
+
+We should probably start modifying our tables to use FULL IDENTIFIERS for the data. The full identifier includes ALL identifiers for any parent tables/data in addition to the specific record identifier.
+
+e.g. For data, say in a ProbeSet table, instead of simply ProbeSet(`Id`) as an identifier, the complete identifier would be something like:
+
+> ProbeSet(`SpeciesId`, `PlatformId`, `Id`)
+
+while for ProbeFreeze table would be something like:
+
+> ProbeFreeze(`SpeciesId`, `PlatformId`, `PopulationId`, `ProbeSetId`, `Id`)
+
+and for data in ProbeSetData, it would be something like:
+
+> ProbeSetData(`SpeciesId`, `PlatformId`, `PopulationId`, `ProbeSetId`, `ProbeFreezeId`, `ProbeSetFreezeId`)
+
+We can then have table indexes composed of one or more of the elements of the *FULL IDENTIFIER* for faster queries.
+
+**NOTE 01**: The FULL IDENTIFIERS above should be hieararchical, beginning with the "oldest" ancestor and ending with the current record's ID.
+
+**NOTE 02**: The examples of the FULL IDENTIFIERS above might not be complete. I'll update them as I tease more information from the database.
+
+## Data Categories
+
+There are different data "categories" that could be uploaded into the system, some of which are dependent on others already existing on the system, before they can be uploaded. The "categories" are:
+
+### Species information
+
+All the various data of interest to the system are grouped under one species or another. This means that there is a possibility that the user could want to upload data that belongs to a species that does not already exist on GeneNetwork. We might therefore need a way to allow the upload of new Species information, maybe with a verification step before the data hits the database.
+
+> Species --> {{{ data of various sorts }}}
+
+The important species information we need to collect are:
+
+* Species name e.g. mouse, rat, blue gum
+* Scientific name e.g. Mus musculus, Rattus norvegicus, Eucalyptus globulus, etc
+* Family e.g. Vertebrates, Plants, etc.
+
+Maybe we should do the whole "Classification" thing (Domain, Kingdom, Phylum, Class, Order, Family, Genus, Species) e.g. for mouse, Eukaryota, Animalia, Chordata, Mammalia, Rodentia, Muridae, Mus, Muscululus. I do note, however, that this might be too much also, what with the sub-phylums and sub-genus, etc.
+
+There is a benefit, however, of having such information: we can index the data by some of these fields, enabling us to query by say, 'Class' to quickly get all species of mammals in the system.
+
+### Platform Information
+
+Hierarchy
+> Species --> Platform --> {{{ data of various sorts }}}
+
+These are (sequencing?) platforms used for the generation of the data that is then to be uploaded. Some of the platforms are registered with
+=> https://www.ncbi.nlm.nih.gov/geo/browse/?view=platforms NCBI's Gene Expression Omnibus system
+and some are not.
+
+Each platforms also seem to be tied to a specific organism/species (please confirm).
+
+The information regarding the platforms that we need is:
+
+* SpeciesId (see 'Species information' above)
+* Platform Name
+* Name
+* Title
+* GEOPlatform (Optional): NCBI's GEO indentifier for the platform e.g. GPL34216
+
+=> https://gn1.genenetwork.org/webqtl/main.py?FormID=schemaShowPage#GeneChip rules for platform names.
+
+The Platform details on NCBI also include sample data. If user specifies a GEO platform ID, we could fetch such details and auto-populate relevant tables, perhaps. We'd (well, mostly I, Fred) need to figure out whether NCBI provides an API for such.
+
+### Genotype Information
+
+Hierarchy
+> Species --> Genotype --> {{{ data of various sorts }}}
+
+* SpeciesId (see 'Species information' above): This is an internal identifier for the Species information we have collected before.
+* Name: Name of genotype
+* Marker name:
+* Chromosome:
+* Megabases: This is location information in megabase pairs
+* Sequence:
+* Source: Provider of the information, e.g. an institute, person, etc. Is this 
+
+We could index the genotype information by the following fields:
+
+* SpeciesId: For faster queries for a particular species' genotypes
+* ...
+
+### Assembly Information
+
+* mm8
+* mm10
+* mm11
+* ...
+etc.
+
+I still do not wholly comprehend this. This might be related to the platform information.
+
+From the 'Geno' table, I see the fields 'Mb_mm8' and 'Chr_mm8' that indicate that this information can affect data possibly downstream to the Geno data.
+
+We probably need a way to separate these from the Geno table, while maintaining the link to the downstream data.
+
+Tables affected by this information:
+
+* Geno
+* Chr_Length
+* ...
+
+### Population Information
+
+This is the second major organisational grouping of the data under the Species, i.e. data is organised hierachically under Species, then Population:
+
+> Species --> Population --> {{{ data of various sorts }}}
+
+* SpeciesId (see 'Species information' above)
+* Population name: InbredSetName, Name, and FullName. What are the differences?
+* GeneticType: e.g. riset, intercross, etc.
+* Family:
+* MappingMethodId:
+
+### Samples/Cases/Individuals Information
+
+Hierarchy
+> Species --> Population --> Samples --> {{{ data of various sorts }}}
+
+The data we need to collect/have for the samples are:
+
+* SpeciesId (see 'Species Information' above)
+* PopulationId (see 'Population Information' above)
+* Name: Official sample name/symbol
+* Alias: An alias for the sample (Optional)
+* Symbol: short strain symbol used in graphs and tables - looks like a display thing; look into this.
+
+** Samples might also be related to the platform: see 'Platform Information' above.
+
+From the existing `Strain` table, it seems you can only have one-and-only-one sample for a particular species with a specific name.
+
+> MariaDB [db_webqtl]> SHOW CREATE TABLE Strain;
+> ...
+> | Strain | CREATE TABLE `Strain` (
+>   `Id` int(20) NOT NULL AUTO_INCREMENT,
+>   `Name` varchar(100) DEFAULT NULL,
+>   `Name2` varchar(100) DEFAULT NULL,
+>   `SpeciesId` smallint(5) unsigned NOT NULL DEFAULT 0,
+>   `Symbol` varchar(20) DEFAULT NULL,
+>   `Alias` varchar(255) DEFAULT NULL,
+>   PRIMARY KEY (`Id`),
+>   UNIQUE KEY `Name` (`Name`,`SpeciesId`),
+>   KEY `Symbol` (`Symbol`)
+> ) ENGINE=InnoDB AUTO_INCREMENT=180927 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci |
+> ...
+
+We could index this information by any one, or combinations of the following fields:
+
+* SpeciesId
+* PopulationId
+
+and maybe even drop the need for the 'StrainXRef' table. (*To be considered*)
+
+### Tissue Information
+
+Hierarchy
+> Species --> ?? ... ?? --> Tissue --> {{{ data of various sorts }}}
+
+Felix discovered the need for this when uploading the Arabidopsis Thaliana data into the test database with the uploader. Expression data to be uploaded has to be linked to a tissue, and the existing tissue information (as of before 2024-02-22T09:45+03:00UTC) seems to only belong to vertebrates, not plants.
+
+**Find out more about tissue and linkages to other data**
+
+Tables:
+
+* Tissue
+* TissueProbeFreeze
+* TissueProbeSetData
+* TissueProbeSetFreeze
+* TissueProbeSetXRef
+
+...
+
+### Expression Data Information
+
+
+Hierarchy
+> Species --> ?? ... ?? --> Expression Data --> {{{ data of various sorts }}}
+
+The ' --> ?? ... ?? --> ' section winds through Platform, Population, Genotype, Tissue, Samples etc before making its way to the expression data information. I still need to unwind the hieararchy and list the paths here.
+
+Affects the following database tables:
+
+* ProbeSet
+* ProbeFreeze
+* ProbeSetXRef
+* ProbeSetData: Data matrix - numerical values for use in analyses
+* ProbeSetSE: Standard error values for use in analyses
+
+Some mandatory data we need:
+
+* SpeciesId (see 'Species Information' above)
+* PlatformId (see 'Platform Information' above)
+* Name: Phenotype identifier for the platform above
+* Gene Symbol: ...
+* Chromosome:
+* Megabases:
+* Description: A description for the phenotype
+* GeneId: Entrez gene ID from NCBI
+* Strand_Gene/Strand_Probe: he DNA strand (+ or -) of the gene assigned to the phenotype. Leading or lagging strand.
+
+Maybe the *Chromosome* and  *Megabases* value could be replaced by a single link to a ChromosomeId or such... maybe a table linking the chromosome to its specific assembly e.g.
+
+> Probeset(ChromosomeAssemblyId) --> (Id)ChromosomeAssembly(ChromosomeId) --> Chromosome(Id)
+
+...
+
+### Publish Phenotype Data
+
+We need a way for the uploader to distinguish between "Expression Data Phenotypes" and these "Publish Phenotypes".
+
+I have not previously dealt with uploading "Publish Phenotype" (or "Classic Phenotype") data. This section begins an exploration on how that would come about.
+
+Database tables affected:
+
+* Phenotype
+* Publication
+* PublishData
+* PublishFreeze: Links to population
+* PublishSE
+* PublishXRef: Links to population, phenotype, publication, and PublishData
+
+These have a form very similar to the expression data.
+
+Some important data required:
+
+* Units: Units of measurement for the phenotype
+=> https://info.genenetwork.org/faq.php#q-22 Description for "Publish Phenotypes"
+* Others? ...
+
+...
+
+## Descriptions
+
+For "Publish Phenotypes", the descriptions have strict requirement, listed at the link below:
+=> https://info.genenetwork.org/faq.php#q-22
+
+=> /topics/data-uploads/data_dictionaries_20230222.txt.zip The list of "General Category and Ontology Terms" as of 2024-02-22T11:58+03:00UTC
+is only usable for vertebrates. We will need an extended list for other species, e.g. plant species, invertebrates, etc.
+
+## Display
+
+Data should be saved to the database with as accurate and precise information as possible. This means the data in the database could have a large-ish number of decimal places.
+
+The UI (User interface) should then truncate or round off those decimal places as needed to give the user a nice display of the data, and maybe a table or key with the non-modified values as necessary.

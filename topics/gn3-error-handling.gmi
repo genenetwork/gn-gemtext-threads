@@ -1,0 +1,66 @@
+
+# GN3 Error Handling
+
+## Tags
+
+* type: docs, documentation
+* status: open, ongoing
+* keywords: gn3, error_handling, exceptions, docs, documentation
+
+## Introduction
+This documentation explains how GN3 handles errors in the application.
+
+## Notes
+GN3 uses app-level error handling in Flask
+instead of try and except blocks within individual routes.
+
+## Benefits
+
+* Centralized error management simplifies maintenance by centralizing error handling in one location.
+* Ensures uniform behavior across the application, making it more predictable.
+* Promotes code reuse by handling errors through shared logic.
+* Keeps route functions clean and focused by removing redundant error handling.
+* Enhances scalability by efficiently managing error handling as the application grows.
+
+In this approach, errors are registered and handled at the application level. For example:
+
+## Error Handler
+
+```python
+def handle_generic(exc: Exception) -> Response:
+    """Handle generic exceptions."""
+    current_app.logger.error(exc)
+    response = jsonify({
+        "error": type(exc).__name__,
+        "error_description": exc.args[0] if exc.args else "Generic Exception",
+        "trace": traceback.format_exc()
+    })
+    response.status_code = 500
+    return response
+```
+
+## Registering Error Handlers at the App Level
+
+```python
+def register_error_handlers(app: Flask):
+    """Register application-level error handlers."""
+    app.register_error_handler(NotFound, page_not_found)
+    app.register_error_handler(Exception, handle_generic)
+```
+
+## Flask Route Without Try-Except Blocks
+
+```python
+@app.route('/some_route')
+def some_route():
+    # If an error occurs, it is handled at the app level
+    data = computation()
+    return jsonify(data)
+```
+
+For more examples in GN3, see the link below:
+
+=> https://github.com/genenetwork/genenetwork3/blob/main/gn3/errors.py
+
+Related issues:
+=> https://issues.genenetwork.org/issues/error-handling-external-errors

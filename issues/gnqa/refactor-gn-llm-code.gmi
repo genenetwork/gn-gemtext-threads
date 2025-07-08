@@ -1,0 +1,16 @@
+# Refactoring gn-llm code and adding test modules
+
+## Tags:
+
+* assigned:alexm,shelby
+* keywords:refactoring,llm,tests
+* type: enchancements
+* status: completed, closed
+
+
+## Description
+
+The task is to Refactor `gn-llm` code for improved structure, readability, and maintainability. Enhance overall code quality by implementing best practices, design patterns, and incorporate thorough testing, including tests for C1 and CD components.
+
+
+

@@ -1,0 +1,21 @@
+# Rework Hard Dependence on Github
+
+## Tags
+
+* status: open
+* priority: medium
+* type: bug
+* assigned: alexm
+* assigned: bonfacem
+* assigned: fredm
+* keywords: gn-guile, github
+
+## Description
+
+Currently, we have a hard-dependence on Github for our source repository — you can see this in lines 31, 41, 55 and 59 of the code linked below:
+
+=> https://git.genenetwork.org/gn-guile/tree/web/view/markdown.scm?id=0ebf6926db0c69e4c444a6f95907e0971ae9bf40
+
+The most likely reason is that the "edit online" functionality might not exist in a lot of other popular source forges.
+
+This is rendered moot, however, since we do provide a means to edit the data on Genenetwork itself. We might as well get rid of this option, and only allow the "edit online" feature on Genenetwork and stop relying on its presence in the forges we use.

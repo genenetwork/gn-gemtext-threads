@@ -1,0 +1,39 @@
+# Fix Opaque Errors
+
+## Tags
+
+* status: closed, completed
+* assigned: fredm
+* type: bug
+* priority: high
+* keywords: opaque errors, errors, UX, user experience, gn-uploader
+
+## Description
+
+This issue is meant to deal with instances of opaque errors. I describe the concept of "opaque errors", as errors whose messages do not provide the user with enough information to help them fix issues on their own where possible.
+
+As an example, see "Standard-Error Files Upload - Opaque Error Message" below.
+
+Fixed issues are marked with [x], in progress, or partially fixed issue with [-] and issues that have not had any work done yet with [ ].
+
+### [x] Standard-Error Files Upload - Opaque Error Message
+
+Trying to upload standard error files, the user might be faced with an error such as:
+=> ./opaque-standard-error-upload-error.png
+
+This error does not tell the user much that is helpful. It should be changed to something like:
+> There were no annotation found for the dataset "Standard Error Dataset" under
+> the "BXD mice group study for breast cancer Standard Error" that is linked to
+> the "Affymetrix Clariom S Array Mouse" platform.
+>
+> Please verify you selected the correct platform, study and dataset for your
+> standard-error file(s).
+
+The error message in the screenshot attached above is obvious when one
+=> https://git.genenetwork.org/gn-uploader/tree/scripts/insert_data.py?id=a7410cb1c55f6a06606ab7dcdacd18b11c672632#n254-n257 looks at the code (lines 254 to 259)
+but it does not help the user figure out what they did wrong.
+
+The "more correct" error shown in the example above is arguably more helpful, and helps the user figure out what they did wrong.
+
+The fix:
+=> https://git.genenetwork.org/gn-uploader/commit/?id=3334120a07d8cc7d9ba2e1f23344df4d9c9c33bb

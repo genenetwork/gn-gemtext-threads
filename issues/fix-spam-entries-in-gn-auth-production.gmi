@@ -1,0 +1,16 @@
+# Spam Entries in Auth (Production)
+
+# Tags
+
+* assigned: fredm
+* keywords: auth
+
+## Description
+
+We have spam entries in gn-auth in production in the groups table:
+
+```
+b59229de-2fce-4a3d-82f1-d9eeee9b7009|Business For Sale Adelaide|{"group_description": "Welcome to Business2Sell, the ultimate online platform for those seeking affordable business opportunities in Adelaide. As a trusted first-party provider, we offer the ideal marketplace for buying or selling businesses across the country. Whether you're an aspiring entrepreneur looking for your next venture or a business owner ready to sell, Business2Sell provides the perfect platform for you. Our user-friendly interface and extensive listings make it effortless to discover a wide range of businesses, all within your budget. Join our vibrant community of buyers and sellers today, and let us help you achieve your business goals in Adelaide with ease and confidence.\r\nhttps://www.business2sell.com.au/businesses/sa/adelaide"}
+```
+
+

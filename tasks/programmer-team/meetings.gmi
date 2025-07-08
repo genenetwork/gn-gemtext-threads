@@ -1,0 +1,82 @@
+# Weekly meetings
+
+In this document we will track tasks based of our weekly meetings. This list sets the agenda
+on progress for the next week's meeting.
+
+## 02-10-2024
+## @felixm
+* [ ] Use Aider to contribute and cover to Fred's coding.  Share useful prompts.
+* [ ] Feed relevant papers to GPT and find similar summary for other datasets.  Start with C-Elegans.
+
+
+## @bonfacem
+* [ ] Share values with PJ.
+* [ ] Assume LMDB files are transient.  When hash doesn't exist, generate the hash for that dataset.  Use LMDB to store key value pairs of hashes.
+* [ ] Add dump script to gn-guile.
+* [ ] Add Case Attributes in Virtuoso.
+
+## @alex
+* [ ] Push R/QTL2 to production
+* [ ] Have R/QTL2 work for ITP
+
+Nice to have:
+* Think about editing publish data and consequent updates to LMDB.
+
+## @pjotr
+* Kickstart UTHSC VPN access for Felix and Alex.
+
+## 01-20-2024
+### @bonfacem
+
+* [ ] Report:    OpenAI on Aider - use AI for programming - discuss with @alexm
+
+=> https://issues.genenetwork.org/topics/ai/aider
+
+* [-] Metadata:  Provide list of case attributes for BXD to @flisso
+* [-] Code UI:   GeneRIF and GenWiki should work from the mapping page - encourage people to use
+                 - anyone logged in can edit
+                 - If RIF does not exist point to GeneWiki
+                 - If GeneWiki does not exist provide edit page
+* [ ] Code export: Exporting traits to lmdb PublishData - @alexm helps with SQL
+                 - missing data should not be an X
+                 - run lmdb design (first code) by @pjotrp
+                 - start exporting traits for Johannes (he will need to write a python reader)
+* Later:         Improve the work/dev container for @alexm
+
+### @flisso
+
+* [ ] Write:  Uploader protocol.  NOTES: Finished with C-elegans.  Yet to test with other datasets.
+* [ ] Script: Run Reaper
+* [ ] Data:   Case attributes - with @bonfacem
+* [ ] Write:  Create protocol to upload case attributes
+
+### @alexm
+
+* [ ] Code: Rqtl2 match Rqtl1: match scan changes.  Notes: PR out and added tests.
+* [ ] Bug:  Fix pair scan.  NOTES: Fixed it.  But can't test it now since CD is down.
+* Later: AI changes
+
+### @Pjotr
+
+* [ ] Code: Work on precompute with GEMMA (w. Jameson)
+* [ ] Code: Take Bonface's trait files when they become available
+
+
+## 01-27-2024
+
+Last week's error with CD and production downtime:
+* [ level 1] Container: Error messages when data not loaded in Virtuoso, Indexing.
+* [ level 2] Sheepdog: Check services --- sheepdog.  Health checkpoints.
+* [ level 3] User feedback.  Escalate errors correctly to the users, so they can report to coders
+
+### @bonfacem
+* [ ] Troubleshoot CD.
+* [ ] Export files in lmdb.  Yohannes read file in Python example
+* [ ] Metadata:  Provide list of case attributes for BXD to @flisso
+* [ ] Aider: See if it can generate some guile and python.  Give an example.
+
+### @alexm
+* [ ] UI for R/Qtl2.
+
+### @flisso
+* [ ] Look at Fred Python code for the uploader and report on this.

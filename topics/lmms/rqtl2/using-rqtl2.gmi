@@ -1,0 +1,44 @@
+# R/qtl2
+
+# Tags
+
+* assigned: pjotrp, alexm
+* priority: high
+* type: enhancement
+* status: open
+* keywords: database, gemma, reaper, rqtl2
+
+# Description
+
+R/qtl2 handles multi-parent populations, such as DO, HS rat and the collaborative cross (CC). It also comes with an LMM implementation. Here we describe using and embedding R/qtl2 in GN2.
+
+# Tasks
+
+
+## R/qtl2
+
+R/qtl2 is packaged in guix and can be run in a shell with
+
+
+```
+guix shell -C r r-qtl2
+R
+library(qtl2)
+```
+
+R/qtl2 also comes with many tests. When starting up with development tools in the R/qtl2 checked out git repo
+
+```sh
+cd qtl2
+guix shell -C -D r r-qtl2 r-devtools make coreutils gcc-toolchain
+make test
+Warning: Your system is mis-configured: '/var/db/timezone/localtime' is not a symlink
+i Testing qtl2
+Error in dyn.load(dll_copy_file) :
+unable to load shared object '/tmp/RtmpWaf4td/pkgload31850824d/qtl2.so': /gnu/store/hs6jjk97kzafl3qn4wkdc8l73bfqqmqh-gfortran-11.4.0-lib/lib/libstdc++.so.6: version `GLIBCXX_3.4.32' not found (required by /tmp/RtmpWaf4td/pkgload31850824d/qtl2.so)
+Calls: <Anonymous> ... <Anonymous> -> load_dll -> library.dynam2 -> dyn.load
+Execution halted
+make: *** [Makefile:9: test] Error 1
+```
+
+not sure what the problem is yet.

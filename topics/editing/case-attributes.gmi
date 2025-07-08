@@ -1,0 +1,110 @@
+# Editing Case-Attributes
+
+## Tags
+
+* type: document
+* keywords: case-attribute, editing
+* assigned: fredm, zachs, acenteno, bonfacem
+* status: requirements gathering
+
+## Introduction
+
+Case-attributes metadata for samples.  They are include: sex, age, etc of the various individuals and exist separately from "normal" traits mainly because they're non-numeric.  From the GN2 traits page, they are shown as extra columns under the "Reviews and Edit Data" section.
+
+Case-attributes are determined at the group-level.  E.g. for BXD, case attributes would apply at the level of each sample, across all BXD data.  Every strain has a unique attribute and it's fixed, not variable.
+
+We need to differentiate these two things:
+
+* Case-Attribute labels/names/categories (e.g. Sex, Height, Cage-handler, etc)
+* Case-Attribute values (e.g. Male/Female, 20cm, Frederick, etc.)
+
+Currently, both labels and values are set at the group level:
+
+=> https://github.com/genenetwork/genenetwork1/blob/0f170f0b748a4e10eaf8538f6bcbf88b573ce8e7/web/webqtl/showTrait/DataEditingPage.py Case-Attributes on GeneNetwork1
+is a good starting point to help with understanding how case-attributes were implemented and how they worked.
+
+Critical bug existed where editing one case-attribute affected all case-attributes defined for a group.
+
+Case attributes can have the following data-types:
+
+* Free-form text (no constraints) - see the `Status` column
+* Enumerations - textual data, but where the user can only pick from specific values
+* Links - The value displayed also acts as a link - e.g. the 'JAX:*' values in the `RRID` column
+
+## HOWTO
+
+Example SQL query to fetch case-attribute data:
+
+```
+SELECT
+	caxrn.*, ca.Name AS CaseAttributeName,
+	ca.Description AS CaseAttributeDescription,
+	iset.InbredSetId AS OrigInbredSetId
+FROM
+	CaseAttribute AS ca INNER JOIN CaseAttributeXRefNew AS caxrn
+	ON ca.Id=caxrn.CaseAttributeId
+INNER JOIN
+      StrainXRef AS sxr
+      ON caxrn.StrainId=sxr.StrainId
+INNER JOIN
+      InbredSet AS iset
+      ON sxr.InbredSetId=iset.InbredSetId
+WHERE
+	caxrn.value != 'x'
+	AND caxrn.value IS NOT NULL;
+```
+
+CaseAttributeXRefNew differs from CaseAttributeXRef:
+
+```
+mysql> describe CaseAttributeXRef;
++------------------+----------------------+------+-----+---------+-------+
+| Field            | Type                 | Null | Key | Default | Extra |
++------------------+----------------------+------+-----+---------+-------+
+| ProbeSetFreezeId | smallint(5) unsigned | NO   | PRI | 0       |       |
+| StrainId         | smallint(5) unsigned | NO   | PRI | 0       |       |
+| CaseAttributeId  | smallint(5)          | NO   | PRI | 0       |       |
+| Value            | varchar(100)         | NO   |     |         |       |
++------------------+----------------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+mysql> describe CaseAttributeXRefNew;
++-----------------+------------------+------+-----+---------+-------+
+| Field           | Type             | Null | Key | Default | Extra |
++-----------------+------------------+------+-----+---------+-------+
+| InbredSetId     | int(5) unsigned  | NO   | PRI | NULL    |       |
+| StrainId        | int(20) unsigned | NO   | PRI | NULL    |       |
+| CaseAttributeId | int(5) unsigned  | NO   | PRI | NULL    |       |
+| Value           | varchar(100)     | NO   |     | NULL    |       |
++-----------------+------------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+```
+
+=> https://github.com/genenetwork/genenetwork3/blob/dd0b29c07017ec398c447ca683dd4b4be18d73b7/scripts/update-case-attribute-tables-20230818 Script to update CaseAttribute and CaseAttributeXRefNew table
+
+## Tasks
+
+* @bmunyoki: Model case-attributes correctly in RDF.
+* @bmunyoki, @zachs: Implement case-attributes editing in GN3 that correctly models case-attributes at the group-level. CRUD operations with the correct authorization.  People who can edit sample data should not be able to edit case-attributes because case-attributes are defined at the group level; and editing case-attributes at the group-level will affect other samples.
+* @rob: Confirm to team whether "N" and "SE" are case-attributes.  @bmunyoki AFAICT, no.
+
+
+Possible set of privileges subject to discussion:
+
+* group:resource:add-case-attributes - Allows user to add a completely new case attribute
+* group:resource:edit-case-attributes - Allows user to edit an existing case attribute
+* group:resource:delete-case-attributes - Allows user to delete an existing case attribute
+* group:resource:view-case-attributes - Allows user to view case attributes and their value
+
+Given groups are not directly linked to any auth resource, we may introduce some level of indirection.  Addy a new resource type that handles groups may solve this.
+
+## See Also
+
+=> https://matrix.to/#/!EhYjlMbZHbGPjmAFbh:matrix.org/$myIoafLp_dIONnyNvEI0k2xf3Y8-LyiI_mkP2vBN08o?via=matrix.org Discussion on Case-Attributes Editing in Matrix
+=> https://matrix.to/#/!EhYjlMbZHbGPjmAFbh:matrix.org/$P6SNnpY-nAZsDr3VZlRi05m6MT32lXBsCl-BYLh-YLM?via=matrix.org More Discussion on Matrix
+=> /issues/case-attr-edit-error Case Attribute Edting Problems
+=> /issues/fix-case-attribute-work Fix Case Attribute Work (Same Columns)
+=> /issues/fix-case-attribute-editing Editing Case Attribute
+=> /issues/consecutive-crud-applications-when-uploading-data Fix Case Attribute Work (Consecutive CRUD applications)
+=> /issues/edit-metadata-bugs Cannot Edit Metadata of BXD Traits Effectively
+=> /topics/data-uploads/datasets Some Historical Context

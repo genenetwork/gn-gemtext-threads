@@ -1,0 +1,18 @@
+# Provide Link to Register User on Sign-In Page
+
+## Tags
+
+* type: bug
+* status: open
+* assigned: fredm
+* priority: medium
+* keywords: register user, gn-auth, genenetwork
+
+## Description
+
+Provide a link allowing a user to register with the system on the sign-in page.
+=> https://matrix.to/#/!mBYtTotZGiPpHmjJnI:matrix.org/$hoJ5Mit09oMO1PSVviwIe5lpQAyeuz7BTOIR--QSu4s?via=matrix.org
+
+We are now using OAuth2 to enable sign-in, which means that the user is redirected from the service they were in to the authorisation service to sign-in.
+
+The service should retain a note of the service which the user came from, and redirect back to it on successful registration.

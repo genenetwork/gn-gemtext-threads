@@ -1,0 +1,30 @@
+# GN3 API Configurations on CD
+
+## Tags
+
+* assigned: alexm, Bonfacem
+* keywords: configurations, CD, API, genenetwork3
+* type: bug
+* priority: high
+* status: closed, completed
+
+## Description
+
+The issue arises in GN3 when the Gunicorn worker dies due to the default 30-second time limit being exceeded. This occurs while polling the Fahamu API from GN3, where response times can occasionally take up to 1 minute.
+
+See error from GN2:
+
+```
+('Connection aborted.', RemoteDisconnected('Remote end closed connection without response')).
+
+
+```
+
+
+Error for worker timeout in GN3:
+
+```
+[2024-01-08 13:35:17 +0300] [32527] [CRITICAL] WORKER TIMEOUT (pid:32661)
+```
+
+Fixing the issue involves adjusting the timeout to 1200, as done in GN2.

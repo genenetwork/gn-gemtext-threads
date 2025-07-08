@@ -1,0 +1,20 @@
+# Add HTML Page for Genotypes
+
+## Tags
+
+* assigned: bonfacem
+* priority: high
+* type: ui
+* keywords: virtuoso
+* status: closed
+
+## Description
+
+Create HTML frontend for Genotype metadata.
+
+## Resolution
+
+=> https://github.com/genenetwork/genenetwork3/pull/145  Update genotype rdf query #145
+=> https://github.com/genenetwork/genenetwork2/pull/826 Update genotype page #826
+
+* closed

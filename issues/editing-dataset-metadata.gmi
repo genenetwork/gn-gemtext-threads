@@ -1,0 +1,29 @@
+# Edit Dataset Metadata
+
+## Tags
+
+* assigned: bonfacem
+* priority: high
+* type: editing
+* status: stalled
+* keywords: metadata editing
+
+## Description
+
+Currently, we can only showcase dataset metadata. This task involves adding a new feature to edit dataset metadata and integrating authentication features.
+
+Some useful resources are:
+
+Alex' work:
+=> https://ace.c9.io/#nav=howto Ace JS HOWTO
+=> https://github.com/Alexanderlacuna/geditor-UI/ geditor-UI
+
+Chosen RTF editor is CKEditor v4.13.0
+
+* [X] Replace QuillJS with CKEditor
+* [X] Check out ckeditor and make it work
+* [X] Add extra endpoint for metadata authorisation
+* [X] Create migrations for metadata resources table
+* [ ] Create UI for linking metadata resources to groups
+* [ ] Add extra RDF nodes to link the git resources to metadata
+

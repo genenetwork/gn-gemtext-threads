@@ -1,0 +1,279 @@
+# Production on tux04
+
+Lately we have been running production on tux04. Unfortunately Debian got broken and I don't see a way to fix it (something with python versions that break apt!). Also mariadb is giving problems:
+
+=> issues/production-container-mechanical-rob-failure.gmi
+
+and that is alarming. We might as well try an upgrade. I created a new partition on /dev/sda4 using debootstrap.
+
+The hardware RAID has proven unreliable on this machine (and perhaps others).
+
+We added a drive on a PCIe raiser outside the RAID. Use this for bulk data copying. We still bootstrap from the RAID.
+
+Luckily not too much is running on this machine and if we mount things again, most should work.
+
+# Tasks
+
+* [X] cleanly shut down mariadb
+* [X] reboot into new partition /dev/sda4
+* [X] git in /etc
+* [X] make sure serial boot works (/etc/default/grub)
+* [X] fix groups and users
+* [X] get guix going
+* [X] get mariadb going
+* [X] fire up GN2 service
+* [X] fire up SPARQL service
+* [X] sheepdog
+* [ ] fix CRON jobs and backups
+* [ ] test full reboots
+
+
+# Boot in new partition
+
+```
+blkid /dev/sda4
+/dev/sda4: UUID="4aca24fe-3ece-485c-b04b-e2451e226bf7" BLOCK_SIZE="4096" TYPE="ext4" PARTUUID="2e3d569f-6024-46ea-8ef6-15b26725f811"
+```
+
+After debootstrap there are two things to take care of: the /dev directory and grub. For good measure
+I also capture some state
+
+```
+cd ~
+ps xau > cron.log
+systemctl > systemctl.txt
+cp /etc/network/interfaces .
+cp /boot/grub/grub.cfg .
+```
+
+we should still have access to the old root partition, so I don't need to capture everything.
+
+## /dev
+
+I ran MAKEDEV and that may not be needed with udev.
+
+## grub
+
+We need to tell grub to boot into the new partition. The old root is on
+UUID=8e874576-a167-4fa1-948f-2031e8c3809f /dev/sda2.
+
+Next I ran
+
+```
+tux04:~$ update-grub2 /dev/sda
+Generating grub configuration file ...
+Found linux image: /boot/vmlinuz-5.10.0-32-amd64
+Found initrd image: /boot/initrd.img-5.10.0-32-amd64
+Found linux image: /boot/vmlinuz-5.10.0-22-amd64
+Found initrd image: /boot/initrd.img-5.10.0-22-amd64
+Warning: os-prober will be executed to detect other bootable partitions.
+Its output will be used to detect bootable binaries on them and create new boot entries.
+Found Debian GNU/Linux 12 (bookworm) on /dev/sda4
+Found Windows Boot Manager on /dev/sdd1@/efi/Microsoft/Boot/bootmgfw.efi
+Found Debian GNU/Linux 11 (bullseye) on /dev/sdf2
+```
+
+Very good. Do a diff on grub.cfg and you see it even picked up the serial configuration. It only shows it added menu entries for the new boot. Very nice.
+
+At this point I feel safe to boot as we should be able to get back into the old partition.
+
+# /etc/fstab
+
+The old fstab looked like
+
+```
+UUID=8e874576-a167-4fa1-948f-2031e8c3809f /               ext4    errors=remount-ro 0       1
+# /boot/efi was on /dev/sdc1 during installation
+UUID=998E-68AF  /boot/efi       vfat    umask=0077      0       1
+# swap was on /dev/sdc3 during installation
+UUID=cbfcd84e-73f8-4cec-98ee-40cad404735f none            swap    sw              0       0
+UUID="783e3bd6-5610-47be-be82-ac92fdd8c8b8"   /export2    ext4   auto     0   2
+UUID="9e6a9d88-66e7-4a2e-a12c-f80705c16f4f"   /export     ext4   auto     0   2
+UUID="f006dd4a-2365-454d-a3a2-9a42518d6286"   /export3    auto   auto     0   2
+/export2/gnu /gnu none defaults,bind 0 0
+# /dev/sdd1: PARTLABEL="bulk" PARTUUID="b1a820fe-cb1f-425e-b984-914ee648097e"
+# /dev/sdb4   /export   ext4    auto   0       2
+# /dev/sdd1   /export2   ext4    auto   0       2
+```
+
+# reboot
+
+Next we are going to reboot, and we need a serial connector to the Dell out-of-band using racadm:
+
+```
+ssh IP
+console com2
+racadm getsel
+racadm serveraction powercycle
+racadm serveraction powerstatus
+
+```
+
+Main trick it so hit ESC, wait 2 sec and 2 when you want the bios boot menu. Ctrl-\ to escape console. Otherwise ESC (wait) ! to get to the boot menu.
+
+# First boot
+
+It still boots by default into the old root. That gave an error:
+
+[FAILED] Failed to start File Syste…a-2365-454d-a3a2-9a42518d6286
+
+This is /export3. We can fix that later.
+
+When I booted into the proper partition the console clapped out. Also the racadm password did not work on tmux -- I had to switch to a standard console to log in again. Not sure why that is, but next I got:
+
+```
+Give root password for maintenance
+(or press Control-D to continue):
+```
+
+and giving the root password I was in maintenance mode on the correct partition!
+
+To rerun grup I had to add `GRUB_DISABLE_OS_PROBER=false`.
+
+Once booting up it is a matter of mounting partitions and tick the check boxes above.
+
+The following contained errors:
+
+```
+/dev/sdd1       3.6T  1.8T  1.7T  52% /export2
+```
+
+# Guix
+
+Getting guix going is a bit tricky because we want to keep the store!
+
+```
+cp -vau /mnt/old-root/var/guix/ /var/
+cp -vau /mnt/old-root/usr/local/guix-profiles /usr/local/
+cp -vau /mnt/old-root/usr/local/bin/* /usr/local/bin/
+cp -vau /mnt/old-root/etc/systemd/system/guix-daemon.service* /etc/systemd/system/
+cp -vau /mnt/old-root/etc/systemd/system/gnu-store.mount* /etc/systemd/system/
+```
+
+Also had to add guixbuild users and group by hand.
+
+# nginx
+
+We use the streaming facility. Check that
+
+```
+nginx -V
+```
+
+lists --with-stream=static, see
+
+=> https://serverfault.com/questions/858067/unknown-directive-stream-in-etc-nginx-nginx-conf86/858074#858074
+
+and load at the start of nginx.conf:
+
+```
+load_module /usr/lib/nginx/modules/ngx_stream_module.so;
+```
+
+and
+
+```
+nginx -t
+```
+
+passes
+
+Now the container responds to the browser with `Internal Server Error`.
+
+# container web server
+
+Visit the container with something like
+
+```
+nsenter -at 2838 /run/current-system/profile/bin/bash --login
+```
+
+The nginx log in the container has many
+
+```
+2025/02/22 17:23:48 [error] 136#0: *166916 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: genenetwork.org, request: "GET /gn3/gene/aliases/st%2029:1;o;s HTTP/1.1", upstream: "http://127.0.0.1:9800/gene/aliases/st%2029:1;o;s", host: "genenetwork.org"
+```
+
+that is interesting. Acme/https is working because GN2 is working:
+
+```
+curl https://genenetwork.org/api3/version
+"1.0"
+```
+
+Looking at the logs it appears it is a redis problem first for GN2.
+
+Fred builds the container with `/home/fredm/opt/guix-production/bin/guix`. Machines are defined in
+
+```
+fredm@tux04:/export3/local/home/fredm/gn-machines
+```
+
+The shared dir for redis is at
+
+--share=/export2/guix-containers/genenetwork/var/lib/redis=/var/lib/redis
+
+with
+
+```
+root@genenetwork-production /var# ls lib/redis/ -l
+-rw-r--r-- 1 redis redis 629328484 Feb 22 17:25 dump.rdb
+```
+
+In production.scm it is defined as
+
+```
+(service redis-service-type
+         (redis-configuration
+          (bind "127.0.0.1")
+          (port 6379)
+          (working-directory "/var/lib/redis")))
+```
+
+The defaults are the same as the definition of redis-service-type (in guix). Not sure why we are duplicating.
+
+After starting redis by hand I get another error `500 DatabaseError: The following exception was raised while attempting to access http://auth.genenetwork.org/auth/data/authorisation: database disk image is malformed`. The problem is it created
+a DB in the wrong place. Alright, the logs in the container say:
+
+```
+Feb 23 14:04:31 genenetwork-production shepherd[1]: [redis-server] 3977:C 23 Feb 2025 14:04:31.040 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+Feb 23 14:04:31 genenetwork-production shepherd[1]: [redis-server] 3977:C 23 Feb 2025 14:04:31.040 # Redis version=7.0.12, bits=64, commit=00000000, modified=0, pid=3977, just started
+Feb 23 14:04:31 genenetwork-production shepherd[1]: [redis-server] 3977:C 23 Feb 2025 14:04:31.040 # Configuration loaded
+Feb 23 14:04:31 genenetwork-production shepherd[1]: [redis-server] 3977:M 23 Feb 2025 14:04:31.041 * Increased maximum number of open files to 10032 (it was originally set to 1024).
+Feb 23 14:04:31 genenetwork-production shepherd[1]: [redis-server] 3977:M 23 Feb 2025 14:04:31.041 * monotonic clock: POSIX clock_gettime
+Feb 23 14:04:31 genenetwork-production shepherd[1]: [redis-server] 3977:M 23 Feb 2025 14:04:31.041 * Running mode=standalone, port=6379.
+Feb 23 14:04:31 genenetwork-production shepherd[1]: [redis-server] 3977:M 23 Feb 2025 14:04:31.042 # Server initialized
+Feb 23 14:04:31 genenetwork-production shepherd[1]: [redis-server] 3977:M 23 Feb 2025 14:04:31.042 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+Feb 23 14:04:31 genenetwork-production shepherd[1]: [redis-server] 3977:M 23 Feb 2025 14:04:31.042 # Wrong signature trying to load DB from file
+Feb 23 14:04:31 genenetwork-production shepherd[1]: [redis-server] 3977:M 23 Feb 2025 14:04:31.042 # Fatal error loading the DB: Invalid argument. Exiting.
+Feb 23 14:04:31 genenetwork-production shepherd[1]: Service redis (PID 3977) exited with 1.
+```
+
+This is caused by a newer version of redis. This is odd because we are using the same version from the container?!
+
+Actually it turned out the redis DB was corrupted on the SSD! Same for some other databases (ugh).
+
+Fred copied all data to an enterprise level storage, and we rolled back to some older DBs, so hopefully we'll be OK for now.
+
+# Reinstating backups
+
+In the next step we need to restore backups as described in
+
+=> /topics/systems/backups-with-borg
+
+I already created an ibackup user. Next we test the backup script for mariadb.
+
+One important step is to check the database:
+
+```
+/usr/bin/mariadb-check -c -u user -p* db_webqtl
+```
+
+A successful mariadb backup consists of multiple steps
+
+```
+2025-02-27 11:48:28 +0000 (ibackup@tux04) SUCCESS 0 <32m43s> mariabackup-dump
+2025-02-27 11:48:29 +0000 (ibackup@tux04) SUCCESS 0 <00m00s> mariabackup-make-consistent
+2025-02-27 12:16:37 +0000 (ibackup@tux04) SUCCESS 0 <28m08s> borg-tux04-sql-backup
+2025-02-27 12:16:46 +0000 (ibackup@tux04) SUCCESS 0 <00m07s> drop-rsync-balg01
+```

@@ -1,0 +1,34 @@
+# Markdown Editing Service: Not Deployed
+
+## Tags
+
+* type: bug
+* status: open
+* assigned: fredm
+* priority: critical
+* keywords: production, container, tux04
+* interested: alexk, aruni, bonfacem, fredm, pjotrp, zsloan
+
+## Description
+
+The Markdown Editing service is not working on production.
+
+* Link: https://genenetwork.org/facilities/
+* Repository: https://git.genenetwork.org/gn-guile
+
+Currently, the code is being run directly on the host, rather than inside the container.
+
+Some important things to note:
+
+* The service requires access to a checkout of https://github.com/genenetwork/gn-docs
+* Currently, the service is hard-coded to use a specific port: we should probably fix that.
+
+## Reopened: 2024-11-01
+
+While the service was deployed, the edit functionality is not working right, specifically, pushing the edits upstream to the remote seems to fail.
+
+If you do an edit and refresh the page, it will show up in the system, but it will not proceed to be pushed up to the remote.
+
+Set `CGIT_REPO_PATH="https://git.genenetwork.org/gn-guile"` which seems to allow the commit to work, but we do not actually get the changes pushed to the remote in any useful sense.
+
+It seems to me, that we need to configure the environment in such a way that it will be able to push the changes to remote.

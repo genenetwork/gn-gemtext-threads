@@ -1,0 +1,74 @@
+# GNQA Integration to Global Search Design Proposal
+
+## Tags
+* assigned: jnduli, alexm
+* keywords: llm, genenetwork2
+* type: feature
+* status: complete, closed, done 
+
+## Description
+This document outlines the design proposal for integrating GNQA into the Global Search feature.
+
+## High-Level Design
+
+### UI Design
+When the GN2 Global Search page loads:
+1. A request is initiated via HTMX to the GNQA search page with the search query.
+2. Based on the results, a page or subsection is rendered, displaying the query and the answer, and providing links to references.
+
+For more details on the UI design, refer to the pull request: 
+=> https://github.com/genenetwork/genenetwork2/pull/862
+
+### Backend Design
+The API handles requests to the Fahamu API and manages result caching. Once a request to the Fahamu API is successful, the results are cached using SQLite for future queries. Additionally, a separate API is provided to query cached results.
+
+## Deep Dive
+
+### Caching Implementation
+For caching, we will use SQLite3 since it is already implemented for search history. Based on our study, this approach will require minimal space:
+
+*Statistical Estimation:*  
+We calculated that this caching solution would require approximately 79MB annually for an estimated 20 users, each querying the system 5 times a day.
+
+Why average request size per user and how we determined this?
+The average request size was an upper bound calculation for documents returned from the Fahamu API.
+
+why we're assuming 20 users making 5 requests per day?
+
+We’re assuming 20 users making 5 requests per day to estimate typical usage of GN2 services
+### Error Handling
+* Handle cases where users are not logged in, as GNQA requires authentication.
+* Handle scenarios where there is no response from Fahamu.
+* Handle general errors.
+
+### Passing Questions to Fahamu
+We can choose to either pass the entire query from the user to Fahamu or parse the query to search for keywords.
+
+### Generating Possible Questions
+It is possible to generate potential questions based on the user's search and render those to Fahamu. Fahamu would then return possible related queries.
+
+## Related Issues
+=> https://issues.genenetwork.org/issues/gn_llm_integration_using_cached_searches
+
+## Tasks
+
+* [x] Initiate a background task from HTMX to Fahamu once the search page loads.
+* [x] Query Fahamu for data.
+* [x] Cache results from Fahamu.
+* [x] Render the UI page with the query and answer.
+* [x] For "See more," render the entire GNQA page with the query, answer, references, and PubMed data.
+* [x] Implement parsing for Xapian queries to normal queries.
+* [x] Implement error handling.
+* [x] reimplement how gnqa uses GN-AUTH in  gn3.
+* [x] Query Fahamu to generate possible questions based on certain keywords.
+
+
+## Notes
+From  the latest Fahamu API docs, they have implemented a way to include subquestions by setting `amplify=True` for the POST request. We also have our own implementation for parsing text to extract questions.
+
+## PRs Merged Related to This
+
+=> https://github.com/genenetwork/genenetwork2/pull/868
+=> https://github.com/genenetwork/genenetwork2/pull/862
+=> https://github.com/genenetwork/genenetwork2/pull/867
+=> https://github.com/genenetwork/genenetwork3/pull/191

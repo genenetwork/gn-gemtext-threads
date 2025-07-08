@@ -2,6 +2,9 @@
 
 In this file we track tasks that need to be done.
 
+Tuxes still have some 30x 2.5" slots.
+Lambda has            18x 2.5" slots.
+
 # Tasks
 
 * [X] get lizardfs and NFS going on tuxes tux06-09

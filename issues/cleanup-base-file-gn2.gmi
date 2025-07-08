@@ -1,0 +1,30 @@
+# Cleanup GN2 Base HTML File
+
+## Tags
+
+* Assigned: alexm
+* Keywords: base, HTML, JavaScript, cleanup
+* type: Refactoring
+* Status: closed, completed, done 
+
+## Description
+
+The base file should contain no custom JavaScript since it is inherited in almost all files in GN2. It should only include what is necessary. As a result, we need to move the global search from the base file to the index page, which renders the GN2 home.
+
+## Tasks
+
+* [x] Remove global search code from the base file and move it to the index page
+* [x] Fix formatting and linting issues in the base file (e.g., tags)
+* [x]  Inherit from index page for all gn2 templates
+
+
+## Notes
+
+See the PR that seeks to fix this:
+=> https://github.com/genenetwork/genenetwork2/pull/877
+
+## Notes 26/09/2024
+
+It was agreed that global search should be a feature for all pages,
+As such all files need to inherit from the global search which
+defines the global search.

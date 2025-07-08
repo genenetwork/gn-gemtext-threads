@@ -1,0 +1,47 @@
+# Data Integrity for Table Identifiers
+
+## Tags
+
+* type: bug
+* assigned: fredm
+* priority: critical
+* status: closed, completed
+* keywords: data integrity, mariadb, gn-uploader
+
+## Description
+
+The use of
+
+```
+SELECT MAX(Id) FROM …
+```
+
+to get the identifier for a new row is not very robust, especially for auto-increment fields.
+
+It also leads to problems when we have tables that have multiple identifiers, e.g table 'InbredSet' with identifiers 'Id' and 'InbredSetId'.
+
+Instead, we need to do something like:
+
+```
+︙
+cursor.execute("INSERT INTO InbredSet(…) …")
+new_id = cursor.lastrowid
+cursor.execute("UPDATE InbredSet SET InbredSetId=%s WHERE Id=%s",
+               (new_id, new_id))
+︙
+```
+
+To see the modules that need to be updated, do
+
+```
+$ cd /path/to/gn-uploader/
+$ find ./ -name '*.py' -print0 | xargs --no-run-if-empty --null --max-procs=7 grep 'MAX(Id)'
+```
+
+The changes proposed above only work for single inserts; it will not work for `executemany()` calls like those present in the following files:
+
+* scripts/insert_data.py
+* scripts/rqtl2/install_phenos.py
+* scripts/rqtl2/install_genotypes.py
+
+For these, we have to retain the `SELECT MAX(Id) …` form.
