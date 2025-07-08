@@ -15,6 +15,26 @@ Recent events (Late 2024 and early 2025) have led to us needing to move the prod
 
 In this respect, a number of tasks rise to the front as necessary to accomplish for a successful migration. Each of the following sections will detail a task that's necessary for a successful migration.
 
+## Copy Over Auth Database
+
+We need to synchronise the authorisation database. We can copy this over from the production system, or the backups
+
+* TODO: Indicate where the backups for the auth database are here!
+
+Steps (flesh out better):
+
+- Extract backup (or copy from existing production system)
+- Stop the (new) container (if it's running)
+- Backup the (new) container's auth-db file (
+- Place the auth db file in the correct place in the container's filesystem:
+- Backup existing secrets
+- Login to the `/auth/admin/dashboard` of the auth server (e.g. https://cd.genenetwork.org/auth/admin/dashboard)
+- If client with the CLIENT_ID in the secrets exists
+- 1. update the uris for that client, if it doesn't exist, create an entirely new client and replace both the CLIENT_ID and CLIENT_SECRET in the secrets file.
+- 2. Click on the "Change Secret" button and generate a new secret. Replace the secret in the secrets file with the newly generated secret
+- If client with the CLIENT_ID in the secrets DOES NOT exist, register a new client, setting up the appropriate URIs and endpoints, and then add/replace both the CLIENT_ID and CLIENT_SECRET in the secrets file.
+- Restart (new) container
+
 ## Set Up the Database
 
 * Extract: detail this — link to existing document in this repo. Also, probably note that we symlink the extraction back to `/var/lib/mysql`?
