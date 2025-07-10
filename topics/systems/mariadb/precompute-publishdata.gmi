@@ -1,0 +1,347 @@
+# Precompute PublishData
+
+Based on the QTL_Reaper_cal_lrs.py aka QTL_Reaper_v8_PublishXRef.py. This script simply updates PublishXRef table with a highest hit as computed by qtlreaper.
+
+In a first attempt to update the database we are going to do just that using GEMMA.
+
+For the new script we will pass in the genotype file as well as the phenotype file, so gemma-wrapper can process it. I wrote quite a few scripts already
+
+=> https://github.com/genetics-statistics/gemma-wrapper/tree/master/bin
+
+So we can convert a .geno file to BIMBAM. I need to extract GN traits to a R/qtl2 or lmdb trait format file and use that as input.
+
+* [X] Visit use of PublishXRef
+* [X] geno -> BIMBAM (BXD first)
+* [ ] Get PublishData trait(s) and convert to gemma, R/qtl2 or lmdb
+* - [ ] see scripts/lmdb-publishdata-export.scm
+* - [ ] Same for ProbeSetData
+* [ ] Run gemma-wrapper
+* [ ] Update PublishXRef and store old reaper value(?)
+
+For the last we should probably add a few columns. Initially we'll only store the maximum hit.
+
+After
+
+* [ ] provide distributed storage of files using https
+
+# Visit use of PublishXRef
+
+In GN2 this table is used in search, auth, and router. For search it is to look for trait hits (logically). For the router it is to fetch train info as well as dataset info.
+
+In GN3 this table is used for partial correlations. Also to fetch API trait info and to build the search index.
+
+In GN1 usage is similar.
+
+# geno -> BIMBAM
+
+We can use the script in gemma-wrapper
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/gn-geno-to-gemma.py
+
+there is probably something similar in GN2. And I have another version somewhere.
+
+To identify the geno file the reaper script uses
+
+```python
+cursor.execute('select Id, Name from InbredSet')
+results = cursor.fetchall()
+InbredSets = {}
+for item in results:
+	InbredSets[item[0]] = genotypeDir+str(item[1])+'.geno'
+```
+
+which assumes one single geno file for the BXD that is indexed by the InbredSetID (a number). Note it ignores the many genotype files we have per inbredset (today). Also there is a funny hardcoded
+
+```python
+	if InbredSetId==3:
+		InbredSetId=1
+```
+
+(no comment).
+
+Later we'll output to lmdb when GEMMA supports it.
+
+There are about 100 InbredSets. Genotype files can be found on production in
+/export/guix-containers/genenetwork/var/genenetwork/genotype-files/genotype. For the BXD alone there are
+
+```
+BXD.2.geno               BXD-Heart-Metals_old.geno   BXD-Micturition.6.geno
+BXD.4.geno               BXD-JAX-AD.4.geno           BXD-Micturition.8.geno
+BXD.5.geno               BXD-JAX-AD.8.geno           BXD-Micturition.geno
+BXD.6.geno               BXD-JAX-AD.geno             BXD-Micturition_old.4.geno
+BXD.7.geno               BXD-JAX-AD_old.geno         BXD-Micturition_old.6.geno
+BXD.8.geno               BXD-JAX-OFS.geno            BXD-Micturition_old.geno
+BXD-AE.4.geno            BXD-Longevity.4.geno        BXD_mm8.geno
+BXD-AE.8.geno            BXD-Longevity.8.geno        BXD-NIA-AD.4.geno
+BXD-AE.geno              BXD-Longevity.9.geno        BXD-NIA-AD.8.geno
+BXD-AE_old.geno          BXD-Longevity.array.geno    BXD-NIA-AD.geno
+BXD-Bone.geno            BXD-Longevity.classic.geno  BXD-NIA-AD_old2.geno
+BXD-Bone_orig.geno       BXD-Longevity.geno          BXD-NIA-AD_old.geno
+BXD.geno                 BXD-Longevity_old.4.geno    BXD_Nov_23_2010_before_polish_101_102_103.geno
+BXD-Harvested.geno       BXD-Longevity_old.8.geno    BXD_Nov_24_2010_before_polish_55_81.geno
+BXD-Heart-Metals.4.geno  BXD-Longevity_old.geno      BXD_old.geno
+BXD-Heart-Metals.8.geno  BXD-MBD-UTHSC.geno          BXD_unsure.geno
+BXD-Heart-Metals.geno    BXD-Micturition.4.geno      BXD_UT-SJ.geno
+```
+
+Not really reflected in the DB:
+
+```
+MariaDB [db_webqtl]> select Id, Name from InbredSet where name like '%BXD%';
++----+------------------+
+| Id | Name             |
++----+------------------+
+|  1 | BXD              |
+| 58 | BXD-Bone         |
+| 64 | BXD-Longevity    |
+| 68 | BXD_Dev          |
+| 76 | DOD-BXD-GWI      |
+| 84 | BXD-Heart-Metals |
+| 86 | BXD-AE           |
+| 91 | BXD-Micturition  |
+| 92 | BXD-JAX-AD       |
+| 93 | BXD-NIA-AD       |
+| 94 | CCBXD-TM         |
+| 96 | BXD-JAX-OFS      |
+| 97 | BXD-MBD-UTHSC    |
++----+------------------+
+```
+
+Bit of a mess. Looks like some files are discarded. Let's see what the reaper script does.
+
+We should also look into distributed storage. One option is webdav.
+
+# Get PublishData trait(s) and convert to R/qtl2 or lmdb
+
+Let's see how the scripts do it. Note that we already did that for the probeset script in
+
+=> precompute-mapping-input-data
+
+The code is reflected in
+
+=> https://git.genenetwork.org/gn-guile/tree/scripts/precompute/list-traits-to-compute.scm
+
+Now I need to do the exact same thing, but for PublishData.
+
+Let's connect to a remote GN DB:
+
+```
+ssh -L 3306:127.0.0.1:3306 -f -N tux02.genenetwork.org
+```
+
+and follow
+
+=> https://github.com/genenetwork/genenetwork2/blob/testing/scripts/maintenance/QTL_Reaper_v8_PublishXRef.py
+
+the script takes a number of values 'PublishFreezeIds'. Alternatively it picks it up by SpeciesId (hard effing coded, of course).
+
+=> https://github.com/genenetwork/genenetwork2/blob/fcde38b0f37f12508a01b16b7820029aa951bded/scripts/maintenance/QTL_Reaper_v8_PublishXRef.py#L62
+
+Next it picks the geno file from the InbredSetID with
+
+```
+select InbredSetId  from PublishFreeze  where PublishFreeze.Id = 1;
+```
+
+Here we are initially going to focus on BXD=1 datasets only.
+
+```
+MariaDB [db_webqtl]> select Id,InbredSetId  from PublishFreeze  where InbredSetId = 1;
++----+-------------+
+| Id | InbredSetId |
++----+-------------+
+|  1 |           1 |
++----+-------------+
+```
+
+(we are half way the script now). Next we capture some metadata
+
+```
+MariaDB [db_webqtl]> select PhenotypeId, Locus, DataId, Phenotype.Post_publication_description from PublishXRef, Phenotype where PublishXRef.PhenotypeId = Phenotype.Id and InbredSetId=1 limit 5;
++-------------+----------------+---------+----------------------------------------------------------------------------------------------------------------------------+
+| PhenotypeId | Locus          | DataId  | Post_publication_description                                                                                               |
++-------------+----------------+---------+----------------------------------------------------------------------------------------------------------------------------+
+|           4 | rs48756159     | 8967043 | Central nervous system, morphology: Cerebellum weight, whole, bilateral in adults of both sexes [mg]                       |
+|          10 | rsm10000005699 | 8967044 | Central nervous system, morphology: Cerebellum weight after adjustment for covariance with brain size [mg]                 |
+|          15 | rsm10000013713 | 8967045 | Central nervous system, morphology: Brain weight, male and female adult average, unadjusted for body weight, age, sex [mg] |
+|          20 | rs48756159     | 8967046 | Central nervous system, morphology: Cerebellum volume [mm3]                                                                |
+|          25 | rsm10000005699 | 8967047 | Central nervous system, morphology: Cerebellum volume, adjusted for covariance with brain size [mm3]                       |
++-------------+----------------+---------+----------------------------------------------------------------------------------------------------------------------------+
+```
+
+it captures LRS
+
+```
+MariaDB [db_webqtl]> select LRS from PublishXRef where PhenotypeId=4 and InbredSetId=1;
++--------------------+
+| LRS                |
++--------------------+
+| 13.497491147108706 |
++--------------------+
+```
+
+and finally the trait values that are used for mapping
+
+```
+select Strain.Name, PublishData.value from Strain, PublishData where Strain.Id = PublishData.StrainId and PublishData.Id = 8967043;
++-------+-----------+
+| Name  | value     |
++-------+-----------+
+| BXD1  | 61.400002 |
+| BXD2  | 49.000000 |
+| BXD5  | 62.500000 |
+| BXD6  | 53.099998 |
+| BXD8  | 59.099998 |
+| BXD9  | 53.900002 |
+| BXD11 | 53.099998 |
+| BXD12 | 45.900002 |
+| BXD13 | 48.400002 |
+| BXD14 | 49.400002 |
+| BXD15 | 47.400002 |
+| BXD16 | 56.299999 |
+| BXD18 | 53.599998 |
+| BXD19 | 50.099998 |
+| BXD20 | 48.200001 |
+| BXD21 | 50.599998 |
+| BXD22 | 53.799999 |
+| BXD23 | 48.599998 |
+| BXD24 | 54.900002 |
+| BXD25 | 49.599998 |
+| BXD27 | 47.400002 |
+| BXD28 | 51.500000 |
+| BXD29 | 50.200001 |
+| BXD30 | 53.599998 |
+| BXD31 | 49.700001 |
+| BXD32 | 56.000000 |
+| BXD33 | 52.099998 |
+| BXD34 | 53.700001 |
+| BXD35 | 49.700001 |
+| BXD36 | 44.500000 |
+| BXD38 | 51.099998 |
+| BXD39 | 54.900002 |
+| BXD40 | 49.900002 |
+| BXD42 | 59.400002 |
++-------+-----------+
+```
+
+Note that we need to filter out the parents - the original reaper script does not do that! My gn-guile code does handle that:
+
+```
+SELECT StrainId,Strain.Name FROM Strain, StrainXRef WHERE StrainXRef.StrainId = Strain.Id AND StrainXRef.InbredSetId =1 AND Used_for_mapping<>'Y' limit 5;
++----------+----------+
+| StrainId | Name     |
++----------+----------+
+|        1 | B6D2F1   |
+|        2 | C57BL/6J |
+|        3 | DBA/2J   |
+|      150 | A/J      |
+|      151 | AXB1     |
++----------+----------+
+etc.
+```
+
+Also Bonz' script
+
+=> https://git.genenetwork.org/gn-guile/tree/scripts/lmdb-publishdata-export.scm
+
+has an interesting query:
+
+```
+MariaDB [db_webqtl]> SELECT DISTINCT PublishFreeze.Name, PublishXRef.Id FROM PublishData INNER JOIN Strain ON PublishData.StrainId = Strain.Id INNER JOIN PublishXRef ON PublishData.Id = PublishXRef.DataId INNER JOIN PublishFreeze ON PublishXRef.InbredSetId = PublishFreeze.InbredSetId LEFT JOIN PublishSE ON     PublishSE.DataId = PublishData.Id AND     PublishSE.StrainId = PublishData.StrainId LEFT JOIN NStrain ON     NStrain.DataId = PublishData.Id AND     NStrain.StrainId = PublishData.StrainId WHERE     PublishFreeze.public > 0 AND     PublishFreeze.confidentiality < 1 ORDER BY     PublishFreeze.Id, PublishXRef.Id limit 5;
++------------+-------+
+| Name       | Id    |
++------------+-------+
+| BXDPublish | 10001 |
+| BXDPublish | 10002 |
+| BXDPublish | 10003 |
+| BXDPublish | 10004 |
+| BXDPublish | 10005 |
++------------+-------+
+5 rows in set (0.239 sec)
+```
+
+that shows we have 13689 BXDPublish datasets. It also has
+
+```
+SELECT
+JSON_ARRAYAGG(JSON_ARRAY(Strain.Name, PublishData.Value)) AS data,
+ MD5(JSON_ARRAY(Strain.Name, PublishData.Value)) as md5hash
+FROM
+    PublishData
+    INNER JOIN Strain ON PublishData.StrainId = Strain.Id
+    INNER JOIN PublishXRef ON PublishData.Id = PublishXRef.DataId
+    INNER JOIN PublishFreeze ON PublishXRef.InbredSetId = PublishFreeze.InbredSetId
+LEFT JOIN PublishSE ON
+    PublishSE.DataId = PublishData.Id AND
+    PublishSE.StrainId = PublishData.StrainId
+LEFT JOIN NStrain ON
+    NStrain.DataId = PublishData.Id AND
+    NStrain.StrainId = PublishData.StrainId
+WHERE
+    PublishFreeze.Name = "BXDPublish" AND
+    PublishFreeze.public > 0 AND
+    PublishData.value IS NOT NULL AND
+    PublishFreeze.confidentiality < 1
+ORDER BY
+    LENGTH(Strain.Name), Strain.Name LIMIT 5;
+```
+
+best to pipe that to a file. It outputs JSON and an MD5SUM straight from mariadb. Interesting.
+
+Finally, let's have a look at the existing GN API
+
+```
+SELECT
+                            Strain.Name, Strain.Name2, PublishData.value, PublishData.Id, PublishSE.error, NStrain.count
+                        FROM
+                            (PublishData, Strain, PublishXRef, PublishFreeze)
+                        LEFT JOIN PublishSE ON
+                            (PublishSE.DataId = PublishData.Id AND PublishSE.StrainId = PublishData.StrainId)
+                        LEFT JOIN NStrain ON
+                            (NStrain.DataId = PublishData.Id AND
+                            NStrain.StrainId = PublishData.StrainId)
+                        WHERE
+                            PublishXRef.InbredSetId = 1 AND
+                            PublishXRef.PhenotypeId = 4 AND
+                            PublishData.Id = PublishXRef.DataId AND
+                            PublishData.StrainId = Strain.Id AND
+                            PublishXRef.InbredSetId = PublishFreeze.InbredSetId AND
+                            PublishFreeze.public > 0 AND
+                            PublishFreeze.confidentiality < 1
+                        ORDER BY
+                            Strain.Name;
+ +-------+-------+-----------+---------+-------+-------+
+| Name  | Name2 | value     | Id      | error | count |
++-------+-------+-----------+---------+-------+-------+
+| BXD1  | BXD1  | 61.400002 | 8967043 |  2.38 | NULL  |
+| BXD11 | BXD11 | 53.099998 | 8967043 |   1.1 | NULL  |
+| BXD12 | BXD12 | 45.900002 | 8967043 |  1.09 | NULL  |
+| BXD13 | BXD13 | 48.400002 | 8967043 |  1.63 | NULL  |
+...
+```
+
+which actually blocks non-public sets and shows std err, as well as counts when available(?) It does not exclude the parents for mapping (btw). That probably happens on the mapping page itself.
+
+Probably the most elegant query is in GN3 API:
+
+```
+SELECT st.Name, ifnull(pd.value, 'x'), ifnull(ps.error, 'x'), ifnull(ns.count, 'x')
+    FROM PublishFreeze pf JOIN PublishXRef px ON px.InbredSetId = pf.InbredSetId
+        JOIN PublishData pd ON pd.Id = px.DataId JOIN Strain st ON pd.StrainId = st.Id
+        LEFT JOIN PublishSE ps ON ps.DataId = pd.Id AND ps.StrainId = pd.StrainId
+        LEFT JOIN NStrain ns ON ns.DataId = pd.Id AND ns.StrainId = pd.StrainId
+    WHERE px.PhenotypeId = 4 limit 5;
++------+-----------------------+-----------------------+-----------------------+
+| Name | ifnull(pd.value, 'x') | ifnull(ps.error, 'x') | ifnull(ns.count, 'x') |
++------+-----------------------+-----------------------+-----------------------+
+| BXD1 | 61.400002             | 2.38                  | x                     |
+| BXD2 | 49.000000             | 1.25                  | x                     |
+| BXD5 | 62.500000             | 2.32                  | x                     |
+| BXD6 | 53.099998             | 1.22                  | x                     |
+| BXD8 | 59.099998             | 2.07                  | x                     |
++------+-----------------------+-----------------------+-----------------------+
+```
+
+written by Zach and Bonface. See
+
+=> https://github.com/genenetwork/genenetwork3/blame/main/gn3/db/sample_data.py
