@@ -80,7 +80,7 @@ To enter the running container shell, ensure you're using the *parent* PID of th
 Use this command to locate the correct container parent process: 
 
 ```
-ps -u root -f --forest | grep -A4 '/usr/local/bin/genenetwork-local-container' | grep shepherd
+ps -u root -f --forest | grep -A4 '/usr/local/bin/genenetwork-development-container' | grep shepherd
 ```
 
 
