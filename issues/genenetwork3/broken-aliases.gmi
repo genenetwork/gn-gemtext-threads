@@ -5,20 +5,31 @@
 * type: bug
 * status: open
 * priority: high
-* assigned: fredm
+* assigned: pjotrp
 * interested: pjotrp
 * keywords: aliases, aliases server
+
+## Tasks
+
+* [X] Rewrite server in gn-guile
+* [+] Deploy and test aliases in GN2
+* [ ] Fix menu search
+* [ ] Fix global search aliases
 
 ## Repository
 
 => https://github.com/genenetwork/gn3
+
+moved to
+
+gn-guile repo.
 
 ## Bug Report
 
 ### Actual
 
 * Go to https://genenetwork.org/gn3/gene/aliases2/Shh,Brca2
-* Not that an exception is raised, with a "404 Not Found" message
+* Note that an exception is raised, with a "404 Not Found" message
 
 ### Expected
 
@@ -131,3 +142,20 @@ def edit_gn_doc_file():
 
 Running over localhost. This is unfortunately hard coded, and we should change that! In guix system
 configuration it is already a variable as 'genenetwork-configuration-gn-guile-port 8091'. gn-guile should also be visible from outside, so that is a separate configuration.
+
+Also I note that the mapping page does three requests to wikidata (for mouse, rat and human). That could really be one.
+
+# Search
+
+Aliases are also used in search. You can tell when GN search renders too few results that aliases are not used. When aliases work we expect to list '2310010I16Rik' with
+
+=> https://genenetwork.org/search?species=mouse&group=BXD&type=Hippocampus+mRNA&dataset=HC_M2_0606_P&search_terms_or=sh*&search_terms_and=&FormID=searchResult
+
+Sheepdog tests for that and it has been failing for a while.
+
+Global search finds way more results, but also lacks that alias! Meanwhile GN1 does find that alias for record  1431728_at. GN2 finds it with hippocampus mRNA
+
+=> https://genenetwork.org/search?species=mouse&group=BXD&type=Hippocampus+mRNA&dataset=HC_M2_0606_P&search_terms_or=1431728_at%0D%0A&search_terms_and=&accession_id=None&FormID=searchResult
+
+in standard search.
+But neither 1431728_at or '2310010I16Rik' has a hit in *global* search and the result for Ssh should include the record in both search systems.
