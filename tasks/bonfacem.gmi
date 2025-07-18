@@ -20,8 +20,6 @@
 
 ### This week
 * [ ] Talk to Fred and hand over case-attributes.
-* [ ] Distinct admin and dev user. [w/ Fred]
-*     - Extra fluff to grant dev user access to everything.
 * [ ] Dump DO and BXD into LMDB
 * [ ] Adapter to LMDB into a cross object.
 *     - Try computations with R/qtl2
@@ -31,7 +29,8 @@
 * [ ] Dump all genotypes from production to LMDB.
 *     - PJ sync tux01 genotypes with tux02/04.
 *     - Yet to set-up 2FA on new device.
-
+* [ ] Distinct admin and dev user. [w/ Fred]
+*     - Extra fluff to grant dev user access to everything.
 
 ### Later
 * [ ] Editing genotype metadata
