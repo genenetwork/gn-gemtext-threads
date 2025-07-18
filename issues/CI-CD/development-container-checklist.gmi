@@ -1,0 +1,101 @@
+# Deploying GeneNetwork CD
+
+## Prerequisites
+
+Ensure you have `fzf' installed and Guix is set up with your preferred channel configuration. 
+
+
+## Step 1: Pull the Latest Profiles
+
+```
+guix pull -C channels.scm -p ~/.guix-extra-profiles/gn-machines --allow-downgrades
+guix pull -C channels.scm -p ~/.guix-extra-profiles/gn-machines-shepherd-upgrade --allow-downgrades
+```
+
+
+## Step 2: Source the Correct Profile
+
+```
+. ,choose-profile
+```
+
+
+### Contents of `,choose-profile'
+
+This script lets you interactively select a profile using `fzf': 
+
+```
+#!/bin/env sh
+
+export GUIX_PROFILE="$(guix package --list-profiles | fzf --multi)"
+. "$GUIX_PROFILE/etc/profile"
+
+hash guix
+
+echo "Currently using: $GUIX_PROFILE"
+```
+
+
+## Step 3: Verify the Profile
+
+```
+guix describe
+```
+
+
+## Step 4: Pull the Latest Code
+
+```
+cd gn-machines
+git pull
+```
+
+
+## Step 5: Run the Deployment Script
+
+```
+./genenetwork-development-deploy.sh
+```
+
+
+## Step 6: Restart the Development Container
+
+```
+sudo systemctl restart genenetwork-development-container
+```
+
+
+## Step 7: Verify Changes
+
+Manually confirm that the intended changes were applied correctly. 
+
+
+# Accessing the Development Container on tux02
+
+To enter the running container shell, ensure you're using the *parent* PID of the `shepherd' process. 
+
+
+## Step 1: Identify the Correct PID
+
+Use this command to locate the correct container parent process: 
+
+```
+ps -u root -f --forest | grep -A4 '/usr/local/bin/genenetwork-local-container' | grep shepherd
+```
+
+
+## Step 2: Enter the Container
+
+Replace `46804' with your actual parent PID: 
+
+```
+sudo /home/bonfacem/.config/guix/current/bin/guix container exec 46804 \
+  /gnu/store/m6c5hgqg569mbcjjbp8l8m7q82ascpdl-bash-5.1.16/bin/bash \
+  --init-file /home/bonfacem/.guix-profile/etc/profile --login
+```
+
+
+## Notes
+
+* Ensure the PID is the container’s *shepherd parent*, not a child process. 
+* Always double-check your environment and profiles before deploying. 
