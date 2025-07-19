@@ -12,8 +12,8 @@
 ## Tasks
 
 * [X] Rewrite server in gn-guile
-* [+] Deploy and test aliases in GN2
-* [ ] Fix menu search
+* [X] Deploy and test aliases in GN2
+* [X] Fix menu search
 * [ ] Fix global search aliases
 
 ## Repository
