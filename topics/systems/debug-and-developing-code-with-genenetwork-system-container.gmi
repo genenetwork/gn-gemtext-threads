@@ -8,7 +8,7 @@ In principle we'll build guix system containers as described in
 
 The idea is to minimise `guix pull' and system container builds, so as to speed up development. The advantage of using an existing system container is that the full deployment is the same on our other running systems! No more path hacks, in other words.
 
-# Philosophy
+## Philosophy
 
 For development containers we will:
 
@@ -27,7 +27,33 @@ Also:
 
 I.e. no https, not authentication by default (as long as we run on localhost). The localhost URLs and file paths can be defaults because there will only be one development container running on a single machine.
 
+System containers are a bit overkill for development. Still, in some cases we'll need a system container. For example when testing integration of gn-auth, uploader, gn2 etc. We have the CD deployment that gets updated when git repos change. We also have a development container written by @bonz that needs to be improved and documented.
+
+=> https://git.genenetwork.org/gn-machines/tree/genenetwork-local-container.scm?h=gn-local-development-container
+
+Note it is on a special branch for now.
+
 Databases, and files will simply be shared on default paths - /export/guix-containers/gndev/...
+And if you need different combinations it should be relatively easy to compose a new shell or system container.
+
+# Tags
+
+* type: bug
+* status: open
+* priority: high
+* assigned: pjotrp
+* interested: pjotrp,bonfacem,fredm
+* keywords: development, deployment, server
+
+# Tasks
+
+Create a dev environment for:
+
+* [ ] GN3
+* [ ] gn-guile
+* [ ] GN2
+* [ ] gn-auth
+* [ ] gn-uploader
 
 # GN3 in system container
 
