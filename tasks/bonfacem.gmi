@@ -9,6 +9,11 @@
 ## Tasks
 
 ### Note
+* Don't lose metadata.   Have an array of disabled snips.
+* Store by snip (rows).  Storage by marker.  2 different files.
+* gn-auth:
+  have wrappers around gn-auth (draw-back: folk may forget).
+  use Nginx as a MTM (re-routing calls).  How to add handler in Nginx and to work with tokens.
 
 - GN-auth dashboard fixes.  Follow up with Fred.
 - Case-attributes used in co-variates.
@@ -17,20 +22,20 @@
 
 * Concept note/ideas: Add all metadata in GN to an LLM that enriches GnQA.
 * Use mapping output as full vectors for gpt/transformers.  Integrate this work into GN.
+* Share PhD concept note with PJ for polishing
 
 ### This week
-* [ ] Talk to Fred and hand over case-attributes.
-* [ ] Dump DO and BXD into LMDB
-* [ ] Adapter to LMDB into a cross object.
+* [ ] Look at slow running CD (look at issue tracker and be systematic).
+* [~] Adapter to LMDB into a cross object.
 *     - Try computations with R/qtl2
 *     - Look at R LMDB libraries.
 *     - Look at functions that read the files.
 *     - PJ: LMDB adapter in R and cross-type files.
-* [ ] Dump all genotypes from production to LMDB.
+* [~] Dump all genotypes from tux02 to LMDB.
 *     - PJ sync tux01 genotypes with tux02/04.
 *     - Yet to set-up 2FA on new device.
-* [ ] Distinct admin and dev user. [w/ Fred]
-*     - Extra fluff to grant dev user access to everything.
+* [~] gn-guile webhook.
+* [ ] Look at deep-seek/anthropic (also really doc deployment in balg01).  Run in debian machine.
 
 ### Later
 * [ ] Editing genotype metadata
@@ -149,3 +154,7 @@ Currently closed issues are:
 *     - Disable diff in the UI - unnecessary.
 * [X] Added LMDB_PATH to dev container.   Updated old commits.
 * [X] Merged no-login AI work that Alex did.
+* [X] Talk to Fred and hand over case-attributes.
+* [X] Distinct admin and dev user. [w/ Fred]
+*     - Extra fluff to grant dev user access to everything.
+* [X] Merged rate-limiter.
