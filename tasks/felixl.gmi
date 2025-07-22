@@ -41,7 +41,7 @@
 
 * PhD tasks 
   * [ X ] Complete and share concept note and timeline to supervisors, have a meeting for progress 
-  * [ ] Make a milestone on chapter one manuscript (deep dive into the selected papers){THE BIG PICTURE; a complete draft by early May} 
+  * [+] Make a milestone on chapter one manuscript (deep dive into the selected papers){THE BIG PICTURE; a complete draft by early May} 
 
 * Programming 
   * [ ] Make a milestone with the uploader (really push and learn!) 
