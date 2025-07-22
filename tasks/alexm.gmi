@@ -102,13 +102,18 @@ You can refine the search by constraining the checks some more, e.g. to get high
 * [] rqtl2 lmdb interfac
 e
 
-7/7/2025
+## 7/7/2025
 
 * [x] guix packaging for thor package
-* [] reading metadata from lmdb file using thor 
-* [] working on reconstructing the genotype files to geno, geno_map and pheno_map file
-* [] rate limiting for gnqna users.
-* []  check on tokens for no logged in users
+* [x] reading metadata from lmdb file using thor 
+* [-] working on reconstructing the genotype files to geno, geno_map and pheno_map file
+* [x] rate limiting for gnqna users.
+* [x]  check on tokens for no logged in users
+* [x]  Look at isse about signing tokens for non logged in users 
+
+
+## 21/7/2025
+* [-] working on reconstructing/reading  the genotype files based on bons dumping script 
 
 
 ## Next week(s)
