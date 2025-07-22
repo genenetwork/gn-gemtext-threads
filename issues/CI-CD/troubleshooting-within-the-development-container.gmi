@@ -1,4 +1,6 @@
 # Troubleshooting inside the GN dev container
+* type: systems, debugging, container
+* keywords: container, troubleshooting, logs, webhooks
 
 You need to find the development container so that you can begin troubleshooting:
 
