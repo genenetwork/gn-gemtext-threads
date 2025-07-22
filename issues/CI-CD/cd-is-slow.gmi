@@ -11,6 +11,13 @@ The pages are slow and some are broken.
 * interested: pjotrp, bonfacem
 * keywords: deployment, server
 
+# Tasks
+
+* [ ] Run less gunicorn processes on CD (2 should do)
+* [ ] Increase debugging output for GN2
+* [ ] Fix GN3 hook for github (it is not working)
+* [ ] gn-guile lacks certificates it can use for sparql
+
 # Measuring
 
 bonfacekilz:
@@ -105,11 +112,41 @@ root@tux02:/export2/guix-containers/genenetwork-development/var/log/cd# tail -10
 
 Some interesting errors there that need resolving, such as
 
+## gn-guile error
+
 ```
 tail gn-guile.log
 2025-07-20 04:49:49 X.509 certificate of 'sparql.genenetwork.org' could not be verified:
 2025-07-20 04:49:49   signer-not-found invalid
 ```
+
+Guile is not finding the certificates for our virtuoso server. It does work with curl, try
+
+```
+curl -G https://query.wikidata.org/sparql -H "Accept: application/json; charset=utf-8" --data-urlencode query="SELECT DISTINCT * where {
+  wd:Q158695 wdt:P225 ?o .
+} limit 5"
+{
+  "head" : {
+    "vars" : [ "o" ]                                                                                                     },                                                                                                                     "results" : {                                                                                                            "bindings" : [ {                                                                                                         "o" : {
+        "type" : "literal",
+        "value" : "Arabidopsis thaliana"
+      }
+    } ]
+  }
+```
+
+Also inside the container:
+
+```
+curl http://localhost:8091/gene/aliases/Shh
+```
+
+renders the same error! X.509 certificate of 'query.wikidata.org' could not be verified. so it is a gn-guile issue.
+
+## GN2 error reporting
+
+Also there are too many gunicorn processes - and strikingly - no debug output. Also I see a missing robots.txt file (even though LLMs hardly honour them).
 
 Let's try to get inside the container with nsenter:
 
@@ -120,7 +157,7 @@ pgrep -P 115940
 115961
 ```
 
-Use this PID and a recent nsenter:
+Use this child PID and a recent nsenter:
 
 ```
 /gnu/store/w7a3frdmffpw3hvxpvvxwxgzfhyqdm6n-profile/bin/nsenter -m -p -t 115961 /run/current-system/profile/bin/bash -login
