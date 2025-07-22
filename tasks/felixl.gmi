@@ -133,6 +133,29 @@
 * [ ] - upload kilifish to genenetwork
 * [ ] - revise celegans smoothing (genotypes)
 
+* ## this week (07-07-onwards) 
+* [X] - generate haplotypes for offsprings and founders combined; intepretation next.., 
+* [+] - keep improving the uploader via data uploading and error solving 
+* [-] - close smoothing revision for celegans, as left before 
+* [X] - why should people read my paper on improving genotyping methods? 
+*        - on smoothing (low density genotypes for mapping, high density genotypes for fine mapping.,)  
+*        - liftovers due to reference versions (currently, a challenge to be looked upon) 
+*        - founders and their offsprings in genotyping 
+*        - pangenomics and machine learning for improved genotyping 
+
+** keys (+; in progress, X; done, -; not yet) 
+* ## this week (14-07-onwards) 
+* [+] - map founders to offspring, work with only pure recombiantions 
+     [+] - tools available? (plink, rqtl2, beagle, etc)  
+     [+] - custom pipeline, to reflect gaps in the existing tools? (dealing with multiparent species)  
+     [+] - documentation for the paper write up
+
+* ## this week (21-07-onwards) 
+* [ ] - HS rats smoothing continues 
+*    [ ] - documenting the milestones 
+*    [ ] - see the possibility to write a tool from it 
+* [ ] - Pushing kilifish to genenetwork2/learn the source code build up 
+* [ ] - resmoothen celegans genotypes with the new knowledge  
 
 
 ### Later weeks (non-programming tasks)
