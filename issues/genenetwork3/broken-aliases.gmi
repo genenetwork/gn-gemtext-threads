@@ -12,9 +12,9 @@
 ## Tasks
 
 * [X] Rewrite server in gn-guile
-* [X] Deploy and test aliases in GN2
 * [X] Fix menu search
-* [ ] Fix global search aliases
+* [X] Fix global search aliases
+* [ ] Deploy and test aliases in GN2
 
 ## Repository
 
@@ -159,3 +159,20 @@ Global search finds way more results, but also lacks that alias! Meanwhile GN1 d
 
 in standard search.
 But neither 1431728_at or '2310010I16Rik' has a hit in *global* search and the result for Ssh should include the record in both search systems.
+
+# Deploy
+
+We introduced a new environment variable that does not show up on CD, part of the mapping page:
+
+=>
+
+In the logs on /export2:
+
+```
+root@tux02:/export2/guix-containers/genenetwork-development/var/log/cd# tail -100 genenetwork2.log
+2025-07-20 04:19:43   File "/genenetwork2/gn2/base/trait.py", line 157, in wikidata_alias_fmt
+2025-07-20 04:19:43     GN_GUILE_SERVER_URL + "gene/aliases/" + self.symbol.upper())
+2025-07-20 04:19:43 NameError: name 'GN_GUILE_SERVER_URL' is not defined
+```
+
+One thing I ran into is http://genenetwork.org/gn3-proxy/ - what is that for?
