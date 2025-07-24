@@ -2,10 +2,12 @@
 
 The pages are slow and some are broken.
 
+We found out that there are quite a full network calls using DNS - and DNS was slow. The configured DNS server was not responding. Using Google's DNS made things go fast again. We will probably introduce dnsmasq in the container to make things even faster.
+
 # Tags
 
 * type: bug
-* status: open
+* status: in progress
 * priority: high
 * assigned: pjotrp
 * interested: pjotrp, bonfacem
@@ -13,10 +15,11 @@ The pages are slow and some are broken.
 
 # Tasks
 
+* [ ] Use dnsmasq caching - it is a guix system service
 * [ ] Run less gunicorn processes on CD (2 should do)
 * [ ] Increase debugging output for GN2
 * [ ] Fix GN3 hook for github (it is not working)
-* [ ] gn-guile lacks certificates it can use for sparql
+* [X] gn-guile lacks certificates it can use for sparql
 
 # Measuring
 
@@ -165,7 +168,13 @@ Use this child PID and a recent nsenter:
 
 System tools are in '/run/current-system/profile/bin/'
 
-We can pick up curl (I note the system container has full access to the /gnu/store on the host:
+Make it a one-liner with
+
+```
+/gnu/store/w7a3frdmffpw3hvxpvvxwxgzfhyqdm6n-profile/bin/nsenter -m -p -t $(pgrep -P `ps xau|grep genenetwork-development-container|awk  '{print $2}'|sort -r|head -1`) /run/current-system/profile/bin/bash -login
+```
+
+Once inside we can pick up curl (I note the system container has full access to the /gnu/store on the host:
 
 ```
 root@tux02 /# /gnu/store/vdaspmq10c3zmqhp38lfqy812w6r4xg3-curl-8.6.0/bin/curl  -w @- -o /dev/null -s http://localhost:9092 <<EOF
@@ -221,9 +230,9 @@ Ran a profiler against a traits page.  See the following:
 * Resolving a DNS takes around 4.585s.  We make 7 requests.  Totalling to 32.09.  Typically, a traits page should take 8.79s.  The difference: (- 37.9 32.09) = 5.8s; which explains the slowness:
 
 ```
- ncall     tottime    percall  cumtime  percall  filename:lineno(function)  
+ ncall     tottime    percall  cumtime  percall  filename:lineno(function)
 ----------------------------------------------------------------------------
-     7  0.00002618  3.741e-05    32.09    4.585  socket.py:938(getaddrinfo) 
+     7  0.00002618  3.741e-05    32.09    4.585  socket.py:938(getaddrinfo)
 ```
 
 * The above is consistent all the analysis I've done across all the profile dumps.
