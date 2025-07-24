@@ -207,3 +207,27 @@ real    0m0.010s
 user    0m0.004s
 sys     0m0.000s
 ```
+
+# Profiling CD
+
+Ran a profiler against a traits page.  See the following:
+
+=> /issues/CI-CD/profiling-flask
+
+## Results/Interpretation
+
+* By fixing gn-guile and gene-alias resolution, times dropped by ~10s.  However, the page takes 37.9s to run.
+
+* Resolving a DNS takes around 4.585s.  We make 7 requests.  Totalling to 32.09.  Typically, a traits page should take 8.79s.  The difference: (- 37.9 32.09) = 5.8s; which explains the slowness:
+
+```
+ ncall     tottime    percall  cumtime  percall  filename:lineno(function)  
+----------------------------------------------------------------------------
+     7  0.00002618  3.741e-05    32.09    4.585  socket.py:938(getaddrinfo) 
+```
+
+* The above is consistent all the analysis I've done across all the profile dumps.
+
+## Possible Mitigations
+
+* Switch over gn-auth.genenetwork.org to localhost.
