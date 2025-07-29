@@ -45,7 +45,9 @@ And after:
 
 ## Original qtlreaper version for PublishData
 
-=> precompute-publishdata
+See the writeup at
+
+=> ./precompute-publishdata
 
 ## Original qtlreaper version for ProbeSetData
 
