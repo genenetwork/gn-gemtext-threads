@@ -13,10 +13,14 @@ So we can convert a .geno file to BIMBAM. I need to extract GN traits to a R/qtl
 * [X] Visit use of PublishXRef
 * [X] geno -> BIMBAM (BXD first)
 * [ ] Get PublishData trait(s) and convert to gemma, R/qtl2 or lmdb
-* - [ ] see scripts/lmdb-publishdata-export.scm
-* - [ ] Same for ProbeSetData
+* - [X] see scripts/lmdb-publishdata-export.scm
+* - [X] see scripts for ProbeSetData
+* - [ ] Make sure the BXDs are mappable
+* - [ ] Make sure the trait fetcher handles authorization
+* - [ ] Handle escalating errors
 * [ ] Run gemma-wrapper
 * [ ] Update PublishXRef and store old reaper value(?)
+* [ ] Make sure the trait fetcher handles authorization
 
 For the last we should probably add a few columns. Initially we'll only store the maximum hit.
 
@@ -247,7 +251,15 @@ Also Bonz' script
 has an interesting query:
 
 ```
-MariaDB [db_webqtl]> SELECT DISTINCT PublishFreeze.Name, PublishXRef.Id FROM PublishData INNER JOIN Strain ON PublishData.StrainId = Strain.Id INNER JOIN PublishXRef ON PublishData.Id = PublishXRef.DataId INNER JOIN PublishFreeze ON PublishXRef.InbredSetId = PublishFreeze.InbredSetId LEFT JOIN PublishSE ON     PublishSE.DataId = PublishData.Id AND     PublishSE.StrainId = PublishData.StrainId LEFT JOIN NStrain ON     NStrain.DataId = PublishData.Id AND     NStrain.StrainId = PublishData.StrainId WHERE     PublishFreeze.public > 0 AND     PublishFreeze.confidentiality < 1 ORDER BY     PublishFreeze.Id, PublishXRef.Id limit 5;
+MariaDB [db_webqtl]>
+SELECT DISTINCT PublishFreeze.Name, PublishXRef.Id FROM PublishData
+  INNER JOIN Strain ON PublishData.StrainId = Strain.Id
+  INNER JOIN PublishXRef ON PublishData.Id = PublishXRef.DataId
+  INNER JOIN PublishFreeze ON PublishXRef.InbredSetId = PublishFreeze.InbredSetId
+  LEFT JOIN PublishSE ON PublishSE.DataId = PublishData.Id AND PublishSE.StrainId = PublishData.StrainId
+  LEFT JOIN NStrain ON NStrain.DataId = PublishData.Id AND NStrain.StrainId = PublishData.StrainId
+  WHERE PublishFreeze.public > 0 AND PublishFreeze.confidentiality < 1
+  ORDER BY PublishFreeze.Id, PublishXRef.Id limit 5;
 +------------+-------+
 | Name       | Id    |
 +------------+-------+
@@ -345,3 +357,289 @@ SELECT st.Name, ifnull(pd.value, 'x'), ifnull(ps.error, 'x'), ifnull(ns.count, '
 written by Zach and Bonface. See
 
 => https://github.com/genenetwork/genenetwork3/blame/main/gn3/db/sample_data.py
+
+
+
+We can get a list of the 13689 BXD datasets we can use. Note that we start with public data because we'll feed it to AI and all privacy will be gone after. We'll design an second API that makes use of Fred's authentication/authorization later.
+Let's start with the SQL statement listed on:
+
+
+We can run mysql through an ssh tunnel with
+
+```
+ssh -L 3306:127.0.0.1:3306 -f -N tux02.genenetwork.org
+mysql -A -h 127.0.0.1 -uwebqtlout -pwebqtlout db_webqtl
+```
+
+and test the query, i.e.
+
+```
+MariaDB [db_webqtl]> SELECT DISTINCT PublishFreeze.Name, PublishXRef.Id FROM PublishData
+    ->   INNER JOIN Strain ON PublishData.StrainId = Strain.Id
+    ->   INNER JOIN PublishXRef ON PublishData.Id = PublishXRef.DataId
+    ->   INNER JOIN PublishFreeze ON PublishXRef.InbredSetId = PublishFreeze.InbredSetId
+    ->   LEFT JOIN PublishSE ON PublishSE.DataId = PublishData.Id AND PublishSE.StrainId = PublishData.StrainId
+    ->   LEFT JOIN NStrain ON NStrain.DataId = PublishData.Id AND NStrain.StrainId = PublishData.StrainId
+    ->   WHERE PublishFreeze.public > 0 AND PublishFreeze.confidentiality < 1
+    ->   ORDER BY PublishFreeze.Id, PublishXRef.Id limit 5;
++------------+-------+
+| Name       | Id    |
++------------+-------+
+| BXDPublish | 10001 |
+| BXDPublish | 10002 |
+| BXDPublish | 10003 |
+| BXDPublish | 10004 |
+| BXDPublish | 10005 |
+```
+
+Let's take this apart a little. First of all PublishFreeze has only one record for BXDPublish where ID=1. PublishData may be used to check valid fields, but the real information is in PublishXRef. A simple
+
+```
+ select count(*) from PublishXRef WHERE InbredSetId=1;
++----------+
+| count(*) |
++----------+
+|    13711 |
++----------+
+```
+
+counts a few extra datasets (it was 13689). It may mean that PublishXRef contains some records that are still not public? Anyway,
+let's go for the full dataset for precompute right now. We'll add an API endpoint to gn-guile so it can be used later.
+
+Note GN2 on the menu search
+
+=> https://genenetwork.org/search?species=mouse&group=BXD&type=Phenotypes&dataset=BXDPublish&search_terms_or=*&search_terms_and=&accession_id=None&FormID=searchResult
+
+gives 13,729 entries, including recent BXD_51094. That is because that production database is newer. If we look at our highest records:
+
+```
+select * from PublishXRef WHERE InbredSetId=1 ORDER BY ID DESC limit 3;
++-------+-------------+-------------+---------------+----------+-------------------+----------------+--------------------+--------------------+----------+----------+
+| Id    | InbredSetId | PhenotypeId | PublicationId | DataId   | mean              | Locus          | LRS                | additive           | Sequence | comments |
++-------+-------------+-------------+---------------+----------+-------------------+----------------+--------------------+--------------------+----------+----------+
+| 51060 |           1 |       45821 |         39794 | 41022015 |              NULL | rsm10000000968 | 13.263934206457122 | 2.1741201177177185 |        1 |          |
+| 51049 |           1 |       45810 |         39783 | 41022004 | 8.092333210508029 | rsm10000014174 |   16.8291804498215 | 18.143229769230775 |        1 |          |
+| 51048 |           1 |       45809 |         39782 | 41022003 | 6.082199917286634 | rsm10000009222 | 14.462661474938166 |  4.582111488461538 |        1 |          |
++-------+-------------+-------------+---------------+----------+-------------------+----------------+--------------------+--------------------+----------+----------+
+```
+
+You can see they match that list (51060 got updated on production). The ID matches record BXD_51060 on the production search table.
+We can look at the DataId with
+
+```
+select Id,PhenotypeId,DataId from PublishXRef WHERE InbredSetId=1 ORDER BY ID DESC limit 3;
++-------+-------------+----------+
+| Id    | PhenotypeId | DataId   |
++-------+-------------+----------+
+| 51060 |       45821 | 41022015 |
+| 51049 |       45810 | 41022004 |
+| 51048 |       45809 | 41022003 |
++-------+-------------+----------+
+```
+
+And get the actual values with
+
+```
+select * from PublishData WHERE Id=41022003;
++----------+----------+-----------+
+| Id       | StrainId | value     |
++----------+----------+-----------+
+| 41022003 |        2 |  9.136000 |
+| 41022003 |        3 |  4.401000 |
+| 41022003 |        9 |  4.360000 |
+| 41022003 |       29 | 15.745000 |
+| 41022003 |       98 |  4.073000 |
+| 41022003 |       99 | -0.580000 |
+```
+
+which match the values on
+
+=> https://genenetwork.org/show_trait?trait_id=51048&dataset=BXDPublish
+
+The phenotypeid is useful for some metadata:
+
+
+```
+select * from Phenotype WHERE ID=45809;
+| 45809 | Central nervous system, metabolism, nutrition, toxicology: Difference score for Iron (Fe) concentration in cortex (CTX) between 20 to 120-day-old and 300 to 918-day-old males mice fed Envigo diet 7912 containing 240, 93, and 63 ppm Fe, Cu and Zn, respectively [µg/g wet weight]  | Central nervous system, metabolism, nutrition, toxicology: Difference score for Iron (Fe) concentration in cortex (CTX) between 20 to 120-day-old and 300 to 918-day-old males mice fed Envigo diet 7912 containing 240, 93, and 63 ppm Fe, Cu and Zn, respectively [µg/g wet weight]  | Central nervous system, metabolism, nutrition, toxicology: Difference score for Iron (Fe) concentration in cortex (CTX) between 20 to 120-day-old and 300 to 918-day-old males mice fed Envigo diet 7912 containing 240, 93, and 63 ppm Fe, Cu and Zn, respectively [µg/g wet weight]  | [ug/mg wet weight] | Fe300-120CTXMale             | Fe300-120CTXMale              | NULL     | acenteno  | Jones B | joneslab         |
+```
+
+Since I am going for the simpler query I'll add an API endpoint named
+datasets/bxd-publish/list (so others can use that too).  We'll return
+tuples for each entry so we can extend it later. First we need the
+DataID so we can point into PublishData. We expect the endpoint to
+return something like
+
+```
++-------+-------------+----------+
+| Id    | PhenotypeId | DataId   |
++-------+-------------+----------+
+| 51060 |       45821 | 41022015 |
+| 51049 |       45810 | 41022004 |
+| 51048 |       45809 | 41022003 |
+...
+```
+
+Alright, let's write some code. The following patch returns on the endpoint:
+
+```
+[
+  {
+    "Id": 10001,
+    "PhenotypeId": 4,
+    "DataId": 8967043
+  },
+  {
+    "Id": 10002,
+    "PhenotypeId": 10,
+    "DataId": 8967044
+  },
+  {
+    "Id": 10003,
+    "PhenotypeId": 15,
+    "DataId": 8967045
+  },
+...
+```
+
+in about 3 seconds. It will run a lot faster on a local network. But for our purpose it is fine. The code I wrote is here:
+
+=> https://git.genenetwork.org/gn-guile/commit/?id=1590be15f85e30d7db879c19d2d3b4bed201556a
+
+Note the simple SQL query (compared to the first one).
+Next step is to fetch the trait values we can feed to GEMMA. The full query using the PhenotypeId and DataId in GN is:
+
+```
+SELECT Strain.Name, Strain.Name2, PublishData.value, PublishData.Id, PublishSE.error, NStrain.count
+  FROM
+      (PublishData, Strain, PublishXRef, PublishFreeze)
+  LEFT JOIN PublishSE ON
+      (PublishSE.DataId = PublishData.Id AND PublishSE.StrainId = PublishData.StrainId)
+  LEFT JOIN NStrain ON
+      (NStrain.DataId = PublishData.Id AND
+      NStrain.StrainId = PublishData.StrainId)
+  WHERE
+      PublishXRef.InbredSetId = 1 AND
+      PublishXRef.PhenotypeId = 4 AND
+      PublishData.Id = PublishXRef.DataId AND
+      PublishData.StrainId = Strain.Id AND
+      PublishXRef.InbredSetId = PublishFreeze.InbredSetId AND
+      PublishFreeze.public > 0 AND
+      PublishFreeze.confidentiality < 1;
++-------+-------+-----------+---------+-------+-------+
+| Name  | Name2 | value     | Id      | error | count |
++-------+-------+-----------+---------+-------+-------+
+| BXD1  | BXD1  | 61.400002 | 8967043 |  2.38 | NULL  |
+| BXD2  | BXD2  | 49.000000 | 8967043 |  1.25 | NULL  |
+| BXD5  | BXD5  | 62.500000 | 8967043 |  2.32 | NULL  |
+| BXD6  | BXD6  | 53.099998 | 8967043 |  1.22 | NULL  |
+...
+```
+
+(result includes parents). We can simplify this for GEMMA because it only wants the name and (mean) value.
+
+The short version when you have the data ID is:
+
+```
+SELECT Strain.Name, PublishData.value FROM Strain, PublishData WHERE PublishData.Id=41022003 and Strain.Id=StrainID;
++----------+-----------+
+| Name     | value     |
++----------+-----------+
+| C57BL/6J |  9.136000 |
+| DBA/2J   |  4.401000 |
+| BXD9     |  4.360000 |
+| BXD32    | 15.745000 |
+| BXD43    |  4.073000 |
+| BXD44    | -0.580000 |
+| BXD48    | -1.810000 |
+| BXD51    |  4.294000 |
+| BXD60    | -0.208000 |
+| BXD62    | -0.013000 |
+| BXD63    |  3.221000 |
+| BXD66    |  2.472000 |
+| BXD69    | 12.886000 |
+| BXD70    | -1.973000 |
+| BXD78    | 19.511999 |
+| BXD79    |  7.845000 |
+| BXD73a   |  3.201000 |
+| BXD87    | -3.054000 |
+| BXD48a   | 11.585000 |
+| BXD100   |  7.088000 |
+| BXD102   |  8.485000 |
+| BXD124   | 13.442000 |
+| BXD170   | -1.274000 |
+| BXD172   | 18.587000 |
+| BXD186   | 10.634000 |
++----------+-----------+
+```
+
+which matches GN perfectly (some individuals where added). Alright, let's add an endpoint for this named
+'dataset/bxd-publish/values/dataid/41022003'. Note we only deal with public data (so far). Later we may come up with more generic
+end points and authorization. At this point the API is either on the local network (this one is) or public.
+
+The first version returns this data from the endpoint:
+
+```
+time curl http://127.0.0.1:8091/dataset/bxd-publish/values/41022003
+[{"Name":"C57BL/6J","value":9.136},{"Name":"DBA/2J","value":4.401},{"Name":"BXD9","value":4.36},{"Name":"BXD32","value":15.745},{"Name":"BXD43","value":4.073},{"Name":"BXD44","value":-0.58},{"Name":"BXD48","value":-1.81},{"Name":"BXD51","value":4.294},{"Name":"BXD60","value":-0.208},{"Name":"BXD62","value":-0.013},{"Name":"BXD63","value":3.221},{"Name":"BXD66","value":2.472},{"Name":"BXD69","value":12.886},{"Name":"BXD70","value":-1.973},{"Name":"BXD78","value":19.511999},{"Name":"BXD79","value":7.845},{"Name":"BXD73a","value":3.201},{"Name":"BXD87","value":-3.054},{"Name":"BXD48a","value":11.585},{"Name":"BXD100","value":7.088},{"Name":"BXD102","value":8.485},{"Name":"BXD124","value":13.442},{"Name":"BXD170","value":-1.274},{"Name":"BXD172","value":18.587},{"Name":"BXD186","value":10.634}]
+real    0m0.537s
+user    0m0.002s
+sys     0m0.005s
+```
+
+Note it includes the parents. We should drop them. In this case we can simple check for (string-contains name "BXD"). The database records allow for a filter, so we get
+
+```
+curl http://127.0.0.1:8091/dataset/bxd-publish/mapping/values/41022003
+[{"Name":"BXD9","value":4.36},{"Name":"BXD32","value":15.745},{"Name":"BXD43","value":4.073},{"Name":"BXD44","value":-0.58},{"Name":"BXD48","value":-1.81},{"Name":"BXD51","value":4.294},{"Name":"BXD60","value":-0.208},{"Name":"BXD62","value":-0.013},{"Name":"BXD63","value":3.221},{"Name":"BXD66","value":2.472},{"Name":"BXD69","value":12.886},{"Name":"BXD70","value":-1.973},{"Name":"BXD78","value":19.511999},{"Name":"BXD79","value":7.845},{"Name":"BXD73a","value":3.201},{"Name":"BXD87","value":-3.054},{"Name":"BXD48a","value":11.585},{"Name":"BXD100","value":7.088},{"Name":"BXD102","value":8.485},{"Name":"BXD124","value":13.442},{"Name":"BXD170","value":-1.274},{"Name":"BXD172","value":18.587},{"Name":"BXD186","value":10.634}]
+```
+
+That code went in as
+
+=> https://git.genenetwork.org/gn-guile/commit/?id=9ad0793eb477611c700f4a5b02f60ac793bfae96
+
+It took a bit longer than I wanted because I made a mistake converting the results to a hash table. It broke the JSON conversion and the error was not so helpful.
+
+To write a CSV it turns out I have written
+
+=> https://git.genenetwork.org/gn-guile/tree/gn/runner/gemma.scm?id=9ad0793eb477611c700f4a5b02f60ac793bfae96#n18
+
+which takes the GN BXD.json file and our trait file. BXD.json captures the genotype information GN has:
+
+```
+{
+        "mat": "C57BL/6J",
+        "pat": "DBA/2J",
+        "f1s": ["B6D2F1", "D2B6F1"],
+        "genofile" : [{
+                "title" : "WGS-based (Mar2022)",
+                "location" : "BXD.8.geno",
+                "sample_list" : ["BXD1", "BXD2", "BXD5", "BXD6", "BXD8", "BXD9", "BXD11", "BXD12", "BXD13", "BXD14", "BXD15", "BXD16", "BXD18", "BXD19", "BXD20", "BXD21", "BXD22", "BXD23", "BXD24", "BXD24a", "BXD25", "BXD27", "BXD28", "BXD29", "BXD30", "BXD31", "BXD32", "BXD33", "BXD34", "BXD35", "BXD36", "BXD37", "BXD38", "BXD39", "BXD40", "BXD41", "BXD42", "BXD43", "BXD44", "BXD45", "BXD48", "BXD48a", "BXD49", "BXD50", "BXD51", "BXD52", "BXD53", "BXD54", "BXD55", "BXD56", "BXD59", "BXD60", "BXD61",
+(...)
+"BXD065xBXD077F1", "BXD069xBXD090F1", "BXD071xBXD061F1", "BXD073bxBXD065F1", "BXD073bxBXD077F1", "BXD073xBXD034F1", "BXD073xBXD065F1", "BXD073xBXD077F1", "BXD074xBXD055F1", "BXD077xBXD062F1", "BXD083xBXD045F1", "BXD087xBXD100F1", "BXD065bxBXD055F1", "BXD102xBXD077F1", "BXD102xBXD73bF1", "BXD170xBXD172F1", "BXD172xBXD197F1", "BXD197xBXD009F1", "BXD197xBXD170F1"]
+```
+
+The code maps the traits values I generated against these columns to see what inviduals overlap which corrects for unmappable individuals (anyway).
+
+The function 'write-pheno-file', listed above, does not work however because of the format of the endpoint. Remember it generates
+
+```
+[{"Name":"BXD9","value":4.36},{"Name":"BXD32","value":15.745}...]
+```
+
+While this function expects the shorter
+
+```
+{"BXD9":4.36,"BXD23":15.745...}
+```
+
+Now, for endpoints there is no real standard. We have written ideas up here:
+
+=> https://git.genenetwork.org/gn-docs/tree/api
+
+and, most recently
+
+=> https://git.genenetwork.org/gn-docs/tree/api/GN-REST-API-v2.md
+
+Where I make a case for having the metadata as a separate endpoint that can be reasoned on by people and machines (and AI).
+That means I should default to the short version of the data and describe that layout using metadata. This we can do later.
