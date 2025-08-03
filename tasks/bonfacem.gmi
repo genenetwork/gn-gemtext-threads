@@ -4,7 +4,6 @@
 
 * kanban: bonfacem
 * assigned: bonfacem
-* status: in progress
 
 ## Tasks
 
@@ -14,9 +13,8 @@
 * gn-auth:
   have wrappers around gn-auth (draw-back: folk may forget).
   use Nginx as a MTM (re-routing calls).  How to add handler in Nginx and to work with tokens.
-
-- GN-auth dashboard fixes.  Follow up with Fred.
-- Case-attributes used in co-variates.
+* GN-auth dashboard fixes.  Follow up with Fred.
+* Case-attributes used in co-variates.
 
 ### PhD Work
 
@@ -25,9 +23,11 @@
 * Share PhD concept note with PJ for polishing
 
 ### This week
-* [ ] Look at slow running CD (look at issue tracker and be systematic).
+* [X] Look at slow running CD (look at issue tracker and be systematic).
+* [~] Look at deep-seek/anthropic (also really doc deployment in balg01).  Run in debian machine.
+* [~] Set-up wolfshead.
 * [~] Adapter to LMDB into a cross object.
-*     - Try computations with R/qtl2
+*     - Try computations with R/qtl2.
 *     - Look at R LMDB libraries.
 *     - Look at functions that read the files.
 *     - PJ: LMDB adapter in R and cross-type files.
@@ -35,7 +35,7 @@
 *     - PJ sync tux01 genotypes with tux02/04.
 *     - Yet to set-up 2FA on new device.
 * [~] gn-guile webhook.
-* [ ] Look at deep-seek/anthropic (also really doc deployment in balg01).  Run in debian machine.
+
 
 ### Later
 * [ ] Editing genotype metadata
