@@ -1,0 +1,21 @@
+# Tasks for Johannes
+
+## Tags
+
+kanban:jom
+assigned:jom
+
+## Tasks
+
+### Ongoing
+
+* Make RAG script available for reuse
+
+* Discuss with Bonface on how to get metadata for RAG
+
+### Later
+
+
+### Past
+
+
