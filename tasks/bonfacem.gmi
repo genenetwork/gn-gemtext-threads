@@ -23,7 +23,11 @@
 * Share PhD concept note with PJ for polishing
 
 ### This week
-* [X] Look at slow running CD (look at issue tracker and be systematic).
+
+* [ ] Fix CD.  Build guix against a recent pinned profile.
+* [~] Dump all genotypes from tux02 to LMDB.
+*     - PJ sync tux01 genotypes with tux02/04.
+*     - Yet to set-up 2FA on new device
 * [~] Look at deep-seek/anthropic (also really doc deployment in balg01).  Run in debian machine.
 * [~] Set-up wolfshead.
 * [~] Adapter to LMDB into a cross object.
@@ -31,9 +35,6 @@
 *     - Look at R LMDB libraries.
 *     - Look at functions that read the files.
 *     - PJ: LMDB adapter in R and cross-type files.
-* [~] Dump all genotypes from tux02 to LMDB.
-*     - PJ sync tux01 genotypes with tux02/04.
-*     - Yet to set-up 2FA on new device.
 * [~] gn-guile webhook.
 
 
@@ -158,3 +159,4 @@ Currently closed issues are:
 * [X] Distinct admin and dev user. [w/ Fred]
 *     - Extra fluff to grant dev user access to everything.
 * [X] Merged rate-limiter.
+* [X] Look at slow running CD (look at issue tracker and be systematic).
