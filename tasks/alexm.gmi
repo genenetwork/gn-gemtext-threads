@@ -113,8 +113,17 @@ e
 
 
 ## 21/7/2025
-* [-] working on reconstructing/reading  the genotype files based on bons dumping script 
+* [x] working on reconstructing/reading  the genotype files based on bons dumping script 
+* [x]  generate and validate cross objects
 
+## 29/7/2025
+* [x] adding founder_geno and pheno covariates pheno
+* [-] minor fixes for lmdb matrix script (missing metadata)
+* [-] check phenotype work  for lmdb
+
+## 4/8/2025
+* [-] refactoring lmdb matrix script
+* [-] integrating fetching rqtl2 from lmdb using bxd as a test pilot 
 
 ## Next week(s)
 
