@@ -12,14 +12,17 @@ So we can convert a .geno file to BIMBAM. I need to extract GN traits to a R/qtl
 
 * [X] Visit use of PublishXRef
 * [X] geno -> BIMBAM (BXD first)
-* [ ] Get PublishData trait(s) and convert to gemma, R/qtl2 or lmdb
+* [X] Get PublishData trait(s) and convert to gemma, R/qtl2 or lmdb
 * - [X] see scripts/lmdb-publishdata-export.scm
 * - [X] see scripts for ProbeSetData
-* - [ ] Make sure the BXDs are mappable
-* - [ ] Make sure the trait fetcher handles authorization
-* - [ ] Handle escalating errors
-* [ ] Run gemma-wrapper
+* - [X] Make sure the BXDs are mappable
+* [X] Run gemma-wrapper
+* [X] We should map by trait-id, data id is not intuitive: curl http://127.0.0.1:8091/dataset/bxd-publish/values/8967044.json > 10002-pheno.json
+* [X] Check why Zach/GN JSON file lists different mappable BXDs
+* [ ] Add batch run and some metadata
+* [ ] Create a DB/table containing hits and old reaper values
 * [ ] Update PublishXRef and store old reaper value(?)
+* [ ] Correctly Handle escalating errors
 * [ ] Make sure the trait fetcher handles authorization
 
 For the last we should probably add a few columns. Initially we'll only store the maximum hit.
@@ -643,3 +646,231 @@ and, most recently
 
 Where I make a case for having the metadata as a separate endpoint that can be reasoned on by people and machines (and AI).
 That means I should default to the short version of the data and describe that layout using metadata. This we can do later.
+
+I modified the endpoint to return the shorter hash:
+
+```
+time curl http://127.0.0.1:8091/dataset/bxd-publish/values/41022003
+{"BXD9":4.36,"BXD23":15.745...}
+```
+
+Next, to align with
+
+=> https://github.com/genenetwork/gn-docs/blob/master/api/GN-REST-API-v2.md
+
+I gave the API the json extension, so we have http://127.0.0.1:8091/dataset/bxd-publish/values/41022003.json
+
+This allows writing a special handler for GEMMA output (.gemma extension) downloading the pheno file with
+
+```
+curl http://127.0.0.1:8091/dataset/bxd-publish/values/41022003.gemma
+NA
+NA
+NA
+NA
+NA
+4.36NA
+NA
+NA
+NA
+(...)
+``
+
+that GEMMA can use directly and matches the order of the individuals in the BXD.8.geno file and the founders/parents are not included. Note that all of this now only works for the BXD (on PublishData) and I am using BXD.json as described in
+
+=> https://issues.genenetwork.org/topics/systems/mariadb/precompute-mapping-input-data
+
+I.e., it is Zach's listed stopgap solution. Code is here:
+
+=> https://git.genenetwork.org/gn-guile/log/
+
+Next step run gemma as we are on par with my earlier work on ProbeSetData. I wrote a gemma runner for that too at
+
+=> https://git.genenetwork.org/gn-guile/tree/gn/runner/gemma.scm#n79
+
+Now here I use guile to essentially script running GEMMA. There is no real advantage for that, so I will simply tell gemma-wrapper to use the output of above .gemma endpoint to fetch the trait values. Basically gemma-wrapper can specify the standard gemma -p switch, or pass in --phenotypes, that are used for permutations.
+
+Now the new method we want to introduce is that the trait values are read from a REST API, instead of a file. The dirty way is to provide that functionality directly to gemma-wrapper, but we plan to get rid of that code (useful as it is -- it duplicates what Arun's ravanan does and ravanan has the advantage that it can be run on a cluster).
+
+So we simply download the data and write it to a file with a small script. To run:
+
+```
+curl http://127.0.0.1:8091/dataset/bxd-publish/values/41022003.gemma > 41022003-pheno.txt
+```
+
+Next we create a container for gemma-wrapper (and includes the gemma that GN uses):
+
+```
+. .guix-deploy
+env TMPDIR=tmp ruby ./bin/gemma-wrapper --force --json \
+        --loco -- \
+        -g BXD.8_geno.txt.gz \
+        -p 41022003-pheno.txt \
+        -a BXD.8_snps.txt \
+        -gk > K.json
+```
+
+this bailed out with
+
+Executing: parallel --results /tmp/test --joblog /tmp/test/5f3849a9e61b70e3d562b20c5eade5a699923c68-parallel.log < /tmp/test/parallel-commands.txt
+Command exited with non-zero status 20
+
+When running an individual chromosome (from the parallel log) we get two warnings and an error:
+
+```
+**** WARNING: The maximum genotype value is not 2.0 - this is not the BIMBAM standard and will skew l_lme and effect sizes
+**** WARNING: Columns in geno file do not match # individuals in phenotypes
+ERROR: Enforce failed for not enough genotype fields for marker in src/gemma_io.cpp at line 1470 in BimbamKin
+```
+
+Looks familiar!
+The first warning we'll ignore for now, as we just want the hits initially. The second warning relates to the error that there is a mismatch in number of inds.
+
+This topic I have covered in the past, particularly trying to debug Dave's conflicting results:
+
+=> https://issues.genenetwork.org/topics/lmms/gemma/permutations
+
+It makes somewhat depressive reading, though we have a solution.
+
+Note the correct conversion we only have to do once (basically the code I wrote earlier
+to fetch BXD traits needs to work with the latest BXD genotypes).
+The real problem is that gemma itself does not compare individual names (at all), so any corrections need to be done beforehand. In this case our pheno file contains 212 inds from the earlier BXD.json file.
+
+```
+wc -l 41022003-pheno.txt
+212 41022003-pheno.txt
+```
+
+And that is off. Let's try the tool I wrote during that exercise. It can create a different json file after parsing BXD.geno
+that has in the header:
+
+> # Date Modified: April 23, 2024 by Arthur Centeno, Suheeta Roy. March 22, 2022 by Rob Williams, David Ashbrook, and Danny Arends to remove excessive cross-over events in strains BXD42 (Chr9), BXD81 (Chrs1, 5, 10), BXD99 (Chr1), and BXD100 (Chrs2 and 6); and to add Taar1 maker on Chr 10 for T. Phillips-Richards.   Jan 19, 2017: Danny Arends computed BXD cM values and recombinations between markers. Rob W. Williams fixed errors on most chromosomes and added Affy eQTL markers. BXD223 now has been added based on David Ashbrook's spreadsheet genotype information.
+
+```
+md5sum BXD.geno:
+  a78aa312b51ac15dd8ece911409c5b98  BXD.geno
+gemma-wrapper$ ./bin/gn-geno-to-gemma.py BXD.geno > BXD.geno.txt
+```
+
+creates a .json file (that is different from Zach/GN's) and a bimbam file GEMMA can use. Now in the next step I need to adapt above code to use this format. What I *should* have done, instead of writing gemma phenotypes directly, is write the R/qtl2 format that includes the ind names (so we can compare and validate those) and *then* parse that data against our new JSON file created by gn-geno-to-gemma.py using the rqtl2-pheno-to-gemma.py script. Both Python scripts are already part of gemma-wrapper:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/gn-geno-to-gemma.py
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/rqtl2-pheno-to-gemma.py
+
+The idea was to create the rqtl2 API endpoint, or I'll adapt the 2nd script to take the endpoint as input and then correct for GEMMA's requirements.
+
+OK, updated the endpoints and the code for rqtl2-pheno-to-gemma.py so it accepts a URL instead of a file. So the idea is
+to run
+
+```
+./bin/rqtl2-pheno-to-gemma.py BXD_pheno_Dave.csv --json BXD.geno.json > BXD_pheno_matched.txt
+```
+
+A line in BXD_pheno_Dave.csv is:
+
+```
+BXD113,24.52,205.429001,3.643,2203.312012,3685.907959,1.199,2.019,29.347143,0.642857,205.428574,24.520409,3.642857,2203
+.312012,3685.908203,1.198643,2.018643,0.642857,33.785709,1.625,2,1.625,1,22.75
+```
+
+Now if I read the Rqtl2 docs it says:
+
+> We split the numeric phenotypes from the mixed-mode covariates, as two separate CSV files. Each file forms a matrix of individuals × phenotypes (or covariates), with the first column being individual IDs and the first row being phenotype or covariate names. Sex and line IDs (if needed) can be columns in the covariate data.
+
+This differs from the BXD Dave layout (it is transposed). Karl added in the docs:
+
+> All of these CSV files may be transposed relative to the form described below. You just need to include, in the control file, a line like: "geno_transposed: true". So, OK, we can use the transposed form. First we make it possible to parse json:
+
+```
+curl http://127.0.0.1:8091/dataset/bxd-publish/values/41022003.json > 41022003-pheno.json
+jq < 41022003-pheno.json
+{
+  "C57BL/6J": 9.136,
+  "DBA/2J": 4.401,
+  "BXD9": 4.36,
+  "BXD32": 15.745,
+(...)
+```
+
+note it includes the parents. Feed it to
+
+```
+./bin/rqtl2-pheno-to-gemma.py 41022003-pheno.json --json BXD.geno.json
+```
+
+where BXD.geno.json is not the Zach/GN json file, but the actual BXDs in GEMMA's bimbam file.
+
+One question is why Zach's JSON file gives a different number of mappable BXDs. I made of note of that to check.
+
+I wrote a new script and we had our first GEMMA run with lmdb output:
+
+```
+wrk@napoli /export/local/home/wrk/iwrk/opensource/code/genetics/gemma-wrapper [env]$ tar tvf /tmp/3fddda2374509c7b346>
+-rw-r--r-- wrk/users    294912 2025-08-06 05:49 3fddda2374509c7b346b7819ae358ed23be9cb46-gemma-GWA.mdb
+```
+
+The script is just 10 lines of code (after the command line handler)
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/gn-pheno-to-gemma.rb
+
+Excellent, now we can run gemma and the next step is to look at the largest hit.
+
+So the trait we try to run is 41022003 = https://genenetwork.org/show_trait?trait_id=51048&dataset=BXDPublish. The inputs match up. When we run GEMMA in GN it has a 4.0 score on chr 12 and 3.9 on chr 19.
+
+Running gemma-wrapper we get
+
+```
+LOCO K computation with caching and JSON output
+
+gemma-wrapper --json --force --loco -- -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -n 2 -gk -debug > K.json
+
+LMM's using the K's captured in K.json using the --input switch
+
+gemma-wrapper --json --force --lmdb --loco --input K.json -- -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -lmm 9 -maf 0.1 -n 2 -debug > GWA.json
+```
+
+We can view the lmdb file with something like:
+
+```
+./bin/view-gemma-mdb --sort /tmp/66b8c19be87e9566358ce904682a56250eb05748-gemma-GWA.tar.xz --anno BXD.8_snps.txt > test.out
+/tmp/3fddda2374509c7b346b7819ae358ed23be9cb46-gemma-GWA.tar.xz
+chr,pos,marker,af,beta,se,l_mle,l_lrt,-logP
+7,67950073,rsm10000004928,0.543,1.5226,1.3331,100000.0,0.0002,3.79
+7,68061665,rs32453663,0.543,1.5226,1.3331,100000.0,0.0002,3.79
+7,68111284,rs32227186,0.543,1.5226,1.3331,100000.0,0.0002,3.79
+19,30665443,rsm10000014129,0.522,2.2128,1.0486,100000.0,0.0002,3.77
+19,30671753,rs31207057,0.522,2.2128,1.0486,100000.0,0.0002,3.77
+12,40785621,rsm10000009222,0.565,2.8541,1.3576,100000.0,0.0002,3.75
+12,40786657,rs29124638,0.565,2.8541,1.3576,100000.0,0.0002,3.75
+12,40842857,rs13481410,0.565,2.8541,1.3576,100000.0,0.0002,3.75
+12,40887762,rsm10000009223,0.565,2.8541,1.3576,100000.0,0.0002,3.75
+12,40887894,rsm10000009224,0.565,2.8541,1.3576,100000.0,0.0002,3.75
+12,40900825,rs50979658,0.565,2.8541,1.3576,100000.0,0.0002,3.75
+12,41054766,rs46705481,0.565,2.8541,1.3576,100000.0,0.0002,3.75
+```
+
+Interestingly the hits are very similar to what is on production now, though not the same! That points out that I am not using the production database on this recent dataset. Let's try an older one. BXD_10002 has data id 8967044
+
+```
+curl http://127.0.0.1:8091/dataset/bxd-publish/values/8967044.json > 10002-pheno.json
+./bin/gn-pheno-to-gemma.rb -p 10002-pheno.json --geno-json BXD.geno.json > 10002-pheno.txt
+gemma-wrapper --json --force --loco -- -g BXD.geno.txt -p 10002-pheno.txt -a BXD.8_snps.txt -n 2 -gk -debug > K.json
+gemma-wrapper --json --force --lmdb --loco --input K.json -- -g BXD.geno.txt -p 10002-pheno.txt -a BXD.8_snps.txt -lmm 9 -maf 0.1 -n 2 -debug > GWA.json
+./bin/view-gemma-mdb --sort /tmp/c4ffedf358698814c6e29a54a2a51cb6c66328d0-gemma-GWA.tar.xz --anno BXD.8_snps.txt > test.out
+```
+
+Luckily this is a perfect match:
+
+```
+1,179861787,rsm10000000444,0.559,0.8837,0.3555,100000.0,0.0,4.99
+1,179862838,rs30712622,0.559,0.8837,0.3555,100000.0,0.0,4.99
+1,179915631,rsm10000000787,0.559,0.8837,0.3555,100000.0,0.0,4.99
+1,179919811,rsm10000000788,0.559,0.8837,0.3555,100000.0,0.0,4.99
+(...)
+8,94479237,rs32095272,0.441,1.0456,0.4362,100000.0,0.0,4.75
+8,94765445,rsm10000005684,0.441,1.0456,0.4362,100000.0,0.0,4.75
+8,94785223,rsm10000005685,0.441,1.0456,0.4362,100000.0,0.0,4.75
+8,94840921,rsm10000005686,0.441,1.0456,0.4362,100000.0,0.0,4.75
+```
+
+The lmdb file contains the full vector and compresses to 100K. For 13K traits that equals about 1Gb.
