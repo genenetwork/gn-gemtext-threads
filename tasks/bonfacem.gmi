@@ -23,8 +23,7 @@
 * Share PhD concept note with PJ for polishing
 
 ### This week
-
-* [ ] Fix CD.  Build guix against a recent pinned profile.
+* [ ] Generate RDF docs using AI.
 * [~] Dump all genotypes from tux02 to LMDB.
 *     - PJ sync tux01 genotypes with tux02/04.
 *     - Yet to set-up 2FA on new device
@@ -160,3 +159,4 @@ Currently closed issues are:
 *     - Extra fluff to grant dev user access to everything.
 * [X] Merged rate-limiter.
 * [X] Look at slow running CD (look at issue tracker and be systematic).
+* [X] Fix CD.  Build guix against a recent pinned profile.
