@@ -9,13 +9,27 @@ assigned:jom
 
 ### Ongoing
 
-* Make RAG script available for reuse
+* Optimize RAG
 
-* Discuss with Bonface on how to get metadata for RAG
+*[~] Integrate with RAG
+
+* Get actual metadata with SPARQL endpoint
+
 
 ### Later
+
+* Catch up on LMDB
 
 
 ### Past
 
+*[x] Make RAG script available for reuse and clean it with Bonface
+
+*[x] Catch up on SPARQL
+
+*[x] Discuss with Bonface on how to get metadata for RAG
+
+*[x] Pickle RAG
+
+*[x] Try out SPARQLWrapper
 
