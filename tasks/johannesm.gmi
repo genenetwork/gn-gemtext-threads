@@ -9,9 +9,16 @@ assigned:jom
 
 ### Ongoing
 
-* Catch up on LMDB
+* Optimize RAG
+
+*[~] Integrate with RAG
+
+* Get actual metadata with SPARQL endpoint
+
 
 ### Later
+
+* Catch up on LMDB
 
 
 ### Past
@@ -21,3 +28,7 @@ assigned:jom
 *[x] Catch up on SPARQL
 
 *[x] Discuss with Bonface on how to get metadata for RAG
+
+*[x] Pickle RAG
+
+*[x] Try out SPARQLWrapper
