@@ -32,3 +32,4 @@ assigned:jom
 *[x] Pickle RAG
 
 *[x] Try out SPARQLWrapper
+
