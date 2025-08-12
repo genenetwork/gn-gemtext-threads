@@ -274,3 +274,7 @@ To dump data into a ttl file, first make sure that you are in the guix environme
 => https://github.com/genenetwork/dump-genenetwork-database/ Dump Genenetwork Database
 
 See the README for instructions.
+
+For the public GN endpoint visit
+
+=> https://sparql.genenetwork.org/sparql/

@@ -21,10 +21,12 @@ So we can convert a .geno file to BIMBAM. I need to extract GN traits to a R/qtl
 * [X] Check why Zach/GN JSON file lists different mappable BXDs
 * [X] Update DB on run-server
 * [X] Add batch run and some metadata so we can link back from results
+* [ ] Check lmdb duplicate key warning
 * [ ] Create a DB/table containing hits and old reaper values
 * [ ] Update PublishXRef and store old reaper value(?)
 * [ ] Correctly Handle escalating errors
-* [ ] Make sure the trait fetcher handles authorization
+* [ ] Make sure the trait fetcher handles authorization or runs localhost only
+* [ ] gemma-wrapper --force does not work for GRM and re-check GRM does not change on phenotype
 
 For the last we should probably add a few columns. Initially we'll only store the maximum hit.
 
@@ -935,3 +937,314 @@ jq ".[] | .Id" < bxd-publish.json > ids.txt
 ```
 
 All set to run our first batch! Now we replicate our guix-wrapper environment, start the gn-guile server and fire up a batch script that pulls the data from the database and runs gemma for every step.
+
+
+To get precompute going we need a server set up with a recent database. I don't want to use the production server. The fastest other server we have is balg01, and it is not busy right now, so let's use that. First we recover a DB from our backup, as described in
+
+=> topics/systems/mariadb/precompute-mapping-input-data
+
+(btw that examples show we started on precompute since November 2023 - 1.5 years ago). On that server mariadb is running as
+/usr/local/guix-profiles/gn-latest/bin/mariadbd --datadir=/export/mariadb/tux01. We can simply overwrite that database as it
+is an installation of Feb 18 2024. We extract:
+
+```
+borg extract --progress /export/backup/bacchus/drop/tux04/genenetwork::borg-tux04-sql-20250807-04:16-Thu
+```
+
+After extracting the backup we need to update permissions and point mariadb to the new dir: balg01:/export/mariadb/tux04/latest/.
+Restarting the DB and it all appears to work.
+
+Before I move the code across we need to make sure metadata on the traits get added to the lmdb mapping data. I actually wrote the code for that here. This adds the metadata to lmdb:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/a0eb8ed829072cb539b32affe135a7930989ca30/bin/gemma2lmdb.py#L99
+
+gemma-wrapper writes data like this:
+
+```
+  "meta": {
+    "type": "gemma-wrapper",
+    "version": "0.99.7-pre1",
+    "population": "BXD",
+    "name": "HC_U_0304_R",
+    "trait": "101500_at",
+    "url": "https://genenetwork.org/show_trait?trait_id=101500_at&dataset=HC_U_0304_R",
+    "archive_GRM": "46bfba373fe8c19e68be6156cad3750120280e2e-gemma-cXX.tar.xz",
+    "archive_GWA": "779a54a59e4cd03608178db4068791db4ca44ab3-gemma-GWA.tar.xz",
+    "dataid": 75629,
+    "probesetid": 1097,
+    "probesetfreezeid": 7
+    }
+```
+
+This was done for probesetdata and needs to be adapted for our BXD PublishData exercise. Also I want the archive_GWA file name to include the trait name/ID so we can find it quickly on the storage (without having to parse/query all lmdb files).
+
+From the gemma-wrapper invocation you can see I added a few switches to pass in this information:
+
+=> https://git.genenetwork.org/gn-guile/tree/gn/runner/gemma.scm#n97
+
+```
+        --meta NAME                  Pass in metadata as JSON file
+        --population NAME            Add population identifier to metadata
+        --name NAME                  Add dataset identifier to metadata
+        --id ID                      Add identifier to metadata
+        --trait TRAIT                Add trait identifier to metadata
+```
+
+We can add BXD as population and BXDPublish as a dataset identifier. Set id with dataid, and trait id with PublishXRefID and point it back to GN, so we can click
+
+=>  https://genenetwork.org/show_trait?trait_id=51048&dataset=BXDPublish
+
+Another thing I want to add are the existing qtlreaper hit values.  That way we can assess where the biggest impact was of using gemma over qtlreaper. To achieve this we will create a new API endpoint that can serve that data. Remember we get the trait values with:
+
+=> http://127.0.0.1:8091/dataset/bxd-publish/values/10002.json
+
+so we can add an endpoint that lists the mapping results
+
+=> http://127.0.0.1:8091/dataset/bxd-publish/trait-hits/10002.json
+
+we also will have
+
+=> http://127.0.0.1:8091/dataset/bxd-publish/trait-info/10002.json
+
+That will return more metadata and point into our RDF store. Note that this is now all very specific to bxd-publish. Later we'll have to think how to generalise these endpoints. We are just moving forward to do the BXD precompute run.
+
+Interestingly GN2 shows this information (well, only the highest hit) on the search page, but not on the trait page. As we can get hits from multiple sources we should (eventually) account for that with something like:
+
+```
+=> http://127.0.0.1:8091/dataset/bxd-publish/trait-hits/10002.json
+{ "qtlreaper-hk":
+  {
+    [
+      { "name":..., "chr": ..., "pos":..., "LRS":..., "additive":..., }
+    ]
+  }
+  "gemma-loco":
+  {
+    [
+      { "name":..., "chr": ..., "pos":..., "LRS":..., "additive":..., }
+      { "name":..., "chr": ..., "pos":..., "LRS":..., "additive":..., }
+      { "name":..., "chr": ..., "pos":..., "LRS":..., "additive":..., }
+    ]
+  }
+}
+```
+
+Eventually we may list gemma, Rqtl2 hits with and without LOCO and with and without covariates. Once we build this support we can adapt our search tools.
+
+Obviously this won't fit the current PublishXRef format, so -- for now -- we will just mirror its contents:
+
+```
+{ "qtlreaper-hk":
+  {
+    [
+      { "name":..., "chr": ..., "pos":..., "LRS":..., "additive":..., }
+    ]
+  }
+}
+```
+
+To get compute going I am going to skip above because we can update the lmdb files later.
+The first fix is to add the trait name to the file names and the following record to lmdb:
+
+  "meta": {
+    "type": "gemma-wrapper",
+    "version": "0.99.7-pre1",
+    "population": "BXD",
+    "name": "BXDPublish",
+    "table": "PublishData",
+    "traitid": 10002, // aka PublishXrefId
+    "url": "https://genenetwork.org/show_trait?trait_id=51048&dataset=BXDPublish,
+    "archive_GRM": "46bfba373fe8c19e68be6156cad3750120280e2e-gemma-cXX.tar.xz",
+    "archive_GWA": "779a54a59e4cd03608178db4068791db4ca44ab3-BXDPublish-10002-gemma-GWA.tar.xz",
+    "dataid": 8967044,
+    }
+
+This required modifications to gemma-wrapper.
+
+Running:
+
+```
+gemma-wrapper --json --force --loco -- -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -n 2 -gk -debug > K.json
+gemma-wrapper --json --force --lmdb --population BXD --name BXDPublish --trait 10002 --loco --input K.json -- -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -lmm 9 -maf 0.1 -n 2 -debug > GWA.json
+```
+
+begets '66b8c19be87e9566358ce904682a56250eb05748-BXDPublish-10002-gemma-GWA.tar.xz'. When I check the meta data in the lmdb file it is set to
+
+```
+"meta": {"type": "gemma-wrapper", "version": "1.00-pre1", "population": "BXD", "name": "BXDPublish", "trait": "10002", "geno_filename": "BXD.geno.txt", "geno_hash": "3b65ed252fa47270a3ea867409b0bdc5700ad6f6", "loco": true, "url": "https://genenetwork.org/show_trait?trait_id=10002&dataset=BXDPublish", "archive_GRM": "185eb08dc3897c7db5d7ea987170898035768f93-gemma-cXX.tar.xz", "archive_GWA":"66b8c19be87e9566358ce904682a56250eb05748-BXDPublish-10002-gemma-GWA.tar.xz", "table": "PublishData", "traitid": 10002, "dataid": 0}
+```
+
+which is good enough (for now). I may still add the dataid, but it requires a SQL call. Code is here:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/commit/49587523fc93bdcf0265da9da97f8d6d2a9e1008
+
+I should note that up to this point I would have had no advantage from AI programming. I know there are topics that I'll work on where I may benefit, but this type of architecturing, with very little code writing, does not really help. I certainly have the intention of using AI! Next steps, unfortunately, there is still little to be gained. Where we'll probably gain is:
+
+- Using the RDF data store and documenting the endpoint(s)
+- Refactoring some of GN2's code to introduce lmdb\
+- Deduplicating GN2/GN3 SQL code
+- Improving the REST API and writing documentation and tests
+- Analysing existing code bases, such as GEMMA itself
+
+Next step is getting the data churn going! After that we'll list all the hits which requires processing the lmdb output.
+
+Precompute of 13K traits has its first test run on balg01.
+
+It is going at 30 gemma runs per minute, so perhaps 8 hours for the full run if it keeps going. But I am hitting errors.
+
+Afther that will be to digest hits from the precomputed vectors in lmdb.
+
+## Yesterday's tux02 crash
+
+All servers work on tux02 except for BNW.
+
+I tried to restart BNW, but it is giving an error, including the mystifying shepherd error (that I have as a sticker on my laptop):
+
+> 2025-08-11 01:13:41 error in finalization thread: Success
+
+It is on our end, so no need to ping Yan. I'll fix it when I have time (I did below).
+
+## Precompute
+
+To get precompute up and running I need to create the environment on balg01. The DB I updated a few days ago, so that should be fine.
+
+First we check out the guile webserver:
+
+```
+git clone tux02.genenetwork.org:/home/git/public/gn-guile gn-guile-8092
+```
+
+Now gn-guile is already running serving aliases, so we want to run this as an internal endpoint right now with something like
+
+```
+unset GUIX_PROFILE
+. /usr/local/guix-profiles/guix-pull/etc/profile
+guix shell -L ~/guix-bioinformatics --container --network --file=guix.scm -- guile -L . --fresh-auto-compile -e main web/webserver.scm 8092
+```
+
+so, this renders
+
+```
+curl http://127.0.0.1:8092/dataset/bxd-publish/values/10002.json
+{"BXD1":54.099998,"BXD2":50.099998,"BXD5":53.299999,"BXD6":55.099998
+```
+
+Next step is to set up gemma-wrapper. Now this failed because guix was not happy. We have been updating things these last weeks. Rather than trying to align with recent changes I could have rolled back to the version I am using on my desktop. But I decided not to let those bits rot and updated guix from
+
+guix describe Thu Mar 14 21:33:55 2024
+
+to
+
+guix describe Sun Aug 10 18:18:20 2025
+
+Should use a newer version first! Let's try
+
+```
+guix pull --url=https://codeberg.org/guix/guix  -p ~/opt/guix-pull
+```
+
+(that took a while, so I took the opportunity to fix BNW -- turns out someone disabled BNW in shepherd by creating a systemd version that did not start properly).
+
+After the pull there were quite a few problems with gemma dependencies that needed fixing. First problem
+
+```
+guix package: warning: failed to load '(gn packages gemma)':
+In procedure abi-check: #<record-type <git-reference>>: record ABI mismatch; recompilation needed
+```
+
+required
+
+```
+find ~/.cache/guile -name "*.go" -delete
+```
+
+I also had to point guix-past to the new codeberg record! And now, magically, things started working.
+
+So, now I have an identical setup on my desktop and on the balg server. Next is to write a script that will batch run gemma-wrapper for every BXD PublishData ID. We created that list with jq earlier.
+
+```
+curl http://127.0.0.1:8092/dataset/bxd-publish/list > bxd-publish.json
+jq ".[] | .Id" < bxd-publish.json > ids.txt
+```
+
+For every ID in that list we are going to fetch the trait values with
+
+```
+#! /bin/env sh
+
+export TMPDIR=./tmp
+curl http://127.0.0.1:8092/dataset/bxd-publish/list > bxd-publish.json
+jq ".[] | .Id" < bxd-publish.json > ids.txt
+./bin/gemma-wrapper --force --json --loco -- -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -n 2 -gk > K.json
+
+for id in `cat ids.txt` ; do
+  echo Precomputing $id
+  curl http://127.0.0.1:8092/dataset/bxd-publish/values/$id.json > pheno.json
+  ./bin/gn-pheno-to-gemma.rb --phenotypes pheno.json --geno-json BXD.geno.json > BXD_pheno.txt
+  ./bin/gemma-wrapper --json --lmdb --population BXD --name BXDPublish --trait $id --loco --input K.json -- -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -lmm 9 -maf 0.1 -n 2 -debug > GWA.json
+done
+```
+
+I hard copied the following files
+
+```
+BXD.geno.json
+BXD.geno.txt
+BXD.8_snps.txt
+```
+
+One thing I need to check is that the GRM is actually a constant. I forgot what GEMMA does.
+
+We hit an error
+
+```
+/gnu/store/vvl1g1l0j19w39kry2xcsawvlhbyb87j-ruby-3.4.4/lib/ruby/3.4.0/json/common.rb:221:in 'JSON::Ext::Parser.parse':
+unexpected token at '' (JSON::ParserError)
+FATAL ERROR: gemma-wrapper bailed out with pid 340588 exit 20
+./bin/gemma-wrapper:494:in 'block (2 levels) in <main>'
+./bin/gemma-wrapper:479:in 'IO.open'
+./bin/gemma-wrapper:479:in 'block in <main>'
+./bin/gemma-wrapper:832:in '<main>'Precomputing 10137
+```
+
+The JSON file is empty 10136. Hmmm.
+
+I also see
+
+```
+WARNING: failed to update lmdb record with key b'\r\x02n\x7f\x10' -- probably a duplicate 13:40795920 (b'\r':40795920)
+```
+
+For the first the webserver actually stopped on `In procedure accept: Too many open files`. The problem looks similar to
+
+=> https://issues.guix.gnu.org/60226
+
+and Arun's patch
+
+=> https://cgit.git.savannah.gnu.org/cgit/guix/mumi.git/commit/?id=897967a84d3f51da2b1cc8c3ee942fd14f4c669b
+
+I raised ulimit, but may need to restart the webserver several time. We are computing though:
+
+```
+-rw-r--r-- 1 wrk wrk   82968 Aug 11 05:16 ab51d69f79601cfa7399feebca619ea1a71c1270-BXDPublish-10146-gemma-GWA.tar.xz
+-rw-r--r-- 1 wrk wrk   82772 Aug 11 05:16 e6739ace8ca4931fc51baa1844b3b5ceac592104-BXDPublish-10147-gemma-GWA.tar.xz
+-rw-r--r-- 1 wrk wrk   81848 Aug 11 05:16 60880fc7e8c86dffb17f28664e478204ea26f827-BXDPublish-10148-gemma-GWA.tar.xz
+-rw-r--r-- 1 wrk wrk   79336 Aug 11 05:16 c914d6221b004dec98d60e08c0fdf8791c09cb41-BXDPublish-10149-gemma-GWA.tar.xz
+-rw-r--r-- 1 wrk wrk   83536 Aug 11 05:16 3d72b19730edab29bdc593cb6a1a86dd789d351f-BXDPublish-10150-gemma-GWA.tar.xz
+-rw-r--r-- 1 wrk wrk   69060 Aug 11 05:16 0e965f1778425071a5497d0fe69f2dc2e534ef60-BXDPublish-10151-gemma-GWA.tar.xz
+-rw-r--r-- 1 wrk wrk   69072 Aug 11 05:16 4de26e62a75727bc7edd6b266dfcd7753d185f1a-BXDPublish-10152-gemma-GWA.tar.xz
+(...)
+```
+
+There are some scarily small datasets:
+
+```
+GET /dataset/bxd-publish/values/10198.json
+;;; ("8967240")
+
+;;; ((("C57BL/6J" . 1.62) ("BXD1" . 2.37) ("BXD5" . 2.73) ("BXD9" . 3.52) ("BXD11" . 0.18) ("BXD12" . 3.69) ("BXD16" . 0.29) ("BXD21" . 2.34) ("BXD27" . 3.38) ("BXD32" . 0.24)))
+```
+
+i.e. https://genenetwork.org/show_trait?trait_id=10198&dataset=BXDPublish
+
+Not sure we should be running GEMMA on those!
