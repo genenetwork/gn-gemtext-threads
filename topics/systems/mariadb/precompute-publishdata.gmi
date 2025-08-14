@@ -22,9 +22,12 @@ So we can convert a .geno file to BIMBAM. I need to extract GN traits to a R/qtl
 * [X] Update DB on run-server
 * [X] Add batch run and some metadata so we can link back from results
 * [ ] Check lmdb duplicate key warning
-* [ ] Create a DB/table containing hits and old reaper values
+* [ ] Check invalid data sets/traits and feed them to Rob/Arthur
+* [X] Create a DB/table containing hits and old reaper values
+* [ ] Convert this info to RDF
 * [ ] Update PublishXRef and store old reaper value(?)
-* [ ] Correctly Handle escalating errors
+* [ ] When loading traits compute mean, se, skew, kurtosis and store them as metadata in lmdb
+* [ ] Correctly Handle gn-guile escalating errors
 * [ ] Make sure the trait fetcher handles authorization or runs localhost only
 * [ ] gemma-wrapper --force does not work for GRM and re-check GRM does not change on phenotype
 
@@ -1171,13 +1174,12 @@ For every ID in that list we are going to fetch the trait values with
 
 ```
 #! /bin/env sh
-
 export TMPDIR=./tmp
 curl http://127.0.0.1:8092/dataset/bxd-publish/list > bxd-publish.json
 jq ".[] | .Id" < bxd-publish.json > ids.txt
 ./bin/gemma-wrapper --force --json --loco -- -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -n 2 -gk > K.json
 
-for id in `cat ids.txt` ; do
+for id in 'cat ids.txt' ; do
   echo Precomputing $id
   curl http://127.0.0.1:8092/dataset/bxd-publish/values/$id.json > pheno.json
   ./bin/gn-pheno-to-gemma.rb --phenotypes pheno.json --geno-json BXD.geno.json > BXD_pheno.txt
@@ -1248,3 +1250,237 @@ GET /dataset/bxd-publish/values/10198.json
 i.e. https://genenetwork.org/show_trait?trait_id=10198&dataset=BXDPublish
 
 Not sure we should be running GEMMA on those!
+
+
+The computation initially stopped at 70% (we are now at 98%).
+
+To get from 70% I run the webserver without fibers as suggested by Arun's patch:
+
+=> https://cgit.git.savannah.gnu.org/cgit/guix/mumi.git/commit/?id=897967a84d3f51da2b1cc8c3ee942fd14f4c669b
+
+Because we were getting errors like: In procedure accept: Too many open files with GET /dataset/bxd-publish/values/23486.json
+
+Afther removing fibers precompute just continued where it left off. As it should. The fix is:
+
+=> https://git.genenetwork.org/gn-guile/commit/?id=289da2e13e07928cdb8a1d165483a3a3cd9ae1c6
+
+Now that is running I want to make sure I can point back to metadata and perhaps fetch some information to enrich our lmdb files for further processing. Earlier we captured some metadata with
+
+Next we capture some metadata
+
+```
+MariaDB [db_webqtl]> select PhenotypeId, Locus, DataId, Phenotype.Post_publication_description from PublishXRef, Phenotype where PublishXRef.PhenotypeId = Phenotype.Id and InbredSetId=1 limit 5;
++-------------+----------------+---------+----------------------------------------------------------------------------------------------------------------------------+
+| PhenotypeId | Locus          | DataId  | Post_publication_description                                                                                               |
++-------------+----------------+---------+----------------------------------------------------------------------------------------------------------------------------+
+|           4 | rs48756159     | 8967043 | Central nervous system, morphology: Cerebellum weight, whole, bilateral in adults of both sexes [mg]                       |
+|          10 | rsm10000005699 | 8967044 | Central nervous system, morphology: Cerebellum weight after adjustment for covariance with brain size [mg]                 |
+|          15 | rsm10000013713 | 8967045 | Central nervous system, morphology: Brain weight, male and female adult average, unadjusted for body weight, age, sex [mg] |
+|          20 | rs48756159     | 8967046 | Central nervous system, morphology: Cerebellum volume [mm3]                                                                |
+|          25 | rsm10000005699 | 8967047 | Central nervous system, morphology: Cerebellum volume, adjusted for covariance with brain size [mm3]                       |
++-------------+----------------+---------+----------------------------------------------------------------------------------------------------------------------------+
+```
+
+The qtlreaper hits are also of interest. Note Bonz has brilliantly captured this in RDF, see
+
+=> https://github.com/genenetwork/gn-docs/blob/master/rdf-documentation/phenotype-metadata.md
+
+which is parseable by machines(!). Let's try to use RDF first. The query:
+
+```
+SELECT * WHERE {
+    <http://genenetwork.org/id/traitBxd_10002> ?p ?o .
+}
+```
+
+renders
+
+```
+"http://www.w3.org/1999/02/22-rdf-syntax-ns#type","http://genenetwork.org/category/Phenotype"
+"http://genenetwork.org/term/belongsToGroup","http://genenetwork.org/id/setBxd"
+"http://www.w3.org/2004/02/skos/core#altLabel","BXD_10002"
+"http://purl.org/dc/terms/description","Central nervous system, morphology: Cerebellum weight after adjustment for covariance with brain size [mg]"
+"http://genenetwork.org/term/abbreviation","ADJCBLWT"
+"http://genenetwork.org/term/additive",2.08179
+"http://genenetwork.org/term/locus","http://genenetwork.org/id/Rsm10000005699"
+"http://genenetwork.org/term/lodScore",4.77938
+"http://genenetwork.org/term/mean",52.2206
+"http://genenetwork.org/term/sequence",1
+"http://genenetwork.org/term/submitter","robwilliams"
+"http://genenetwork.org/term/traitId","10002"
+"http://purl.org/dc/terms/isReferencedBy","http://rdf.ncbi.nlm.nih.gov/pubmed/11438585"
+```
+
+which covers pretty much what we need. Note that this is coming from our public endpoint and can be used to instruct AI agents(!)
+
+Now we want to fetch these values for all these traitBxd (yes, we need to fix some naming) with a single query:
+
+```
+SELECT count(*) WHERE {
+    ?s gnt:belongsToGroup gn:setBxd.
+} limit 5
+```
+
+returns 14039 traits. Good! Let's get all properties
+
+```
+
+SELECT * WHERE {
+    ?s gnt:belongsToGroup gn:setBxd;
+         gnt:traitId ?id;
+         gnt:locus ?locus;
+         gnt:lodScore ?lrs;
+         dct:description ?descr.
+} limit 50
+```
+
+[Try](https://sparql.genenetwork.org/sparql?default-graph-uri=&query=%0D%0APREFIX+dct%3A+%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3E+%0D%0APREFIX+gn%3A+%3Chttp%3A%2F%2Fgenenetwork.org%2Fid%2F%3E+%0D%0APREFIX+owl%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2002%2F07%2Fowl%23%3E+%0D%0APREFIX+gnc%3A+%3Chttp%3A%2F%2Fgenenetwork.org%2Fcategory%2F%3E+%0D%0APREFIX+gnt%3A+%3Chttp%3A%2F%2Fgenenetwork.org%2Fterm%2F%3E+%0D%0APREFIX+sdmx-measure%3A+%3Chttp%3A%2F%2Fpurl.org%2Flinked-data%2Fsdmx%2F2009%2Fmeasure%23%3E+%0D%0APREFIX+skos%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23%3E+%0D%0APREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E+%0D%0APREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E+%0D%0APREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E+%0D%0APREFIX+qb%3A+%3Chttp%3A%2F%2Fpurl.org%2Flinked-data%2Fcube%23%3E+%0D%0APREFIX+xkos%3A+%3Chttp%3A%2F%2Frdf-vocabulary.ddialliance.org%2Fxkos%23%3E+%0D%0APREFIX+pubmed%3A+%3Chttp%3A%2F%2Frdf.ncbi.nlm.nih.gov%2Fpubmed%2F%3E+%0D%0A%0D%0A%0D%0A%0D%0ASELECT+*+WHERE+%7B%0D%0A++++%3Fs+gnt%3AbelongsToGroup+gn%3AsetBxd%3B%0D%0A+++++++++gnt%3AtraitId+%3Fid%3B%0D%0A+++++++++gnt%3Alocus+%3Flocus%3B%0D%0A+++++++++%23+gnt%3Achr+%3Fchr%3B%0D%0A+++++++++%23+gnt%3Apos+%3Fpos%3B%0D%0A+++++++++gnt%3AlodScore+%3Flrs%3B%0D%0A+++++++++dct%3Adescription+%3Fdescr.%0D%0A%7D+limit+50&format=text%2Fhtml&timeout=0&signal_void=on)
+
+If we want to get the chr+location we can query one:
+
+```
+SELECT * WHERE {
+gn:Rs47436964 ?p ?o.
+}
+```
+
+renders
+
+```
+http://www.w3.org/2000/01/rdf-schema#label 	"rs47436964"
+chr "12"
+mb 	65.0498
+```
+
+Now the label is not so interesting, so in one query we can do:
+
+```
+SELECT ?id ?lod ?chr ?mb ?descr WHERE {
+    ?s gnt:belongsToGroup gn:setBxd;
+         gnt:traitId ?id;
+         gnt:locus ?locus;
+         gnt:lodScore ?lod;
+         dct:description ?descr.
+    ?locus gnt:chr ?chr;
+         gnt:mb ?mb.
+} order by desc(?lod) limit 50
+```
+
+which gets, for example a massive reaper HK QTL at
+
+```
+"21588" 34.558 "12" 116.67 "Cofactor, genetics, genomics: Structural variants SVs on chromosome 12, raw uncorrected sum of calls using LongRanger on linked-read sequencing data [n]"
+```
+
+The description of the phenotype is unfortunate. I think it is a synthetic QTL. The title is "SVs_Chr12". Luckily most traits give more an idea of what it is about.
+
+[SPARQL](https://sparql.genenetwork.org/sparql?default-graph-uri=&query=%0D%0APREFIX+dct%3A+%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3E+%0D%0APREFIX+gn%3A+%3Chttp%3A%2F%2Fgenenetwork.org%2Fid%2F%3E+%0D%0APREFIX+owl%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2002%2F07%2Fowl%23%3E+%0D%0APREFIX+gnc%3A+%3Chttp%3A%2F%2Fgenenetwork.org%2Fcategory%2F%3E+%0D%0APREFIX+gnt%3A+%3Chttp%3A%2F%2Fgenenetwork.org%2Fterm%2F%3E+%0D%0APREFIX+sdmx-measure%3A+%3Chttp%3A%2F%2Fpurl.org%2Flinked-data%2Fsdmx%2F2009%2Fmeasure%23%3E+%0D%0APREFIX+skos%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23%3E+%0D%0APREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E+%0D%0APREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E+%0D%0APREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E+%0D%0APREFIX+qb%3A+%3Chttp%3A%2F%2Fpurl.org%2Flinked-data%2Fcube%23%3E+%0D%0APREFIX+xkos%3A+%3Chttp%3A%2F%2Frdf-vocabulary.ddialliance.org%2Fxkos%23%3E+%0D%0APREFIX+pubmed%3A+%3Chttp%3A%2F%2Frdf.ncbi.nlm.nih.gov%2Fpubmed%2F%3E+%0D%0A%0D%0A%0D%0A%0D%0ASELECT+%3Fid+%3Flrs+%3Fchr+%3Fmb+%3Fdescr+WHERE+%7B%0D%0A++++%3Fs+gnt%3AbelongsToGroup+gn%3AsetBxd%3B%0D%0A+++++++++gnt%3AtraitId+%3Fid%3B%0D%0A+++++++++gnt%3Alocus+%3Flocus%3B%0D%0A+++++++++gnt%3AlodScore+%3Flrs%3B%0D%0A+++++++++dct%3Adescription+%3Fdescr.%0D%0A++++%3Flocus+gnt%3Achr+%3Fchr%3B%0D%0A+++++++++++++++gnt%3Amb+%3Fmb.%0D%0A%7D+order+by+desc%28%3Flrs%29+limit+50&format=text%2Fhtml&timeout=0&signal_void=on)
+
+To run this query on all 13K traits takes just a second! The resulting 3Mb TSV I'll share. Note that there is no code necessary to get to this point! Just SPARQL queries on a public endpoint.
+
+Now, what we want to do is take these results and combine them with the full vector data stored in lmdb.
+The first thing we can do is list the top hit from every trait and combine that with above data. That way we can quickly asses what trait hits will change using GEMMA instead of HK reaper. One thing to note is the formula LRS/4.6=LOD. The GN2 interface shows LRS.
+
+Meanwhile I am waiting for precompute. Most of it is done, but some interesting errors:
+
+```
+Precomputing 20484
+;;; ("41012208")
+SQL Connection ERROR! file not found
+```
+
+especially since it appears this is a cache hit. OK, I'll check tomorrow. For now we have 12837 completed vectors!
+After some reruns we have 13491 vectors, i.e. 98% of BXD PublishData.
+
+
+After some reruns we have 13491 vectors, i.e. 98% of BXD PublishData.
+
+Some remaining problems:
+
+```
+Executing: parallel --results /tmp/test --joblog /tmp/test/79d6dbd2fbd55b159c35d903ba10d9cab14f7816-parallel.log < /tmp
+/test/parallel-commands.txt
+Command exited with non-zero status 20
+```
+
+the trait values are all 1.0.
+
+```
+BXD1    1.0
+BXD2    1.0
+BXD5    1.0
+BXD6    1.0
+BXD8    1.0
+BXD9    1.0
+BXD11   1.0
+BXD12   1.0
+BXD13   1.0
+BXD14   1.0
+BXD15   1.0
+BXD16   1.0
+BXD18   1.0
+BXD19   1.0
+```
+
+We'll look into those later.
+
+Next step is to collect all the highest hits and we can do that with
+
+```
+./bin/view-gemma-mdb --sort tmp/tmp/9179b...923f181-gemma-GWA.mdb --anno BXD.8_snps.txt |head -2
+Reading tmp/tmp/9179b192fc1c19142d97607b64c04bf5a923f181-gemma-GWA.mdb...
+chr,pos,marker,af,beta,se,l_mle,l_lrt,-logP
+10,125580028,rsm10000007478,0.655,0.014,0.0134,100000.0,0.0005,3.34
+```
+
+That is great, but now we need to put the data in a place that we can analyse it - and the difference with qtlreaper. We can do a one-off using some tabular format. But that would mean we would have to redo things later to get it in SQL and/or present it some other way. So, basically, we need a flexible storage format that allows us to query things -- without predicting how people want to use that data and -- importantly -- have machines do it. Here comes RDF as the solution. As Mark Wilkinson has it: in my lab we only do RDF. No hacks (please).
+
+So, let's adapt the output of view-gemma-mdb and convert that to RDF. Bonz has done many such exercises in
+
+=> https://git.genenetwork.org/gn-transform-databases/tree/
+
+e.g. for the earlier phenotypes RDF+SPARQL we used to get the reaper values
+
+=> https://git.genenetwork.org/gn-transform-databases/tree/examples/phenotype.scm
+
+In this code SQL queries are embedded. I would argue these need to be replaced with REST API calls. But hey.
+
+First step is to include the ID with ./bin/view-gemma-mdb and some other metadata as fields, that we so thoughtfully included in the mdb metadata. This results in:
+
+```
+Reading /tmp/tmphvi6grqm/2b8e7c7cfe98f7e44bb2f07f057cc1adedf29c38-gemma-GWA.mdb...
+name,id,chr,pos,marker,af,beta,se,l_mle,l_lrt,-logP
+BXDPublish,22200,1,4858261,rsm10000000111,0.5,0.0246,0.0537,100000.0,0.0192,1.72
+BXDPublish,22200,1,182581091,rsm10000000451,0.548,-0.009,0.0537,100000.0,0.139,0.86
+BXDPublish,22200,1,182635325,rsm10000000452,0.548,-0.009,0.0537,100000.0,0.139,0.86
+```
+
+Now remember the HK reaper data is already in RDF. If we push this data in we should be able to query the combined datasets. Let's convert this to RDF that looks like:
+
+```
+gn:GEMMAMappedLOCO_22200 a gnt:mappedTrait;
+                         label "GEMMA trait 22200 mapped with LOCO";
+                         gnt:LOCO true;
+                         gnt:belongsToGroup gn:setBxd;
+                         gnt:traitId "22200";
+                         skos:altLabel "BXD_22200";
+                         gnt:locus gn:rsm10000000111;
+                         gnt:lodScore 1.72;
+                         gnt:af 0.5;
+                         gnt:effect 0.0246;
+```
+
+If the marker is not yet defined we can add:
+
+```
+gn:rsm10000000111        a gnt:marker;
+                         label "rsm10000000111I";
+                         gnt:chr  "1";
+                         gnt:mb   4.858261;
+                         gnt:pos  4858261.
+```
+
+This means we can pivot on the trait id between reaper and gemma results. It will also be easy to store multiple
+GEMMA hits.
+I note that GEMMA does not store the mean
+value. We can fetch that from trait values.
