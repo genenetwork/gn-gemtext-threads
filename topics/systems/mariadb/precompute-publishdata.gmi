@@ -680,7 +680,7 @@ NA
 NA
 NA
 (...)
-``
+```
 
 that GEMMA can use directly and matches the order of the individuals in the BXD.8.geno file and the founders/parents are not included. Note that all of this now only works for the BXD (on PublishData) and I am using BXD.json as described in
 
