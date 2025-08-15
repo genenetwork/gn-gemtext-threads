@@ -176,3 +176,13 @@ root@tux02:/export2/guix-containers/genenetwork-development/var/log/cd# tail -10
 ```
 
 One thing I ran into is http://genenetwork.org/gn3-proxy/ - what is that for?
+
+## Deploy Updates: 2025-08-15
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=269f99f1e1f0c253ecdd99f04bc7c6697012b0aa Update commit of gn-guile used on production
+
+This does not fix the issue on https://gn2-fred.genenetwork.org/show_trait?trait_id=1427571_at&dataset=HC_M2_0606_P, instead we get
+
+```
+fredm@tux04:~$ curl http://localhost:8091/gene/aliases/Brca2
+Resource not found: /gene/aliases/Brca2
+```
