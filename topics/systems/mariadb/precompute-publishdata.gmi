@@ -30,6 +30,7 @@ So we can convert a .geno file to BIMBAM. I need to extract GN traits to a R/qtl
 * [ ] Correctly Handle gn-guile escalating errors
 * [ ] Make sure the trait fetcher handles authorization or runs localhost only
 * [ ] gemma-wrapper --force does not work for GRM and re-check GRM does not change on phenotype
+* [ ] Use SNP URIs when possible (instead of inventing our own) - and BED information so we can locate them
 
 For the last we should probably add a few columns. Initially we'll only store the maximum hit.
 
@@ -1459,7 +1460,7 @@ Now remember the HK reaper data is already in RDF. If we push this data in we sh
 
 ```
 gn:GEMMAMappedLOCO_22200 a gnt:mappedTrait;
-                         label "GEMMA trait 22200 mapped with LOCO";
+                         label "GEMMA trait 22200 mapped with LOCO (defaults)";
                          gnt:LOCO true;
                          gnt:belongsToGroup gn:setBxd;
                          gnt:traitId "22200";
@@ -1484,3 +1485,130 @@ This means we can pivot on the trait id between reaper and gemma results. It wil
 GEMMA hits.
 I note that GEMMA does not store the mean
 value. We can fetch that from trait values.
+
+Rob wrote:
+
+> We will want to harvest the sample size for each trait. That will be a critical parameter for filtering. Knowing the skew and kurtosis also highly valuable in filtering and diagnostics. Many users forget to log their data and this introduces serious problems since you have a tail of outliers. Obviously a dumb mistake to have traits with all values of 1. Perhaps you can assign the task of fixing/deleting that traits to Arthur and me. Just send a list.
+
+I'll make a list to send to Arthur and you - it is on my tasks. With regard to trait info we should compute that as metadata when doing the precompute (as we have the trait values at that point!). I have added that to the task list.
+
+=> https://issues.genenetwork.org/topics/systems/mariadb/precompute-publishdata
+
+We'll do a rerun with this data soon, as it only took a day.
+
+Alright, I am keen to move forward on our precompute, because this is the fun phase. Getting the metadata in place should be easy, now we are on RDF. First we are going to simply mirror PublishXRef information for HK reaper and GEMMA runs. Reaper is already in RDF (mostly), so let's add some functionality to gemma-wrapper.
+
+The viewer for 1e59d19a679359516ecd97cf20375c80e987ee3e-BXDPublish-22282-gemma-GWA.tar.xz  gives
+
+```
+name,id,chr,pos,marker,af,beta,se,l_mle,l_lrt,-logP
+BXDPublish,22282,5,110385941,rs29780222,0.484,-0.0802,0.0356,2.0341,0.0,4.51
+BXDPublish,22282,5,110421808,rsm10000002804,0.484,-0.0802,0.0356,2.0341,0.0,4.51
+BXDPublish,22282,5,110479038,rsm10000002805,0.484,-0.0802,0.0356,2.0341,0.0,4.51
+BXDPublish,22282,5,110515858,rs33083878,0.484,-0.0802,0.0356,2.0341,0.0,4.51
+```
+
+Note that the sorting is arbitrary because -logP is identical! My take is that we should include all hits (read SNP names) for comparison with HK reaper. We will be able to parse range locations - so we can check 50K base pairs up and downstream too.
+
+Looking at SNPs we should look at using existing URIs instead of inventing new ones. I'll make a note of that too (to move forward). Looking at the first hit rs29780222 some googling finds https://www.informatics.jax.org/marker/MGI:1925270. I need to check with the GN database what is known there. Adding a BED file to RDF makes sense. Yet another task to add.
+
+OK, back to focussing on generating RDF with what we have now. A first attempt is
+
+```
+gn:GEMMAMapped_LOCO_e987ee3e_BXDPublish_22282_gemma_GWA a gnt:mappedTrait;
+      rdfs:label "GEMMA BXDPublish trait 22282 mapped with LOCO (defaults)";
+      gnt:trait gn:publishXRef_22282;
+      gnt:loco true;
+      gnt:time "2025/08/11 10:15";
+      gnt:belongsToGroup gn:setBxd;
+      gnt:name "BXDPublish";
+      gnt:traitId "22282";
+      skos:altLabel "BXD_22282";
+      gnt:locus gn:rs29780222;
+      gnt:lodScore 4.51;
+      gnt:af 0.484;
+      gnt:effect -0.08;
+```
+
+which looks nice already. We want to support more SNPs, however, so we split those up and now this dataset shows 84 snps at a cut off of logP of 4.0. We'll improve on that later (and will us precompute to estimate levels for the BXD). We always show the single highest score, no matter what. The cool thing is that we have *all* peaks now in RDF and we can query that:
+
+```
+gn:GEMMAMapped_LOCO_BXDPublish_22282_gemma_GWA_e987ee3e a gnt:mappedTrait;
+      rdfs:label "GEMMA BXDPublish trait 22282 mapped with LOCO (defaults)";
+      gnt:trait gn:publishXRef_22282;
+      gnt:loco true;
+      gnt:time "2025/08/11 10:15";
+      gnt:belongsToGroup gn:setBxd;
+      gnt:name "BXDPublish";
+      gnt:traitId "22282";
+      skos:altLabel "BXD_22282".
+gn:rs29780222_BXDPublish_22282_gemma_GWA_e987ee3e a gnt:mappedLocus;
+      gnt:mappedSnp gn:GEMMAMapped_LOCO_BXDPublish_22282_gemma_GWA_e987ee3e;
+      gnt:locus gn:rs29780222;
+      gnt:lodScore 4.51;
+      gnt:af 0.484;
+      gnt:effect -0.08.
+gn:rsm10000002804_BXDPublish_22282_gemma_GWA_e987ee3e a gnt:mappedLocus;
+      gnt:mappedSnp gn:GEMMAMapped_LOCO_BXDPublish_22282_gemma_GWA_e987ee3e;
+      gnt:locus gn:rsm10000002804;
+      gnt:lodScore 4.51;
+      gnt:af 0.484;
+      gnt:effect -0.08.
+(...)
+gn:rs33400361_BXDPublish_22282_gemma_GWA_e987ee3e a gnt:mappedLocus;
+      gnt:mappedSnp gn:GEMMAMapped_LOCO_BXDPublish_22282_gemma_GWA_e987ee3e;
+      gnt:locus gn:rs33400361;
+      gnt:lodScore 4.07;
+      gnt:af 0.452;
+      gnt:effect -0.078.
+gn:rsm10000002851_BXDPublish_22282_gemma_GWA_e987ee3e a gnt:mappedLocus;
+      gnt:mappedSnp gn:GEMMAMapped_LOCO_BXDPublish_22282_gemma_GWA_e987ee3e;
+      gnt:locus gn:rsm10000002851;
+      gnt:lodScore 4.07;
+      gnt:af 0.452;
+      gnt:effect -0.078.
+```
+
+Next step is to use rapper to see if this is valid RDF.
+
+```
+rapper --input turtle test.ttl
+```
+
+For this one trait: rapper: Parsing returned 513 triples. It may look like a lot of data, but RDF stores are pretty good at creating small enough representations. All identifiers are stored once as a string and referenced by 64-bit pointers.
+
+For the locus I notice Bonz capitalized the SNP identifiers. We don't want that. But I'll stick it in for now. The code is here:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/gemma-mdb-to-rdf.rb
+
+Basically we run
+
+```
+rm test.rdf
+for x in tmp/*.xz ; do
+    env GEM_PATH=tmp/ruby GEM_HOME=tmp/ruby ./bin/gemma-mdb-to-rdf.rb $x --anno BXD.8_snps.txt --sort >> test.rdf
+done
+```
+
+for the 98% BXD PublishData that rendered 1512885 triples. It needs some minor fixes, such as a Lod of infinite and the use of ? for an unknown locus.
+
+To load the file on production:
+
+```
+/gnu/store/9d81kdw2frn6b3fwqphsmkssc9zblir1-virtuoso-ose-7.2.11/bin/isql -u dba -P "*" -S 8981
+OpenLink Virtuoso Interactive SQL (Virtuoso)
+Version 07.20.3238 as of Jan  1 1970
+Type HELP; for help and EXIT; to exit.
+Connected to OpenLink Virtuoso
+Driver: 07.20.3238 OpenLink Virtuoso ODBC Driver
+ld_dir("/home/wrk/","test.ttl","http://pjotr.genenetwork.org")
+SQL> rdf_loader_run();
+Done. -- 13 msec.
+SQL> checkpoint;
+Done. -- 243 msec.
+SQL>
+```
+
+root@tux04:/export/guix-containers/genenetwork/data/virtuoso/ttl# curl --digest -v --user 'dba:*' --url "http://localhost:8982/sparql-graph-crud-auth?graph=http://pjotr.genenetwork.org" -T test.ttl
+
+I tried to upload to production, but this crashed the virtuoso server :/.
