@@ -123,7 +123,18 @@ e
 
 ## 4/8/2025
 * [-] refactoring lmdb matrix script
-* [-] integrating fetching rqtl2 from lmdb using bxd as a test pilot 
+* [-] integrating fetching rqtl2 from lmdb using bxd as a test pilot
+
+
+##  11/8/2025
+
+* [-] integrating lmdb genotypes  for rqtl2 computation for BXD 
+
+
+##  18/8/2025
+
+* [-] integrating lmdb genotypes for rqtl2 computation for BXD 
+
 
 ## Next week(s)
 
