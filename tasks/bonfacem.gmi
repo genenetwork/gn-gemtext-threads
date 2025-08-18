@@ -23,6 +23,7 @@
 * Share PhD concept note with PJ for polishing
 
 ### This week
+* [ ] Look at container work.  Look at permissions issue.
 * [ ] Generate RDF docs using AI.
 * [~] Dump all genotypes from tux02 to LMDB.
 *     - PJ sync tux01 genotypes with tux02/04.
