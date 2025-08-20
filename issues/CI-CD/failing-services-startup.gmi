@@ -1,0 +1,79 @@
+# Failing Services' Startup
+
+## Tags
+
+* type: bug
+* status: open, in progress
+* priority: high
+* assigned: fredm
+* interested: pjotrp, bonfacem, aruni
+* keywords: deployment, CI, CD
+
+## Description
+
+On rebuild of the CI/CD container with guix channel pinned at commit `34453b97005ff86355399df89c8827c57839d9c7`, some services fail to start and the error messages we get are as follows:
+
+```
+2025-08-20 16:05:20 Backtrace:
+2025-08-20 16:05:20            6 (primitive-load "/gnu/store/xbxd2zihw9dssrhips925gri0yn?")
+2025-08-20 16:05:20 In ice-9/eval.scm:
+2025-08-20 16:05:20    191:35  5 (_ _)
+2025-08-20 16:05:20 In gnu/build/linux-container.scm:
+2025-08-20 16:05:20     368:8  4 (call-with-temporary-directory #<procedure 7f014aa3a3f0?>)
+2025-08-20 16:05:20    476:16  3 (_ "/tmp/guix-directory.VWRNbv")
+2025-08-20 16:05:20      62:6  2 (call-with-clean-exit #<procedure 7f014aa1de80 at gnu/b?>)
+2025-08-20 16:05:20    321:20  1 (_)
+2025-08-20 16:05:20 In guix/build/syscalls.scm:
+2025-08-20 16:05:20   1231:10  0 (_ 268566528)
+2025-08-20 16:05:20 
+2025-08-20 16:05:20 guix/build/syscalls.scm:1231:10: In procedure unshare: 268566528: Invalid argument
+2025-08-20 16:05:20 Backtrace:
+2025-08-20 16:05:20            4 (primitive-load "/gnu/store/xbxd2zihw9dssrhips925gri0yn?")
+2025-08-20 16:05:20 In ice-9/eval.scm:
+2025-08-20 16:05:20    191:35  3 (_ #f)
+2025-08-20 16:05:20 In gnu/build/linux-container.scm:
+2025-08-20 16:05:20     368:8  2 (call-with-temporary-directory #<procedure 7f014aa3a3f0?>)
+2025-08-20 16:05:20     485:7  1 (_ "/tmp/guix-directory.VWRNbv")
+2025-08-20 16:05:20 In unknown file:
+2025-08-20 16:05:20            0 (waitpid #f #<undefined>)
+2025-08-20 16:05:20 
+2025-08-20 16:05:20 ERROR: In procedure waitpid:
+2025-08-20 16:05:20 Wrong type (expecting exact integer): #f
+```
+
+The services that fail are:
+
+* genenetwork3: consistently
+* genenetwork2: consistently
+* gn-auth: intermittently
+
+After digging further into this issue, and I think I have the beginnings of an idea of why the issue is comming up. Looking at:
+
+=> https://codeberg.org/guix/guix/src/commit/34453b97005ff86355399df89c8827c57839d9c7/guix/build/syscalls.scm#L1218-L1233
+
+We see the documentation says:
+
+> Note that CLONE_NEWUSER requires that the calling process be single-threaded,
+> which is possible if and only if libgc is running a single marker thread; this
+> can be achieved by setting the GC_MARKERS environment variable to 1.  If the
+> calling process is multi-threaded, this throws to 'system-error' with EINVAL.
+
+and looking at the error we are getting:
+
+```
+⋮
+2025-08-20 15:17:38 guix/build/syscalls.scm:1231:10: In procedure unshare: 268566528: Invalid argument
+⋮
+```
+
+Now, looking at
+=>https://codeberg.org/guix/guix/src/commit/34453b97005ff86355399df89c8827c57839d9c7/gnu/build/linux-container.scm#L321 where `unshare` is called
+
+
+we could come to the conclusion that, perhaps the calling process for `unshare` for "genenetwork3" and "genenetwork2" is consistently multi-threaded, leading to the error above.
+
+It might also explain why the /gn-auth/ service will **sometimes** throw the same error when the container is restarted, but other times, it'll just start with no error.
+
+I (currently) have no idea why the calling process would be multi-threaded.
+
+Or maybe, I'm overthinking this whole thing.
