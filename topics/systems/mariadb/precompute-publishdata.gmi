@@ -21,16 +21,18 @@ So we can convert a .geno file to BIMBAM. I need to extract GN traits to a R/qtl
 * [X] Check why Zach/GN JSON file lists different mappable BXDs
 * [X] Update DB on run-server
 * [X] Add batch run and some metadata so we can link back from results
-* [ ] Check lmdb duplicate key warning
-* [ ] Check invalid data sets/traits and feed them to Rob/Arthur
 * [X] Create a DB/table containing hits and old reaper values
-* [ ] Convert this info to RDF
+* [X] Convert this info to RDF
+* [X] Run virtuoso server
+* [ ] Ask interesting questions about the overlap between reaper and gemma
 * [ ] Update PublishXRef and store old reaper value(?)
 * [ ] When loading traits compute mean, se, skew, kurtosis and store them as metadata in lmdb
 * [ ] Correctly Handle gn-guile escalating errors
 * [ ] Make sure the trait fetcher handles authorization or runs localhost only
 * [ ] gemma-wrapper --force does not work for GRM and re-check GRM does not change on phenotype
 * [ ] Use SNP URIs when possible (instead of inventing our own) - and BED information so we can locate them
+* [ ] Check lmdb duplicate key warning
+* [ ] Check invalid data sets/traits and feed them to Rob/Arthur
 
 For the last we should probably add a few columns. Initially we'll only store the maximum hit.
 
@@ -1595,6 +1597,8 @@ for the 98% BXD PublishData that rendered 1512885 triples. It needs some minor f
 To load the file on production:
 
 ```
+guix shell -C -N virtuoso-ose -- isql
+# or
 /gnu/store/9d81kdw2frn6b3fwqphsmkssc9zblir1-virtuoso-ose-7.2.11/bin/isql -u dba -P "*" -S 8981
 OpenLink Virtuoso Interactive SQL (Virtuoso)
 Version 07.20.3238 as of Jan  1 1970
@@ -1609,6 +1613,407 @@ Done. -- 243 msec.
 SQL>
 ```
 
+But it don't show. Same for:
+
+```
 root@tux04:/export/guix-containers/genenetwork/data/virtuoso/ttl# curl --digest -v --user 'dba:*' --url "http://localhost:8982/sparql-graph-crud-auth?graph=http://pjotr.genenetwork.org" -T test.ttl
+```
+
 
 I tried to upload to production, but this crashed the virtuoso server :/.
+So I built a new virtuoso instance using gn-machines:
+
+=> https://git.genenetwork.org/gn-machines/commit/?id=90fa4fdacffe26c57649cb0515d0679ca19c27cc
+
+Now we can run isql locally as
+
+```
+guix shell -C -N --expose=/export/guix-containers/virtuoso/data/virtuoso/ttl/=/export/data/virtuoso/ttl virtuoso-ose -- isql -S 8891
+
+SQL> ld_dir('/export/data/virtuoso/ttl','test.n3','http://pjotr.genenetwork.org');"
+Done. -- 3 msec.
+# for testing the validity and optional delete problematic ones:
+SQL> SELECT * FROM DB.DBA.load_list;
+SQL> DELETE from DB.DBA.LOAD_LIST where ll_error IS NOT NULL ;
+# commit changes
+SQL> rdf_loader_run ();
+SQL> checkpoint;
+Done. -- 16 msec.
+SQL> SPARQL SELECT count(*) FROM <http://pjotr.genenetwork.org> WHERE { ?s ?p ?o };
+15
+```
+
+If an error exists all uploads will be blocked unless DB.DBA.LOAD_LIST is emptied (DELETE).
+An error may look like:
+
+```
+ERROR  : Character data are not allowed here by XML structure rules
+at line 2 column 3 of source text
+@prefix dct: <http://purl.org/dc/terms/> .
+```
+
+I don't know why, but only n3 triples appeared to work. The full manual is here:
+
+=> https://vos.openlinksw.com/owiki/wiki/VOS/VirtBulkRDFLoader Virtuoso bulk uploader
+
+## Fixing hanging virtuoso on production
+
+Going back to production I cleaned up the DB.DBA.LOAD_LIST as described above. Running isql can be done outside the container:
+
+```
+guix shell virtuoso-ose -- isql 8981
+SQL> DELETE from DB.DBA.LOAD_LIST;
+SQL> checkpoint;
+```
+
+SPARQL queries inside isql are fast:
+
+```
+SQL> SPARQL SELECT count(*) FROM <http://pjotr.genenetwork.org> WHERE { ?s ?p ?o };
+1206882
+SQL> SPARQL SELECT count(*) FROM <http://genenetwork.org> WHERE { ?s ?p ?o };
+46982542
+```
+
+The web socket is not connected. This does not respond:
+
+```
+curl http://localhost:8982/sparql/
+```
+
+herd stop/start virtuoso made no difference. Nor did nginx or nscd. Hmm. Restarting the full container it starts up at
+
+```
+root@tux04:/export/guix-containers/genenetwork/var/log# tail virtuoso.log
+  2025-08-17 07:47:07 07:47:07 HTTP server online at localhost:9893
+  2025-08-17 07:47:07 07:47:07 Server online at localhost:9892 (pid 43)
+curl localhost:9893/sparql
+```
+
+Aha, the domain is pointing to the wrong virtuoso server... I modified nginx on tux04 and, at least, we have SPARQL running on http. For https nginx is pointing to https://127.0.0.1:8993. Hmmm. That is not the same as what the logs tell me. Looks like there is still some problem with the production container. Well, we can solve that later.
+
+I'll first run virtuoso on a server. Starting from a guix from half a year ago:
+
+```
+. /usr/local/guix-profiles/guix-pull-3-link/etc/profile
+cd ~/gn-machines
+./virtuoso-deploy.sh
+curl localhost:8892/sparql/
+```
+
+Configure nginx to listen
+
+```
+server {
+  server_name sparql-test.genenetwork.org;
+  listen 80;
+  access_log /var/log/nginx/sparql-test-access.log;
+  error_log /var/log/nginx/sparql-test-error.log;
+  location / {
+    proxy_pass http://localhost:8892;
+    proxy_set_header Host $host;
+  }
+}
+```
+
+Added DNS-entry and we should be able to see
+
+=> http://sparql-test.genenetwork.org/sparql/
+
+Now I need to load the important data into this SPARQL server. On tux02 I find a recent set:
+
+```
+     4096 Dec  5  2024 wip
+   260886 Jul 21 19:57 schema.ttl
+443454617 Jul 21 19:57 generif-old.ttl
+    44902 Jul 21 19:57 classification.ttl
+339900838 Jul 21 19:58 genelist.ttl
+ 42509383 Jul 21 19:58 genbank.ttl
+152936953 Jul 21 19:58 genotype.ttl
+  1460511 Jul 21 19:58 dataset-metadata.ttl
+700627810 Jul 21 19:58 generif.ttl
+ 10491221 Jul 21 19:58 strains.ttl
+     1388 Jul 21 19:58 species.ttl
+ 23495986 Jul 21 19:58 publication.ttl
+    16879 Jul 21 19:58 tissue.ttl
+ 18537935 Jul 21 19:58 phenotype.ttl
+root@tux02:/export/data/genenetwork-virtuoso# du -sh .
+1.7G    .
+```
+
+Which is about 2Gb uncompressed. Not bad. To load the ttl files I have to move them into
+/export/guix-containers/virtuoso/data/virtuoso/ttl.
+
+```
+guix shell virtuoso-ose -- isql 8891 exec="ld_dir('/export/data/virtuoso/ttl','*.ttl','http://genenetwork.org');"
+guix shell virtuoso-ose -- isql 8891 exec="ld_dir('/export/data/virtuoso/ttl','*.ttl','http://genenetwork.org');"
+guix shell virtuoso-ose -- isql 8891 exec="rdf_loader_run();"
+```
+
+That takes a few minutes for 29746544 triples. Not bad at all!
+
+```
+guix shell virtuoso-ose -- isql 8891 exec="SELECT * FROM DB.DBA.load_list;"
+guix shell virtuoso-ose -- isql 8891 exec="checkpoint;"
+```
+
+Let's list all the tissues we have with
+
+```
+SELECT * WHERE {
+  ?s rdf:type gnc:tissue .
+  ?s rdfs:label ?o .
+}
+"http://genenetwork.org/id/tissueA1c" "Primary Auditory (A1) Cortex mRNA"
+"http://genenetwork.org/id/tissueAcc" "Anterior Cingulate Cortex mRNA"
+"http://genenetwork.org/id/tissueAdr" "Adrenal Gland mRNA"
+"http://genenetwork.org/id/tissueAmg" "Amygdala mRNA"
+"http://genenetwork.org/id/tissueBebv"  "Lymphoblast B-cell mRNA"
+"http://genenetwork.org/id/tissueBla" "Bladder mRNA"
+(...)
+```
+
+=> http://sparql-test.genenetwork.org/sparql/?default-graph-uri=&query=PREFIX+dct%3A+%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3E%0D%0APREFIX+gn%3A+%3Chttp%3A%2F%2Fgenenetwork.org%2Fid%2F%3E%0D%0APREFIX+owl%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2002%2F07%2Fowl%23%3E%0D%0APREFIX+gnc%3A+%3Chttp%3A%2F%2Fgenenetwork.org%2Fcategory%2F%3E%0D%0APREFIX+gnt%3A+%3Chttp%3A%2F%2Fgenenetwork.org%2Fterm%2F%3E%0D%0APREFIX+sdmx-measure%3A+%3Chttp%3A%2F%2Fpurl.org%2Flinked-data%2Fsdmx%2F2009%2Fmeasure%23%3E%0D%0APREFIX+skos%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23%3E%0D%0APREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E%0D%0APREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E%0D%0APREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E%0D%0APREFIX+qb%3A+%3Chttp%3A%2F%2Fpurl.org%2Flinked-data%2Fcube%23%3E%0D%0APREFIX+xkos%3A+%3Chttp%3A%2F%2Frdf-vocabulary.ddialliance.org%2Fxkos%23%3E%0D%0APREFIX+pubmed%3A+%3Chttp%3A%2F%2Frdf.ncbi.nlm.nih.gov%2Fpubmed%2F%3E%0D%0A%0D%0ASELECT+*+WHERE+%7B%0D%0A%3Fs+rdf%3Atype+gnc%3Atissue+.%0D%0A%3Fs+rdfs%3Alabel+%3Fo+.%0D%0A%7D%0D%0A&format=text%2Fhtml&timeout=0&signal_void=on Try it!
+
+## Getting to our first PublishData queries
+
+Next we need to upload our fresh PublishData RDF. We generated that with:
+
+```
+rm test.rdf ; for x in tmp/*.xz ; do ./bin/gemma-mdb-to-rdf.rb $x --anno BXD.8_snps.txt --sort >> test.ttl; done
+```
+
+Takes 10 minutes. rapper still returns an error for 'gnt:lodScore Infinity;'. I'll fix that down the line.
+
+Put test.ttl in /export/guix-containers/virtuoso/data/virtuoso/ttl and use the isql commands to update virtuoso. I use a separate graph named 'http://pjotr.genenetwork.org' so we can easily delete the triples.
+
+```
+guix shell virtuoso-ose -- isql 8891 exec="ld_dir('/export/data/virtuoso/ttl','test.ttl','http://pjotr.genenetwork.org'); rdf_loader_run();"
+```
+
+OK, we have the data together. Time for our first queries. Interesting questions are:
+
+* How many hits do we have for qtlreaper and how many for gemma in total
+* How many hits do we have for qtlreaper and how many for gemma that have a hit of 4.0 or higher
+* How many of these hits for qtlreaper differ from those of gemma
+* What datasets have been mapped in qtlreaper, but not in gemma
+
+### How many hits do we have for qtlreaper and how many for gemma in total
+
+Remember we had this query for reaper:
+
+```
+SELECT * WHERE {
+    ?s gnt:belongsToGroup gn:setBxd;
+         gnt:traitId ?id;
+         gnt:locus ?locus;
+         gnt:lodScore ?lrs;
+         dct:description ?descr.
+} limit 5
+"http://genenetwork.org/id/traitBxd_10001","10001","http://genenetwork.org/id/Rs48756159",2.93169,"Central nervous system, morphology: Cerebellum weight, whole, bilateral in adults of both sexes [mg]"
+"http://genenetwork.org/id/traitBxd_10002","10002","http://genenetwork.org/id/Rsm10000005699",4.77938,"Central nervous system, morphology: Cerebellum weight after adjustment for covariance with brain size [mg]"
+"http://genenetwork.org/id/traitBxd_10003","10003","http://genenetwork.org/id/Rsm10000013713",3.38682,"Central nervous system, morphology: Brain weight, male and female adult average, unadjusted for body weight, age, sex [mg]"
+"http://genenetwork.org/id/traitBxd_10004","10004","http://genenetwork.org/id/Rs48756159",2.56076,"Central nervous system, morphology: Cerebellum volume [mm3]"
+"http://genenetwork.org/id/traitBxd_10005","10005","http://genenetwork.org/id/Rsm10000005699",5.02907,"Central nervous system, morphology: Cerebellum volume, adjusted for covariance with brain size [mm3]"
+```
+
+we can run a similar query for GEMMA results with trait id "10001" and locus names.
+
+```
+SELECT * WHERE {
+    ?s gnt:mappedSnp ?id;
+         gnt:locus ?locus;
+         gnt:lodScore ?lrs.
+    filter(?lrs > 4.0).
+} limit 5
+```
+
+to find distinct datasets for GEMMA:
+
+```
+SELECT count(*) WHERE {
+  ?id gnt:name "BXDPublish" .
+} limit 5
+```
+
+To count the total number of hits we have 13576 reaper hits and 231911 GEMMA hits. For GEMMA we have 13491 uniquely mapped datasets.
+
+### Count hits that are significant
+
+For GEMMA 223232 hits are 4.0 or higher. For Reaper we count 1098. Almost all reaper values are between 2.0 and 4.0. When we count GEMMA below 4.0 we get 8679 datasets - and that makes sense because for gemmma we list all SNPs that are over 4.0 and only the datasets that are below we list the highest SNP. In both cases the majority of traits are below our threshold.
+
+### Start looking at the difference
+
+For every reaper SNP 'locus' we want to find that GEMMA sets that contain that particular SNP. In other words, those are the hits that GEMMA found that compare with qtlreaper. We pivot on SNP ?locus and ?traitid.
+
+```
+SELECT count(*) WHERE {
+    ?reaper gnt:belongsToGroup gn:setBxd;
+         gnt:traitId ?traitid;
+         gnt:locus ?locus;
+         gnt:lodScore ?lrs .
+    ?gemma gnt:mappedSnp ?id2;
+         gnt:locus ?locus;
+         gnt:lodScore ?lrs2.
+    ?id2 gnt:name "BXDPublish" ;
+        gnt:traitId ?traitid.
+    filter(?lrs2 >= 4.0).
+} limit 5
+```
+
+Now find 4222 overlapping traits! Whereof 2924 have a gemma lod score >= 4.0. And reaper 892 > 4.0 (out of 1098). That implies that some 200 significant scores find (completely) different SNPs for GEMMA.
+
+The next step is to list these differences. That is a reverse query. In plain English it should be something like:
+
+> List all sets where reaper has a SNP (r_snp) that does not appear in its GEMMA computation (g_snps).
+
+This is rather hard to do in SPARQL. We can make a list, however, of the overlapping traits with a lod score>4.0 with
+
+```
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX gn: <http://genenetwork.org/id/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX gnc: <http://genenetwork.org/category/>
+PREFIX gnt: <http://genenetwork.org/term/>
+PREFIX sdmx-measure: <http://purl.org/linked-data/sdmx/2009/measure#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX qb: <http://purl.org/linked-data/cube#>
+PREFIX xkos: <http://rdf-vocabulary.ddialliance.org/xkos#>
+PREFIX pubmed: <http://rdf.ncbi.nlm.nih.gov/pubmed/>
+
+SELECT ?traitid WHERE {
+   # --- get the reaper SNPs
+    ?r_trait gnt:belongsToGroup gn:setBxd;
+         gnt:traitId ?traitid;
+         gnt:locus ?snp.
+    # --- get gemma trait that matches reaper traitid (pivot on traitid)
+    ?g_trait gnt:name "BXDPublish" ;
+        gnt:traitId ?traitid.
+    # --- g_snp is the SNP scored within a gemma trait run
+    ?g_snp gnt:mappedSnp ?g_trait;
+         gnt:locus ?snp;
+         gnt:lodScore ?g_lrs.
+    filter(?g_lrs >= 4.0).
+} limit 5
+```
+
+Resulting in 2925 overlapping results. For example, it lists trait
+
+=> https://genenetwork.org/show_trait?trait_id=12014&dataset=BXDPublish
+
+where both reaper and gemma show a top hit for rs13478947.
+
+
+SELECT count(distinct ?traitid) WHERE {
+   # --- get the reaper SNPs
+    ?r_trait gnt:belongsToGroup gn:setBxd;
+         gnt:traitId ?traitid;
+         gnt:locus ?snp.
+    # --- get gemma trait that matches reaper traitid (pivot on traitid)
+    ?g_trait gnt:name "BXDPublish" ;
+        gnt:traitId ?traitid.
+    # --- g_snp is the SNP scored within a gemma trait run
+    ?g_snp gnt:mappedSnp ?g_trait;
+         gnt:lodScore ?g_lrs.
+    MINUS { ?g_snp gnt:locus ?snp . }
+    filter(?g_lrs >= 4.0).
+}
+
+
+
+Now we can make a second list for all gemma results where g_lrs > 4.0. The difference is our set.
+
+```
+SELECT DISTINCT ?traitid WHERE {
+    # --- get gemma trait that matches reaper traitid (pivot on traitid)
+    ?g_trait gnt:name "BXDPublish" ;
+        gnt:traitId ?traitid.
+    # --- g_snp is the SNP scored within a gemma trait run
+    ?g_snp gnt:mappedSnp ?g_trait;
+         gnt:locus ?snp;
+         gnt:lodScore ?g_lrs.
+    filter(?g_lrs >= 4.0).
+}
+```
+
+One example is trait 23777 where reaper has rsm10000008413 and gemma ranks SNPs, and rsm10000008413 with LRS 3.44 is below the threshold. That makes not such a strong case because both results are on Chr11 and not to far from each other (58 vs 73 Mb). Still, it may be a difference of interest. GEMMA's main hit rs13480386 is also ranked by reaper (in GN2).
+I think we need to refine our method. Peaks on Chr9 and 15 are also of interest.
+
+See
+
+=> https://genenetwork.org/show_trait?trait_id=23777&dataset=BXDPublish
+
+Another trait 14905 shows a whopper on Chr4 with gemma and and one on Chr8 with reaper.
+This is rather a good example. To improve the power of our search I think I should extend the GEMMA results with all hits above 3.0. That greatly increase the chance that a reaper marker is seen. To do an even better job we should run reaper precompute and also store the highest ranked markers (rather than one single hit). That way we get a true picture of the overlap and differences. While we are at it, we should store the trait values with the sample size etc.
+
+But first let's try finding those that differ on chromosome hits:
+
+Hmmm. the folloinwg not working quite right because it shows all the differences with 200K results. I tried
+
+```
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX gn: <http://genenetwork.org/id/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX gnc: <http://genenetwork.org/category/>
+PREFIX gnt: <http://genenetwork.org/term/>
+PREFIX sdmx-measure: <http://purl.org/linked-data/sdmx/2009/measure#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX qb: <http://purl.org/linked-data/cube#>
+PREFIX xkos: <http://rdf-vocabulary.ddialliance.org/xkos#>
+PREFIX pubmed: <http://rdf.ncbi.nlm.nih.gov/pubmed/>
+
+SELECT DISTINCT ?traitid ?chr1 ?chr2 ?url ?descr WHERE {
+   # --- get the reaper SNPs
+    ?r_trait gnt:belongsToGroup gn:setBxd;
+         gnt:traitId ?traitid;
+         gnt:locus ?snp ;
+         dct:description ?descr.
+    # --- get gemma trait that matches reaper traitid (pivot on traitid)
+    ?g_trait gnt:name "BXDPublish" ;
+        gnt:traitId ?traitid.
+    # --- g_snp is the SNP scored within a gemma trait run
+    ?g_snp gnt:mappedSnp ?g_trait;
+         gnt:lodScore ?g_lrs ;
+         gnt:locus ?snp2 .
+    # --- get Chr positions of both snps
+    ?snp gnt:chr ?chr1 .
+    ?snp2 gnt:chr ?chr2 .
+    MINUS { ?g_snp gnt:locus ?snp . }
+    filter(?g_lrs >= 4.0).
+    filter(?chr2 != ?chr1) .
+    BIND(REPLACE(?traitid, "(\\d+)","https://genenetwork.org/show_trait?trait_id=$1&dataset=BXDPublish") AS ?url)
+} LIMIT 15
+```
+
+What I am trying is set analysis and SPARQL is so powerful that you actually try, but it is far simpler to do in any programming language. I tooted about this rediscovery:
+
+=> https://genomic.social/@pjotrprins@mastodon.social/115059451578588805
+
+I created list for Rob using some simple shell commands, so he can see what the challenge is. I wrote
+
+> Attached a list of traits that show a reaper SNP that is not significant (LOD 4.0) for GEMMA and still show a significant hit for GEMMA. You can test run them on GN2 and see that the story is ambiguous. To do a proper job we should store more hits for GEMMA (say from LOD 3.0) and do a precompute exercise with reaper storing all top hits. That way we can probably do better and even get a list for Claude.
+
+One example is trait 23777 where reaper has rsm10000008413 and gemma ranks SNPs, and rsm10000008413 with LRS 3.44 is be low the threshold. That makes not such a strong case because both results are on Chr11 and not to far from each other (58 vs 73 Mb). Still, it may be a difference of interest. GEMMA's main hit rs13480386 is also ranked by reaper (in GN2). I think we need to refine our method. Peaks on Chr9 and 15 are also of interest.
+
+See
+
+=> https://genenetwork.org/show_trait?trait_id=23777&dataset=BXDPublish
+
+Another trait 14905 shows a whopper on Chr4 with gemma and and one on Chr8 with reaper. This is rather a good example. To improve the power of our search I think I should extend the GEMMA results with all hi ts above 3.0. That greatly increase the chance that a reaper marker is seen. To do an even better job we should run rea per precompute and also store the highest ranked markers (rather than one single hit). That way we get a true picture o f the overlap and differences. While we are at it, we should store the trait values with the sample size etc.
+
+So, rerunning GEMMA and reaper are on the books. While we are at it we can adapt reruns for
+
+* qnormalized data
+* auto winsorizing
+* sex covariate
+* run gemma without LOCO
+* cis covariate, using the current hit and recompute with that as a covariate
+* epistatic covariates
+
+and that should all be reasonably easy for the 13K traits.

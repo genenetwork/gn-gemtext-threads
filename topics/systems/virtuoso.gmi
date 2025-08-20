@@ -8,6 +8,10 @@ We run instances of virtuoso for our graph databases. Virtuoso is remarkable sof
 ## Running virtuoso
 ### Running virtuoso in a guix system container
 
+See also
+
+=> ../deploy/our-virtuoso-instances
+
 We have a Guix virtuoso service in the guix-bioinformatics channel. The easiest way to run virtuoso is to use the virtuoso service to run it in a guix system container. The only downside of this method is that, since guix system containers require root privileges to start up, you will need root priviliges on the machine you are running this on.
 
 Here is a basic guix system configuration that runs virtuoso listening on port 8891, and with its HTTP server listening on port 8892. Among other things, the HTTP server provides a SPARQL endpoint to interact with.

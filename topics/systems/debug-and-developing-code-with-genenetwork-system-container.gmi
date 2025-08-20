@@ -305,6 +305,12 @@ guix-vm-run:
   $cmd
 ```
 
+## Virtuoso in a system container
+
+See
+
+=> ./virtuoso
+
 # Troubleshooting
 
 ## Updating the VM does not show latest fixes
