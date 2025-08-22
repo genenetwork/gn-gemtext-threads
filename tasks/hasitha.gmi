@@ -1,0 +1,37 @@
+# Tasks for Hasitha
+
+## Tags
+
+* kanban: hasitha
+* assigned: hasitha
+* status: in progress
+
+## Tasks
+
+### Notes
+* 
+
+### This week
+* [ ] Implementing CRAM encoding methods in GBAM
+*       - [ ] ReadName tokenization pipeline - could save ~6% space using this technique. Need to work on decoding.
+* [ ] Starting off with Cigar compression sub project with Andrea
+* [ ] Discuss AGC and population compression with Andrea
+
+### Later
+* [ ] 
+
+### Even later
+
+* [ ]
+
+### On Hold
+* [ ] GBAM reader using noodles
+
+## Done
+
+* [X] Moving GBAM python and rust stuff to C
+* [X] Fixing memory issues in C
+* [X] SAM input to GBAM in Rust
+* [X] agc-rs setup testing on M1 mac
+
+
