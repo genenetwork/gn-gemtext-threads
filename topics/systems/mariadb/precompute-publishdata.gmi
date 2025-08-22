@@ -2009,11 +2009,15 @@ Another trait 14905 shows a whopper on Chr4 with gemma and and one on Chr8 with 
 
 So, rerunning GEMMA and reaper are on the books. While we are at it we can adapt reruns for
 
-* qnormalized data
+* qnormalized data*
 * auto winsorizing
 * sex covariate
 * run gemma without LOCO
-* cis covariate, using the current hit and recompute with that as a covariate
+* cis covariate, using the current hit and recompute with that as a covariate*
 * epistatic covariates
 
 and that should all be reasonably easy for the 13K traits.
+
+## More metadata
+
+But first we set up a new run with more metadata. In the lmdb files we should add the trait values, the mean, SE, skew, kurtosis, any DOIs.
