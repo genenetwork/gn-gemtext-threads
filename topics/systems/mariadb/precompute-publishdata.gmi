@@ -2021,3 +2021,312 @@ and that should all be reasonably easy for the 13K traits.
 ## More metadata
 
 But first we set up a new run with more metadata. In the lmdb files we should add the trait values, the mean, SE, skew, kurtosis, any DOIs.
+
+gemma-wrapper can take trait values as produced by our gn-guile endpoint (in .json). First step is to add thes values to the meta data. The existing permutate switch takes a pheno file and outputs that during a run. We can use that to pass in the pheno file.
+
+
+Now we should write out the gemma phenotypes to make sure they align. Now we essentially moved the functionality from gn-pheno-to-gemma.rb into gemma-wrapper, so we need to pass in the geno information too.
+
+The command becomes
+
+```
+./bin/gemma-wrapper --force --json --loco -- -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -n 2 -gk > K.json
+./bin/gemma-wrapper --json --lmdb --geno-json BXD.geno.json --lmdb --phenotypes 10002-pheno.json --population BXD --name BXDPublish --trait $id --loco --input K.json -- -g BXD.geno.txt -a BXD.8_snps.txt -lmm 9 -maf 0.1 -n 2 -debug > GWA.json
+```
+
+We now store the trait values into the metadata and they go into lmdb!
+
+```
+  "meta": {
+    "type": "gemma-wrapper",
+    "version": "1.00-pre1",
+    "population": "BXD",
+    "name": "BXDPublish",
+    "trait": "1",
+    "geno_filename": "BXD.geno.txt",
+    "geno_hash": "3b65ed252fa47270a3ea867409b0bdc5700ad6f6",
+    "loco": true,
+    "url": "https://genenetwork.org/show_trait?trait_id=1&dataset=BXDPublish",
+    "archive_GRM": "185eb08dc3897c7db5d7ea987170898035768f93-gemma-cXX.tar.xz",
+    "archive_GWA": "c143bc7928408fdc53affed0dacdd98d7c00f36d-BXDPublish-1-gemma-GWA.tar.xz",
+    "trait_values": {
+      "BXD1": 54.099998,
+      "BXD2": 50.099998,
+      "BXD5": 53.299999,
+...
+```
+
+Commit is here:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/commit/9ad5f762823031da08fc51c2a6adae983e6e8314
+
+Now gemma2lmdb is actually written in python, so we can make use of scipy functions using the trait values.
+
+So, for example, we can compute:
+
+```
+mean= 52.22058749999999  std= 2.968538937833582  kurtosis= 0.03143766680654192  skew= -0.1315270039489698
+for
+[54.099998, 50.099998, 53.299999, 55.099998, 57.299999, 51.200001, 53.599998, 46.799999, 50.599998, 49.299999, 45.700001, 52.5, 52.0, 51.099998, 52.400002, 49.0, 51.599998, 50.700001, 55.5, 52.599998, 53.099998, 53.5, 53.200001, 58.700001, 50.799999, 53.299999, 51.900002, 54.099998, 52.299999, 46.099998, 51.799999, 57.0, 48.599998, 56.599998]
+```
+
+Using
+
+=> https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.skew.html
+=> https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kurtosis.html
+
+Code in gemma-wrapper repo.
+
+I'll set up a new run and export to RDF. Some additions first.
+
+Even though we store trait values, I should add the number of indiduals too. We store that as nind.
+
+Now we have these metrics, no metadata is complete without its publication. PublishXRef contains a PublicationID. It points into the Publication table that contains, for example:
+
+```
+| Id  | PubMed_ID | Abstract | Authors | Title | Journal | Volume | Pages | Month | Year |
+| 116 |  11438585 | To discover genes influencing cerebellum development, we conducted a complex trait analysis of variation in the size of the adult mouse cerebellum. We analyzed two sets of recombinant inbred BXD strains and an F2 intercross of the common inbred strains, C57BL/6J and DBA/2J. We measured cerebellar size as the weight or volume of fixed or histologically processed tissue. Among BXD recombinant inbred strains, the cerebellum averages 52 mg (12.4% of the brain) and ranges 18 mg in size. In F2 mice, the cerebellum averages 62 mg (12.9% of the brain) and ranges approximately 20 mg in size. Five quantitative trait loci (QTLs) that significantly control variation in cerebellar size were mapped to chromosomes 1 (Cbs1a), 8 (Cbs8a), 14 (Cbs14a), and 19 (Cbs19a, Cbs19b). In combination, these QTLs can shift cerebellar size to an appreciable 35% of the observed range. To assess regional genetic control of the cerebellum, we also measured the volume of the cell-rich, internal granule layer (IGL) in a set of BXD strains. The IGL ranges from 34 to 43% of total cerebellar volume. The QTL Cbs8a is significantly linked to variation in IGL volume and is suggestively linked to variation in the number of cerebellar folia. The QTLs we have discovered are among the first loci shown to modulate the size and architecture of the adult mouse cerebellum. | Airey DC, Lu L, Williams RW | Genetic control of the mouse cerebellum: identification of quantitative trait loci modulating size and architecture | J Neuroscience | 21     | 5099-5109 | NULL  | 2001 |
+```
+
+That is a nice example.
+But we also find many publications without abstracts, e.g. | 7276 |     15792 | NULL | Williams EG, Andreux P, Houtkooper R, Auwerx J | Recombinant Inbred BXD Mice as a Model for the Metabolic Syndrome.
+
+In fact, 22K entries out of 29K miss the abstract. Also I can't find this last paper by Evan Williams. The closest is "Systems Genetics of Metabolism: The Use of the BXD Murine Reference Panel for Multiscalar Integration of Traits" which is probably worth reading.
+
+=> https://www.cell.com/cell/pdfExtended/S0092-8674(12)01007-0?__cf_chl_tk=kYZ49R4P29zOzYPeuWdrXVJC61HyhpHwFtq8lS2_rlk-1756022056-1.0.1.1-uY.PpAbgi8FO54P4_wYp_f6Nm84CdfHNQEI1WOmngFE
+
+I have no idea where the number 15792 comes from. It is not a pubmed ID. Some quick checks:
+
+```
+MariaDB [db_webqtl]> select count(*) from Publication WHERE Pubmed_ID>0 limit 3;
++----------+
+|      427 |
++----------+
+MariaDB [db_webqtl]> select count(*) from Publication WHERE Pubmed_ID>0 and Pubmed_ID<99999 limit 3;
++----------+
+|        2 |
++----------+
+MariaDB [db_webqtl]> select count(*) from Publication WHERE Pubmed_ID>0 and Pubmed_ID<999999 limit 3;
++----------+
+|       10 |
++----------+
+select count(*) from Publication WHERE NOT Abstract is NULL limit 3;
++----------+
+|     6750 |
++----------+
+```
+
+so, out of 29K entries, we have a very limited number of useful PMIDs, but we have some 6750 abstracts - mostly related to the BXD. Meanwhile some 16572 entries (about half) appear to have valid titles. Almost all records have authors, however.
+
+It really is a bit of a mess. What we need to do is harvest what we have and then collect pubmed ids for the missing BXD PublishData records and use that to fetch up-to-date abstracts and author lists. We can even adapt my Pubmed script that I use for bibtex. A search for just the combination of these authors
+
+```
+pubmed2bib.sh 'Williams EG, Andreux P, Houtkooper R, Auwerx J  [au]'
+```
+
+renders
+
+```
+@article{Andreux:2012,
+  keywords     = { },
+  pmid         = {22939713},
+  pmcid        = {3604687},
+  note         = {{PMC3604687}},
+  IDS          = {PMC3604687, PMID:22939713},
+  author       = {Andreux, P. A. and Williams, E. G. and Koutnikova, H. and Houtkooper, R. H. and Champy, M. F. and Henry, H. and Schoonjans, K. and Williams, R. W. and Auwerx, J.},
+  title        = {{Systems genetics of metabolism: the use of the BXD murine reference panel for multiscalar integration of traits}},
+  journal      = {Cell},
+  year         = {2012},
+  volume       = {150},
+  number       = {6},
+  pages        = {1287-1299},
+  doi          = {10.1016/j.cell.2012.08.012},
+  url          = {http://www.ncbi.nlm.nih.gov/pubmed/22939713},
+  abstract     = {Metabolic homeostasis is achieved by complex molecular and cellular networks that differ significantly among individuals and are difficult to model with genetically engineered lines of mice optimized to study single gene function. Here, we systematically acquired metabolic phenotypes by using the EUMODIC EMPReSS protocols across a large panel of isogenic but diverse strains of mice (BXD type) to study the genetic control of metabolism. We generated and analyzed 140 classical phenotypes and deposited these in an open-access web service for systems genetics (www.genenetwork.org). Heritability, influence of sex, and genetic modifiers of traits were examined singly and jointly by using quantitative-trait locus (QTL) and expression QTL-mapping methods. Traits and networks were linked to loci encompassing both known variants and novel candidate genes, including alkaline phosphatase (ALPL), here linked to hypophosphatasia. The assembled and curated phenotypes provide key resources and exemplars that can be used to dissect complex metabolic traits and disorders.},
+}
+```
+
+So, yes, it is the likely candidate. We can use this information to suggest updates. It just proves again how useful manual curation is.
+
+Note that this information is collected at the experimental level (rather than the trait level), so it really does not belong in the GEMMA lmdb data. Every trait has an entry in PublishXRef that points back to the Publication ID. So we can take it later (and fix it!).
+
+# Rerun GEMMA precompute
+
+Let's set up a full rerun for the 13K BXD PublishData entries with this new information. That should allow us to see how skew and kurtosis and experimental size affect the outcome. Remember we have the batch run script:
+
+```
+#! /bin/env sh
+
+export TMPDIR=./tmp
+curl http://127.0.0.1:8092/dataset/bxd-publish/list > bxd-publish.json
+jq ".[] | .Id" < bxd-publish.json > ids.txt
+./bin/gemma-wrapper --force --json --loco -- -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -n 2 -gk > K.json
+
+for id in 'cat ids.txt' ; do
+  echo Precomputing $id
+  if [ ! -e tmp/*-BXDPublish-$id-gemma-GWA.tar.xz ] ; then
+    curl http://127.0.0.1:8092/dataset/bxd-publish/values/$id.json > pheno.json
+    ./bin/gn-pheno-to-gemma.rb --phenotypes pheno.json --geno-json BXD.geno.json > BXD_pheno.txt
+    ./bin/gemma-wrapper --json --lmdb --population BXD --name BXDPublish --trait $id --loco --input K.json -- -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -lmm 9 -maf 0.1 -n 2 -debug > GWA.json
+  fi
+done
+```
+
+that can be simplified because gemma-wrapper now replaces gn-pheno-to-gemma.rb. First Guix had to install scipy which pulls in inkscape and Jupyter among other things. It is really too much! But at least Guix makes it easy to reproduce the environment I use on my desktop to the server. Now we get a beautiful record in every lmdb GEMMA run:
+
+```
+"archive_GWA": "c143bc7928408fdc53affed0dacdd98d7c00f36d-BXDPublish-10001-gemma-GWA.tar.xz", "trait_values": {"BXD
+1": 61.400002, "BXD2": 49.0, "BXD5": 62.5, "BXD6": 53.099998, "BXD8": 59.099998, "BXD9": 53.900002, "BXD11": 53.099998,
+ "BXD12": 45.900002, "BXD13": 48.400002, "BXD14": 49.400002, "BXD15": 47.400002, "BXD16": 56.299999, "BXD18": 53.599998
+, "BXD19": 50.099998, "BXD20": 48.200001, "BXD21": 50.599998, "BXD22": 53.799999, "BXD23": 48.599998, "BXD24": 54.90000
+2, "BXD25": 49.599998, "BXD27": 47.400002, "BXD28": 51.5, "BXD29": 50.200001, "BXD30": 53.599998, "BXD31": 49.700001, "
+BXD32": 56.0, "BXD33": 52.099998, "BXD34": 53.700001, "BXD35": 49.700001, "BXD36": 44.5, "BXD38": 51.099998, "BXD39": 5
+4.900002, "BXD40": 49.900002, "BXD42": 59.400002}, "table": "PublishData", "traitid": 10001, "dataid": 0}}, "nind": 34,
+ "mean": 52.1353, "std": 4.1758, "skew": 0.6619, "kurtosis": 0.0523,
+```
+
+and the job is running....
+
+Next stop is to rerun reaper and variations on gemma. Last night it halted at 9K. The webserver gave an SQL error and just stopped/waited. As it is not using threads it will block. It says: SQL Connection ERROR! file not found
+
+# HK
+
+We want to rerun reaper to get more top ranked hits (and peaks). Now I also realize GEMMA can also do LR and it would be interesting to see how that differs from reaper. The '-lm' switch says:
+
+```
+ -lm       [num]          specify analysis options (default 1).
+          options: 1: Wald test
+                   2: Likelihood ratio test
+                   3: Score test
+                   4: 1-3
+```
+
+the documentation points out that we don't need a GRM. Exactly. Now we could try and embed this in gemma-wrapper, but that is overkill. Part of the complexity of gemma-wrapper is related to handling the GRM with LOCO. Here we have a simple command that needs to be iterated. We don't need to record trait values, kurtosis etc. because that is already part of the previous exercise (and is constant). So the main complications are to create the trait vector, run gemma, and write an lmdb file. For now this will be a one-off, so we are not going to bother with caching and all that.
+
+```
+gemma -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -lm 2 -o trait-BXDPublish-$id-gemma-GWA-hk
+```
+
+This produces a file
+
+```
+chr rs  ps  n_mis n_obs allele1 allele0 af  p_lrt
+1 rsm10000000001  3001490 0 237 X Y 0.527 -nan
+1 rs31443144  3010274 0 237 X Y 0.525 -nan
+1 rs6269442 3492195 0 237 X Y 0.525 -nan
+1 rs32285189  3511204 0 237 X Y 0.525 -nan
+```
+
+Hmm. All p_lrt are NaN. Oh, I need to make sure the second column is used:
+
+```
+gemma -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -n 2 -lm 2 -o tmp/trait-BXDPublish-$id-gemma-GWA-hk
+chr rs  ps  n_mis n_obs allele1 allele0 af  p_lrt
+1 rsm10000000001  3001490 0 23  X Y 0.739 8.331149e-01
+1 rs31443144  3010274 0 23  X Y 0.739 8.331149e-01
+1 rs6269442 3492195 0 23  X Y 0.739 8.331149e-01
+1 rs32285189  3511204 0 23  X Y 0.739 8.331149e-01
+1 rs258367496 3659804 0 23  X Y 0.739 8.331149e-01
+```
+
+much better! Now we need to turn this into an lmdb file. We can adapt gemma2lmdb.py to do that. But I am not going to do that. The attraction of repurposing code is always there, but it will mean diluting the meaning of the code - basically ifthen blocks - and making the code less readable. This is one reason the Linux kernel does not share code between device drivers. Even for these simple tools I prefer to split out at the risk of not being DRY. I hope you can see what I mean with:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/gemma2lmdb.py
+
+which is now pretty straightforward for parsing LMM output of GEMMA into lmdb. We are going to do the same thing for a simpler output. But when writing it suddenly struck me we don't need lmdb here in the first place! lmdb is for the full vector output and there is no reason to retain it. All we want is the top hits. Great, that simplifies matters even more. Which btw points out how baffling it is to me that people think they can replace programmers with AI. Well, maybe for the obvious code... You just see how much code will be garbage.
+
+Now we have the same idea in gemma-mdb-to-rdf.rb - and for the same reason as before I am not going to adapt that code.
+
+Fun fact, HK returns the same hits for GEMMA and reaper versions. Good. the log10 of the GEMMA's p_LRT returns a value of 2.720446e-06 where -log10/LOD is 5.56 and the multiplier with 4.61 renders 25 where GN2 shows an LRS of 22. Oh well, we are not too concerned, as long as the ranking is correct.
+
+So for GN trait
+
+=> https://genenetwork.org/show_trait?trait_id=10002&dataset=BXDPublish
+
+we now get for GEMMA HK:
+
+```
+gn:HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt a gnt:mappedTrait;
+        rdfs:label "GEMMA_BXDPublish output/trait-BXDPublish-1-gemma-GWA-hk.assoc.txt trait HK mapped";
+        gnt:GEMMA_HK true;
+        gnt:belongsToGroup gn:setBxd;
+        gnt:trait gn:publishXRef_1;
+        gnt:time "2025-08-25 10:14:23 +0000";
+        gnt:belongsToGroup gn:setBxd;
+        gnt:name "BXDPublish";
+        gnt:traitId "1";
+        skos:altLabel "BXD_1".
+gn:rsm10000005699_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt a gnt:mappedLocus;
+       gnt:mappedSnp gn:rsm10000005699_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt ;
+       gnt:locus gn:Rsm10000005699 ;
+       gnt:lodScore 5.6 .
+gn:rs47899232_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt a gnt:mappedLocus;
+       gnt:mappedSnp gn:rs47899232_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt ;
+       gnt:locus gn:Rs47899232 ;
+       gnt:lodScore 5.6 .
+gn:rs3661882_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt a gnt:mappedLocus;
+       gnt:mappedSnp gn:rs3661882_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt ;
+       gnt:locus gn:Rs3661882 ;
+       gnt:lodScore 5.3 .
+gn:rs33490412_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt a gnt:mappedLocus;
+       gnt:mappedSnp gn:rs33490412_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt ;
+       gnt:locus gn:Rs33490412 ;
+       gnt:lodScore 5.3 .
+gn:rsm10000005703_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt a gnt:mappedLocus;
+       gnt:mappedSnp gn:rsm10000005703_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt ;
+       gnt:locus gn:Rsm10000005703 ;
+       gnt:lodScore 5.3 .
+(...)
+```
+
+Code is here:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/commit/a17901d927d21a1686c0ac0d1552695f0096b84b
+
+Generate RDF incl. skew, kurtosis etc
+
+```
+./bin/gemma-mdb-to-rdf.rb --header > test.ttl
+time for x in tmp/*.xz ; do
+    ./bin/gemma-mdb-to-rdf.rb $x --anno BXD.8_snps.txt --sort >> test.ttl
+done
+```
+
+Renders
+
+```
+gn:GEMMAMapped_LOCO_BXDPublish_10001_gemma_GWA_7c00f36d a gnt:mappedTrait;
+      rdfs:label "GEMMA BXDPublish trait 10001 mapped with LOCO (defaults)";
+      gnt:trait gn:publishXRef_10001;
+      gnt:loco true;
+      gnt:time "2025/08/24 08:22";
+      gnt:belongsToGroup gn:setBxd;
+      gnt:name "BXDPublish";
+      gnt:traitId "10001";
+      gnt:nind 34;
+      gnt:mean 52.1353;
+      gnt:std 4.1758;
+      gnt:skew 0.6619;
+      gnt:kurtosis 0.0523;
+      skos:altLabel "BXD_10001".
+gn:Rsm10000005700_BXDPublish_10001_gemma_GWA_7c00f36d a gnt:mappedLocus;
+      gnt:mappedSnp gn:GEMMAMapped_LOCO_BXDPublish_10001_gemma_GWA_7c00f36d;
+      gnt:locus gn:Rsm10000005700;
+      gnt:lodScore 6.2;
+      gnt:af 0.382;
+      gnt:effect 1.626.
+n:Rs32133186_BXDPublish_10001_gemma_GWA_7c00f36d a gnt:mappedLocus;
+      gnt:mappedSnp gn:GEMMAMapped_LOCO_BXDPublish_10001_gemma_GWA_7c00f36d;
+      gnt:locus gn:Rs32133186;
+      gnt:lodScore 6.2;
+      gnt:af 0.382;
+      gnt:effect 1.626.
+...
+```
+
+Funny thing is that the hash values are now all the same because gemma-wrapper no longer includes the trait values. That is a harmless bug that I'll fix for the next run.
+
+After GEMMA LMM completes its run I'll set up the HK run.
+
+
+# Tomorrow we'll combine results.
