@@ -5,7 +5,7 @@
 * type: bug
 * status: open, in progress
 * priority: high
-* assigned: fredm
+* assigned: fredm, bonfacem
 * interested: pjotrp, bonfacem, aruni
 * keywords: deployment, CI, CD
 
