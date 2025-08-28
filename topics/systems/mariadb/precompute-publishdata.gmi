@@ -24,15 +24,16 @@ So we can convert a .geno file to BIMBAM. I need to extract GN traits to a R/qtl
 * [X] Create a DB/table containing hits and old reaper values
 * [X] Convert this info to RDF
 * [X] Run virtuoso server
+* [X] When loading traits compute mean, se, skew, kurtosis and store them as metadata in lmdb
 * [ ] Ask interesting questions about the overlap between reaper and gemma
 * [ ] Update PublishXRef and store old reaper value(?)
-* [ ] When loading traits compute mean, se, skew, kurtosis and store them as metadata in lmdb
 * [ ] Correctly Handle gn-guile escalating errors
 * [ ] Make sure the trait fetcher handles authorization or runs localhost only
 * [ ] gemma-wrapper --force does not work for GRM and re-check GRM does not change on phenotype
 * [ ] Use SNP URIs when possible (instead of inventing our own) - and BED information so we can locate them
 * [ ] Check lmdb duplicate key warning
 * [ ] Check invalid data sets/traits and feed them to Rob/Arthur
+* [ ] Add metadata for bimodality indicator in addition to kurtosis (see below)
 
 For the last we should probably add a few columns. Initially we'll only store the maximum hit.
 
@@ -1630,7 +1631,7 @@ Now we can run isql locally as
 ```
 guix shell -C -N --expose=/export/guix-containers/virtuoso/data/virtuoso/ttl/=/export/data/virtuoso/ttl virtuoso-ose -- isql -S 8891
 
-SQL> ld_dir('/export/data/virtuoso/ttl','test.n3','http://pjotr.genenetwork.org');"
+SQL> ld_dir('/export/data/virtuoso/ttl','test.n3','http://pjotr.genenetwork.org');
 Done. -- 3 msec.
 # for testing the validity and optional delete problematic ones:
 SQL> SELECT * FROM DB.DBA.load_list;
@@ -1745,7 +1746,6 @@ Which is about 2Gb uncompressed. Not bad. To load the ttl files I have to move t
 /export/guix-containers/virtuoso/data/virtuoso/ttl.
 
 ```
-guix shell virtuoso-ose -- isql 8891 exec="ld_dir('/export/data/virtuoso/ttl','*.ttl','http://genenetwork.org');"
 guix shell virtuoso-ose -- isql 8891 exec="ld_dir('/export/data/virtuoso/ttl','*.ttl','http://genenetwork.org');"
 guix shell virtuoso-ose -- isql 8891 exec="rdf_loader_run();"
 ```
@@ -2326,7 +2326,218 @@ n:Rs32133186_BXDPublish_10001_gemma_GWA_7c00f36d a gnt:mappedLocus;
 
 Funny thing is that the hash values are now all the same because gemma-wrapper no longer includes the trait values. That is a harmless bug that I'll fix for the next run.
 
-After GEMMA LMM completes its run I'll set up the HK run.
+The GEMMA run ended up generating 1,576,110 triples. The gemma-mdb-to-rdf script took 42 minutes.
+
+After GEMMA LMM completed its run we set up the HK run which should reflect reaper.
+
+# On bimodality (of trait values)
+
+Kurtosis is not a great predictor of bimodality.
+
+=> https://aldenbradford.com/bimodality.html
+
+Rob says that for the BXD bimodality works best. Maybe annotate with
+
+=> https://skeptric.com/dip-statistic/
+
+We'll skip it for now - I added a task above.
+
+# Combine results
+
+First we upload the data into virtuoso after dropping the old graph. We can do again, now introducing new sub graphs
+
+```
+rapper -i turtle test.ttl > test.n3
+guix shell -C -N --expose=/export/guix-containers/virtuoso/data/virtuoso/ttl/=/export/data/virtuoso/ttl virtuoso-ose -- isql -S 8891
+SQL> log_enable(3,1);
+SQL> DELETE FROM rdf_quad WHERE g = iri_to_id ('http://pjotr.genenetwork.org');
+SQL> SPARQL SELECT count(*) FROM <http://pjotr.genenetwork.org> WHERE { ?s ?p ?o };
+  0
+SQL> ld_dir('/export/data/virtuoso/ttl','test.n3','http://lmm2.genenetwork.org');
+  Done. -- 3 msec.
+# for testing the validity and optional delete problematic ones:
+SQL> SELECT * FROM DB.DBA.load_list;
+SQL> DELETE from DB.DBA.LOAD_LIST where ll_error IS NOT NULL ;
+# commit changes
+SQL> rdf_loader_run ();
+SQL> checkpoint;
+Done. -- 16 msec.
+SQL> SPARQL SELECT count(*) FROM <http://pjotr.genenetwork.org> WHERE { ?s ?p ?o };
+  1576102
+```
+
+and after HK we are at 6838444 triples for this exercise. Note that you can clean up the load list with
+
+```
+DELETE from DB.DBA.LOAD_LIST;
+```
 
 
-# Tomorrow we'll combine results.
+Let's list all the tissues we have with
+
+```
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX gn: <http://genenetwork.org/id/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX gnc: <http://genenetwork.org/category/>
+PREFIX gnt: <http://genenetwork.org/term/>
+PREFIX sdmx-measure: <http://purl.org/linked-data/sdmx/2009/measure#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX qb: <http://purl.org/linked-data/cube#>
+PREFIX xkos: <http://rdf-vocabulary.ddialliance.org/xkos#>
+PREFIX pubmed: <http://rdf.ncbi.nlm.nih.gov/pubmed/>
+
+SELECT * WHERE { ?s rdf:type gnc:tissue . ?s rdfs:label ?o . }
+
+"http://genenetwork.org/id/tissueA1c" "Primary Auditory (A1) Cortex mRNA"
+"http://genenetwork.org/id/tissueAcc" "Anterior Cingulate Cortex mRNA"
+"http://genenetwork.org/id/tissueAdr" "Adrenal Gland mRNA"
+"http://genenetwork.org/id/tissueAmg" "Amygdala mRNA"
+"http://genenetwork.org/id/tissueBebv"  "Lymphoblast B-cell mRNA"
+"http://genenetwork.org/id/tissueBla" "Bladder mRNA"
+(...)
+```
+
+To other quick queries confirm that our data is loaded correctly. One quick test we would want to do is to see if all reaper hits overlap with GEMMA_HK. That would be a comfort.
+
+The reaper hits are found with
+
+```
+SELECT * WHERE {
+    ?s gnt:belongsToGroup gn:setBxd;
+         gnt:traitId ?id;
+         gnt:locus ?locus;
+         gnt:lodScore ?lrs;
+         dct:description ?descr.
+} limit 50
+```
+
+The HK hits are defined as
+
+```
+gn:HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt a gnt:mappedTrait;
+        rdfs:label "GEMMA_BXDPublish output/trait-BXDPublish-1-gemma-GWA-hk.assoc.txt trait HK mapped";
+        gnt:GEMMA_HK true;
+        gnt:belongsToGroup gn:setBxd;
+        gnt:trait gn:publishXRef_1;
+        gnt:time "2025-08-25 10:14:23 +0000";
+        gnt:belongsToGroup gn:setBxd;
+        gnt:name "BXDPublish";
+        gnt:traitId "1";
+        skos:altLabel "BXD_1".
+gn:rsm10000005699_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt a gnt:mappedLocus;
+       gnt:mappedSnp gn:rsm10000005699_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt ;
+       gnt:locus gn:Rsm10000005699 ;
+       gnt:lodScore 5.6 .
+gn:rs47899232_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt a gnt:mappedLocus;
+       gnt:mappedSnp gn:rs47899232_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt ;
+       gnt:locus gn:Rs47899232 ;
+       gnt:lodScore 5.6 .
+```
+
+So the hits can be listed as
+
+```
+SELECT count(*) WHERE {
+    ?reaper gnt:belongsToGroup gn:setBxd;
+         gnt:traitId ?traitid;
+         gnt:locus ?locus;
+         gnt:lodScore ?lrs .
+    ?gemma gnt:mappedSnp ?id2;
+         gnt:locus ?locus;
+         gnt:lodScore ?lrs2.
+    ?id2 gnt:name "BXDPublish" ;
+        gnt:GEMMA_HK true;
+        gnt:traitId ?traitid.
+} limit 5
+```
+
+Unfortunately I made a mistake mapping the SNPs. This should have linked back. So instead of:
+
+```
+gn:rsm10000005699_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt a gnt:mappedLocus;
+       gnt:mappedSnp gn:rsm10000005699_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt ;
+```
+
+I should have generated
+
+```
+gn:rsm10000005699_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt a gnt:mappedLocus;
+       gnt:mappedSnp gn:HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt ;
+
+```
+
+Doh! These SNPs are dangling now. Bit hard to see sometimes with these identifiers. OK, set up another rdf generation run.
+Now I see it show an error for a few traits, e.g.
+
+```
+./bin/gemma2rdf.rb:74:in `initialize': No such file or directory @ rb_sysopen - ./tmp/trait-BXDPublish-18078-gemma-GWA-hk.assoc.txt (Errno::ENOENT)
+```
+
+For later (again) as the majority is coming through.
+
+```
+SQL> ld_dir('/export/data/virtuoso/ttl','gemma-GWA-hk.ttl','http://hk.genenetwork.org');
+SQL> rdf_loader_run ();
+SQL> SPARQL SELECT count(*) FROM <http://hk.genenetwork.org> WHERE { ?s ?p ?o };
+  5262347
+```
+
+Try again
+
+```
+SELECT count(*) WHERE {
+    ?reaper gnt:belongsToGroup gn:setBxd;
+         gnt:traitId ?traitid;
+         gnt:locus ?locus;
+         gnt:lodScore ?lrs .
+    ?trait gnt:GEMMA_HK true;
+        gnt:traitId ?traitid.
+    # filter(?lrs2 >= 4.0).
+    ?snp gnt:mappedSnp ?trait ;
+        gnt:locus ?locus ;
+        gnt:lodScore ?lrs2 .
+}
+"traitid","locus","lrs","lrs2"
+"21188","http://genenetwork.org/id/Rs31400538",2.73982,3.42
+"21194","http://genenetwork.org/id/Rs29514307",3.94845,4.7
+"21199","http://genenetwork.org/id/Rs50530980",2.60066,3.27
+"21203","http://genenetwork.org/id/Rs13483656",2.57406,3.24
+"21205","http://genenetwork.org/id/Rsm10000000057",2.90985,3.6
+"21210","http://genenetwork.org/id/Rsm10000000182",2.67097,3.34
+"21217","http://genenetwork.org/id/Rs29525970",3.80402,4.54
+"21220","http://genenetwork.org/id/Rs46586055",2.50946,3.17
+"21221","http://genenetwork.org/id/Rs47967883",2.54473,3.21
+"21223","http://genenetwork.org/id/Rs29327089",3.94623,4.69
+"21230","http://genenetwork.org/id/Rs30026335",2.78151,3.46
+"21238","http://genenetwork.org/id/Rs32170136",2.83393,3.52
+"21267","http://genenetwork.org/id/Rsm10000000063",2.54818,3.21
+```
+
+counts 9261 overlapping SNPs. So, about 4000 traits are not mapping exactly. Also interesting is that GEMMA HK LRS/LOD is consistently higher than reaper.
+
+For the non-overlapping traits we find, for example 10023, has no significant HK hit. For GEMMA_HK it is simply ignored and for reaper Bonz included the lodScore of 1.77. If we count the significant hits for reaper LOD>3.0 we find 4541 hits. Out of these 4506 hits overlap with GEMMA_HK. That is perfect!
+
+```
+SELECT ?traitid WHERE {
+    ?reaper gnt:belongsToGroup gn:setBxd;
+         gnt:traitId ?traitid;
+         gnt:locus ?locus;
+         gnt:lodScore ?lrs .
+    ?trait gnt:GEMMA_HK true;
+        gnt:traitId ?traitid.
+    filter(?lrs >= 3.0).
+    ?snp gnt:mappedSnp ?trait ;
+        gnt:locus ?locus ;
+        gnt:lodScore ?lrs2 .
+}
+```
+
+Essentially every reaper result is replicated in GEMMA_HK and now we have all SNPs that can be compared against the LMM results.
+
+# Normality
+
+But first we want to take a look normality for the datasets now we stored ninds, mean, std, skew and kurtosis.
