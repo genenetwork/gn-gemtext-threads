@@ -32,6 +32,9 @@ So we can convert a .geno file to BIMBAM. I need to extract GN traits to a R/qtl
 * [ ] gemma-wrapper --force does not work for GRM and re-check GRM does not change on phenotype
 * [ ] Use SNP URIs when possible (instead of inventing our own) - and BED information so we can locate them
 * [ ] Check lmdb duplicate key warning
+* [ ] run gemma with qnorm
+* [ ] run gemma with sex covariate
+* [ ] run gemma again with the hit as a covariate
 * [ ] Check invalid data sets/traits and feed them to Rob/Arthur
 * [ ] Add metadata for bimodality indicator in addition to kurtosis (see below)
 
@@ -2538,6 +2541,32 @@ SELECT ?traitid WHERE {
 
 Essentially every reaper result is replicated in GEMMA_HK and now we have all SNPs that can be compared against the LMM results.
 
-# Normality
+# On Normality
 
-But first we want to take a look normality for the datasets now we stored ninds, mean, std, skew and kurtosis.
+But first we want to take a look normality for the datasets now we stored ninds, mean, std, skew and kurtosis. At this stage let's just count datasets. So, out of 13427 GEMMA LMM traits 12416 have more than 16 individuals. When looking at abs(skew)<0.8 we have 7691 fairly normal traits. Adding an abs(kurtosis)<1.0 we have 6289 traits. So about half of them are fairly normal. So if we quantile normalize these vectors it may have some impact. Let that be another task I add above (run gemma with qnorm).
+
+The query was
+
+```
+SELECT count(*) WHERE {
+    ?trait gnt:loco true;
+        gnt:traitId ?traitid;
+        gnt:nind ?nind;
+        gnt:skew ?skew;
+        gnt:kurtosis ?kurtosis.
+    filter(?nind > 16 and abs(?skew) < 0.8 and abs(?kurtosis) < 1.0).
+} LIMIT 40
+```
+
+# Pubmed
+
+As an aside, I did an interesting discovery. Some of the pubmed IDs that I thought were wrong may actually be OK. Maybe Bonz did some screening because his RDF differs from what is in MySQL.
+
+# Preparing for comparison
+
+OK, we are finally at the point where we can compare LMM results with HK (read reaper). This is a 'set analysis' because we want to see what SNPs differ between the two results for every trait and highlight those where peaks are different. We have captured in RDF all the SNPs that are considered (fairly) significant for both LMM and HK.
+
+The easiest way is to capture all SNPs and write the analysis in code. There may be a way to do this in SPARQL but it will take me more time and we'll end with less flexibility. Now there are two main ways to go about it. I can dump a table with all SNPs using SPARQL itself and process the tabular data (this, btw, may be a good input for AI). Another option is to use an RDF library and parse the RDF triples directly (without Virtuoso) in the middle. That should allow for quicker processing and also a shorter turnaround if I need to modify RDF (the process of updating, uploading, checking and writing SPARQL queries, is quite long). There is one thing in writing software that is very important: you want a quick turnaround, otherwise you are just staring at a prompt ;). So it pays to learn these short cuts. It also allows accessing lmdb files and even SQL if useful.
+Note that we still can also use SPARQL *also* to output RDF triples. So if we want more powerful filtering and/or add metadata it will all work.
+
+So, I wrote a first script to digest our RDF from GEMMA. The RDF library in Guix is a bit old, so we may need to upgrade eventually.
