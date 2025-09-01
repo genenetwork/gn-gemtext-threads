@@ -27,6 +27,8 @@ For our production systems we use Debian as a base install. Once installed:
 * [X] add ttyS0 support for grub and kernel - so out-of-band works
 * [X] start ssh server and configure not to use with passwords
 * [X] start nginx and check external networking
+* [X] mount old root
+* [X] Clean up /etc/profile (remove global profile.d loading)
 * [ ] set up E-mail routing
 
 It may help to mount the old root if you have it. Now it is on
@@ -37,25 +39,30 @@ mount /dev/sdd2 /mnt/old-root/
 
 # Get Guix going
 
-* [X] Install Guix daemon
+* [X] Mount bind /gnu on a large partition
 * [X] Move /gnu/store to larger partition
-* [X] Update Guix daemon and setup in systemd
+* [X] Install Guix daemon
+* [X] Update Guix daemon and setup in systemd (if necessary)
 * [X] Make available in /usr/local/guix-profiles
-* [X] Clean up /etc/profile
 
-We can bootstrap with the Debian guix package. Next move the store to a large partion and hard mount it in /etc/fstab with
+Next move the /gnu store to a large partion and hard mount it in /etc/fstab with
 
 ```
 /export2/gnu /gnu none defaults,bind 0 0
 ```
 
+We can bootstrap with the Debian guix package (though I prefer the guix-install.sh script these days, mostly because it is more modern).
+
+=> https://guix.gnu.org/manual/en/html_node/Binary-Installation.html
+
+
 Run guix pull
 
 ```
-wrk@tux04:~$ guix pull -p ~/opt/guix-pull --url=https://codeberg.org/guix/guix-mirror.git
+guix pull --url=https://codeberg.org/guix/guix  -p ~/opt/guix-pull
 ```
 
-Use that to install guix in /usr/local/guix-profiles
+Use that also to install guix in /usr/local/guix-profiles
 
 ```
 guix package -i guix -p /usr/local/guix-profiles/guix
