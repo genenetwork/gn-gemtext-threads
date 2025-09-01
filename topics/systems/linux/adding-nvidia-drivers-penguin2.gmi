@@ -1,0 +1,46 @@
+# GPU Graphics Driver Set-Up
+
+Tux02 has the Tesla K80 (GK210GL) GPU.  For machine learning, we want the official proprietary NVIDIA drivers.
+
+## Installation
+
+* Debian 12 moved NVIDIA driver into the non-free-firmware repo.  Add the following to "/etc/apt/sources.list" and run "sudo apt update":
+
+```
+deb http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
+```
+
+* Make sure the correct kernel headers are installed:
+
+```
+sudo apt install linux-headers-$(uname -r)
+```
+
+* Install "nvidia-tesla-470-driver"⁰ (The NVIDIA line-up of programmable "Tesla" devices, used primarily for simulations and large-scale calculations, also require separate driver packages to function correctly compared to the consumer-grade GeForce GPUs that are instead targeted for desktop and gaming usage)¹:
+
+```
+sudo apt install nvidia-tesla-470-driver nvidia-tesla-470-driver-libs
+```
+
+* Black list nouveau since it conflicts with NVIDIA's driver, and regenerate the initramfs "sudo update-initramfs -u":
+
+```
+echo "blacklist nouveau" | sudo tee /etc/modprobe.d/blacklist-nouveau.conf
+echo "options nouveau modeset=0" | sudo tee -a /etc/modprobe.d/blacklist-nouveau.conf
+```
+
+* Reboot and test the nvidia drivers:
+
+```
+sudo reboot
+nvidia-smi
+
+# optional if you want to use nvidia-cuda-toolkit
+sudo apt install nvidia-cuda-dev nvidia-cuda-toolkit
+```
+
+## References
+
+=> ⁰ https://us.download.nvidia.com/XFree86/Linux-x86_64/470.129.06/README/supportedchips.html Nvidia 470.129.06 Supported Chipsets.
+=> ¹ https://wiki.debian.org/NvidiaGraphicsDrivers#Tesla_Drivers Debian Tesla Drivers.
+=> ² https://wiki.debian.org/NvidiaGraphicsDrivers/Configuration NVIDIA Proprietary Driver: Configuration.
