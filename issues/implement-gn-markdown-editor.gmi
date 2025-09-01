@@ -13,7 +13,7 @@ Example of similar implementation
 
 * assigned: alexm
 * type: enhancement
-* status: IN PROGRESS
+* status: done, completed.
 
 * keywords: markdown,editor
 
@@ -23,7 +23,7 @@ Example of similar implementation
 
 * [x]  add live preview for page markdown on edit
 
-* [] authentication(WIP)
+* [x] authentication
 
 * [x] commit changes to github repo
 
