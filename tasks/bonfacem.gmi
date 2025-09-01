@@ -40,6 +40,8 @@
 
 ### Later
 * [ ] Editing genotype metadata
+* [ ] Look at XAPIAN search for gene alias.
+* [ ] Add GeneNetwork abstracts to XAPIAN search.
 * [+] Correlations hash.
 *     - Add dataset count to RDF.
 * [ ] Spam + LLMs
