@@ -41,6 +41,6 @@ sudo apt install nvidia-cuda-dev nvidia-cuda-toolkit
 
 ## References
 
-=> ⁰ https://us.download.nvidia.com/XFree86/Linux-x86_64/470.129.06/README/supportedchips.html Nvidia 470.129.06 Supported Chipsets.
-=> ¹ https://wiki.debian.org/NvidiaGraphicsDrivers#Tesla_Drivers Debian Tesla Drivers.
-=> ² https://wiki.debian.org/NvidiaGraphicsDrivers/Configuration NVIDIA Proprietary Driver: Configuration.
+=> https://us.download.nvidia.com/XFree86/Linux-x86_64/470.129.06/README/supportedchips.html ⁰ Nvidia 470.129.06 Supported Chipsets.
+=> https://wiki.debian.org/NvidiaGraphicsDrivers#Tesla_Drivers ¹ Debian Tesla Drivers.
+=> https://wiki.debian.org/NvidiaGraphicsDrivers/Configuration ² NVIDIA Proprietary Driver: Configuration.
