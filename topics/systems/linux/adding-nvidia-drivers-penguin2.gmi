@@ -39,6 +39,21 @@ nvidia-smi
 sudo apt install nvidia-cuda-dev nvidia-cuda-toolkit
 ```
 
+## Issues
+
+Holding on reboot until I check in with the rest of team regarding some initd raspi hook:
+
+```
+update-initramfs: Generating /boot/initrd.img-6.1.0-9-amd64
+raspi-firmware: missing /boot/firmware, did you forget to mount it?
+run-parts: /etc/initramfs/post-update.d//z50-raspi-firmware exited with return code 1
+dpkg: error processing package initramfs-tools (--configure):
+ installed initramfs-tools package post-installation script subprocess returned error exit status 1
+Processing triggers for libgdk-pixbuf-2.0-0:amd64 (2.42.10+dfsg-1+deb12u1) ...
+Errors were encountered while processing:
+ initramfs-tools
+```
+
 ## References
 
 => https://us.download.nvidia.com/XFree86/Linux-x86_64/470.129.06/README/supportedchips.html ⁰ Nvidia 470.129.06 Supported Chipsets.
