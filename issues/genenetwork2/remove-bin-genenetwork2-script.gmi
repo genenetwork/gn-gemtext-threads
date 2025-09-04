@@ -52,6 +52,8 @@ export GEMMA_WRAPPER_COMMAND="${GN2_PROFILE}/bin/gemma-wrapper"
 export REQUESTS_CA_BUNDLE="${GUIX_ENVIRONMENT}/etc/ssl/certs/ca-certificates.crt"
 ```
 
+Note that, you can define all the variables derived from "GN2_PROFILE" in your settings file, if such a settings file is computed.
+
 ### Running Unit Tests
 
 To run unit tests, run pytest at the root of the repository.
