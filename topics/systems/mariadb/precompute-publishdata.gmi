@@ -2569,4 +2569,168 @@ OK, we are finally at the point where we can compare LMM results with HK (read r
 The easiest way is to capture all SNPs and write the analysis in code. There may be a way to do this in SPARQL but it will take me more time and we'll end with less flexibility. Now there are two main ways to go about it. I can dump a table with all SNPs using SPARQL itself and process the tabular data (this, btw, may be a good input for AI). Another option is to use an RDF library and parse the RDF triples directly (without Virtuoso) in the middle. That should allow for quicker processing and also a shorter turnaround if I need to modify RDF (the process of updating, uploading, checking and writing SPARQL queries, is quite long). There is one thing in writing software that is very important: you want a quick turnaround, otherwise you are just staring at a prompt ;). So it pays to learn these short cuts. It also allows accessing lmdb files and even SQL if useful.
 Note that we still can also use SPARQL *also* to output RDF triples. So if we want more powerful filtering and/or add metadata it will all work.
 
-So, I wrote a first script to digest our RDF from GEMMA. The RDF library in Guix is a bit old, so we may need to upgrade eventually.
+## Reading RDF
+
+So, I wrote a first script to digest our RDF from GEMMA. The RDF library in Guix is a bit old, so we have to upgrade that in Guix.
+
+For testing I created a small TTL file and convert to N3 with wrapper.
+
+```
+rapper -i turtle test-2000.ttl > test-2000.n3
+```
+
+What we want to do is walk the dataset and harvest SNPs that belong to a run. As a start.
+
+First I needed to add the relevant RDF packages to Guix.
+
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=fcbe2919a1e4b168e8ec9ac995a6512360d56ac8
+
+The following code fetches all traits with all SNPs:
+
+```
+  graph = RDF::Graph.load(fn)
+  datasets = graph.query(RDF::Query.new {
+                           pattern [:dataset, RDF.type, GNT.mappedTrait]
+                         })
+  datasets.each { |trait|
+    p "-------"
+    p trait.dataset
+    snps = graph.query(RDF::Query.new {
+                         pattern [ :snp, GNT.mappedSnp, trait.dataset ]
+                       })
+    p snps
+  }
+```
+
+Resulting in
+
+```
+"-------"
+#<RDF::URI:0x9ec0 URI:http://genenetwork.org/id/GEMMAMapped_LOCO_BXDPublish_10007_gemma_GWA_7c00f36d>
+[#<RDF::Query::Solution:0x9ed4({:snp=>#<RDF::URI:0x9ee8 URI:http://genenetwork.org/id/Rsm10000005697_BXDPublish_10007_gemma_GWA_7c00f36d>})>]
+```
+
+At the next step we want to do a bit more sophisticated queries. This thing has SPARQL support with the graph in RAM, but I want to try the native interface first.
+
+The first hurdle was that loading RDF triples is extremely slow. So I wanted to try the RDF Raptor C extension, but that sent me down a temporary Guix rabbit hole because nss-certs moved. Also the raptor gem was ancient, and was showing errors, so I updated to the latest github code.
+
+Anyway guix-bioinformatics was updated to support that. Next I tried loading with raptor and that made the difference. At least the triples are read in minutes rather than hours, but the next step building the large graph takes a lot of time too. This sucks.
+
+Creating and inspecting each statement is fast enough that look like:
+
+```
+#<RDF::Statement:0x7a8(<http://genenetwork.org/id/HK_trait_BXDPublish_10001_gemma_GWA_hk_assoc_txt> <http://genenetwork.org/term/trait> <http://genenetwork.org/id/publishXRef_10001> .)>
+```
+
+So, rather than including all triples, we first filter out the ones we are not interested in and that speeds things up. That worked until I included all SNPs. Are we delivered here? These libraries may be too slow. Analysing 200K triples took forever. Constructing the graph through an enumerator is a really slow step. The graph query is also slow. But adding the raptor read triples to an array only took 7s. It makes pretty clear we should process the 'raw' data directly.
+
+The current script collects all SNPs by GEMMA trait:
+
+```
+time ./bin/rdf-analyse-gemma-hits.rb test.nt
+Parsing test.nt...
+
+real    0m12.314s
+user    0m12.117s
+sys     0m0.196s
+```
+
+Next stop we make it a set and do the same for HK. And we can do set analysis. The first round is pretty impressive, it looks like trait 10001 has exactly the same SNPs for HK and GEMMA. That is a nice confirmation. Actually 10001 is an interesting test case because in GN you can see HK and GEMMA find different secondary peaks:
+
+=> https://genenetwork.org/show_trait?trait_id=10001&dataset=BXDPublish
+
+At the GEMMA threshold we set (LOD>4.0) all hits are on chr8 and they overlap with HK. Down the line we could look at lower values, but lets stick with this for now.
+
+For 10004 we find some different SNPs. The mapping looks similar in GN:
+
+=> https://genenetwork.org/show_trait?trait_id=10001&dataset=BXDPublish
+
+The difference is:
+
+```
+["10004", #<Set: {#<RDF::URI:0x1a18 URI:http://genenetwork.org/id/Rs47899232>, #<RDF::URI:0x1a54 URI:http://genenetwork.org/id/Rsm10000005699>, #<RDF::URI:0xf78 URI:http://genenetwork.org/id/Rsm10000005700>, #<RDF::URI:0xf3c URI:http://genenetwork.org/id/Rs32133186>, #<RDF::URI:0xf00 URI:http://genenetwork.org/id/Rs32818171>, #<RDF::URI:0xec4 URI:http://genenetwork.org/id/Rsm10000005701>, #<RDF::URI:0xe88 URI:http://genenetwork.org/id/Rsm10000005702>, #<RDF::URI:0xdd4 URI:http://genenetwork.org/id/Rsm10000005703>, #<RDF::URI:0xfb4 URI:http://genenetwork.org/id/Rs33490412>, #<RDF::URI:0xff0 URI:http://genenetwork.org/id/Rs3661882>, #<RDF::URI:0x102c URI:http://genenetwork.org/id/Rsm10000005704>, #<RDF::URI:0x1068 URI:http://genenetwork.org/id/Rs32579649>, #<RDF::URI:0x10a4 URI:http://genenetwork.org/id/Rsm10000005705>}>]
+```
+
+This locus Rs47899232 is not in my test set, so it looks like it is under the threshold. If you look at Chr8 you can see the GEMMA hit shifted somewhat to the right from HK Chr8: 68.799000 to LOCO Chr8: 95.704608. The LOCO hit is also visible in HK, but dropped below significance.
+
+So we can do this analysis now! But just looking at SNPs is going to be laborious. At this stage we are mostly interested in the highest peak and whether it changed. What we need to do is capture regions, i.e. the chromosome positions, and map out if they moved.
+
+In the next phase I am going to take all SNP positions and map their region (+- 10,000 bps). For every trait we'll have a list of *regions* linked to significant hits. If these regions differ then the peaks differ, and we can highlight them.
+
+# Getting SNPs and their positions
+
+To get SNPs and their positions a simple SPARQL query will do. Bonz has created a TTL, e.g.
+
+```
+gn:Rs47899232 rdf:type gnc:Genotype .
+gn:Rs47899232 rdfs:label "rs47899232" .
+gn:Rs47899232 gnt:chr "8" .
+gn:Rs47899232 gnt:mb "95.704608"^^xsd:double .
+gn:Rs47899232 gnt:belongsToSpecies gn:Mus_musculus .
+gn:Rs47899232 gnt:chrNum "0"^^xsd:int .
+gn:Rsm10000005700 rdf:type gnc:Genotype .
+gn:Rsm10000005700 rdfs:label "rsm10000005700" .
+gn:Rsm10000005700 gnt:chr "8" .
+gn:Rsm10000005700 gnt:mb "95.712996"^^xsd:double .
+gn:Rsm10000005700 gnt:belongsToSpecies gn:Mus_musculus .
+gn:Rsm10000005700 gnt:chrNum "0"^^xsd:int .
+```
+
+A few things are a bit puzzling, but at this stage we mostly care for are the identifier, label, chr and mb. GN, for some reason tracks mb as a floating point. I don't like that, but it will work for tracking positions. To get a table we use the following query:
+
+```
+SELECT * WHERE {
+    ?snp a gnc:Genotype;
+             gnt:belongsToSpecies gn:Mus_musculus ;
+             rdfs:label ?name ;
+             gnt:chr ?chr ;
+             gnt:mb ?mb .
+
+}
+```
+
+we save that as a TSV and have 120K SNPs formatted like:
+
+```
+"http://genenetwork.org/id/Rs47899232"   "rs47899232"    "8"     95.7046
+```
+
+# Ranges
+
+In the next step we want do define peak ranges. It would be nice to visualize them as a line, e.g. for HK and LOCO:
+
+```
+Chr   1              2             3 ...
+HK    ---X-------------------X-----
+LOCO  ---X----X--------------X-----
+```
+
+That way we can see that a peak appeared on Chr 1. Down the line we can use the same info to compare traits A and B:
+
+```
+Chr   1              2             3 ...
+A     ---X-------------------X-----
+B     ---X-------------------------
+```
+
+where we see some chromosome area is shared. Rob sent me this nice 2008 paper:
+
+=> https://pubmed.ncbi.nlm.nih.gov/19008955/
+
+which states that a remarkably diverse set of traits maps to a region on mouse distal chromosome 1 (Chr 1) that corresponds to human Chr 1q21-q23. This region is highly enriched in quantitative trait loci (QTLs) that control neural and behavioral phenotypes, including motor behavior, escape latency, emotionality, seizure susceptibility (Szs1), and responses to ethanol, caffeine, pentobarbital, and haloperidol.
+
+And we are still doing this research today.
+
+Anyway, for our purposes, for each trait we have a range of SNPs. If they are close to each other they form a 'peak'. What I am going to do is combine the SNPs we are comparing into one set first. Use that to define the ranges (say within 10K BPs). Next we go back to the computed SNPs and figure out what fits a range. We will pick out those ranges that are unique to a trait. But first we'll just visualize.
+
+As this involves some logic we will have to do it in real code (again). First we show how many SNPs we have combined for HK+LOCO and how many differ, e.g.
+
+```
+["10001",  78,  0]
+["10002", 208, 92]
+["10003",  96,  0]
+["10004",  35, 13]
+["10005",  76,  0]
+```
+
+so, for 10001 we have 78 SNPs and the LOCO ones overlap with HK. We showed before that for every set we have the SNP ids.
