@@ -1,0 +1,29 @@
+# Remove `bin/genenetwork2` Script
+
+## Tags
+
+* type: improvement
+* status: open
+* priority: medium
+* assigned: fredm, bonfacem, alexm, zachs
+* interested: pjotrp, aruni
+* keywords: gn2, bin/genenetwork2, startup script
+
+## Description
+
+The `bin/genenetwork2` script was used for a really long time to launch Genenetwork2, and has served that purpose with honour and dedication. We applaud that.
+
+It is, however, time to retire the script, since at this point in time, it serves more to obfuscate the startup that as a helpful tool.
+
+On production, we have all but abandoned the use of the script, and we need to do the same for CI/CD, and eventually, development.
+
+This issue tracks the process, and problems that come up during the move to retire the script.
+
+### Process
+
+* [ ] Identify how to run unit tests without the script
+* [ ] Document how to run unit tests without the script
+* [ ] Identify how to run mechanical-rob tests without the script
+* [ ] Document how to run mechanical-rob tests without the script
+* [ ] Update CI/CD definitions to get rid of the references to the script
+* [ ] Delete the script from the repository
