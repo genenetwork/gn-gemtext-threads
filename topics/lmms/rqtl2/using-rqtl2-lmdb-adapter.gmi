@@ -29,12 +29,12 @@ You can find the `lmdb_matrix.py` script here:
 guix shell python-click python-lmdb python-wrapper python-numpy -- \
      python lmdb_matrix.py import-genotype \
      <path-to-genotype-file> <path-to-lmdb-store>
-````
+```
 
 ## Dumping the Cross Metadata
 
 The script can be found here:
-\=> [https://github.com/genenetwork/genenetwork3/pull/235/files](https://github.com/genenetwork/genenetwork3/pull/235/files)  # lmdb\_cross\_metadata.py
+=> https://github.com/genenetwork/genenetwork3/pull/235/files   # lmdb_cross_metadata.py
 
 You need to provide a cross file path. The currently supported formats are JSON and YAML.
 
@@ -44,7 +44,7 @@ Example:
 guix shell python-click python-lmdb python-wrapper python-pyyaml -- \
      python dump_metadata.py dump-cross [LMDB_PATH] [CROSS_FILE_PATH] --file-format yaml/json
 
-# or
+# Example
 
 python dump_metadata.py dump-cross "./test_lmdb_data" "./cross_file.json"
 ```
