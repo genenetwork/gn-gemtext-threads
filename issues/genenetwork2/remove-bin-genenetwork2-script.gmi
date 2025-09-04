@@ -28,7 +28,7 @@ This issue tracks the process, and problems that come up during the move to reti
 * [ ] Update CI/CD definitions to get rid of the references to the script
 * [ ] Delete the script from the repository
 
-#### Setup
+### Setup
 
 First, we need to setup the following mandatory environment variables:
 
@@ -52,7 +52,7 @@ export GEMMA_WRAPPER_COMMAND="${GN2_PROFILE}/bin/gemma-wrapper"
 export REQUESTS_CA_BUNDLE="${GUIX_ENVIRONMENT}/etc/ssl/certs/ca-certificates.crt"
 ```
 
-#### Running Unit Tests
+### Running Unit Tests
 
 To run unit tests, run pytest at the root of the repository.
 
@@ -61,7 +61,7 @@ $ cd /path/to/genenetwork2
 $ pytest
 ```
 
-#### Running "mechanical-rob" Tests
+### Running "mechanical-rob" Tests
 
 At the root of the repository, run something like:
 
@@ -72,7 +72,7 @@ python test/requests/test-website.py --all http://localhost:5033
 Change the port, as appropriate.
 
 
-#### Launching Application
+### Launching Application
 
 In addition to the minimum set of envvars defined in the "Setup" section above, we need the following variables defined to get the application to launch:
 
