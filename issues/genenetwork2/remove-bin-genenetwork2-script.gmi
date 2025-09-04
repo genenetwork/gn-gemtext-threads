@@ -21,9 +21,87 @@ This issue tracks the process, and problems that come up during the move to reti
 
 ### Process
 
-* [ ] Identify how to run unit tests without the script
-* [ ] Document how to run unit tests without the script
-* [ ] Identify how to run mechanical-rob tests without the script
-* [ ] Document how to run mechanical-rob tests without the script
+* [x] Identify how to run unit tests without the script
+* [x] Document how to run unit tests without the script
+* [x] Identify how to run mechanical-rob tests without the script
+* [x] Document how to run mechanical-rob tests without the script
 * [ ] Update CI/CD definitions to get rid of the references to the script
 * [ ] Delete the script from the repository
+
+#### Setup
+
+First, we need to setup the following mandatory environment variables:
+
+* GN2_PROFILE
+* GN2_SETTINGS
+* JS_GUIX_PATH
+* GEMMA_COMMAND
+* PLINK_COMMAND
+* GEMMA_WRAPPER_COMMAND
+* REQUESTS_CA_BUNDLE
+
+Within a guix shell, you could do that with something like:
+
+```
+export GN2_PROFILE="${GUIX_ENVIRONMENT}"
+export GN2_SETTINGS="/home/frederick/genenetwork/gn2_settings.conf"
+export JS_GUIX_PATH="${GN2_PROFILE}/share/genenetwork2/javascript"
+export GEMMA_COMMAND="${GN2_PROFILE}/bin/gemma"
+export PLINK_COMMAND="${GN2_PROFILE}/bin/plink2"
+export GEMMA_WRAPPER_COMMAND="${GN2_PROFILE}/bin/gemma-wrapper"
+export REQUESTS_CA_BUNDLE="${GUIX_ENVIRONMENT}/etc/ssl/certs/ca-certificates.crt"
+```
+
+#### Running Unit Tests
+
+To run unit tests, run pytest at the root of the repository.
+
+```
+$ cd /path/to/genenetwork2
+$ pytest
+```
+
+#### Running "mechanical-rob" Tests
+
+At the root of the repository, run something like:
+
+```
+python test/requests/test-website.py --all http://localhost:5033
+```
+
+Change the port, as appropriate.
+
+
+#### Launching Application
+
+In addition to the minimum set of envvars defined in the "Setup" section above, we need the following variables defined to get the application to launch:
+
+* FLASK_APP
+
+In a guix shell, you could do:
+
+```
+export FLASK_APP="gn2.wsgi"
+```
+
+Now you can launch the application with flask with something like:
+
+```
+flask run --port=5033 --with-threads
+```
+
+or with green unicorn with something like:
+
+```
+gunicorn --reload \
+         --workers 3 \
+         --timeout 1200 \
+         --log-level="debug" \
+         --keep-alive 6000 \
+         --max-requests 10 \
+         --bind="127.0.0.1:5033" \
+         --max-requests-jitter 5 \
+         gn2.wsgi:application
+```
+
+You can change the gunicorn setting to fit your scenario.
