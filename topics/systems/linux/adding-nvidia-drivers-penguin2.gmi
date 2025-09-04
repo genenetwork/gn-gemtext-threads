@@ -19,7 +19,8 @@ sudo apt install linux-headers-$(uname -r)
 * Install "nvidia-tesla-470-driver"⁰ (The NVIDIA line-up of programmable "Tesla" devices, used primarily for simulations and large-scale calculations, also require separate driver packages to function correctly compared to the consumer-grade GeForce GPUs that are instead targeted for desktop and gaming usage)¹:
 
 ```
-sudo apt install nvidia-tesla-470-driver nvidia-tesla-470-driver-libs
+sudo apt purge 'nvidia-*'
+sudo apt install nvidia-tesla-470-driver
 ```
 
 * Black list nouveau since it conflicts with NVIDIA's driver, and regenerate the initramfs "sudo update-initramfs -u":
@@ -52,6 +53,18 @@ dpkg: error processing package initramfs-tools (--configure):
 Processing triggers for libgdk-pixbuf-2.0-0:amd64 (2.42.10+dfsg-1+deb12u1) ...
 Errors were encountered while processing:
  initramfs-tools
+```
+
+Removed the firmware by running:
+
+```
+sudo apt purge raspi-firmware
+
+# Configure all packages that are installed but not yet fully configured
+sudo dpkg --configure -a
+
+# Update initramfs since we updated our drivers
+sudo update-initramfs -u
 ```
 
 ## References
