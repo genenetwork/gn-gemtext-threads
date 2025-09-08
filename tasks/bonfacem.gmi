@@ -23,7 +23,8 @@
 * Share PhD concept note with PJ for polishing
 
 ### This week
-* [ ] Look at container work.  Look at permissions issue.
+* [~] Updated Penguin2 with cuda drivers.  Need to check OpenCL.
+* [~] Look at container work.  Look at permissions issue.
 * [ ] Generate RDF docs using AI.
 * [~] Dump all genotypes from tux02 to LMDB.
 *     - PJ sync tux01 genotypes with tux02/04.
@@ -100,7 +101,7 @@ Currently closed issues are:
 * [X] lmdb publishdata output and share with Pjotr and Johannes
 
 ## Done
-
+* [X] Provided Johannes anthropic tokens
 * [X] Add lmdb output hashes with index and export LMDB_DATA_DIRECTORY
 * [X] Share small database with @pjotrp and @felixl
 * [X] With Alex get rqtl2 demo going in CD (for BXD)
@@ -141,7 +142,6 @@ Currently closed issues are:
 * [X] Referrer headers -- a way of preventing bots beyond rate-limiting. 
 * [X] Python Fahamu.
 * [X] Memvid - brief look.
-
 * [X] Encourage FahamuAI to be open.
 *     Another paper with his group should be out this month
 * [X] Help Alex with SSL certification container error.
