@@ -2734,3 +2734,113 @@ As this involves some logic we will have to do it in real code (again). First we
 ```
 
 so, for 10001 we have 78 SNPs and the LOCO ones overlap with HK. We showed before that for every set we have the SNP ids.
+
+For the first time this exercise I have to write some real new code (before I was just tying together existing work and fixing bugs on the fly). The reason is that we have to track QTL peak ranges by inserting SNP positions. Not only that, we also need to make sure that these ranges do not overlap and build faithfully. For example, the order of adding SNPs matters - we grow a range by adding SNPs on the same chromosome. If a SNP falls out of range (e.g. 10K BPs away) we create a new range. But when a nother SNP falls in the middle we need to merge them into one range (or peak). This requires some logic and I am creating a new module for it.
+
+The current code creates the following peaks on chr1:
+
+```
+@chromosome={"1"=>[#<QRange 𝚺14 173.339..173.679>, #<QRange 𝚺9 175.615..176.205>, #<QRange 𝚺2 174.541..174.679>, #<QRange 𝚺7 175.437..176.032>, #<QRange 𝚺15 72.2551..73.3771>, #<QRange 𝚺10 179.862..180.284>, #<QRange 𝚺22 181.476..183.154>, #<QRange 𝚺9 179.916..180.412>, #<QRange 𝚺4 177.555..177.901>, #<QRange 𝚺29 171.749..173.532>, #<QRange 𝚺8 171.172..172.175>]
+```
+
+The sigma tells you how many SNPs are in there. There is some overlap, so I need to fix that. When I set the distance at 50,000 BPS we get too many peaks. We need some other heuristic to decide what is a peak and what not. Probably look at the direction the significance is going. I.e. when it drops and rises again we may have a local peak. Would be nice to track those as separate ranges.
+
+Rob suggested a bin size of 500,000 BPs for the BXD. Let's try that first. This results in an orderly combined LOCO+HK results for trait 10002:
+
+```
+#<QTL::QRanges:0x00007f99f277c840 @chromosome={"1"=>[#<QRange 𝚺15 72.2551..73.3771>, #<QRange 𝚺91 171.172..183.154>], "8"=>[#<QRange 𝚺102 94.3743..112.929>]}>
+```
+
+Next we do this for LOCO and HK separately:
+
+```
+[10002,combined] =>{"1"=>[#<QRange 𝚺15 72.2551..73.3771>, #<QRange 𝚺91 171.172..183.154>], "8"=>[#<QRange 𝚺102 94.3743..112.929>]}
+[10002,HK]       =>{"1"=>[#<QRange 𝚺14 179.862..181.546>], "8"=>[#<QRange 𝚺102 94.3743..112.929>]}
+[10002,LOCO]     =>{"1"=>[#<QRange 𝚺15 72.2551..73.3771>, #<QRange 𝚺91 171.172..183.154>], "8"=>[#<QRange 𝚺32 94.4792..97.3382>]}
+["10003", 96, 0]
+["10004", 35, 13]
+[10004,combined] =>{"8"=>[#<QRange 𝚺35 68.7992..97.3516>]}
+[10004,HK]       =>{"8"=>[#<QRange 𝚺22 68.7992..74.9652>]}
+[10004,LOCO]     =>{"8"=>[#<QRange 𝚺13 95.6926..97.3516>]}
+```
+
+Resulting in a new QTL for 10002,LOCO. And with 10004 we see the QTL shift to the right. Nice!
+
+We'll want to track the LOD score too, so let's load that using the RDF file we parse anyway.
+
+```
+[10002,HK]       =>{"1"=>[#<QRange 𝚺14 179.862..181.546 LOD=3.07..3.07>], "8"=>[#<QRange 𝚺102 94.3743..112.929 LOD=3.1..5.57>]}
+[10002,LOCO]     =>{"1"=>[#<QRange 𝚺15 72.2551..73.3771 LOD=4.0..5.1>, #<QRange 𝚺91 171.172..183.154 LOD=4.5..5.3>], "8"=>[#<QRange 𝚺32 94.4792..97.3382 LOD=4.5..4.8>]}
+[10004,HK]       =>{"8"=>[#<QRange 𝚺22 68.7992..74.9652 LOD=3.14..3.23>]}
+[10004,LOCO]     =>{"8"=>[#<QRange 𝚺13 95.6926..97.3516 LOD=4.1..4.6>]}
+```
+
+Speaks for itself.
+
+# Analyzing peaks
+
+Now we have the peaks for different runs (HK and LOCO). We would like to see how many of the traits are affected - gaining or losing or moving peaks. Also, before we introduce the GEMMA values to GN, we would like to assess how many of the peaks are really different.
+
+With above example we can see that 10002 gained a peak on chr1. With 10004 we see that the peak on chr8 shifted position. These are the things we want to capture. Also we want to bring back some metadata to show what the trait is about. Finally we want to point to the full vector lmdb file which I forgot to include in the original parsing though I did include the hash, e.g.
+
+```
+gn:GEMMAMapped_LOCO_BXDPublish_10001_gemma_GWA_7c00f36d a gnt:mappedTrait;
+      rdfs:label "GEMMA BXDPublish trait 10001 mapped with LOCO (defaults)";
+      gnt:trait gn:publishXRef_10001;
+      gnt:loco true;
+      gnt:time "2025/08/24 08:22";
+      gnt:belongsToGroup gn:setBxd;
+      gnt:name "BXDPublish";
+      gnt:traitId "10001";
+```
+
+I shoud add
+
+```
+      gnt:filename "c143bc7928408fdc53affed0dacdd98d7c00f36d-BXDPublish-10001-gemma-GWA.tar.xz"
+      gnt:hostname "balg01"
+```
+
+so we can find it back easily.
+
+Next step is to say something about the peaks. Let's enrich our RDF store to show these results. Basically for 10002 we can add RDF statements for
+
+```
+[10002,HK]       =>{"1"=>[#<QRange 𝚺14 179.862..181.546 LOD=3.07..3.07>], "8"=>[#<QRange 𝚺102 94.3743..112.929 LOD=3.1..5.57>]}
+[10002,LOCO]     =>{"1"=>[#<QRange 𝚺15 72.2551..73.3771 LOD=4.0..5.1>, #<QRange 𝚺91 171.172..183.154 LOD=4.5..5.3>], "8"=>[#<QRange 𝚺32 94.4792..97.3382 LOD=4.5..4.8>]}
+```
+
+e.g.
+
+```
+gn:qtl00001_LOCO
+    gnt:qtlChr      "1";
+    gnt:qtlStart    72.2551 ;
+    gnt:qtlStop     73.3771 ;
+    gnt:qtlLOD      5.1 ;
+    gnt:SNPs        15 ;
+gn:qtl00002_LOCO
+    gnt:qtlChr      "1";
+    gnt:qtlStart    171.172 ;
+    gnt:qtlStop     183.154 ;
+    gnt:qtlLOD      5.3 ;
+    gnt:SNPs        91 ;
+    gnt:qtlOverlaps gn:qtl00001_HK.
+```
+
+This way, in SPARQL, we can query all QTL that are not in HK. For the QTL that are in HK we can also see if they shifted. Actually for SPARQL we don't really need the last statement - it is just a convenience. We will also add the actual SNP identifiers so the SNP counter is not really necessary either (let SPARQL count):
+
+```
+gn:QTL_CHR1_722551_GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d
+    gnt:mappedQTL gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d
+    rdfs:label     "GEMMA BXDPublish LOCO QTL on 1:722551 trait 10002";
+    gnt:qtlChr     "1";
+    gnt:qtlStart   72.2551 ;
+    gnt:qtlStop    73.3771 ;
+    gnt:qtlLOD     5.1 ;
+    gnt:qtlSNP     gn:Rs13475920_BXDPublish_10002_gemma_GWA_7c00f36d
+    gnt:qtlSNP     gn:Rs31428112_BXDPublish_10002_gemma_GWA_7c00f36d
+    (...)
+```
+
+I have two things to solve now. First we need to check whether QTLs between the two runs overlap. And then there is a bug in the QTL computation from SNP positions. I am seeing some inconsistencies wrt binning.
