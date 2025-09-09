@@ -2844,3 +2844,60 @@ gn:QTL_CHR1_722551_GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d
 ```
 
 I have two things to solve now. First we need to check whether QTLs between the two runs overlap. And then there is a bug in the QTL computation from SNP positions. I am seeing some inconsistencies wrt binning.
+
+The problem I was referring to yesterday turns out to be alright. I thought that when I was using the combined SNPs from HK and LOCO that there was only one peak. But there are two:
+
+```
+[10002,combined] =>{"1"=>[#<QRange 𝚺15 72.2551..73.3771 LOD=..>,       #<QRange 𝚺91 171.172..183.154 LOD=..>]},
+[10002,HK]       =>{"1"=>                                              #<QRange 𝚺14 179.862..181.546 LOD=3.07..3.07>],
+[10002,LOCO]     =>{"1"=>[#<QRange 𝚺15 72.2551..73.3771 LOD=4.0..5.1>, #<QRange 𝚺91 171.172..183.154 LOD=4.5..5.3>]
+```
+
+It is interesting to see that HK misses out on one peak completely and the second peak completely overlaps with LOCO (including all SNPs). All good, so far. OK. Let's add some logic to see what peaks match or don't match:
+
+```
+[10002,HK] =>{"1"=>[#<QRange Chr1 𝚺14 179.862..181.546 LOD=3.07..3.07>], "8"=>[#<QRange Chr8 𝚺102 94.3743..112.929 LOD=3.1..5.57>]}
+[10002,LOCO] =>{"1"=>[#<QRange Chr1 𝚺15 72.2551..73.3771 LOD=4.0..5.1>, #<QRange Chr1 𝚺91 171.172..183.154 LOD=4.5..5.3>], "8"=>[#<QRange Chr8 𝚺32 94.4792..97.3382 LOD=4.5..4.8>]}
+["10002: NO HK match for LOCO Chr 1 QTL!", #<QRange Chr1 𝚺15 72.2551..73.3771 LOD=4.0..5.1>]
+[10004,HK] =>{"8"=>[#<QRange Chr8 𝚺22 68.7992..74.9652 LOD=3.14..3.23>]}
+[10004,LOCO] =>{"8"=>[#<QRange Chr8 𝚺13 95.6926..97.3516 LOD=4.1..4.6>]}
+["10004: NO HK match for LOCO Chr 8 QTL!", #<QRange Chr8 𝚺13 95.6926..97.3516 LOD=4.1..4.6>]
+```
+
+So 10002 correctly says there is a new QTL on chr1 and for 10004 a new QTL on chr8. Now, for 10004 it appears the HK version is in a different location, but I think it suffices to point out 'apparently' new QTL.
+
+Alright, so we can now annotate new/moved QTL! We are going to feed this back into virtuoso by writing RDF as I showed yesterday.
+
+Next step is to say something about the peaks. Let's enrich our RDF store to show these results. Basically for 10002 we add RDF statements for
+
+```
+[10002,HK]       =>{"1"=>[#<QRange 𝚺14 179.862..181.546 LOD=3.07..3.07>], "8"=>[#<QRange 𝚺102 94.3743..112.929 LOD=3.1..5.57>]}
+[10002,LOCO]     =>{"1"=>[#<QRange 𝚺15 72.2551..73.3771 LOD=4.0..5.1>, #<QRange 𝚺91 171.172..183.154 LOD=4.5..5.3>], "8"=>[#<QRange 𝚺32 94.4792..97.3382 LOD=4.5..4.8>]}
+```
+
+E.g.
+
+```
+gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_8_94
+    gnt:mappedQTL   gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d;
+    rdfs:label      "GEMMA BXDPublish QTL";
+    gnt:qtlChr      "8";
+    gnt:qtlStart    94.4792 ;
+    gnt:qtlStop     97.3382 ;
+    gnt:qtlLOD      4.8 .
+gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_8_94 gnt:mappedSnp gn:Rsm10000005689_BXDPublish_10002_gemma_GWA_7c00f36d .
+gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_8_94 gnt:mappedSnp gn:Rs232396986_BXDPublish_10002_gemma_GWA_7c00f36d .
+gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_8_94 gnt:mappedSnp gn:Rsm10000005690_BXDPublish_10002_gemma_GWA_7c00f36d .
+(...)
+```
+
+and if it is a new QTL compared to HK we annotate a newly discovered QTL:
+
+```
+gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_1_72_73 a gnt:newlyDiscoveredQTL .
+gn:GEMMAMapped_LOCO_BXDPublish_10004_gemma_GWA_7c00f36d_8_96_97 a gnt:newlyDiscoveredQTL .
+```
+
+Note we skipped the results that show no SNP changes - I should add them later to give full QTL cover. \
+Now we have all the RDF to figure out what traits have new QTL compared to reaper!
+I'll upload them in virtuoso for further analysis.
