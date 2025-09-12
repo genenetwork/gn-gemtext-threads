@@ -20,15 +20,15 @@ which I run on one of my machines.
 Usually I use a version of borg from guix. This should really be done as the borg user (ibackup).
 
 ```
-mkdir ~/opt
-guix package -i borg ~/opt/borg
-tux04:~$ ~/opt/borg/bin/borg --version
+ibackup@tux03:~$ mkdir ~/opt
+ibackup@tux03:~$ guix package -i borg -p ~/opt/borg
+~/opt/borg/bin/borg --version
   1.2.2
 ```
 
 # Create a new backup dir and user
 
-The backup should live on a different disk from the things we backup, so when that disk fails we have another.
+The backup should live on a *different* disk from the things we backup, so when that disk fails we have another. In fact in 2025 we had a corruption of the backups(!) We could recover from the original data + older backups. Not great. But if it had been the same disk it would have been worse.
 
 The SQL database lives on /export and the containers live on /export2. /export3 is a largish slow drive, so perfect.
 
@@ -50,6 +50,8 @@ id
 cd /export/backup/borg
 ~/opt/borg/bin/borg init --encryption=repokey-blake2 genenetwork
 ```
+
+Note that we typically start from an existing backup. These go back a long time.
 
 Now we can run our first backup. Note that ibackup should be a member of the mysql and gn groups
 
