@@ -25,7 +25,8 @@ So we can convert a .geno file to BIMBAM. I need to extract GN traits to a R/qtl
 * [X] Convert this info to RDF
 * [X] Run virtuoso server
 * [X] When loading traits compute mean, se, skew, kurtosis and store them as metadata in lmdb
-* [ ] Ask interesting questions about the overlap between reaper and gemma
+* [ ] Why is X not showing in LMM precompute for trait 51064
+* [X] Ask interesting questions about the overlap between reaper and gemma
 * [ ] Update PublishXRef and store old reaper value(?)
 * [ ] Correctly Handle gn-guile escalating errors
 * [ ] Make sure the trait fetcher handles authorization or runs localhost only
@@ -2878,16 +2879,16 @@ Next step is to say something about the peaks. Let's enrich our RDF store to sho
 E.g.
 
 ```
-gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_8_94
+gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_QTL_Chr8_94_97
     gnt:mappedQTL   gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d;
     rdfs:label      "GEMMA BXDPublish QTL";
     gnt:qtlChr      "8";
     gnt:qtlStart    94.4792 ;
     gnt:qtlStop     97.3382 ;
     gnt:qtlLOD      4.8 .
-gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_8_94 gnt:mappedSnp gn:Rsm10000005689_BXDPublish_10002_gemma_GWA_7c00f36d .
-gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_8_94 gnt:mappedSnp gn:Rs232396986_BXDPublish_10002_gemma_GWA_7c00f36d .
-gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_8_94 gnt:mappedSnp gn:Rsm10000005690_BXDPublish_10002_gemma_GWA_7c00f36d .
+gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_QTL_Chr8_94_97 gnt:mappedSnp gn:Rsm10000005689_BXDPublish_10002_gemma_GWA_7c00f36d .
+gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_QTL_Chr8_94_97 gnt:mappedSnp gn:Rs232396986_BXDPublish_10002_gemma_GWA_7c00f36d .
+gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_QTL_Chr8_94_97 gnt:mappedSnp gn:Rsm10000005690_BXDPublish_10002_gemma_GWA_7c00f36d .
 (...)
 ```
 
@@ -2898,6 +2899,61 @@ gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_1_72_73 a gnt:newlyDisco
 gn:GEMMAMapped_LOCO_BXDPublish_10004_gemma_GWA_7c00f36d_8_96_97 a gnt:newlyDiscoveredQTL .
 ```
 
-Note we skipped the results that show no SNP changes - I should add them later to give full QTL cover. \
+Note we skipped the results that show no SNP changes - I should add them later to give full QTL cover.
+
+Code is here:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/rdf-analyse-gemma-hits.rb
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/lib/qtlrange.rb
+
 Now we have all the RDF to figure out what traits have new QTL compared to reaper!
 I'll upload them in virtuoso for further analysis.
+
+I want to do a run that shows what traits have changed QTLs.
+Basically the command is
+
+```
+./bin/rdf-analyse-gemma-hits.rb test-hk-2000.ttl test-2000.ttl -o RDF
+```
+
+let's try to run with the full ttl files. Actually I converted them to n3 because of some error:
+
+```
+rapper --input turtle gemma-GWA.ttl > gemma-GWA.n3
+rapper --input turtle gemma-GWA-hk.ttl > gemma-GWA-hk.n3
+time ./bin/rdf-analyse-gemma-hits.rb gemma-GWA-hk.n3 gemma-GWA.n3 > test.out
+real    3m21.979s
+user    3m21.076s
+sys     0m0.716s
+```
+
+3.5 minutes is fine for testing stuff (if already a little tedious). The first run failed because I have renamed GEMMA_HK to GemmaHK. Another bug I hit was with:
+
+```
+[10009,HK] =>{"15"=>[#<QRange Chr15 𝚺30 25.6987..74.5398 LOD=3.01..3.27>]}
+[10009,LOCO] =>{"10"=>[#<QRange Chr10 𝚺1 76.2484..76.2484 LOD=3.5..3.5>]}
+/export/local/home/wrk/iwrk/opensource/code/genetics/gemma-wrapper/lib/qtlrange.rb:126:in `block (2 levels) in qtl_diff': undefined method `each' for nil (NoMethodError)
+```
+
+There are a few more bugs to fix - mostly around empty results, e.g. if a trait had no SNPs. Also HK would render a lodScore of infinite `gnt:lodScore Infinity` and that reduced the result set. I set a LOD of infinity to 99.0. So at least it'll stand out. Fixing it at 12 minutes made the run a lot slower than 3.5 minutes! Still OK, for now.
+
+The first run shows 7943 new QTL. Turns out that a bunch of them are non-significant, so need to filter those. Remember we kept the highest hit, even if significance was low. A quick filter shows that with LMM 2802 traits show new QTLs (out of 13K). Out of those 1984 traits did not compute a QTL at all with HK. That looks exciting, but we need to validate. Lets take a look at
+
+```
+[10727,HK] =>{}
+[10727,LOCO] =>{"15"=>[#<QRange Chr15 𝚺9 62.3894..63.6584 LOD=4.4..4.4>]}
+["10727: NO HK match for LOCO Chr 15 QTL!", [#<QRange Chr15 𝚺9 62.3894..63.6584 LOD=4.4..4.4>]]
+```
+
+=> https://genenetwork.org/show_trait?trait_id=10727&dataset=BXDPublish
+
+That looks correct to me. Rob you may want to check. And another:
+
+```
+[51064,HK] =>{"10"=>[#<QRange Chr10 𝚺12 92.3035..108.525 LOD=3.08..4.15>], "19"=>[#<QRange Chr19 𝚺34 8.93047..34.2017 LOD=3.06..3.41>], "3"=>[#<QRange Chr3 𝚺5 138.273..138.581 LOD=3.06..3.06>], "X"=>[#<QRange ChrX 𝚺5 160.766..163.016 LOD=3.48..3.48>]}
+[51064,LOCO] =>{"19"=>[#<QRange Chr19 𝚺37 29.9654..34.2017 LOD=4.3..5.5>]}
+```
+
+=> https://genenetwork.org/show_trait?trait_id=51064&dataset=BXDPublish
+
+Looks correct. With HK we see QTL on Chr 3,10,19 and X. On GN LMM we see a whopper on chr 19, as well as X. I need to see why GEMMA is not finding that X in precompute! Made a note of that too.
