@@ -23,9 +23,10 @@
 * Share PhD concept note with PJ for polishing
 
 ### This week
-* [~] Updated Penguin2 with cuda drivers.  Need to check OpenCL.
+* [X] Fix CD tests.
+* [ ] Install OpenCL in Penguin2 and try LLM script.  Check differences between OpenCL and CUDA.
+* [ ] Look at different provider(s) for LLMs.
 * [~] Look at container work.  Look at permissions issue.
-* [ ] Generate RDF docs using AI.
 * [~] Dump all genotypes from tux02 to LMDB.
 *     - PJ sync tux01 genotypes with tux02/04.
 *     - Yet to set-up 2FA on new device
@@ -40,6 +41,7 @@
 
 
 ### Later
+* [ ] Generate RDF docs using AI.
 * [ ] Editing genotype metadata
 * [ ] Look at XAPIAN search for gene alias.
 * [ ] Add GeneNetwork abstracts to XAPIAN search.
@@ -101,6 +103,7 @@ Currently closed issues are:
 * [X] lmdb publishdata output and share with Pjotr and Johannes
 
 ## Done
+* [X] Updated Penguin2 with cuda drivers.  Cuda no longer supports K80s
 * [X] Provided Johannes anthropic tokens
 * [X] Add lmdb output hashes with index and export LMDB_DATA_DIRECTORY
 * [X] Share small database with @pjotrp and @felixl
