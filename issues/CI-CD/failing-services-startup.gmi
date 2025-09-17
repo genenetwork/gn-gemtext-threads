@@ -47,7 +47,6 @@ Failing services:
 * genenetwork2: consistently
 * gn-auth: intermittently
 
-
 ## Troubleshooting Notes
 
 ### Unable to run genenetwork2 in a shell container with the "-C" flag
@@ -220,6 +219,14 @@ Traceback (most recent call last):
 sqlite3.OperationalError: unable to open database file
 ```
 
+Fixed above by correctly mapping:
+
+```
+-                                                (source auth-db-path)
++                                                (source (dirname auth-db-path))
+```
+
+in the relevant g-exp, and making sure that the parent directory is set to #o775 (rwx for both user/group).
 
 ## Also See
 
