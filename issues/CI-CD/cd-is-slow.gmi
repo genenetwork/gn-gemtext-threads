@@ -1,0 +1,276 @@
+# CD is slow
+
+The pages are slow and some are broken.
+
+We found out that there are quite a full network calls using DNS - and DNS was slow. The configured DNS server was not responding. Using Google's DNS made things go fast again. We will probably introduce dnsmasq in the container to make things even faster.
+
+# Tags
+
+* type: bug
+* status: in progress
+* priority: high
+* assigned: pjotrp
+* interested: pjotrp, bonfacem
+* keywords: deployment, server
+
+# Tasks
+
+* [ ] Use dnsmasq caching - it is a guix system service
+* [ ] Run less gunicorn processes on CD (2 should do)
+* [ ] Increase debugging output for GN2
+* [ ] Fix GN3 hook for github (it is not working)
+* [X] gn-guile lacks certificates it can use for sparql
+
+# Measuring
+
+bonfacekilz:
+I'm currently instrumenting the requests.  See what hogs up time.  Loading the landing page takes up 32 seconds!
+
+Something's off. From outside the container:
+
+```
+123bonfacem@tux02 ~ $ guix shell python-wrapper python-requests -- python time.py
+Status: 200
+Time taken: 32.989222288131714 seconds
+```
+
+From inside the container:
+
+```
+12025-07-18 14:46:36 INFO:gn2.wqflask:Landing page rendered in 8.12 seconds
+```
+
+And I see:
+
+## CD
+
+```
+> curl -w @- -o /dev/null -s https://cd.genenetwork.org <<EOF
+\n
+DNS lookup:  %{time_namelookup}s\n
+Connect time: %{time_connect}s\n
+TLS handshake: %{time_appconnect}s\n
+Pre-transfer: %{time_pretransfer}s\n
+Start transfer: %{time_starttransfer}s\n
+Total time:   %{time_total}s\n
+EOF
+
+DNS lookup:  8.117543s
+Connect time: 8.117757s
+TLS handshake: 8.197767s
+Pre-transfer: 8.197861s
+Start transfer: 33.096467s
+Total time:   33.096601s
+```
+
+## Production
+```
+> curl -w @- -o /dev/null -s https://genenetwork.org <<EOF
+\n
+DNS lookup:  %{time_namelookup}s\n
+Connect time: %{time_connect}s\n
+TLS handshake: %{time_appconnect}s\n
+Pre-transfer: %{time_pretransfer}s\n
+Start transfer: %{time_starttransfer}s\n
+Total time:   %{time_total}s\n
+EOF
+
+DNS lookup:  8.075794s
+Connect time: 8.076402s
+TLS handshake: 8.147322s
+Pre-transfer: 8.147370s
+Start transfer: 8.797107s
+Total time:   8.797299s
+```
+
+## On tux02 (outside CD container)
+
+```
+> curl -w @- -o /dev/null -s http://localhost:9092 <<EOF
+\n
+DNS lookup:  %{time_namelookup}s\n
+Connect time: %{time_connect}s\n
+TLS handshake: %{time_appconnect}s\n
+Pre-transfer: %{time_pretransfer}s\n
+Start transfer: %{time_starttransfer}s\n
+Total time:   %{time_total}s\n
+EOF
+
+DNS lookup:  0.000068s
+Connect time: 0.000543s
+TLS handshake: 0.000000s
+Pre-transfer: 0.000606s
+Start transfer: 24.851069s
+Total time:   24.851166s
+```
+
+This does not look like an nginx problem (at least on tux02 itself). Also the nginx configuration was not really changed.
+The mysql configuration ditto. I can still test both, but it looks like the problem is inside the system container.
+
+The container logs are at
+
+```
+root@tux02:/export2/guix-containers/genenetwork-development/var/log/cd# tail -100 genenetwork2.log
+```
+
+Some interesting errors there that need resolving, such as
+
+## gn-guile error
+
+```
+tail gn-guile.log
+2025-07-20 04:49:49 X.509 certificate of 'sparql.genenetwork.org' could not be verified:
+2025-07-20 04:49:49   signer-not-found invalid
+```
+
+Guile is not finding the certificates for our virtuoso server. It does work with curl, try
+
+```
+curl -G https://query.wikidata.org/sparql -H "Accept: application/json; charset=utf-8" --data-urlencode query="SELECT DISTINCT * where {
+  wd:Q158695 wdt:P225 ?o .
+} limit 5"
+{
+  "head" : {
+    "vars" : [ "o" ]                                                                                                     },                                                                                                                     "results" : {                                                                                                            "bindings" : [ {                                                                                                         "o" : {
+        "type" : "literal",
+        "value" : "Arabidopsis thaliana"
+      }
+    } ]
+  }
+```
+
+Also inside the container:
+
+```
+curl http://localhost:8091/gene/aliases/Shh
+```
+
+renders the same error! X.509 certificate of 'query.wikidata.org' could not be verified. so it is a gn-guile issue.
+
+## GN2 error reporting
+
+Also there are too many gunicorn processes - and strikingly - no debug output. Also I see a missing robots.txt file (even though LLMs hardly honour them).
+
+Let's try to get inside the container with nsenter:
+
+```
+ps xau|grep genenetwork-development-container
+root     115940  0.0  0.0 163692 26296 ?        Ssl  Jul18   0:00 /gnu/store/ylwk2vn18dkzkj0nxq2h4vjzhz17bm7c-guile-3.0.9/bin/guile --no-auto-compile /usr/local/bin/genenetwork-development-container
+pgrep -P 115940
+115961
+```
+
+Use this child PID and a recent nsenter:
+
+```
+/gnu/store/w7a3frdmffpw3hvxpvvxwxgzfhyqdm6n-profile/bin/nsenter -m -p -t 115961 /run/current-system/profile/bin/bash -login
+```
+
+System tools are in '/run/current-system/profile/bin/'
+
+Make it a one-liner with
+
+```
+/gnu/store/w7a3frdmffpw3hvxpvvxwxgzfhyqdm6n-profile/bin/nsenter -m -p -t $(pgrep -P `ps xau|grep genenetwork-development-container|awk  '{print $2}'|sort -r|head -1`) /run/current-system/profile/bin/bash -login
+```
+
+Once inside we can pick up curl (I note the system container has full access to the /gnu/store on the host:
+
+```
+root@tux02 /# /gnu/store/vdaspmq10c3zmqhp38lfqy812w6r4xg3-curl-8.6.0/bin/curl  -w @- -o /dev/null -s http://localhost:9092 <<EOF
+\n
+DNS lookup:  %{time_namelookup}s\n
+Connect time: %{time_connect}s\n
+TLS handshake: %{time_appconnect}s\n
+Pre-transfer: %{time_pretransfer}s\n
+Start transfer: %{time_starttransfer}s\n
+Total time:   %{time_total}s\n
+EOF
+
+DNS lookup:  0.000064s
+Connect time: 0.000478s
+TLS handshake: 0.000000s
+Pre-transfer: 0.000551s
+Start transfer: 24.792926s
+Total time:   24.793015s
+```
+
+That rules out container and nginx streaming issues.
+
+So the problem is with GN and its DBs. The gn-machines is used from /home/aruni and it checkout is March. Has CD been slow since then? I don't think so. Also the changes to the actual scripts are even older. Also the guix-bioinformatics repo shows no changes. Remaining culprits I suspect are:
+
+* [*] MySQL
+* [ ] Interaction gn-auth with gn2
+* [ ] Interaction gnqa with gn2
+
+Running a standard test on mysql shows it is fine:
+
+```
+time mysql -u webqtlout -pwebqtlout db_webqtl < $rundir/../shared/sql/test02.sql
+Name    FullName        Name    Symbol  CAST(ProbeSet."description" AS BINARY)  CAST(ProbeSet."Probe_Target_Description" AS BINARY)    Chr     Mb      Mean    LRS     Locus   pValue  additive        geno_chr        geno_mb
+HC_M2_0606_P    Hippocampus Consortium M430v2 (Jun06) PDNN      1457545_at      9530036O11Rik   long non-coding RNA, expressed sequence tag (EST) AK035474 with high bladder expression        antisense EST 14 Kb upstream of Shh     5     28.480441        6.7419292929293 15.2845189682605        rsm10000001525  0.055   0.0434848484848485      3       9.671673
+HC_M2_0606_P    Hippocampus Consortium M430v2 (Jun06) PDNN      1427571_at      Shh     sonic hedgehog (hedgehog)     last exon        5       28.457886       6.50113131313131        9.58158655605723        rs8253327       0.697   0.0494097096188748     1       191.908118
+HC_M2_0606_P    Hippocampus Consortium M430v2 (Jun06) PDNN      1436869_at      Shh     sonic hedgehog (hedgehog)     mid distal 3' UTR        5       28.457155       9.279090909090911       12.7711275309832        rs8253327       0.306 -0.214087568058076       1       191.908118
+
+real    0m0.010s
+user    0m0.004s
+sys     0m0.000s
+```
+
+# Profiling CD
+
+Ran a profiler against a traits page.  See the following:
+
+=> /issues/CI-CD/profiling-flask
+
+## Results/Interpretation
+
+* By fixing gn-guile and gene-alias resolution, times dropped by ~10s.  However, the page takes 37.9s to run.
+
+* Resolving a DNS takes around 4.585s.  We make 7 requests.  Totalling to 32.09.  Typically, a traits page should take 8.79s.  The difference: (- 37.9 32.09) = 5.8s; which explains the slowness:
+
+```
+ ncall     tottime    percall  cumtime  percall  filename:lineno(function)
+----------------------------------------------------------------------------
+     7  0.00002618  3.741e-05    32.09    4.585  socket.py:938(getaddrinfo)
+```
+
+* The above is consistent all the analysis I've done across all the profile dumps.
+
+* Testing my theory out:
+
+```
+@app.route("/test-network")
+def test_network():
+    start = time.time()
+    http_url = urljoin(
+            current_app.config["GN_SERVER_URL"],
+            "version"
+        )
+    result =  requests.get(http_url)
+    duration = time.time() - start
+    app.logger.error(f"{http_url}: {duration:.4f}s")
+
+    start = time.time()
+    local_url = "http://localhost:9093/api/version"
+    result =  requests.get(local_url)
+    duration = time.time() - start
+    app.logger.error(f"{local_url}: {duration:.4f}s")
+    return result.json()
+```
+
+* Results:
+
+```
+2025-07-24 10:20:43 [2025-07-24 10:20:43 +0000] [101] [ERROR] https://cd.genenetwork.org/api3/version: 8.1647s
+2025-07-24 10:20:43 ERROR:gn2.wqflask:https://cd.genenetwork.org/api3/version: 8.1647s
+2025-07-24 10:20:43 [2025-07-24 10:20:43 +0000] [101] [ERROR] result: 1.0
+2025-07-24 10:20:43 ERROR:gn2.wqflask:result: 1.0
+2025-07-24 10:20:43 [2025-07-24 10:20:43 +0000] [101] [ERROR] http://localhost:9093/api/version: 0.0088s
+2025-07-24 10:20:43 ERROR:gn2.wqflask:http://localhost:9093/api/version: 0.0088s
+2025-07-24 10:20:43 [2025-07-24 10:20:43 +0000] [101] [ERROR] result: 1.0
+```
+
+## Possible Mitigations
+
+* Switch over gn-auth.genenetwork.org to localhost.

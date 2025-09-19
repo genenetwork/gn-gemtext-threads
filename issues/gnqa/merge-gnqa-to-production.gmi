@@ -4,6 +4,7 @@
 
 * assigned: alexm,
 * keywords: production, GNQA, integration
+* status: closed, completed
 
 ## Description
 
@@ -12,5 +13,5 @@ be pushed to production. We need to allow only logged-in users to access the ser
 
 ## Tasks
 
-* [] Integrate GN-auth for the service
-* [] Push production to the current commit
+* [x] Integrate GN-auth for the service
+* [x] Push production to the current commit

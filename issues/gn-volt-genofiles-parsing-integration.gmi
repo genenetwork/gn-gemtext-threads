@@ -5,7 +5,7 @@
 * assigned: alexm,
 * type: improvement
 * priority: high
-* status: in progress
+* status: stalled, closed.
 
 ## Notes
 

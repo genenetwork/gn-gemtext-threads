@@ -125,8 +125,67 @@
 * [+] - uploading kilifish using the backend route
 
 * ## this week (23-06-onwards)
-* [ ] - hs rats recombination counts
-* [ ] - kilifish to gn2 via backend
+* [X] - hs rats recombination counts
+* [+] - kilifish to gn2 via backend
+
+* ## this week (30-06-onwards)
+* [ ] - mapping offsprings to founders (hs rats)
+* [ ] - upload kilifish to genenetwork
+* [ ] - revise celegans smoothing (genotypes)
+
+* ## this week (07-07-onwards) 
+* [X] - generate haplotypes for offsprings and founders combined; intepretation next.., 
+* [+] - keep improving the uploader via data uploading and error solving 
+* [-] - close smoothing revision for celegans, as left before 
+* [X] - why should people read my paper on improving genotyping methods? 
+*        - on smoothing (low density genotypes for mapping, high density genotypes for fine mapping.,)  
+*        - liftovers due to reference versions (currently, a challenge to be looked upon) 
+*        - founders and their offsprings in genotyping 
+*        - pangenomics and machine learning for improved genotyping 
+
+** keys (+; in progress, X; done, -; not yet) 
+* ## this week (14-07-onwards) 
+* [+] - map founders to offspring, work with only pure recombiantions 
+     [+] - tools available? (plink, rqtl2, beagle, etc)  
+     [+] - custom pipeline, to reflect gaps in the existing tools? (dealing with multiparent species)  
+     [+] - documentation for the paper write up
+
+* ## this week (21-07-onwards) 
+* [ ] - HS rats smoothing continues 
+*    [ ] - documenting the milestones 
+*    [ ] - see the possibility to write a tool from it 
+* [ ] - Pushing kilifish to genenetwork2/learn the source code build up 
+* [ ] - resmoothen celegans genotypes with the new knowledge  
+
+* ## this week (28-07-onwards)
+* [-] - predict genotype probabilities with rqlt2 functions
+       - problems with control setup to load in the needed files for the functions
+* [+] - comparison models for @individual rat vs 8 founders (similarities and percentage composition)
+     [+] - ongoing discussion with alex, there's progress
+
+* ## this week (04-08-onwards)
+* [+] - Testing the logic to infer Hs outbred genotypes with the founders 
+           - Managed to identify parents of origin for each snp on each rat per position, corresponding to the 8 founders
+           - Still, need to filter in the disntictive snps, then generate haplo blocks., 
+
+* ## this week (11 - 08 - onwards) 
+* [X] - generate final haplo file and document 
+* [+] - testing on local gemma and in gn2 
+
+* ## this week (18-08-onwards) 
+* [+] - push for the file to be in gn2, and feedback from the team 
+* [X] - complete the local gemma run, interpret the results 
+* [+] - process the rest of the Xsomes for a ready file to go to gn2 
+*       - issues: over filtering snps, neglecting the one parent of origin, takes long to run.  
+* [+] - prepare an abstract for CTC conference in Barcelona  
+
+* ## this week (01-09-onWards) 
+* [ ] - finetune abstract 
+*       - include more of what i achieved: main focus; genotype smoothing on models with complex traits 
+*       - thought map: generate plots, compare before and after smoothing, check for overlaps, and whether or not the peaks in traits are same before and after smoothing 
+* [ ] - troubleshoot inferring scripts for all Xsomes 
+*       - request bonz/alex's help on this (to save time) 
+
 
 * ## this week (30-06-onwards)  
 * [X] - mapping offsprings to founders (hs rats) 

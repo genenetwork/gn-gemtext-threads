@@ -1,12 +1,59 @@
 # Debugging and developing code
 
-Once we get to the stage of having a working system container it would be nice to develop code against it. The idea is to take an existing running system container and start modifying code *inside* the container by brining in an external path.
+Once we get to the stage of having a working system container it would be nice to develop code against it. The idea is to take an existing running system container and start modifying code *inside* the container by bringing in an external path.
 
-First build and start a guix system container as described in
+In principle we'll build guix system containers as described in
 
-=> /topics/guix/guix-system-containers-and-how-we-use-them.gmi
+=> /topics/guix/guix-system-containers-and-how-we-use-them
 
-The idea is to do less `guix pull' and system container builds, so as to speed up development. The advantage of using an existing system container is that the full deployment is the same on our other running systems! No more path hacks, in other words.
+The idea is to minimise `guix pull' and system container builds, so as to speed up development. The advantage of using an existing system container is that the full deployment is the same on our other running systems! No more path hacks, in other words.
+
+## Philosophy
+
+For development containers we will:
+
+* Use sane default values - for URLs, paths etc.
+* Add services incrementally (i.e., not one big blob)
+* Run tests inside the container (not during build time)
+* Build indexes etc. outside the container - or make it optional
+
+Also:
+
+* We should be able to run gn3 and gn-guile (aka gn4) as a guix shell without anything else
+* We should be able to run gn2 with only gn3 and/or gn-guile as a guix shell with external DBs.
+* We should be albe to run gn2+gn3+gn-guile as a system container with external DBs.
+* We should be able to run gn-auth with gn2 as a system container
+* We should be able to run the uploader as a system container
+
+I.e. no https, not authentication by default (as long as we run on localhost). The localhost URLs and file paths can be defaults because there will only be one development container running on a single machine.
+
+System containers are a bit overkill for development. Still, in some cases we'll need a system container. For example when testing integration of gn-auth, uploader, gn2 etc. We have the CD deployment that gets updated when git repos change. We also have a development container written by @bonz that needs to be improved and documented.
+
+=> https://git.genenetwork.org/gn-machines/tree/genenetwork-local-container.scm?h=gn-local-development-container
+
+Note it is on a special branch for now.
+
+Databases, and files will simply be shared on default paths - /export/guix-containers/gndev/...
+And if you need different combinations it should be relatively easy to compose a new shell or system container.
+
+# Tags
+
+* type: bug
+* status: open
+* priority: high
+* assigned: pjotrp
+* interested: pjotrp,bonfacem,fredm
+* keywords: development, deployment, server
+
+# Tasks
+
+Create a dev environment for:
+
+* [ ] GN3
+* [ ] gn-guile
+* [ ] GN2
+* [ ] gn-auth
+* [ ] gn-uploader
 
 # GN3 in system container
 
@@ -257,6 +304,12 @@ guix-vm-run:
   echo $cmd
   $cmd
 ```
+
+## Virtuoso in a system container
+
+See
+
+=> ./virtuoso
 
 # Troubleshooting
 

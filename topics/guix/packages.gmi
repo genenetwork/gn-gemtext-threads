@@ -6,10 +6,18 @@ Typically run a guix pull to get the latest guix:
 
 ```
 mkdir -p ~/opt
-guix package -i guix -p ~/opt/guix
+guix pull -p ~/opt/guix-pull
+unset GUIX_PROFILE # for Debian
+source ~/opt/guix-pull
 ```
 
 and checkout guix-past and guix-bioinformatics using git.
+
+Note that a codeberg pull may be faster (Guix recently moved main development to Codeberg):
+
+```
+guix pull -p ~/opt/guix-pull --url https://codeberg.org/guix/guix
+```
 
 Now Guix should be happy with
 

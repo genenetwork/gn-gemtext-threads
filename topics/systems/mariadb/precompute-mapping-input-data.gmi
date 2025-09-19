@@ -2,7 +2,7 @@
 
 GN relies on precomputed mapping scores for search and other functionality. Here we prepare for a new generation of functionality that introduces LMMs for compute and multiple significant scores for queries.
 
-At this stage we precompute GEMMA and tarball or lmdb it. As a project is never complete we need to add a metadata record in each tarball that track the status of the 'package'. Also, to offload compute to machines without DB access we need to prepare a first step that contains genotypes and phenotypes for compute. The genotypes have to be shared, as well as the computed kinship with and without LOCO. See
+At this stage we precompute GEMMA and tarball or lmdb it. As a project is never complete we need to add a metadata record in each tarball that tracks the status of the 'package'. Also, to offload compute to machines without DB access we need to prepare a first step that contains genotypes and phenotypes for compute. The genotypes have to be shared, as well as the computed kinship with and without LOCO. See
 
 => /topics/data/precompute/steps
 
@@ -43,7 +43,13 @@ And after:
 
 # Info
 
-## Original qtlreaper version
+## Original qtlreaper version for PublishData
+
+See the writeup at
+
+=> ./precompute-publishdata
+
+## Original qtlreaper version for ProbeSetData
 
 The original reaper precompute lives in
 

@@ -1,0 +1,53 @@
+# gn-guile: Activations on Production not Running as Expected
+
+## Tags
+
+* status: open
+* priority: high
+* type: bug
+* assigned: bonfacem, fredm, aruni
+* keywords: gn-guile, deployment, activation-service-type
+
+## Description
+
+With the recent changes to guix's `least-authority-wrapper` we can no longer write to the root filesystem ("/"). That is not much of a problem.
+
+So I tried adding `#:directory (dirname gn-doc-git-checkout)` to the `make-forkexec-constructor` for the `gn-guile-shepherd-service` and that actually changes the working directory of the process, as I would expect.
+
+In `genenetwork-activation` I add:
+
+```
+          ;; setup correct ownership for gn-docs
+          (for-each (lambda (file)
+                      (chown file
+                             (passwd:uid (getpw "genenetwork"))
+                             (passwd:gid (getpw "genenetwork"))))
+                    (find-files #$(dirname gn-doc-git-checkout)
+                                                   #:directories? #t))
+```
+
+which, ideally, should change ownership of the parent directory of the bare git checkout for "gn-docs" when we build/start the container. This does not happen — the directory is still owned by root.
+
+My thinking goes, the "genenetwork" user[1] is not yet created at the point when the activation[2] is run, leading to the service failing to start.
+
+The reason I think this, is because, when I do:
+
+```
+fredm@tux04:/...$ sudo guix container exec <container-pid> /run/current-system/profile/bin/bash --login
+root@genenetwork-gn2-fred /# chown -R genenetwork:genenetwork /var/lib/genenetwork/
+root@genenetwork-gn2-fred /# chown -R genenetwork:genenetwork /var/lib/genenetwork/
+```
+
+The bound directory's permissions change, and we can now enable and start the service:
+
+```
+root@genenetwork-gn2-fred /# herd enable gn-guile
+root@genenetwork-gn2-fred /# herd start gn-guile
+```
+
+which starts the service as expected. We can also simply restart the entire container at this point, and it works too.
+
+## Footnotes
+
+=> https://git.genenetwork.org/gn-machines/tree/genenetwork/services/genenetwork.scm?id=e425671e69a321a032134fafee974442e8c1ce6f#n167 [1] "genenetwork" user declaration
+=> https://git.genenetwork.org/gn-machines/tree/genenetwork/services/genenetwork.scm?id=e425671e69a321a032134fafee974442e8c1ce6f#n680 [2] Activation of services (see also the account-service-type being extended with the "genenetwork" user).

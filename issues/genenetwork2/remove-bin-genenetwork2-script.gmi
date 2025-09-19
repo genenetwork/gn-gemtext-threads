@@ -1,0 +1,109 @@
+# Remove `bin/genenetwork2` Script
+
+## Tags
+
+* type: improvement
+* status: open
+* priority: medium
+* assigned: fredm, bonfacem, alexm, zachs
+* interested: pjotrp, aruni
+* keywords: gn2, bin/genenetwork2, startup script
+
+## Description
+
+The `bin/genenetwork2` script was used for a really long time to launch Genenetwork2, and has served that purpose with honour and dedication. We applaud that.
+
+It is, however, time to retire the script, since at this point in time, it serves more to obfuscate the startup that as a helpful tool.
+
+On production, we have all but abandoned the use of the script, and we need to do the same for CI/CD, and eventually, development.
+
+This issue tracks the process, and problems that come up during the move to retire the script.
+
+### Process
+
+* [x] Identify how to run unit tests without the script
+* [x] Document how to run unit tests without the script
+* [x] Identify how to run mechanical-rob tests without the script
+* [x] Document how to run mechanical-rob tests without the script
+* [ ] Update CI/CD definitions to get rid of the references to the script
+* [ ] Delete the script from the repository
+
+### Setup
+
+First, we need to setup the following mandatory environment variables:
+
+* GN2_PROFILE
+* GN2_SETTINGS
+* JS_GUIX_PATH
+* GEMMA_COMMAND
+* PLINK_COMMAND
+* GEMMA_WRAPPER_COMMAND
+* REQUESTS_CA_BUNDLE
+
+Within a guix shell, you could do that with something like:
+
+```
+export GN2_PROFILE="${GUIX_ENVIRONMENT}"
+export GN2_SETTINGS="/home/frederick/genenetwork/gn2_settings.conf"
+export JS_GUIX_PATH="${GN2_PROFILE}/share/genenetwork2/javascript"
+export GEMMA_COMMAND="${GN2_PROFILE}/bin/gemma"
+export PLINK_COMMAND="${GN2_PROFILE}/bin/plink2"
+export GEMMA_WRAPPER_COMMAND="${GN2_PROFILE}/bin/gemma-wrapper"
+export REQUESTS_CA_BUNDLE="${GUIX_ENVIRONMENT}/etc/ssl/certs/ca-certificates.crt"
+```
+
+Note that, you can define all the variables derived from "GN2_PROFILE" in your settings file, if such a settings file is computed.
+
+### Running Unit Tests
+
+To run unit tests, run pytest at the root of the repository.
+
+```
+$ cd /path/to/genenetwork2
+$ pytest
+```
+
+### Running "mechanical-rob" Tests
+
+At the root of the repository, run something like:
+
+```
+python test/requests/test-website.py --all http://localhost:5033
+```
+
+Change the port, as appropriate.
+
+
+### Launching Application
+
+In addition to the minimum set of envvars defined in the "Setup" section above, we need the following variables defined to get the application to launch:
+
+* FLASK_APP
+
+In a guix shell, you could do:
+
+```
+export FLASK_APP="gn2.wsgi"
+```
+
+Now you can launch the application with flask with something like:
+
+```
+flask run --port=5033 --with-threads
+```
+
+or with green unicorn with something like:
+
+```
+gunicorn --reload \
+         --workers 3 \
+         --timeout 1200 \
+         --log-level="debug" \
+         --keep-alive 6000 \
+         --max-requests 10 \
+         --bind="127.0.0.1:5033" \
+         --max-requests-jitter 5 \
+         gn2.wsgi:application
+```
+
+You can change the gunicorn setting to fit your scenario.

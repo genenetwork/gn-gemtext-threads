@@ -1,0 +1,2959 @@
+# Precompute PublishData
+
+Based on the QTL_Reaper_cal_lrs.py aka QTL_Reaper_v8_PublishXRef.py. This script simply updates PublishXRef table with a highest hit as computed by qtlreaper.
+
+In a first attempt to update the database we are going to do just that using GEMMA.
+
+For the new script we will pass in the genotype file as well as the phenotype file, so gemma-wrapper can process it. I wrote quite a few scripts already
+
+=> https://github.com/genetics-statistics/gemma-wrapper/tree/master/bin
+
+So we can convert a .geno file to BIMBAM. I need to extract GN traits to a R/qtl2 or lmdb trait format file and use that as input.
+
+* [X] Visit use of PublishXRef
+* [X] geno -> BIMBAM (BXD first)
+* [X] Get PublishData trait(s) and convert to gemma, R/qtl2 or lmdb
+* - [X] see scripts/lmdb-publishdata-export.scm
+* - [X] see scripts for ProbeSetData
+* - [X] Make sure the BXDs are mappable
+* [X] Run gemma-wrapper
+* [X] We should map by trait-id, data id is not intuitive: curl http://127.0.0.1:8091/dataset/bxd-publish/values/8967044.json > 10002-pheno.json
+* [X] Check why Zach/GN JSON file lists different mappable BXDs
+* [X] Update DB on run-server
+* [X] Add batch run and some metadata so we can link back from results
+* [X] Create a DB/table containing hits and old reaper values
+* [X] Convert this info to RDF
+* [X] Run virtuoso server
+* [X] When loading traits compute mean, se, skew, kurtosis and store them as metadata in lmdb
+* [ ] Why is X not showing in LMM precompute for trait 51064
+* [X] Ask interesting questions about the overlap between reaper and gemma
+* [ ] Update PublishXRef and store old reaper value(?)
+* [ ] Correctly Handle gn-guile escalating errors
+* [ ] Make sure the trait fetcher handles authorization or runs localhost only
+* [ ] gemma-wrapper --force does not work for GRM and re-check GRM does not change on phenotype
+* [ ] Use SNP URIs when possible (instead of inventing our own) - and BED information so we can locate them
+* [ ] Check lmdb duplicate key warning
+* [ ] run gemma with qnorm
+* [ ] run gemma with sex covariate
+* [ ] run gemma again with the hit as a covariate
+* [ ] Check invalid data sets/traits and feed them to Rob/Arthur
+* [ ] Add metadata for bimodality indicator in addition to kurtosis (see below)
+
+For the last we should probably add a few columns. Initially we'll only store the maximum hit.
+
+After
+
+* [ ] provide distributed storage of files using https
+
+# Visit use of PublishXRef
+
+In GN2 this table is used in search, auth, and router. For search it is to look for trait hits (logically). For the router it is to fetch train info as well as dataset info.
+
+In GN3 this table is used for partial correlations. Also to fetch API trait info and to build the search index.
+
+In GN1 usage is similar.
+
+# geno -> BIMBAM
+
+We can use the script in gemma-wrapper
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/gn-geno-to-gemma.py
+
+there is probably something similar in GN2. And I have another version somewhere.
+
+To identify the geno file the reaper script uses
+
+```python
+cursor.execute('select Id, Name from InbredSet')
+results = cursor.fetchall()
+InbredSets = {}
+for item in results:
+	InbredSets[item[0]] = genotypeDir+str(item[1])+'.geno'
+```
+
+which assumes one single geno file for the BXD that is indexed by the InbredSetID (a number). Note it ignores the many genotype files we have per inbredset (today). Also there is a funny hardcoded
+
+```python
+	if InbredSetId==3:
+		InbredSetId=1
+```
+
+(no comment).
+
+Later we'll output to lmdb when GEMMA supports it.
+
+There are about 100 InbredSets. Genotype files can be found on production in
+/export/guix-containers/genenetwork/var/genenetwork/genotype-files/genotype. For the BXD alone there are
+
+```
+BXD.2.geno               BXD-Heart-Metals_old.geno   BXD-Micturition.6.geno
+BXD.4.geno               BXD-JAX-AD.4.geno           BXD-Micturition.8.geno
+BXD.5.geno               BXD-JAX-AD.8.geno           BXD-Micturition.geno
+BXD.6.geno               BXD-JAX-AD.geno             BXD-Micturition_old.4.geno
+BXD.7.geno               BXD-JAX-AD_old.geno         BXD-Micturition_old.6.geno
+BXD.8.geno               BXD-JAX-OFS.geno            BXD-Micturition_old.geno
+BXD-AE.4.geno            BXD-Longevity.4.geno        BXD_mm8.geno
+BXD-AE.8.geno            BXD-Longevity.8.geno        BXD-NIA-AD.4.geno
+BXD-AE.geno              BXD-Longevity.9.geno        BXD-NIA-AD.8.geno
+BXD-AE_old.geno          BXD-Longevity.array.geno    BXD-NIA-AD.geno
+BXD-Bone.geno            BXD-Longevity.classic.geno  BXD-NIA-AD_old2.geno
+BXD-Bone_orig.geno       BXD-Longevity.geno          BXD-NIA-AD_old.geno
+BXD.geno                 BXD-Longevity_old.4.geno    BXD_Nov_23_2010_before_polish_101_102_103.geno
+BXD-Harvested.geno       BXD-Longevity_old.8.geno    BXD_Nov_24_2010_before_polish_55_81.geno
+BXD-Heart-Metals.4.geno  BXD-Longevity_old.geno      BXD_old.geno
+BXD-Heart-Metals.8.geno  BXD-MBD-UTHSC.geno          BXD_unsure.geno
+BXD-Heart-Metals.geno    BXD-Micturition.4.geno      BXD_UT-SJ.geno
+```
+
+Not really reflected in the DB:
+
+```
+MariaDB [db_webqtl]> select Id, Name from InbredSet where name like '%BXD%';
++----+------------------+
+| Id | Name             |
++----+------------------+
+|  1 | BXD              |
+| 58 | BXD-Bone         |
+| 64 | BXD-Longevity    |
+| 68 | BXD_Dev          |
+| 76 | DOD-BXD-GWI      |
+| 84 | BXD-Heart-Metals |
+| 86 | BXD-AE           |
+| 91 | BXD-Micturition  |
+| 92 | BXD-JAX-AD       |
+| 93 | BXD-NIA-AD       |
+| 94 | CCBXD-TM         |
+| 96 | BXD-JAX-OFS      |
+| 97 | BXD-MBD-UTHSC    |
++----+------------------+
+```
+
+Bit of a mess. Looks like some files are discarded. Let's see what the reaper script does.
+
+We should also look into distributed storage. One option is webdav.
+
+# Get PublishData trait(s) and convert to R/qtl2 or lmdb
+
+Let's see how the scripts do it. Note that we already did that for the probeset script in
+
+=> precompute-mapping-input-data
+
+The code is reflected in
+
+=> https://git.genenetwork.org/gn-guile/tree/scripts/precompute/list-traits-to-compute.scm
+
+Now I need to do the exact same thing, but for PublishData.
+
+Let's connect to a remote GN DB:
+
+```
+ssh -L 3306:127.0.0.1:3306 -f -N tux02.genenetwork.org
+```
+
+and follow
+
+=> https://github.com/genenetwork/genenetwork2/blob/testing/scripts/maintenance/QTL_Reaper_v8_PublishXRef.py
+
+the script takes a number of values 'PublishFreezeIds'. Alternatively it picks it up by SpeciesId (hard effing coded, of course).
+
+=> https://github.com/genenetwork/genenetwork2/blob/fcde38b0f37f12508a01b16b7820029aa951bded/scripts/maintenance/QTL_Reaper_v8_PublishXRef.py#L62
+
+Next it picks the geno file from the InbredSetID with
+
+```
+select InbredSetId  from PublishFreeze  where PublishFreeze.Id = 1;
+```
+
+Here we are initially going to focus on BXD=1 datasets only.
+
+```
+MariaDB [db_webqtl]> select Id,InbredSetId  from PublishFreeze  where InbredSetId = 1;
++----+-------------+
+| Id | InbredSetId |
++----+-------------+
+|  1 |           1 |
++----+-------------+
+```
+
+(we are half way the script now). Next we capture some metadata
+
+```
+MariaDB [db_webqtl]> select PhenotypeId, Locus, DataId, Phenotype.Post_publication_description from PublishXRef, Phenotype where PublishXRef.PhenotypeId = Phenotype.Id and InbredSetId=1 limit 5;
++-------------+----------------+---------+----------------------------------------------------------------------------------------------------------------------------+
+| PhenotypeId | Locus          | DataId  | Post_publication_description                                                                                               |
++-------------+----------------+---------+----------------------------------------------------------------------------------------------------------------------------+
+|           4 | rs48756159     | 8967043 | Central nervous system, morphology: Cerebellum weight, whole, bilateral in adults of both sexes [mg]                       |
+|          10 | rsm10000005699 | 8967044 | Central nervous system, morphology: Cerebellum weight after adjustment for covariance with brain size [mg]                 |
+|          15 | rsm10000013713 | 8967045 | Central nervous system, morphology: Brain weight, male and female adult average, unadjusted for body weight, age, sex [mg] |
+|          20 | rs48756159     | 8967046 | Central nervous system, morphology: Cerebellum volume [mm3]                                                                |
+|          25 | rsm10000005699 | 8967047 | Central nervous system, morphology: Cerebellum volume, adjusted for covariance with brain size [mm3]                       |
++-------------+----------------+---------+----------------------------------------------------------------------------------------------------------------------------+
+```
+
+it captures LRS
+
+```
+MariaDB [db_webqtl]> select LRS from PublishXRef where PhenotypeId=4 and InbredSetId=1;
++--------------------+
+| LRS                |
++--------------------+
+| 13.497491147108706 |
++--------------------+
+```
+
+and finally the trait values that are used for mapping
+
+```
+select Strain.Name, PublishData.value from Strain, PublishData where Strain.Id = PublishData.StrainId and PublishData.Id = 8967043;
++-------+-----------+
+| Name  | value     |
++-------+-----------+
+| BXD1  | 61.400002 |
+| BXD2  | 49.000000 |
+| BXD5  | 62.500000 |
+| BXD6  | 53.099998 |
+| BXD8  | 59.099998 |
+| BXD9  | 53.900002 |
+| BXD11 | 53.099998 |
+| BXD12 | 45.900002 |
+| BXD13 | 48.400002 |
+| BXD14 | 49.400002 |
+| BXD15 | 47.400002 |
+| BXD16 | 56.299999 |
+| BXD18 | 53.599998 |
+| BXD19 | 50.099998 |
+| BXD20 | 48.200001 |
+| BXD21 | 50.599998 |
+| BXD22 | 53.799999 |
+| BXD23 | 48.599998 |
+| BXD24 | 54.900002 |
+| BXD25 | 49.599998 |
+| BXD27 | 47.400002 |
+| BXD28 | 51.500000 |
+| BXD29 | 50.200001 |
+| BXD30 | 53.599998 |
+| BXD31 | 49.700001 |
+| BXD32 | 56.000000 |
+| BXD33 | 52.099998 |
+| BXD34 | 53.700001 |
+| BXD35 | 49.700001 |
+| BXD36 | 44.500000 |
+| BXD38 | 51.099998 |
+| BXD39 | 54.900002 |
+| BXD40 | 49.900002 |
+| BXD42 | 59.400002 |
++-------+-----------+
+```
+
+Note that we need to filter out the parents - the original reaper script does not do that! My gn-guile code does handle that:
+
+```
+SELECT StrainId,Strain.Name FROM Strain, StrainXRef WHERE StrainXRef.StrainId = Strain.Id AND StrainXRef.InbredSetId =1 AND Used_for_mapping<>'Y' limit 5;
++----------+----------+
+| StrainId | Name     |
++----------+----------+
+|        1 | B6D2F1   |
+|        2 | C57BL/6J |
+|        3 | DBA/2J   |
+|      150 | A/J      |
+|      151 | AXB1     |
++----------+----------+
+etc.
+```
+
+Also Bonz' script
+
+=> https://git.genenetwork.org/gn-guile/tree/scripts/lmdb-publishdata-export.scm
+
+has an interesting query:
+
+```
+MariaDB [db_webqtl]>
+SELECT DISTINCT PublishFreeze.Name, PublishXRef.Id FROM PublishData
+  INNER JOIN Strain ON PublishData.StrainId = Strain.Id
+  INNER JOIN PublishXRef ON PublishData.Id = PublishXRef.DataId
+  INNER JOIN PublishFreeze ON PublishXRef.InbredSetId = PublishFreeze.InbredSetId
+  LEFT JOIN PublishSE ON PublishSE.DataId = PublishData.Id AND PublishSE.StrainId = PublishData.StrainId
+  LEFT JOIN NStrain ON NStrain.DataId = PublishData.Id AND NStrain.StrainId = PublishData.StrainId
+  WHERE PublishFreeze.public > 0 AND PublishFreeze.confidentiality < 1
+  ORDER BY PublishFreeze.Id, PublishXRef.Id limit 5;
++------------+-------+
+| Name       | Id    |
++------------+-------+
+| BXDPublish | 10001 |
+| BXDPublish | 10002 |
+| BXDPublish | 10003 |
+| BXDPublish | 10004 |
+| BXDPublish | 10005 |
++------------+-------+
+5 rows in set (0.239 sec)
+```
+
+that shows we have 13689 BXDPublish datasets. It also has
+
+```
+SELECT
+JSON_ARRAYAGG(JSON_ARRAY(Strain.Name, PublishData.Value)) AS data,
+ MD5(JSON_ARRAY(Strain.Name, PublishData.Value)) as md5hash
+FROM
+    PublishData
+    INNER JOIN Strain ON PublishData.StrainId = Strain.Id
+    INNER JOIN PublishXRef ON PublishData.Id = PublishXRef.DataId
+    INNER JOIN PublishFreeze ON PublishXRef.InbredSetId = PublishFreeze.InbredSetId
+LEFT JOIN PublishSE ON
+    PublishSE.DataId = PublishData.Id AND
+    PublishSE.StrainId = PublishData.StrainId
+LEFT JOIN NStrain ON
+    NStrain.DataId = PublishData.Id AND
+    NStrain.StrainId = PublishData.StrainId
+WHERE
+    PublishFreeze.Name = "BXDPublish" AND
+    PublishFreeze.public > 0 AND
+    PublishData.value IS NOT NULL AND
+    PublishFreeze.confidentiality < 1
+ORDER BY
+    LENGTH(Strain.Name), Strain.Name LIMIT 5;
+```
+
+best to pipe that to a file. It outputs JSON and an MD5SUM straight from mariadb. Interesting.
+
+Finally, let's have a look at the existing GN API
+
+```
+SELECT
+                            Strain.Name, Strain.Name2, PublishData.value, PublishData.Id, PublishSE.error, NStrain.count
+                        FROM
+                            (PublishData, Strain, PublishXRef, PublishFreeze)
+                        LEFT JOIN PublishSE ON
+                            (PublishSE.DataId = PublishData.Id AND PublishSE.StrainId = PublishData.StrainId)
+                        LEFT JOIN NStrain ON
+                            (NStrain.DataId = PublishData.Id AND
+                            NStrain.StrainId = PublishData.StrainId)
+                        WHERE
+                            PublishXRef.InbredSetId = 1 AND
+                            PublishXRef.PhenotypeId = 4 AND
+                            PublishData.Id = PublishXRef.DataId AND
+                            PublishData.StrainId = Strain.Id AND
+                            PublishXRef.InbredSetId = PublishFreeze.InbredSetId AND
+                            PublishFreeze.public > 0 AND
+                            PublishFreeze.confidentiality < 1
+                        ORDER BY
+                            Strain.Name;
+ +-------+-------+-----------+---------+-------+-------+
+| Name  | Name2 | value     | Id      | error | count |
++-------+-------+-----------+---------+-------+-------+
+| BXD1  | BXD1  | 61.400002 | 8967043 |  2.38 | NULL  |
+| BXD11 | BXD11 | 53.099998 | 8967043 |   1.1 | NULL  |
+| BXD12 | BXD12 | 45.900002 | 8967043 |  1.09 | NULL  |
+| BXD13 | BXD13 | 48.400002 | 8967043 |  1.63 | NULL  |
+...
+```
+
+which actually blocks non-public sets and shows std err, as well as counts when available(?) It does not exclude the parents for mapping (btw). That probably happens on the mapping page itself.
+
+Probably the most elegant query is in GN3 API:
+
+```
+SELECT st.Name, ifnull(pd.value, 'x'), ifnull(ps.error, 'x'), ifnull(ns.count, 'x')
+    FROM PublishFreeze pf JOIN PublishXRef px ON px.InbredSetId = pf.InbredSetId
+        JOIN PublishData pd ON pd.Id = px.DataId JOIN Strain st ON pd.StrainId = st.Id
+        LEFT JOIN PublishSE ps ON ps.DataId = pd.Id AND ps.StrainId = pd.StrainId
+        LEFT JOIN NStrain ns ON ns.DataId = pd.Id AND ns.StrainId = pd.StrainId
+    WHERE px.PhenotypeId = 4 limit 5;
++------+-----------------------+-----------------------+-----------------------+
+| Name | ifnull(pd.value, 'x') | ifnull(ps.error, 'x') | ifnull(ns.count, 'x') |
++------+-----------------------+-----------------------+-----------------------+
+| BXD1 | 61.400002             | 2.38                  | x                     |
+| BXD2 | 49.000000             | 1.25                  | x                     |
+| BXD5 | 62.500000             | 2.32                  | x                     |
+| BXD6 | 53.099998             | 1.22                  | x                     |
+| BXD8 | 59.099998             | 2.07                  | x                     |
++------+-----------------------+-----------------------+-----------------------+
+```
+
+written by Zach and Bonface. See
+
+=> https://github.com/genenetwork/genenetwork3/blame/main/gn3/db/sample_data.py
+
+
+
+We can get a list of the 13689 BXD datasets we can use. Note that we start with public data because we'll feed it to AI and all privacy will be gone after. We'll design an second API that makes use of Fred's authentication/authorization later.
+Let's start with the SQL statement listed on:
+
+
+We can run mysql through an ssh tunnel with
+
+```
+ssh -L 3306:127.0.0.1:3306 -f -N tux02.genenetwork.org
+mysql -A -h 127.0.0.1 -uwebqtlout -pwebqtlout db_webqtl
+```
+
+and test the query, i.e.
+
+```
+MariaDB [db_webqtl]> SELECT DISTINCT PublishFreeze.Name, PublishXRef.Id FROM PublishData
+    ->   INNER JOIN Strain ON PublishData.StrainId = Strain.Id
+    ->   INNER JOIN PublishXRef ON PublishData.Id = PublishXRef.DataId
+    ->   INNER JOIN PublishFreeze ON PublishXRef.InbredSetId = PublishFreeze.InbredSetId
+    ->   LEFT JOIN PublishSE ON PublishSE.DataId = PublishData.Id AND PublishSE.StrainId = PublishData.StrainId
+    ->   LEFT JOIN NStrain ON NStrain.DataId = PublishData.Id AND NStrain.StrainId = PublishData.StrainId
+    ->   WHERE PublishFreeze.public > 0 AND PublishFreeze.confidentiality < 1
+    ->   ORDER BY PublishFreeze.Id, PublishXRef.Id limit 5;
++------------+-------+
+| Name       | Id    |
++------------+-------+
+| BXDPublish | 10001 |
+| BXDPublish | 10002 |
+| BXDPublish | 10003 |
+| BXDPublish | 10004 |
+| BXDPublish | 10005 |
+```
+
+Let's take this apart a little. First of all PublishFreeze has only one record for BXDPublish where ID=1. PublishData may be used to check valid fields, but the real information is in PublishXRef. A simple
+
+```
+ select count(*) from PublishXRef WHERE InbredSetId=1;
++----------+
+| count(*) |
++----------+
+|    13711 |
++----------+
+```
+
+counts a few extra datasets (it was 13689). It may mean that PublishXRef contains some records that are still not public? Anyway,
+let's go for the full dataset for precompute right now. We'll add an API endpoint to gn-guile so it can be used later.
+
+Note GN2 on the menu search
+
+=> https://genenetwork.org/search?species=mouse&group=BXD&type=Phenotypes&dataset=BXDPublish&search_terms_or=*&search_terms_and=&accession_id=None&FormID=searchResult
+
+gives 13,729 entries, including recent BXD_51094. That is because that production database is newer. If we look at our highest records:
+
+```
+select * from PublishXRef WHERE InbredSetId=1 ORDER BY ID DESC limit 3;
++-------+-------------+-------------+---------------+----------+-------------------+----------------+--------------------+--------------------+----------+----------+
+| Id    | InbredSetId | PhenotypeId | PublicationId | DataId   | mean              | Locus          | LRS                | additive           | Sequence | comments |
++-------+-------------+-------------+---------------+----------+-------------------+----------------+--------------------+--------------------+----------+----------+
+| 51060 |           1 |       45821 |         39794 | 41022015 |              NULL | rsm10000000968 | 13.263934206457122 | 2.1741201177177185 |        1 |          |
+| 51049 |           1 |       45810 |         39783 | 41022004 | 8.092333210508029 | rsm10000014174 |   16.8291804498215 | 18.143229769230775 |        1 |          |
+| 51048 |           1 |       45809 |         39782 | 41022003 | 6.082199917286634 | rsm10000009222 | 14.462661474938166 |  4.582111488461538 |        1 |          |
++-------+-------------+-------------+---------------+----------+-------------------+----------------+--------------------+--------------------+----------+----------+
+```
+
+You can see they match that list (51060 got updated on production). The ID matches record BXD_51060 on the production search table.
+We can look at the DataId with
+
+```
+select Id,PhenotypeId,DataId from PublishXRef WHERE InbredSetId=1 ORDER BY ID DESC limit 3;
++-------+-------------+----------+
+| Id    | PhenotypeId | DataId   |
++-------+-------------+----------+
+| 51060 |       45821 | 41022015 |
+| 51049 |       45810 | 41022004 |
+| 51048 |       45809 | 41022003 |
++-------+-------------+----------+
+```
+
+And get the actual values with
+
+```
+select * from PublishData WHERE Id=41022003;
++----------+----------+-----------+
+| Id       | StrainId | value     |
++----------+----------+-----------+
+| 41022003 |        2 |  9.136000 |
+| 41022003 |        3 |  4.401000 |
+| 41022003 |        9 |  4.360000 |
+| 41022003 |       29 | 15.745000 |
+| 41022003 |       98 |  4.073000 |
+| 41022003 |       99 | -0.580000 |
+```
+
+which match the values on
+
+=> https://genenetwork.org/show_trait?trait_id=51048&dataset=BXDPublish
+
+The phenotypeid is useful for some metadata:
+
+
+```
+select * from Phenotype WHERE ID=45809;
+| 45809 | Central nervous system, metabolism, nutrition, toxicology: Difference score for Iron (Fe) concentration in cortex (CTX) between 20 to 120-day-old and 300 to 918-day-old males mice fed Envigo diet 7912 containing 240, 93, and 63 ppm Fe, Cu and Zn, respectively [µg/g wet weight]  | Central nervous system, metabolism, nutrition, toxicology: Difference score for Iron (Fe) concentration in cortex (CTX) between 20 to 120-day-old and 300 to 918-day-old males mice fed Envigo diet 7912 containing 240, 93, and 63 ppm Fe, Cu and Zn, respectively [µg/g wet weight]  | Central nervous system, metabolism, nutrition, toxicology: Difference score for Iron (Fe) concentration in cortex (CTX) between 20 to 120-day-old and 300 to 918-day-old males mice fed Envigo diet 7912 containing 240, 93, and 63 ppm Fe, Cu and Zn, respectively [µg/g wet weight]  | [ug/mg wet weight] | Fe300-120CTXMale             | Fe300-120CTXMale              | NULL     | acenteno  | Jones B | joneslab         |
+```
+
+Since I am going for the simpler query I'll add an API endpoint named
+datasets/bxd-publish/list (so others can use that too).  We'll return
+tuples for each entry so we can extend it later. First we need the
+DataID so we can point into PublishData. We expect the endpoint to
+return something like
+
+```
++-------+-------------+----------+
+| Id    | PhenotypeId | DataId   |
++-------+-------------+----------+
+| 51060 |       45821 | 41022015 |
+| 51049 |       45810 | 41022004 |
+| 51048 |       45809 | 41022003 |
+...
+```
+
+Alright, let's write some code. The following patch returns on the endpoint:
+
+```
+[
+  {
+    "Id": 10001,
+    "PhenotypeId": 4,
+    "DataId": 8967043
+  },
+  {
+    "Id": 10002,
+    "PhenotypeId": 10,
+    "DataId": 8967044
+  },
+  {
+    "Id": 10003,
+    "PhenotypeId": 15,
+    "DataId": 8967045
+  },
+...
+```
+
+in about 3 seconds. It will run a lot faster on a local network. But for our purpose it is fine. The code I wrote is here:
+
+=> https://git.genenetwork.org/gn-guile/commit/?id=1590be15f85e30d7db879c19d2d3b4bed201556a
+
+Note the simple SQL query (compared to the first one).
+Next step is to fetch the trait values we can feed to GEMMA. The full query using the PhenotypeId and DataId in GN is:
+
+```
+SELECT Strain.Name, Strain.Name2, PublishData.value, PublishData.Id, PublishSE.error, NStrain.count
+  FROM
+      (PublishData, Strain, PublishXRef, PublishFreeze)
+  LEFT JOIN PublishSE ON
+      (PublishSE.DataId = PublishData.Id AND PublishSE.StrainId = PublishData.StrainId)
+  LEFT JOIN NStrain ON
+      (NStrain.DataId = PublishData.Id AND
+      NStrain.StrainId = PublishData.StrainId)
+  WHERE
+      PublishXRef.InbredSetId = 1 AND
+      PublishXRef.PhenotypeId = 4 AND
+      PublishData.Id = PublishXRef.DataId AND
+      PublishData.StrainId = Strain.Id AND
+      PublishXRef.InbredSetId = PublishFreeze.InbredSetId AND
+      PublishFreeze.public > 0 AND
+      PublishFreeze.confidentiality < 1;
++-------+-------+-----------+---------+-------+-------+
+| Name  | Name2 | value     | Id      | error | count |
++-------+-------+-----------+---------+-------+-------+
+| BXD1  | BXD1  | 61.400002 | 8967043 |  2.38 | NULL  |
+| BXD2  | BXD2  | 49.000000 | 8967043 |  1.25 | NULL  |
+| BXD5  | BXD5  | 62.500000 | 8967043 |  2.32 | NULL  |
+| BXD6  | BXD6  | 53.099998 | 8967043 |  1.22 | NULL  |
+...
+```
+
+(result includes parents). We can simplify this for GEMMA because it only wants the name and (mean) value.
+
+The short version when you have the data ID is:
+
+```
+SELECT Strain.Name, PublishData.value FROM Strain, PublishData WHERE PublishData.Id=41022003 and Strain.Id=StrainID;
++----------+-----------+
+| Name     | value     |
++----------+-----------+
+| C57BL/6J |  9.136000 |
+| DBA/2J   |  4.401000 |
+| BXD9     |  4.360000 |
+| BXD32    | 15.745000 |
+| BXD43    |  4.073000 |
+| BXD44    | -0.580000 |
+| BXD48    | -1.810000 |
+| BXD51    |  4.294000 |
+| BXD60    | -0.208000 |
+| BXD62    | -0.013000 |
+| BXD63    |  3.221000 |
+| BXD66    |  2.472000 |
+| BXD69    | 12.886000 |
+| BXD70    | -1.973000 |
+| BXD78    | 19.511999 |
+| BXD79    |  7.845000 |
+| BXD73a   |  3.201000 |
+| BXD87    | -3.054000 |
+| BXD48a   | 11.585000 |
+| BXD100   |  7.088000 |
+| BXD102   |  8.485000 |
+| BXD124   | 13.442000 |
+| BXD170   | -1.274000 |
+| BXD172   | 18.587000 |
+| BXD186   | 10.634000 |
++----------+-----------+
+```
+
+which matches GN perfectly (some individuals where added). Alright, let's add an endpoint for this named
+'dataset/bxd-publish/values/dataid/41022003'. Note we only deal with public data (so far). Later we may come up with more generic
+end points and authorization. At this point the API is either on the local network (this one is) or public.
+
+The first version returns this data from the endpoint:
+
+```
+time curl http://127.0.0.1:8091/dataset/bxd-publish/values/41022003
+[{"Name":"C57BL/6J","value":9.136},{"Name":"DBA/2J","value":4.401},{"Name":"BXD9","value":4.36},{"Name":"BXD32","value":15.745},{"Name":"BXD43","value":4.073},{"Name":"BXD44","value":-0.58},{"Name":"BXD48","value":-1.81},{"Name":"BXD51","value":4.294},{"Name":"BXD60","value":-0.208},{"Name":"BXD62","value":-0.013},{"Name":"BXD63","value":3.221},{"Name":"BXD66","value":2.472},{"Name":"BXD69","value":12.886},{"Name":"BXD70","value":-1.973},{"Name":"BXD78","value":19.511999},{"Name":"BXD79","value":7.845},{"Name":"BXD73a","value":3.201},{"Name":"BXD87","value":-3.054},{"Name":"BXD48a","value":11.585},{"Name":"BXD100","value":7.088},{"Name":"BXD102","value":8.485},{"Name":"BXD124","value":13.442},{"Name":"BXD170","value":-1.274},{"Name":"BXD172","value":18.587},{"Name":"BXD186","value":10.634}]
+real    0m0.537s
+user    0m0.002s
+sys     0m0.005s
+```
+
+Note it includes the parents. We should drop them. In this case we can simple check for (string-contains name "BXD"). The database records allow for a filter, so we get
+
+```
+curl http://127.0.0.1:8091/dataset/bxd-publish/mapping/values/41022003
+[{"Name":"BXD9","value":4.36},{"Name":"BXD32","value":15.745},{"Name":"BXD43","value":4.073},{"Name":"BXD44","value":-0.58},{"Name":"BXD48","value":-1.81},{"Name":"BXD51","value":4.294},{"Name":"BXD60","value":-0.208},{"Name":"BXD62","value":-0.013},{"Name":"BXD63","value":3.221},{"Name":"BXD66","value":2.472},{"Name":"BXD69","value":12.886},{"Name":"BXD70","value":-1.973},{"Name":"BXD78","value":19.511999},{"Name":"BXD79","value":7.845},{"Name":"BXD73a","value":3.201},{"Name":"BXD87","value":-3.054},{"Name":"BXD48a","value":11.585},{"Name":"BXD100","value":7.088},{"Name":"BXD102","value":8.485},{"Name":"BXD124","value":13.442},{"Name":"BXD170","value":-1.274},{"Name":"BXD172","value":18.587},{"Name":"BXD186","value":10.634}]
+```
+
+That code went in as
+
+=> https://git.genenetwork.org/gn-guile/commit/?id=9ad0793eb477611c700f4a5b02f60ac793bfae96
+
+It took a bit longer than I wanted because I made a mistake converting the results to a hash table. It broke the JSON conversion and the error was not so helpful.
+
+To write a CSV it turns out I have written
+
+=> https://git.genenetwork.org/gn-guile/tree/gn/runner/gemma.scm?id=9ad0793eb477611c700f4a5b02f60ac793bfae96#n18
+
+which takes the GN BXD.json file and our trait file. BXD.json captures the genotype information GN has:
+
+```
+{
+        "mat": "C57BL/6J",
+        "pat": "DBA/2J",
+        "f1s": ["B6D2F1", "D2B6F1"],
+        "genofile" : [{
+                "title" : "WGS-based (Mar2022)",
+                "location" : "BXD.8.geno",
+                "sample_list" : ["BXD1", "BXD2", "BXD5", "BXD6", "BXD8", "BXD9", "BXD11", "BXD12", "BXD13", "BXD14", "BXD15", "BXD16", "BXD18", "BXD19", "BXD20", "BXD21", "BXD22", "BXD23", "BXD24", "BXD24a", "BXD25", "BXD27", "BXD28", "BXD29", "BXD30", "BXD31", "BXD32", "BXD33", "BXD34", "BXD35", "BXD36", "BXD37", "BXD38", "BXD39", "BXD40", "BXD41", "BXD42", "BXD43", "BXD44", "BXD45", "BXD48", "BXD48a", "BXD49", "BXD50", "BXD51", "BXD52", "BXD53", "BXD54", "BXD55", "BXD56", "BXD59", "BXD60", "BXD61",
+(...)
+"BXD065xBXD077F1", "BXD069xBXD090F1", "BXD071xBXD061F1", "BXD073bxBXD065F1", "BXD073bxBXD077F1", "BXD073xBXD034F1", "BXD073xBXD065F1", "BXD073xBXD077F1", "BXD074xBXD055F1", "BXD077xBXD062F1", "BXD083xBXD045F1", "BXD087xBXD100F1", "BXD065bxBXD055F1", "BXD102xBXD077F1", "BXD102xBXD73bF1", "BXD170xBXD172F1", "BXD172xBXD197F1", "BXD197xBXD009F1", "BXD197xBXD170F1"]
+```
+
+The code maps the traits values I generated against these columns to see what inviduals overlap which corrects for unmappable individuals (anyway).
+
+The function 'write-pheno-file', listed above, does not work however because of the format of the endpoint. Remember it generates
+
+```
+[{"Name":"BXD9","value":4.36},{"Name":"BXD32","value":15.745}...]
+```
+
+While this function expects the shorter
+
+```
+{"BXD9":4.36,"BXD23":15.745...}
+```
+
+Now, for endpoints there is no real standard. We have written ideas up here:
+
+=> https://git.genenetwork.org/gn-docs/tree/api
+
+and, most recently
+
+=> https://git.genenetwork.org/gn-docs/tree/api/GN-REST-API-v2.md
+
+Where I make a case for having the metadata as a separate endpoint that can be reasoned on by people and machines (and AI).
+That means I should default to the short version of the data and describe that layout using metadata. This we can do later.
+
+I modified the endpoint to return the shorter hash:
+
+```
+time curl http://127.0.0.1:8091/dataset/bxd-publish/values/41022003
+{"BXD9":4.36,"BXD23":15.745...}
+```
+
+Next, to align with
+
+=> https://github.com/genenetwork/gn-docs/blob/master/api/GN-REST-API-v2.md
+
+I gave the API the json extension, so we have http://127.0.0.1:8091/dataset/bxd-publish/values/41022003.json
+
+This allows writing a special handler for GEMMA output (.gemma extension) downloading the pheno file with
+
+```
+curl http://127.0.0.1:8091/dataset/bxd-publish/values/41022003.gemma
+NA
+NA
+NA
+NA
+NA
+4.36NA
+NA
+NA
+NA
+(...)
+```
+
+that GEMMA can use directly and matches the order of the individuals in the BXD.8.geno file and the founders/parents are not included. Note that all of this now only works for the BXD (on PublishData) and I am using BXD.json as described in
+
+=> https://issues.genenetwork.org/topics/systems/mariadb/precompute-mapping-input-data
+
+I.e., it is Zach's listed stopgap solution. Code is here:
+
+=> https://git.genenetwork.org/gn-guile/log/
+
+Next step run gemma as we are on par with my earlier work on ProbeSetData. I wrote a gemma runner for that too at
+
+=> https://git.genenetwork.org/gn-guile/tree/gn/runner/gemma.scm#n79
+
+Now here I use guile to essentially script running GEMMA. There is no real advantage for that, so I will simply tell gemma-wrapper to use the output of above .gemma endpoint to fetch the trait values. Basically gemma-wrapper can specify the standard gemma -p switch, or pass in --phenotypes, that are used for permutations.
+
+Now the new method we want to introduce is that the trait values are read from a REST API, instead of a file. The dirty way is to provide that functionality directly to gemma-wrapper, but we plan to get rid of that code (useful as it is -- it duplicates what Arun's ravanan does and ravanan has the advantage that it can be run on a cluster).
+
+So we simply download the data and write it to a file with a small script. To run:
+
+```
+curl http://127.0.0.1:8091/dataset/bxd-publish/values/41022003.gemma > 41022003-pheno.txt
+```
+
+Next we create a container for gemma-wrapper (and includes the gemma that GN uses):
+
+```
+. .guix-deploy
+env TMPDIR=tmp ruby ./bin/gemma-wrapper --force --json \
+        --loco -- \
+        -g BXD.8_geno.txt.gz \
+        -p 41022003-pheno.txt \
+        -a BXD.8_snps.txt \
+        -gk > K.json
+```
+
+this bailed out with
+
+Executing: parallel --results /tmp/test --joblog /tmp/test/5f3849a9e61b70e3d562b20c5eade5a699923c68-parallel.log < /tmp/test/parallel-commands.txt
+Command exited with non-zero status 20
+
+When running an individual chromosome (from the parallel log) we get two warnings and an error:
+
+```
+**** WARNING: The maximum genotype value is not 2.0 - this is not the BIMBAM standard and will skew l_lme and effect sizes
+**** WARNING: Columns in geno file do not match # individuals in phenotypes
+ERROR: Enforce failed for not enough genotype fields for marker in src/gemma_io.cpp at line 1470 in BimbamKin
+```
+
+Looks familiar!
+The first warning we'll ignore for now, as we just want the hits initially. The second warning relates to the error that there is a mismatch in number of inds.
+
+This topic I have covered in the past, particularly trying to debug Dave's conflicting results:
+
+=> https://issues.genenetwork.org/topics/lmms/gemma/permutations
+
+It makes somewhat depressive reading, though we have a solution.
+
+Note the correct conversion we only have to do once (basically the code I wrote earlier
+to fetch BXD traits needs to work with the latest BXD genotypes).
+The real problem is that gemma itself does not compare individual names (at all), so any corrections need to be done beforehand. In this case our pheno file contains 212 inds from the earlier BXD.json file.
+
+```
+wc -l 41022003-pheno.txt
+212 41022003-pheno.txt
+```
+
+And that is off. Let's try the tool I wrote during that exercise. It can create a different json file after parsing BXD.geno
+that has in the header:
+
+> # Date Modified: April 23, 2024 by Arthur Centeno, Suheeta Roy. March 22, 2022 by Rob Williams, David Ashbrook, and Danny Arends to remove excessive cross-over events in strains BXD42 (Chr9), BXD81 (Chrs1, 5, 10), BXD99 (Chr1), and BXD100 (Chrs2 and 6); and to add Taar1 maker on Chr 10 for T. Phillips-Richards.   Jan 19, 2017: Danny Arends computed BXD cM values and recombinations between markers. Rob W. Williams fixed errors on most chromosomes and added Affy eQTL markers. BXD223 now has been added based on David Ashbrook's spreadsheet genotype information.
+
+```
+md5sum BXD.geno:
+  a78aa312b51ac15dd8ece911409c5b98  BXD.geno
+gemma-wrapper$ ./bin/gn-geno-to-gemma.py BXD.geno > BXD.geno.txt
+```
+
+creates a .json file (that is different from Zach/GN's) and a bimbam file GEMMA can use. Now in the next step I need to adapt above code to use this format. What I *should* have done, instead of writing gemma phenotypes directly, is write the R/qtl2 format that includes the ind names (so we can compare and validate those) and *then* parse that data against our new JSON file created by gn-geno-to-gemma.py using the rqtl2-pheno-to-gemma.py script. Both Python scripts are already part of gemma-wrapper:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/gn-geno-to-gemma.py
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/rqtl2-pheno-to-gemma.py
+
+The idea was to create the rqtl2 API endpoint, or I'll adapt the 2nd script to take the endpoint as input and then correct for GEMMA's requirements.
+
+OK, updated the endpoints and the code for rqtl2-pheno-to-gemma.py so it accepts a URL instead of a file. So the idea is
+to run
+
+```
+./bin/rqtl2-pheno-to-gemma.py BXD_pheno_Dave.csv --json BXD.geno.json > BXD_pheno_matched.txt
+```
+
+A line in BXD_pheno_Dave.csv is:
+
+```
+BXD113,24.52,205.429001,3.643,2203.312012,3685.907959,1.199,2.019,29.347143,0.642857,205.428574,24.520409,3.642857,2203
+.312012,3685.908203,1.198643,2.018643,0.642857,33.785709,1.625,2,1.625,1,22.75
+```
+
+Now if I read the Rqtl2 docs it says:
+
+> We split the numeric phenotypes from the mixed-mode covariates, as two separate CSV files. Each file forms a matrix of individuals × phenotypes (or covariates), with the first column being individual IDs and the first row being phenotype or covariate names. Sex and line IDs (if needed) can be columns in the covariate data.
+
+This differs from the BXD Dave layout (it is transposed). Karl added in the docs:
+
+> All of these CSV files may be transposed relative to the form described below. You just need to include, in the control file, a line like: "geno_transposed: true". So, OK, we can use the transposed form. First we make it possible to parse json:
+
+```
+curl http://127.0.0.1:8091/dataset/bxd-publish/values/41022003.json > 41022003-pheno.json
+jq < 41022003-pheno.json
+{
+  "C57BL/6J": 9.136,
+  "DBA/2J": 4.401,
+  "BXD9": 4.36,
+  "BXD32": 15.745,
+(...)
+```
+
+note it includes the parents. Feed it to
+
+```
+./bin/rqtl2-pheno-to-gemma.py 41022003-pheno.json --json BXD.geno.json
+```
+
+where BXD.geno.json is not the Zach/GN json file, but the actual BXDs in GEMMA's bimbam file.
+
+One question is why Zach's JSON file gives a different number of mappable BXDs. I made of note of that to check.
+
+I wrote a new script and we had our first GEMMA run with lmdb output:
+
+```
+wrk@napoli /export/local/home/wrk/iwrk/opensource/code/genetics/gemma-wrapper [env]$ tar tvf /tmp/3fddda2374509c7b346>
+-rw-r--r-- wrk/users    294912 2025-08-06 05:49 3fddda2374509c7b346b7819ae358ed23be9cb46-gemma-GWA.mdb
+```
+
+The script is just 10 lines of code (after the command line handler)
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/gn-pheno-to-gemma.rb
+
+Excellent, now we can run gemma and the next step is to look at the largest hit.
+
+So the trait we try to run is 41022003 = https://genenetwork.org/show_trait?trait_id=51048&dataset=BXDPublish. The inputs match up. When we run GEMMA in GN it has a 4.0 score on chr 12 and 3.9 on chr 19.
+
+Running gemma-wrapper we get
+
+```
+LOCO K computation with caching and JSON output
+
+gemma-wrapper --json --force --loco -- -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -n 2 -gk -debug > K.json
+
+LMM's using the K's captured in K.json using the --input switch
+
+gemma-wrapper --json --force --lmdb --loco --input K.json -- -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -lmm 9 -maf 0.1 -n 2 -debug > GWA.json
+```
+
+We can view the lmdb file with something like:
+
+```
+./bin/view-gemma-mdb --sort /tmp/66b8c19be87e9566358ce904682a56250eb05748-gemma-GWA.tar.xz --anno BXD.8_snps.txt > test.out
+/tmp/3fddda2374509c7b346b7819ae358ed23be9cb46-gemma-GWA.tar.xz
+chr,pos,marker,af,beta,se,l_mle,l_lrt,-logP
+7,67950073,rsm10000004928,0.543,1.5226,1.3331,100000.0,0.0002,3.79
+7,68061665,rs32453663,0.543,1.5226,1.3331,100000.0,0.0002,3.79
+7,68111284,rs32227186,0.543,1.5226,1.3331,100000.0,0.0002,3.79
+19,30665443,rsm10000014129,0.522,2.2128,1.0486,100000.0,0.0002,3.77
+19,30671753,rs31207057,0.522,2.2128,1.0486,100000.0,0.0002,3.77
+12,40785621,rsm10000009222,0.565,2.8541,1.3576,100000.0,0.0002,3.75
+12,40786657,rs29124638,0.565,2.8541,1.3576,100000.0,0.0002,3.75
+12,40842857,rs13481410,0.565,2.8541,1.3576,100000.0,0.0002,3.75
+12,40887762,rsm10000009223,0.565,2.8541,1.3576,100000.0,0.0002,3.75
+12,40887894,rsm10000009224,0.565,2.8541,1.3576,100000.0,0.0002,3.75
+12,40900825,rs50979658,0.565,2.8541,1.3576,100000.0,0.0002,3.75
+12,41054766,rs46705481,0.565,2.8541,1.3576,100000.0,0.0002,3.75
+```
+
+Interestingly the hits are very similar to what is on production now, though not the same! That points out that I am not using the production database on this recent dataset. Let's try an older one. BXD_10002 has data id 8967044
+
+```
+curl http://127.0.0.1:8091/dataset/bxd-publish/values/8967044.json > 10002-pheno.json
+./bin/gn-pheno-to-gemma.rb -p 10002-pheno.json --geno-json BXD.geno.json > 10002-pheno.txt
+gemma-wrapper --json --force --loco -- -g BXD.geno.txt -p 10002-pheno.txt -a BXD.8_snps.txt -n 2 -gk -debug > K.json
+gemma-wrapper --json --force --lmdb --loco --input K.json -- -g BXD.geno.txt -p 10002-pheno.txt -a BXD.8_snps.txt -lmm 9 -maf 0.1 -n 2 -debug > GWA.json
+./bin/view-gemma-mdb --sort /tmp/c4ffedf358698814c6e29a54a2a51cb6c66328d0-gemma-GWA.tar.xz --anno BXD.8_snps.txt > test.out
+```
+
+Luckily this is a perfect match:
+
+```
+1,179861787,rsm10000000444,0.559,0.8837,0.3555,100000.0,0.0,4.99
+1,179862838,rs30712622,0.559,0.8837,0.3555,100000.0,0.0,4.99
+1,179915631,rsm10000000787,0.559,0.8837,0.3555,100000.0,0.0,4.99
+1,179919811,rsm10000000788,0.559,0.8837,0.3555,100000.0,0.0,4.99
+(...)
+8,94479237,rs32095272,0.441,1.0456,0.4362,100000.0,0.0,4.75
+8,94765445,rsm10000005684,0.441,1.0456,0.4362,100000.0,0.0,4.75
+8,94785223,rsm10000005685,0.441,1.0456,0.4362,100000.0,0.0,4.75
+8,94840921,rsm10000005686,0.441,1.0456,0.4362,100000.0,0.0,4.75
+```
+
+The lmdb file contains the full vector and compresses to 100K. For 13K traits that equals about 1Gb.
+
+First I wanted to check how Zach's list of mappable inds compares to mine. A simple REPL exercise shows:
+
+```
+zach = JSON.parse(File.read('BXD.json'))
+pj = JSON.parse(File.read('BXD.geno.json'))
+s1 = zach["genofile"][0]["sample_list"]
+=> ["BXD1", "BXD2", "BXD5", "BXD6", "BXD8", "BXD9", "BXD11", "BXD12", "BXD13", "BXD14", "BXD15", "BXD16", "BXD18",...
+s2 = pj["samples"]
+=> ["BXD1", "BXD2", "BXD5", "BXD6", "BXD8", "BXD9", "BXD11", "BXD12", "BXD13", "BXD14", "BXD15", "BXD16", "BXD18",...
+s1.size()
+=> 235
+s2.size()
+=> 237
+ s2-s1
+=> ["BXD077xBXD065F1", "BXD065xBXD102F1"]
+```
+
+So it turns out the newer geno file contains these two new inds that are *also* in the .geno file and confuses the hell out of my scripts ;). The GN2 webserver probably uses the header of the geno file to fetch the correct number. The trait page also lists these inds, so (I guess) the BXD.json file ought to be updated.
+
+Now that is explained and we are good.
+
+## Running at scale
+
+In the next step we need to batch run GEMMA. Initially we'll run on one server. gemma-wrapper takes care of running only once, so we can restart the pipeline at any point (we'll move to ravanan after to run on the cluster). At this point the API uses the dataid to return the trait values. I think that is not so intuitive, so I modified the endpoint to give the same results for:
+
+```
+curl http://127.0.0.1:8091/dataset/bxd-publish/values/10002.json > 10002-pheno.json
+curl http://127.0.0.1:8091/dataset/bxd-publish/dataid/values/8967044.json > 10002-pheno.json
+```
+
+Now that works we can get a list of all BXDPublish datasets that I wrote earlier:
+
+```
+curl http://127.0.0.1:8091/dataset/bxd-publish/list > bxd-publish.json
+[
+  {
+    "Id": 10001,
+    "PhenotypeId": 4,
+    "DataId": 8967043
+  },
+  {
+    "Id": 10002,
+    "PhenotypeId": 10,
+    "DataId": 8967044
+  },
+  {
+    "Id": 10003,
+    "PhenotypeId": 15,
+    "DataId": 8967045
+  },
+```
+
+so we can use this to create our batch list. There are 13711 datasets listed on this DB. We can use jq to extract all Ids
+
+```
+jq ".[] | .Id" < bxd-publish.json > ids.txt
+```
+
+All set to run our first batch! Now we replicate our guix-wrapper environment, start the gn-guile server and fire up a batch script that pulls the data from the database and runs gemma for every step.
+
+
+To get precompute going we need a server set up with a recent database. I don't want to use the production server. The fastest other server we have is balg01, and it is not busy right now, so let's use that. First we recover a DB from our backup, as described in
+
+=> topics/systems/mariadb/precompute-mapping-input-data
+
+(btw that examples show we started on precompute since November 2023 - 1.5 years ago). On that server mariadb is running as
+/usr/local/guix-profiles/gn-latest/bin/mariadbd --datadir=/export/mariadb/tux01. We can simply overwrite that database as it
+is an installation of Feb 18 2024. We extract:
+
+```
+borg extract --progress /export/backup/bacchus/drop/tux04/genenetwork::borg-tux04-sql-20250807-04:16-Thu
+```
+
+After extracting the backup we need to update permissions and point mariadb to the new dir: balg01:/export/mariadb/tux04/latest/.
+Restarting the DB and it all appears to work.
+
+Before I move the code across we need to make sure metadata on the traits get added to the lmdb mapping data. I actually wrote the code for that here. This adds the metadata to lmdb:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/a0eb8ed829072cb539b32affe135a7930989ca30/bin/gemma2lmdb.py#L99
+
+gemma-wrapper writes data like this:
+
+```
+  "meta": {
+    "type": "gemma-wrapper",
+    "version": "0.99.7-pre1",
+    "population": "BXD",
+    "name": "HC_U_0304_R",
+    "trait": "101500_at",
+    "url": "https://genenetwork.org/show_trait?trait_id=101500_at&dataset=HC_U_0304_R",
+    "archive_GRM": "46bfba373fe8c19e68be6156cad3750120280e2e-gemma-cXX.tar.xz",
+    "archive_GWA": "779a54a59e4cd03608178db4068791db4ca44ab3-gemma-GWA.tar.xz",
+    "dataid": 75629,
+    "probesetid": 1097,
+    "probesetfreezeid": 7
+    }
+```
+
+This was done for probesetdata and needs to be adapted for our BXD PublishData exercise. Also I want the archive_GWA file name to include the trait name/ID so we can find it quickly on the storage (without having to parse/query all lmdb files).
+
+From the gemma-wrapper invocation you can see I added a few switches to pass in this information:
+
+=> https://git.genenetwork.org/gn-guile/tree/gn/runner/gemma.scm#n97
+
+```
+        --meta NAME                  Pass in metadata as JSON file
+        --population NAME            Add population identifier to metadata
+        --name NAME                  Add dataset identifier to metadata
+        --id ID                      Add identifier to metadata
+        --trait TRAIT                Add trait identifier to metadata
+```
+
+We can add BXD as population and BXDPublish as a dataset identifier. Set id with dataid, and trait id with PublishXRefID and point it back to GN, so we can click
+
+=>  https://genenetwork.org/show_trait?trait_id=51048&dataset=BXDPublish
+
+Another thing I want to add are the existing qtlreaper hit values.  That way we can assess where the biggest impact was of using gemma over qtlreaper. To achieve this we will create a new API endpoint that can serve that data. Remember we get the trait values with:
+
+=> http://127.0.0.1:8091/dataset/bxd-publish/values/10002.json
+
+so we can add an endpoint that lists the mapping results
+
+=> http://127.0.0.1:8091/dataset/bxd-publish/trait-hits/10002.json
+
+we also will have
+
+=> http://127.0.0.1:8091/dataset/bxd-publish/trait-info/10002.json
+
+That will return more metadata and point into our RDF store. Note that this is now all very specific to bxd-publish. Later we'll have to think how to generalise these endpoints. We are just moving forward to do the BXD precompute run.
+
+Interestingly GN2 shows this information (well, only the highest hit) on the search page, but not on the trait page. As we can get hits from multiple sources we should (eventually) account for that with something like:
+
+```
+=> http://127.0.0.1:8091/dataset/bxd-publish/trait-hits/10002.json
+{ "qtlreaper-hk":
+  {
+    [
+      { "name":..., "chr": ..., "pos":..., "LRS":..., "additive":..., }
+    ]
+  }
+  "gemma-loco":
+  {
+    [
+      { "name":..., "chr": ..., "pos":..., "LRS":..., "additive":..., }
+      { "name":..., "chr": ..., "pos":..., "LRS":..., "additive":..., }
+      { "name":..., "chr": ..., "pos":..., "LRS":..., "additive":..., }
+    ]
+  }
+}
+```
+
+Eventually we may list gemma, Rqtl2 hits with and without LOCO and with and without covariates. Once we build this support we can adapt our search tools.
+
+Obviously this won't fit the current PublishXRef format, so -- for now -- we will just mirror its contents:
+
+```
+{ "qtlreaper-hk":
+  {
+    [
+      { "name":..., "chr": ..., "pos":..., "LRS":..., "additive":..., }
+    ]
+  }
+}
+```
+
+To get compute going I am going to skip above because we can update the lmdb files later.
+The first fix is to add the trait name to the file names and the following record to lmdb:
+
+  "meta": {
+    "type": "gemma-wrapper",
+    "version": "0.99.7-pre1",
+    "population": "BXD",
+    "name": "BXDPublish",
+    "table": "PublishData",
+    "traitid": 10002, // aka PublishXrefId
+    "url": "https://genenetwork.org/show_trait?trait_id=51048&dataset=BXDPublish,
+    "archive_GRM": "46bfba373fe8c19e68be6156cad3750120280e2e-gemma-cXX.tar.xz",
+    "archive_GWA": "779a54a59e4cd03608178db4068791db4ca44ab3-BXDPublish-10002-gemma-GWA.tar.xz",
+    "dataid": 8967044,
+    }
+
+This required modifications to gemma-wrapper.
+
+Running:
+
+```
+gemma-wrapper --json --force --loco -- -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -n 2 -gk -debug > K.json
+gemma-wrapper --json --force --lmdb --population BXD --name BXDPublish --trait 10002 --loco --input K.json -- -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -lmm 9 -maf 0.1 -n 2 -debug > GWA.json
+```
+
+begets '66b8c19be87e9566358ce904682a56250eb05748-BXDPublish-10002-gemma-GWA.tar.xz'. When I check the meta data in the lmdb file it is set to
+
+```
+"meta": {"type": "gemma-wrapper", "version": "1.00-pre1", "population": "BXD", "name": "BXDPublish", "trait": "10002", "geno_filename": "BXD.geno.txt", "geno_hash": "3b65ed252fa47270a3ea867409b0bdc5700ad6f6", "loco": true, "url": "https://genenetwork.org/show_trait?trait_id=10002&dataset=BXDPublish", "archive_GRM": "185eb08dc3897c7db5d7ea987170898035768f93-gemma-cXX.tar.xz", "archive_GWA":"66b8c19be87e9566358ce904682a56250eb05748-BXDPublish-10002-gemma-GWA.tar.xz", "table": "PublishData", "traitid": 10002, "dataid": 0}
+```
+
+which is good enough (for now). I may still add the dataid, but it requires a SQL call. Code is here:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/commit/49587523fc93bdcf0265da9da97f8d6d2a9e1008
+
+I should note that up to this point I would have had no advantage from AI programming. I know there are topics that I'll work on where I may benefit, but this type of architecturing, with very little code writing, does not really help. I certainly have the intention of using AI! Next steps, unfortunately, there is still little to be gained. Where we'll probably gain is:
+
+- Using the RDF data store and documenting the endpoint(s)
+- Refactoring some of GN2's code to introduce lmdb\
+- Deduplicating GN2/GN3 SQL code
+- Improving the REST API and writing documentation and tests
+- Analysing existing code bases, such as GEMMA itself
+
+Next step is getting the data churn going! After that we'll list all the hits which requires processing the lmdb output.
+
+Precompute of 13K traits has its first test run on balg01.
+
+It is going at 30 gemma runs per minute, so perhaps 8 hours for the full run if it keeps going. But I am hitting errors.
+
+Afther that will be to digest hits from the precomputed vectors in lmdb.
+
+## Yesterday's tux02 crash
+
+All servers work on tux02 except for BNW.
+
+I tried to restart BNW, but it is giving an error, including the mystifying shepherd error (that I have as a sticker on my laptop):
+
+> 2025-08-11 01:13:41 error in finalization thread: Success
+
+It is on our end, so no need to ping Yan. I'll fix it when I have time (I did below).
+
+## Precompute
+
+To get precompute up and running I need to create the environment on balg01. The DB I updated a few days ago, so that should be fine.
+
+First we check out the guile webserver:
+
+```
+git clone tux02.genenetwork.org:/home/git/public/gn-guile gn-guile-8092
+```
+
+Now gn-guile is already running serving aliases, so we want to run this as an internal endpoint right now with something like
+
+```
+unset GUIX_PROFILE
+. /usr/local/guix-profiles/guix-pull/etc/profile
+guix shell -L ~/guix-bioinformatics --container --network --file=guix.scm -- guile -L . --fresh-auto-compile -e main web/webserver.scm 8092
+```
+
+so, this renders
+
+```
+curl http://127.0.0.1:8092/dataset/bxd-publish/values/10002.json
+{"BXD1":54.099998,"BXD2":50.099998,"BXD5":53.299999,"BXD6":55.099998
+```
+
+Next step is to set up gemma-wrapper. Now this failed because guix was not happy. We have been updating things these last weeks. Rather than trying to align with recent changes I could have rolled back to the version I am using on my desktop. But I decided not to let those bits rot and updated guix from
+
+guix describe Thu Mar 14 21:33:55 2024
+
+to
+
+guix describe Sun Aug 10 18:18:20 2025
+
+Should use a newer version first! Let's try
+
+```
+guix pull --url=https://codeberg.org/guix/guix  -p ~/opt/guix-pull
+```
+
+(that took a while, so I took the opportunity to fix BNW -- turns out someone disabled BNW in shepherd by creating a systemd version that did not start properly).
+
+After the pull there were quite a few problems with gemma dependencies that needed fixing. First problem
+
+```
+guix package: warning: failed to load '(gn packages gemma)':
+In procedure abi-check: #<record-type <git-reference>>: record ABI mismatch; recompilation needed
+```
+
+required
+
+```
+find ~/.cache/guile -name "*.go" -delete
+```
+
+I also had to point guix-past to the new codeberg record! And now, magically, things started working.
+
+So, now I have an identical setup on my desktop and on the balg server. Next is to write a script that will batch run gemma-wrapper for every BXD PublishData ID. We created that list with jq earlier.
+
+```
+curl http://127.0.0.1:8092/dataset/bxd-publish/list > bxd-publish.json
+jq ".[] | .Id" < bxd-publish.json > ids.txt
+```
+
+For every ID in that list we are going to fetch the trait values with
+
+```
+#! /bin/env sh
+export TMPDIR=./tmp
+curl http://127.0.0.1:8092/dataset/bxd-publish/list > bxd-publish.json
+jq ".[] | .Id" < bxd-publish.json > ids.txt
+./bin/gemma-wrapper --force --json --loco -- -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -n 2 -gk > K.json
+
+for id in 'cat ids.txt' ; do
+  echo Precomputing $id
+  curl http://127.0.0.1:8092/dataset/bxd-publish/values/$id.json > pheno.json
+  ./bin/gn-pheno-to-gemma.rb --phenotypes pheno.json --geno-json BXD.geno.json > BXD_pheno.txt
+  ./bin/gemma-wrapper --json --lmdb --population BXD --name BXDPublish --trait $id --loco --input K.json -- -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -lmm 9 -maf 0.1 -n 2 -debug > GWA.json
+done
+```
+
+I hard copied the following files
+
+```
+BXD.geno.json
+BXD.geno.txt
+BXD.8_snps.txt
+```
+
+One thing I need to check is that the GRM is actually a constant. I forgot what GEMMA does.
+
+We hit an error
+
+```
+/gnu/store/vvl1g1l0j19w39kry2xcsawvlhbyb87j-ruby-3.4.4/lib/ruby/3.4.0/json/common.rb:221:in 'JSON::Ext::Parser.parse':
+unexpected token at '' (JSON::ParserError)
+FATAL ERROR: gemma-wrapper bailed out with pid 340588 exit 20
+./bin/gemma-wrapper:494:in 'block (2 levels) in <main>'
+./bin/gemma-wrapper:479:in 'IO.open'
+./bin/gemma-wrapper:479:in 'block in <main>'
+./bin/gemma-wrapper:832:in '<main>'Precomputing 10137
+```
+
+The JSON file is empty 10136. Hmmm.
+
+I also see
+
+```
+WARNING: failed to update lmdb record with key b'\r\x02n\x7f\x10' -- probably a duplicate 13:40795920 (b'\r':40795920)
+```
+
+For the first the webserver actually stopped on `In procedure accept: Too many open files`. The problem looks similar to
+
+=> https://issues.guix.gnu.org/60226
+
+and Arun's patch
+
+=> https://cgit.git.savannah.gnu.org/cgit/guix/mumi.git/commit/?id=897967a84d3f51da2b1cc8c3ee942fd14f4c669b
+
+I raised ulimit, but may need to restart the webserver several time. We are computing though:
+
+```
+-rw-r--r-- 1 wrk wrk   82968 Aug 11 05:16 ab51d69f79601cfa7399feebca619ea1a71c1270-BXDPublish-10146-gemma-GWA.tar.xz
+-rw-r--r-- 1 wrk wrk   82772 Aug 11 05:16 e6739ace8ca4931fc51baa1844b3b5ceac592104-BXDPublish-10147-gemma-GWA.tar.xz
+-rw-r--r-- 1 wrk wrk   81848 Aug 11 05:16 60880fc7e8c86dffb17f28664e478204ea26f827-BXDPublish-10148-gemma-GWA.tar.xz
+-rw-r--r-- 1 wrk wrk   79336 Aug 11 05:16 c914d6221b004dec98d60e08c0fdf8791c09cb41-BXDPublish-10149-gemma-GWA.tar.xz
+-rw-r--r-- 1 wrk wrk   83536 Aug 11 05:16 3d72b19730edab29bdc593cb6a1a86dd789d351f-BXDPublish-10150-gemma-GWA.tar.xz
+-rw-r--r-- 1 wrk wrk   69060 Aug 11 05:16 0e965f1778425071a5497d0fe69f2dc2e534ef60-BXDPublish-10151-gemma-GWA.tar.xz
+-rw-r--r-- 1 wrk wrk   69072 Aug 11 05:16 4de26e62a75727bc7edd6b266dfcd7753d185f1a-BXDPublish-10152-gemma-GWA.tar.xz
+(...)
+```
+
+There are some scarily small datasets:
+
+```
+GET /dataset/bxd-publish/values/10198.json
+;;; ("8967240")
+
+;;; ((("C57BL/6J" . 1.62) ("BXD1" . 2.37) ("BXD5" . 2.73) ("BXD9" . 3.52) ("BXD11" . 0.18) ("BXD12" . 3.69) ("BXD16" . 0.29) ("BXD21" . 2.34) ("BXD27" . 3.38) ("BXD32" . 0.24)))
+```
+
+i.e. https://genenetwork.org/show_trait?trait_id=10198&dataset=BXDPublish
+
+Not sure we should be running GEMMA on those!
+
+
+The computation initially stopped at 70% (we are now at 98%).
+
+To get from 70% I run the webserver without fibers as suggested by Arun's patch:
+
+=> https://cgit.git.savannah.gnu.org/cgit/guix/mumi.git/commit/?id=897967a84d3f51da2b1cc8c3ee942fd14f4c669b
+
+Because we were getting errors like: In procedure accept: Too many open files with GET /dataset/bxd-publish/values/23486.json
+
+Afther removing fibers precompute just continued where it left off. As it should. The fix is:
+
+=> https://git.genenetwork.org/gn-guile/commit/?id=289da2e13e07928cdb8a1d165483a3a3cd9ae1c6
+
+Now that is running I want to make sure I can point back to metadata and perhaps fetch some information to enrich our lmdb files for further processing. Earlier we captured some metadata with
+
+Next we capture some metadata
+
+```
+MariaDB [db_webqtl]> select PhenotypeId, Locus, DataId, Phenotype.Post_publication_description from PublishXRef, Phenotype where PublishXRef.PhenotypeId = Phenotype.Id and InbredSetId=1 limit 5;
++-------------+----------------+---------+----------------------------------------------------------------------------------------------------------------------------+
+| PhenotypeId | Locus          | DataId  | Post_publication_description                                                                                               |
++-------------+----------------+---------+----------------------------------------------------------------------------------------------------------------------------+
+|           4 | rs48756159     | 8967043 | Central nervous system, morphology: Cerebellum weight, whole, bilateral in adults of both sexes [mg]                       |
+|          10 | rsm10000005699 | 8967044 | Central nervous system, morphology: Cerebellum weight after adjustment for covariance with brain size [mg]                 |
+|          15 | rsm10000013713 | 8967045 | Central nervous system, morphology: Brain weight, male and female adult average, unadjusted for body weight, age, sex [mg] |
+|          20 | rs48756159     | 8967046 | Central nervous system, morphology: Cerebellum volume [mm3]                                                                |
+|          25 | rsm10000005699 | 8967047 | Central nervous system, morphology: Cerebellum volume, adjusted for covariance with brain size [mm3]                       |
++-------------+----------------+---------+----------------------------------------------------------------------------------------------------------------------------+
+```
+
+The qtlreaper hits are also of interest. Note Bonz has brilliantly captured this in RDF, see
+
+=> https://github.com/genenetwork/gn-docs/blob/master/rdf-documentation/phenotype-metadata.md
+
+which is parseable by machines(!). Let's try to use RDF first. The query:
+
+```
+SELECT * WHERE {
+    <http://genenetwork.org/id/traitBxd_10002> ?p ?o .
+}
+```
+
+renders
+
+```
+"http://www.w3.org/1999/02/22-rdf-syntax-ns#type","http://genenetwork.org/category/Phenotype"
+"http://genenetwork.org/term/belongsToGroup","http://genenetwork.org/id/setBxd"
+"http://www.w3.org/2004/02/skos/core#altLabel","BXD_10002"
+"http://purl.org/dc/terms/description","Central nervous system, morphology: Cerebellum weight after adjustment for covariance with brain size [mg]"
+"http://genenetwork.org/term/abbreviation","ADJCBLWT"
+"http://genenetwork.org/term/additive",2.08179
+"http://genenetwork.org/term/locus","http://genenetwork.org/id/Rsm10000005699"
+"http://genenetwork.org/term/lodScore",4.77938
+"http://genenetwork.org/term/mean",52.2206
+"http://genenetwork.org/term/sequence",1
+"http://genenetwork.org/term/submitter","robwilliams"
+"http://genenetwork.org/term/traitId","10002"
+"http://purl.org/dc/terms/isReferencedBy","http://rdf.ncbi.nlm.nih.gov/pubmed/11438585"
+```
+
+which covers pretty much what we need. Note that this is coming from our public endpoint and can be used to instruct AI agents(!)
+
+Now we want to fetch these values for all these traitBxd (yes, we need to fix some naming) with a single query:
+
+```
+SELECT count(*) WHERE {
+    ?s gnt:belongsToGroup gn:setBxd.
+} limit 5
+```
+
+returns 14039 traits. Good! Let's get all properties
+
+```
+
+SELECT * WHERE {
+    ?s gnt:belongsToGroup gn:setBxd;
+         gnt:traitId ?id;
+         gnt:locus ?locus;
+         gnt:lodScore ?lrs;
+         dct:description ?descr.
+} limit 50
+```
+
+[Try](https://sparql.genenetwork.org/sparql?default-graph-uri=&query=%0D%0APREFIX+dct%3A+%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3E+%0D%0APREFIX+gn%3A+%3Chttp%3A%2F%2Fgenenetwork.org%2Fid%2F%3E+%0D%0APREFIX+owl%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2002%2F07%2Fowl%23%3E+%0D%0APREFIX+gnc%3A+%3Chttp%3A%2F%2Fgenenetwork.org%2Fcategory%2F%3E+%0D%0APREFIX+gnt%3A+%3Chttp%3A%2F%2Fgenenetwork.org%2Fterm%2F%3E+%0D%0APREFIX+sdmx-measure%3A+%3Chttp%3A%2F%2Fpurl.org%2Flinked-data%2Fsdmx%2F2009%2Fmeasure%23%3E+%0D%0APREFIX+skos%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23%3E+%0D%0APREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E+%0D%0APREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E+%0D%0APREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E+%0D%0APREFIX+qb%3A+%3Chttp%3A%2F%2Fpurl.org%2Flinked-data%2Fcube%23%3E+%0D%0APREFIX+xkos%3A+%3Chttp%3A%2F%2Frdf-vocabulary.ddialliance.org%2Fxkos%23%3E+%0D%0APREFIX+pubmed%3A+%3Chttp%3A%2F%2Frdf.ncbi.nlm.nih.gov%2Fpubmed%2F%3E+%0D%0A%0D%0A%0D%0A%0D%0ASELECT+*+WHERE+%7B%0D%0A++++%3Fs+gnt%3AbelongsToGroup+gn%3AsetBxd%3B%0D%0A+++++++++gnt%3AtraitId+%3Fid%3B%0D%0A+++++++++gnt%3Alocus+%3Flocus%3B%0D%0A+++++++++%23+gnt%3Achr+%3Fchr%3B%0D%0A+++++++++%23+gnt%3Apos+%3Fpos%3B%0D%0A+++++++++gnt%3AlodScore+%3Flrs%3B%0D%0A+++++++++dct%3Adescription+%3Fdescr.%0D%0A%7D+limit+50&format=text%2Fhtml&timeout=0&signal_void=on)
+
+If we want to get the chr+location we can query one:
+
+```
+SELECT * WHERE {
+gn:Rs47436964 ?p ?o.
+}
+```
+
+renders
+
+```
+http://www.w3.org/2000/01/rdf-schema#label 	"rs47436964"
+chr "12"
+mb 	65.0498
+```
+
+Now the label is not so interesting, so in one query we can do:
+
+```
+SELECT ?id ?lod ?chr ?mb ?descr WHERE {
+    ?s gnt:belongsToGroup gn:setBxd;
+         gnt:traitId ?id;
+         gnt:locus ?locus;
+         gnt:lodScore ?lod;
+         dct:description ?descr.
+    ?locus gnt:chr ?chr;
+         gnt:mb ?mb.
+} order by desc(?lod) limit 50
+```
+
+which gets, for example a massive reaper HK QTL at
+
+```
+"21588" 34.558 "12" 116.67 "Cofactor, genetics, genomics: Structural variants SVs on chromosome 12, raw uncorrected sum of calls using LongRanger on linked-read sequencing data [n]"
+```
+
+The description of the phenotype is unfortunate. I think it is a synthetic QTL. The title is "SVs_Chr12". Luckily most traits give more an idea of what it is about.
+
+[SPARQL](https://sparql.genenetwork.org/sparql?default-graph-uri=&query=%0D%0APREFIX+dct%3A+%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3E+%0D%0APREFIX+gn%3A+%3Chttp%3A%2F%2Fgenenetwork.org%2Fid%2F%3E+%0D%0APREFIX+owl%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2002%2F07%2Fowl%23%3E+%0D%0APREFIX+gnc%3A+%3Chttp%3A%2F%2Fgenenetwork.org%2Fcategory%2F%3E+%0D%0APREFIX+gnt%3A+%3Chttp%3A%2F%2Fgenenetwork.org%2Fterm%2F%3E+%0D%0APREFIX+sdmx-measure%3A+%3Chttp%3A%2F%2Fpurl.org%2Flinked-data%2Fsdmx%2F2009%2Fmeasure%23%3E+%0D%0APREFIX+skos%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23%3E+%0D%0APREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E+%0D%0APREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E+%0D%0APREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E+%0D%0APREFIX+qb%3A+%3Chttp%3A%2F%2Fpurl.org%2Flinked-data%2Fcube%23%3E+%0D%0APREFIX+xkos%3A+%3Chttp%3A%2F%2Frdf-vocabulary.ddialliance.org%2Fxkos%23%3E+%0D%0APREFIX+pubmed%3A+%3Chttp%3A%2F%2Frdf.ncbi.nlm.nih.gov%2Fpubmed%2F%3E+%0D%0A%0D%0A%0D%0A%0D%0ASELECT+%3Fid+%3Flrs+%3Fchr+%3Fmb+%3Fdescr+WHERE+%7B%0D%0A++++%3Fs+gnt%3AbelongsToGroup+gn%3AsetBxd%3B%0D%0A+++++++++gnt%3AtraitId+%3Fid%3B%0D%0A+++++++++gnt%3Alocus+%3Flocus%3B%0D%0A+++++++++gnt%3AlodScore+%3Flrs%3B%0D%0A+++++++++dct%3Adescription+%3Fdescr.%0D%0A++++%3Flocus+gnt%3Achr+%3Fchr%3B%0D%0A+++++++++++++++gnt%3Amb+%3Fmb.%0D%0A%7D+order+by+desc%28%3Flrs%29+limit+50&format=text%2Fhtml&timeout=0&signal_void=on)
+
+To run this query on all 13K traits takes just a second! The resulting 3Mb TSV I'll share. Note that there is no code necessary to get to this point! Just SPARQL queries on a public endpoint.
+
+Now, what we want to do is take these results and combine them with the full vector data stored in lmdb.
+The first thing we can do is list the top hit from every trait and combine that with above data. That way we can quickly asses what trait hits will change using GEMMA instead of HK reaper. One thing to note is the formula LRS/4.6=LOD. The GN2 interface shows LRS.
+
+Meanwhile I am waiting for precompute. Most of it is done, but some interesting errors:
+
+```
+Precomputing 20484
+;;; ("41012208")
+SQL Connection ERROR! file not found
+```
+
+especially since it appears this is a cache hit. OK, I'll check tomorrow. For now we have 12837 completed vectors!
+After some reruns we have 13491 vectors, i.e. 98% of BXD PublishData.
+
+
+After some reruns we have 13491 vectors, i.e. 98% of BXD PublishData.
+
+Some remaining problems:
+
+```
+Executing: parallel --results /tmp/test --joblog /tmp/test/79d6dbd2fbd55b159c35d903ba10d9cab14f7816-parallel.log < /tmp
+/test/parallel-commands.txt
+Command exited with non-zero status 20
+```
+
+the trait values are all 1.0.
+
+```
+BXD1    1.0
+BXD2    1.0
+BXD5    1.0
+BXD6    1.0
+BXD8    1.0
+BXD9    1.0
+BXD11   1.0
+BXD12   1.0
+BXD13   1.0
+BXD14   1.0
+BXD15   1.0
+BXD16   1.0
+BXD18   1.0
+BXD19   1.0
+```
+
+We'll look into those later.
+
+Next step is to collect all the highest hits and we can do that with
+
+```
+./bin/view-gemma-mdb --sort tmp/tmp/9179b...923f181-gemma-GWA.mdb --anno BXD.8_snps.txt |head -2
+Reading tmp/tmp/9179b192fc1c19142d97607b64c04bf5a923f181-gemma-GWA.mdb...
+chr,pos,marker,af,beta,se,l_mle,l_lrt,-logP
+10,125580028,rsm10000007478,0.655,0.014,0.0134,100000.0,0.0005,3.34
+```
+
+That is great, but now we need to put the data in a place that we can analyse it - and the difference with qtlreaper. We can do a one-off using some tabular format. But that would mean we would have to redo things later to get it in SQL and/or present it some other way. So, basically, we need a flexible storage format that allows us to query things -- without predicting how people want to use that data and -- importantly -- have machines do it. Here comes RDF as the solution. As Mark Wilkinson has it: in my lab we only do RDF. No hacks (please).
+
+So, let's adapt the output of view-gemma-mdb and convert that to RDF. Bonz has done many such exercises in
+
+=> https://git.genenetwork.org/gn-transform-databases/tree/
+
+e.g. for the earlier phenotypes RDF+SPARQL we used to get the reaper values
+
+=> https://git.genenetwork.org/gn-transform-databases/tree/examples/phenotype.scm
+
+In this code SQL queries are embedded. I would argue these need to be replaced with REST API calls. But hey.
+
+First step is to include the ID with ./bin/view-gemma-mdb and some other metadata as fields, that we so thoughtfully included in the mdb metadata. This results in:
+
+```
+Reading /tmp/tmphvi6grqm/2b8e7c7cfe98f7e44bb2f07f057cc1adedf29c38-gemma-GWA.mdb...
+name,id,chr,pos,marker,af,beta,se,l_mle,l_lrt,-logP
+BXDPublish,22200,1,4858261,rsm10000000111,0.5,0.0246,0.0537,100000.0,0.0192,1.72
+BXDPublish,22200,1,182581091,rsm10000000451,0.548,-0.009,0.0537,100000.0,0.139,0.86
+BXDPublish,22200,1,182635325,rsm10000000452,0.548,-0.009,0.0537,100000.0,0.139,0.86
+```
+
+Now remember the HK reaper data is already in RDF. If we push this data in we should be able to query the combined datasets. Let's convert this to RDF that looks like:
+
+```
+gn:GEMMAMappedLOCO_22200 a gnt:mappedTrait;
+                         label "GEMMA trait 22200 mapped with LOCO (defaults)";
+                         gnt:LOCO true;
+                         gnt:belongsToGroup gn:setBxd;
+                         gnt:traitId "22200";
+                         skos:altLabel "BXD_22200";
+                         gnt:locus gn:rsm10000000111;
+                         gnt:lodScore 1.72;
+                         gnt:af 0.5;
+                         gnt:effect 0.0246;
+```
+
+If the marker is not yet defined we can add:
+
+```
+gn:rsm10000000111        a gnt:marker;
+                         label "rsm10000000111I";
+                         gnt:chr  "1";
+                         gnt:mb   4.858261;
+                         gnt:pos  4858261.
+```
+
+This means we can pivot on the trait id between reaper and gemma results. It will also be easy to store multiple
+GEMMA hits.
+I note that GEMMA does not store the mean
+value. We can fetch that from trait values.
+
+Rob wrote:
+
+> We will want to harvest the sample size for each trait. That will be a critical parameter for filtering. Knowing the skew and kurtosis also highly valuable in filtering and diagnostics. Many users forget to log their data and this introduces serious problems since you have a tail of outliers. Obviously a dumb mistake to have traits with all values of 1. Perhaps you can assign the task of fixing/deleting that traits to Arthur and me. Just send a list.
+
+I'll make a list to send to Arthur and you - it is on my tasks. With regard to trait info we should compute that as metadata when doing the precompute (as we have the trait values at that point!). I have added that to the task list.
+
+=> https://issues.genenetwork.org/topics/systems/mariadb/precompute-publishdata
+
+We'll do a rerun with this data soon, as it only took a day.
+
+Alright, I am keen to move forward on our precompute, because this is the fun phase. Getting the metadata in place should be easy, now we are on RDF. First we are going to simply mirror PublishXRef information for HK reaper and GEMMA runs. Reaper is already in RDF (mostly), so let's add some functionality to gemma-wrapper.
+
+The viewer for 1e59d19a679359516ecd97cf20375c80e987ee3e-BXDPublish-22282-gemma-GWA.tar.xz  gives
+
+```
+name,id,chr,pos,marker,af,beta,se,l_mle,l_lrt,-logP
+BXDPublish,22282,5,110385941,rs29780222,0.484,-0.0802,0.0356,2.0341,0.0,4.51
+BXDPublish,22282,5,110421808,rsm10000002804,0.484,-0.0802,0.0356,2.0341,0.0,4.51
+BXDPublish,22282,5,110479038,rsm10000002805,0.484,-0.0802,0.0356,2.0341,0.0,4.51
+BXDPublish,22282,5,110515858,rs33083878,0.484,-0.0802,0.0356,2.0341,0.0,4.51
+```
+
+Note that the sorting is arbitrary because -logP is identical! My take is that we should include all hits (read SNP names) for comparison with HK reaper. We will be able to parse range locations - so we can check 50K base pairs up and downstream too.
+
+Looking at SNPs we should look at using existing URIs instead of inventing new ones. I'll make a note of that too (to move forward). Looking at the first hit rs29780222 some googling finds https://www.informatics.jax.org/marker/MGI:1925270. I need to check with the GN database what is known there. Adding a BED file to RDF makes sense. Yet another task to add.
+
+OK, back to focussing on generating RDF with what we have now. A first attempt is
+
+```
+gn:GEMMAMapped_LOCO_e987ee3e_BXDPublish_22282_gemma_GWA a gnt:mappedTrait;
+      rdfs:label "GEMMA BXDPublish trait 22282 mapped with LOCO (defaults)";
+      gnt:trait gn:publishXRef_22282;
+      gnt:loco true;
+      gnt:time "2025/08/11 10:15";
+      gnt:belongsToGroup gn:setBxd;
+      gnt:name "BXDPublish";
+      gnt:traitId "22282";
+      skos:altLabel "BXD_22282";
+      gnt:locus gn:rs29780222;
+      gnt:lodScore 4.51;
+      gnt:af 0.484;
+      gnt:effect -0.08;
+```
+
+which looks nice already. We want to support more SNPs, however, so we split those up and now this dataset shows 84 snps at a cut off of logP of 4.0. We'll improve on that later (and will us precompute to estimate levels for the BXD). We always show the single highest score, no matter what. The cool thing is that we have *all* peaks now in RDF and we can query that:
+
+```
+gn:GEMMAMapped_LOCO_BXDPublish_22282_gemma_GWA_e987ee3e a gnt:mappedTrait;
+      rdfs:label "GEMMA BXDPublish trait 22282 mapped with LOCO (defaults)";
+      gnt:trait gn:publishXRef_22282;
+      gnt:loco true;
+      gnt:time "2025/08/11 10:15";
+      gnt:belongsToGroup gn:setBxd;
+      gnt:name "BXDPublish";
+      gnt:traitId "22282";
+      skos:altLabel "BXD_22282".
+gn:rs29780222_BXDPublish_22282_gemma_GWA_e987ee3e a gnt:mappedLocus;
+      gnt:mappedSnp gn:GEMMAMapped_LOCO_BXDPublish_22282_gemma_GWA_e987ee3e;
+      gnt:locus gn:rs29780222;
+      gnt:lodScore 4.51;
+      gnt:af 0.484;
+      gnt:effect -0.08.
+gn:rsm10000002804_BXDPublish_22282_gemma_GWA_e987ee3e a gnt:mappedLocus;
+      gnt:mappedSnp gn:GEMMAMapped_LOCO_BXDPublish_22282_gemma_GWA_e987ee3e;
+      gnt:locus gn:rsm10000002804;
+      gnt:lodScore 4.51;
+      gnt:af 0.484;
+      gnt:effect -0.08.
+(...)
+gn:rs33400361_BXDPublish_22282_gemma_GWA_e987ee3e a gnt:mappedLocus;
+      gnt:mappedSnp gn:GEMMAMapped_LOCO_BXDPublish_22282_gemma_GWA_e987ee3e;
+      gnt:locus gn:rs33400361;
+      gnt:lodScore 4.07;
+      gnt:af 0.452;
+      gnt:effect -0.078.
+gn:rsm10000002851_BXDPublish_22282_gemma_GWA_e987ee3e a gnt:mappedLocus;
+      gnt:mappedSnp gn:GEMMAMapped_LOCO_BXDPublish_22282_gemma_GWA_e987ee3e;
+      gnt:locus gn:rsm10000002851;
+      gnt:lodScore 4.07;
+      gnt:af 0.452;
+      gnt:effect -0.078.
+```
+
+Next step is to use rapper to see if this is valid RDF.
+
+```
+rapper --input turtle test.ttl
+```
+
+For this one trait: rapper: Parsing returned 513 triples. It may look like a lot of data, but RDF stores are pretty good at creating small enough representations. All identifiers are stored once as a string and referenced by 64-bit pointers.
+
+For the locus I notice Bonz capitalized the SNP identifiers. We don't want that. But I'll stick it in for now. The code is here:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/gemma-mdb-to-rdf.rb
+
+Basically we run
+
+```
+rm test.rdf
+for x in tmp/*.xz ; do
+    env GEM_PATH=tmp/ruby GEM_HOME=tmp/ruby ./bin/gemma-mdb-to-rdf.rb $x --anno BXD.8_snps.txt --sort >> test.rdf
+done
+```
+
+for the 98% BXD PublishData that rendered 1512885 triples. It needs some minor fixes, such as a Lod of infinite and the use of ? for an unknown locus.
+
+To load the file on production:
+
+```
+guix shell -C -N virtuoso-ose -- isql
+# or
+/gnu/store/9d81kdw2frn6b3fwqphsmkssc9zblir1-virtuoso-ose-7.2.11/bin/isql -u dba -P "*" -S 8981
+OpenLink Virtuoso Interactive SQL (Virtuoso)
+Version 07.20.3238 as of Jan  1 1970
+Type HELP; for help and EXIT; to exit.
+Connected to OpenLink Virtuoso
+Driver: 07.20.3238 OpenLink Virtuoso ODBC Driver
+ld_dir("/home/wrk/","test.ttl","http://pjotr.genenetwork.org")
+SQL> rdf_loader_run();
+Done. -- 13 msec.
+SQL> checkpoint;
+Done. -- 243 msec.
+SQL>
+```
+
+But it don't show. Same for:
+
+```
+root@tux04:/export/guix-containers/genenetwork/data/virtuoso/ttl# curl --digest -v --user 'dba:*' --url "http://localhost:8982/sparql-graph-crud-auth?graph=http://pjotr.genenetwork.org" -T test.ttl
+```
+
+
+I tried to upload to production, but this crashed the virtuoso server :/.
+So I built a new virtuoso instance using gn-machines:
+
+=> https://git.genenetwork.org/gn-machines/commit/?id=90fa4fdacffe26c57649cb0515d0679ca19c27cc
+
+Now we can run isql locally as
+
+```
+guix shell -C -N --expose=/export/guix-containers/virtuoso/data/virtuoso/ttl/=/export/data/virtuoso/ttl virtuoso-ose -- isql -S 8891
+
+SQL> ld_dir('/export/data/virtuoso/ttl','test.n3','http://pjotr.genenetwork.org');
+Done. -- 3 msec.
+# for testing the validity and optional delete problematic ones:
+SQL> SELECT * FROM DB.DBA.load_list;
+SQL> DELETE from DB.DBA.LOAD_LIST where ll_error IS NOT NULL ;
+# commit changes
+SQL> rdf_loader_run ();
+SQL> checkpoint;
+Done. -- 16 msec.
+SQL> SPARQL SELECT count(*) FROM <http://pjotr.genenetwork.org> WHERE { ?s ?p ?o };
+15
+```
+
+If an error exists all uploads will be blocked unless DB.DBA.LOAD_LIST is emptied (DELETE).
+An error may look like:
+
+```
+ERROR  : Character data are not allowed here by XML structure rules
+at line 2 column 3 of source text
+@prefix dct: <http://purl.org/dc/terms/> .
+```
+
+I don't know why, but only n3 triples appeared to work. The full manual is here:
+
+=> https://vos.openlinksw.com/owiki/wiki/VOS/VirtBulkRDFLoader Virtuoso bulk uploader
+
+## Fixing hanging virtuoso on production
+
+Going back to production I cleaned up the DB.DBA.LOAD_LIST as described above. Running isql can be done outside the container:
+
+```
+guix shell virtuoso-ose -- isql 8981
+SQL> DELETE from DB.DBA.LOAD_LIST;
+SQL> checkpoint;
+```
+
+SPARQL queries inside isql are fast:
+
+```
+SQL> SPARQL SELECT count(*) FROM <http://pjotr.genenetwork.org> WHERE { ?s ?p ?o };
+1206882
+SQL> SPARQL SELECT count(*) FROM <http://genenetwork.org> WHERE { ?s ?p ?o };
+46982542
+```
+
+The web socket is not connected. This does not respond:
+
+```
+curl http://localhost:8982/sparql/
+```
+
+herd stop/start virtuoso made no difference. Nor did nginx or nscd. Hmm. Restarting the full container it starts up at
+
+```
+root@tux04:/export/guix-containers/genenetwork/var/log# tail virtuoso.log
+  2025-08-17 07:47:07 07:47:07 HTTP server online at localhost:9893
+  2025-08-17 07:47:07 07:47:07 Server online at localhost:9892 (pid 43)
+curl localhost:9893/sparql
+```
+
+Aha, the domain is pointing to the wrong virtuoso server... I modified nginx on tux04 and, at least, we have SPARQL running on http. For https nginx is pointing to https://127.0.0.1:8993. Hmmm. That is not the same as what the logs tell me. Looks like there is still some problem with the production container. Well, we can solve that later.
+
+I'll first run virtuoso on a server. Starting from a guix from half a year ago:
+
+```
+. /usr/local/guix-profiles/guix-pull-3-link/etc/profile
+cd ~/gn-machines
+./virtuoso-deploy.sh
+curl localhost:8892/sparql/
+```
+
+Configure nginx to listen
+
+```
+server {
+  server_name sparql-test.genenetwork.org;
+  listen 80;
+  access_log /var/log/nginx/sparql-test-access.log;
+  error_log /var/log/nginx/sparql-test-error.log;
+  location / {
+    proxy_pass http://localhost:8892;
+    proxy_set_header Host $host;
+  }
+}
+```
+
+Added DNS-entry and we should be able to see
+
+=> http://sparql-test.genenetwork.org/sparql/
+
+Now I need to load the important data into this SPARQL server. On tux02 I find a recent set:
+
+```
+     4096 Dec  5  2024 wip
+   260886 Jul 21 19:57 schema.ttl
+443454617 Jul 21 19:57 generif-old.ttl
+    44902 Jul 21 19:57 classification.ttl
+339900838 Jul 21 19:58 genelist.ttl
+ 42509383 Jul 21 19:58 genbank.ttl
+152936953 Jul 21 19:58 genotype.ttl
+  1460511 Jul 21 19:58 dataset-metadata.ttl
+700627810 Jul 21 19:58 generif.ttl
+ 10491221 Jul 21 19:58 strains.ttl
+     1388 Jul 21 19:58 species.ttl
+ 23495986 Jul 21 19:58 publication.ttl
+    16879 Jul 21 19:58 tissue.ttl
+ 18537935 Jul 21 19:58 phenotype.ttl
+root@tux02:/export/data/genenetwork-virtuoso# du -sh .
+1.7G    .
+```
+
+Which is about 2Gb uncompressed. Not bad. To load the ttl files I have to move them into
+/export/guix-containers/virtuoso/data/virtuoso/ttl.
+
+```
+guix shell virtuoso-ose -- isql 8891 exec="ld_dir('/export/data/virtuoso/ttl','*.ttl','http://genenetwork.org');"
+guix shell virtuoso-ose -- isql 8891 exec="rdf_loader_run();"
+```
+
+That takes a few minutes for 29746544 triples. Not bad at all!
+
+```
+guix shell virtuoso-ose -- isql 8891 exec="SELECT * FROM DB.DBA.load_list;"
+guix shell virtuoso-ose -- isql 8891 exec="checkpoint;"
+```
+
+Let's list all the tissues we have with
+
+```
+SELECT * WHERE {
+  ?s rdf:type gnc:tissue .
+  ?s rdfs:label ?o .
+}
+"http://genenetwork.org/id/tissueA1c" "Primary Auditory (A1) Cortex mRNA"
+"http://genenetwork.org/id/tissueAcc" "Anterior Cingulate Cortex mRNA"
+"http://genenetwork.org/id/tissueAdr" "Adrenal Gland mRNA"
+"http://genenetwork.org/id/tissueAmg" "Amygdala mRNA"
+"http://genenetwork.org/id/tissueBebv"  "Lymphoblast B-cell mRNA"
+"http://genenetwork.org/id/tissueBla" "Bladder mRNA"
+(...)
+```
+
+=> http://sparql-test.genenetwork.org/sparql/?default-graph-uri=&query=PREFIX+dct%3A+%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3E%0D%0APREFIX+gn%3A+%3Chttp%3A%2F%2Fgenenetwork.org%2Fid%2F%3E%0D%0APREFIX+owl%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2002%2F07%2Fowl%23%3E%0D%0APREFIX+gnc%3A+%3Chttp%3A%2F%2Fgenenetwork.org%2Fcategory%2F%3E%0D%0APREFIX+gnt%3A+%3Chttp%3A%2F%2Fgenenetwork.org%2Fterm%2F%3E%0D%0APREFIX+sdmx-measure%3A+%3Chttp%3A%2F%2Fpurl.org%2Flinked-data%2Fsdmx%2F2009%2Fmeasure%23%3E%0D%0APREFIX+skos%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23%3E%0D%0APREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E%0D%0APREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E%0D%0APREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E%0D%0APREFIX+qb%3A+%3Chttp%3A%2F%2Fpurl.org%2Flinked-data%2Fcube%23%3E%0D%0APREFIX+xkos%3A+%3Chttp%3A%2F%2Frdf-vocabulary.ddialliance.org%2Fxkos%23%3E%0D%0APREFIX+pubmed%3A+%3Chttp%3A%2F%2Frdf.ncbi.nlm.nih.gov%2Fpubmed%2F%3E%0D%0A%0D%0ASELECT+*+WHERE+%7B%0D%0A%3Fs+rdf%3Atype+gnc%3Atissue+.%0D%0A%3Fs+rdfs%3Alabel+%3Fo+.%0D%0A%7D%0D%0A&format=text%2Fhtml&timeout=0&signal_void=on Try it!
+
+## Getting to our first PublishData queries
+
+Next we need to upload our fresh PublishData RDF. We generated that with:
+
+```
+rm test.rdf ; for x in tmp/*.xz ; do ./bin/gemma-mdb-to-rdf.rb $x --anno BXD.8_snps.txt --sort >> test.ttl; done
+```
+
+Takes 10 minutes. rapper still returns an error for 'gnt:lodScore Infinity;'. I'll fix that down the line.
+
+Put test.ttl in /export/guix-containers/virtuoso/data/virtuoso/ttl and use the isql commands to update virtuoso. I use a separate graph named 'http://pjotr.genenetwork.org' so we can easily delete the triples.
+
+```
+guix shell virtuoso-ose -- isql 8891 exec="ld_dir('/export/data/virtuoso/ttl','test.ttl','http://pjotr.genenetwork.org'); rdf_loader_run();"
+```
+
+OK, we have the data together. Time for our first queries. Interesting questions are:
+
+* How many hits do we have for qtlreaper and how many for gemma in total
+* How many hits do we have for qtlreaper and how many for gemma that have a hit of 4.0 or higher
+* How many of these hits for qtlreaper differ from those of gemma
+* What datasets have been mapped in qtlreaper, but not in gemma
+
+### How many hits do we have for qtlreaper and how many for gemma in total
+
+Remember we had this query for reaper:
+
+```
+SELECT * WHERE {
+    ?s gnt:belongsToGroup gn:setBxd;
+         gnt:traitId ?id;
+         gnt:locus ?locus;
+         gnt:lodScore ?lrs;
+         dct:description ?descr.
+} limit 5
+"http://genenetwork.org/id/traitBxd_10001","10001","http://genenetwork.org/id/Rs48756159",2.93169,"Central nervous system, morphology: Cerebellum weight, whole, bilateral in adults of both sexes [mg]"
+"http://genenetwork.org/id/traitBxd_10002","10002","http://genenetwork.org/id/Rsm10000005699",4.77938,"Central nervous system, morphology: Cerebellum weight after adjustment for covariance with brain size [mg]"
+"http://genenetwork.org/id/traitBxd_10003","10003","http://genenetwork.org/id/Rsm10000013713",3.38682,"Central nervous system, morphology: Brain weight, male and female adult average, unadjusted for body weight, age, sex [mg]"
+"http://genenetwork.org/id/traitBxd_10004","10004","http://genenetwork.org/id/Rs48756159",2.56076,"Central nervous system, morphology: Cerebellum volume [mm3]"
+"http://genenetwork.org/id/traitBxd_10005","10005","http://genenetwork.org/id/Rsm10000005699",5.02907,"Central nervous system, morphology: Cerebellum volume, adjusted for covariance with brain size [mm3]"
+```
+
+we can run a similar query for GEMMA results with trait id "10001" and locus names.
+
+```
+SELECT * WHERE {
+    ?s gnt:mappedSnp ?id;
+         gnt:locus ?locus;
+         gnt:lodScore ?lrs.
+    filter(?lrs > 4.0).
+} limit 5
+```
+
+to find distinct datasets for GEMMA:
+
+```
+SELECT count(*) WHERE {
+  ?id gnt:name "BXDPublish" .
+} limit 5
+```
+
+To count the total number of hits we have 13576 reaper hits and 231911 GEMMA hits. For GEMMA we have 13491 uniquely mapped datasets.
+
+### Count hits that are significant
+
+For GEMMA 223232 hits are 4.0 or higher. For Reaper we count 1098. Almost all reaper values are between 2.0 and 4.0. When we count GEMMA below 4.0 we get 8679 datasets - and that makes sense because for gemmma we list all SNPs that are over 4.0 and only the datasets that are below we list the highest SNP. In both cases the majority of traits are below our threshold.
+
+### Start looking at the difference
+
+For every reaper SNP 'locus' we want to find that GEMMA sets that contain that particular SNP. In other words, those are the hits that GEMMA found that compare with qtlreaper. We pivot on SNP ?locus and ?traitid.
+
+```
+SELECT count(*) WHERE {
+    ?reaper gnt:belongsToGroup gn:setBxd;
+         gnt:traitId ?traitid;
+         gnt:locus ?locus;
+         gnt:lodScore ?lrs .
+    ?gemma gnt:mappedSnp ?id2;
+         gnt:locus ?locus;
+         gnt:lodScore ?lrs2.
+    ?id2 gnt:name "BXDPublish" ;
+        gnt:traitId ?traitid.
+    filter(?lrs2 >= 4.0).
+} limit 5
+```
+
+Now find 4222 overlapping traits! Whereof 2924 have a gemma lod score >= 4.0. And reaper 892 > 4.0 (out of 1098). That implies that some 200 significant scores find (completely) different SNPs for GEMMA.
+
+The next step is to list these differences. That is a reverse query. In plain English it should be something like:
+
+> List all sets where reaper has a SNP (r_snp) that does not appear in its GEMMA computation (g_snps).
+
+This is rather hard to do in SPARQL. We can make a list, however, of the overlapping traits with a lod score>4.0 with
+
+```
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX gn: <http://genenetwork.org/id/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX gnc: <http://genenetwork.org/category/>
+PREFIX gnt: <http://genenetwork.org/term/>
+PREFIX sdmx-measure: <http://purl.org/linked-data/sdmx/2009/measure#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX qb: <http://purl.org/linked-data/cube#>
+PREFIX xkos: <http://rdf-vocabulary.ddialliance.org/xkos#>
+PREFIX pubmed: <http://rdf.ncbi.nlm.nih.gov/pubmed/>
+
+SELECT ?traitid WHERE {
+   # --- get the reaper SNPs
+    ?r_trait gnt:belongsToGroup gn:setBxd;
+         gnt:traitId ?traitid;
+         gnt:locus ?snp.
+    # --- get gemma trait that matches reaper traitid (pivot on traitid)
+    ?g_trait gnt:name "BXDPublish" ;
+        gnt:traitId ?traitid.
+    # --- g_snp is the SNP scored within a gemma trait run
+    ?g_snp gnt:mappedSnp ?g_trait;
+         gnt:locus ?snp;
+         gnt:lodScore ?g_lrs.
+    filter(?g_lrs >= 4.0).
+} limit 5
+```
+
+Resulting in 2925 overlapping results. For example, it lists trait
+
+=> https://genenetwork.org/show_trait?trait_id=12014&dataset=BXDPublish
+
+where both reaper and gemma show a top hit for rs13478947.
+
+
+SELECT count(distinct ?traitid) WHERE {
+   # --- get the reaper SNPs
+    ?r_trait gnt:belongsToGroup gn:setBxd;
+         gnt:traitId ?traitid;
+         gnt:locus ?snp.
+    # --- get gemma trait that matches reaper traitid (pivot on traitid)
+    ?g_trait gnt:name "BXDPublish" ;
+        gnt:traitId ?traitid.
+    # --- g_snp is the SNP scored within a gemma trait run
+    ?g_snp gnt:mappedSnp ?g_trait;
+         gnt:lodScore ?g_lrs.
+    MINUS { ?g_snp gnt:locus ?snp . }
+    filter(?g_lrs >= 4.0).
+}
+
+
+
+Now we can make a second list for all gemma results where g_lrs > 4.0. The difference is our set.
+
+```
+SELECT DISTINCT ?traitid WHERE {
+    # --- get gemma trait that matches reaper traitid (pivot on traitid)
+    ?g_trait gnt:name "BXDPublish" ;
+        gnt:traitId ?traitid.
+    # --- g_snp is the SNP scored within a gemma trait run
+    ?g_snp gnt:mappedSnp ?g_trait;
+         gnt:locus ?snp;
+         gnt:lodScore ?g_lrs.
+    filter(?g_lrs >= 4.0).
+}
+```
+
+One example is trait 23777 where reaper has rsm10000008413 and gemma ranks SNPs, and rsm10000008413 with LRS 3.44 is below the threshold. That makes not such a strong case because both results are on Chr11 and not to far from each other (58 vs 73 Mb). Still, it may be a difference of interest. GEMMA's main hit rs13480386 is also ranked by reaper (in GN2).
+I think we need to refine our method. Peaks on Chr9 and 15 are also of interest.
+
+See
+
+=> https://genenetwork.org/show_trait?trait_id=23777&dataset=BXDPublish
+
+Another trait 14905 shows a whopper on Chr4 with gemma and and one on Chr8 with reaper.
+This is rather a good example. To improve the power of our search I think I should extend the GEMMA results with all hits above 3.0. That greatly increase the chance that a reaper marker is seen. To do an even better job we should run reaper precompute and also store the highest ranked markers (rather than one single hit). That way we get a true picture of the overlap and differences. While we are at it, we should store the trait values with the sample size etc.
+
+But first let's try finding those that differ on chromosome hits:
+
+Hmmm. the folloinwg not working quite right because it shows all the differences with 200K results. I tried
+
+```
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX gn: <http://genenetwork.org/id/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX gnc: <http://genenetwork.org/category/>
+PREFIX gnt: <http://genenetwork.org/term/>
+PREFIX sdmx-measure: <http://purl.org/linked-data/sdmx/2009/measure#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX qb: <http://purl.org/linked-data/cube#>
+PREFIX xkos: <http://rdf-vocabulary.ddialliance.org/xkos#>
+PREFIX pubmed: <http://rdf.ncbi.nlm.nih.gov/pubmed/>
+
+SELECT DISTINCT ?traitid ?chr1 ?chr2 ?url ?descr WHERE {
+   # --- get the reaper SNPs
+    ?r_trait gnt:belongsToGroup gn:setBxd;
+         gnt:traitId ?traitid;
+         gnt:locus ?snp ;
+         dct:description ?descr.
+    # --- get gemma trait that matches reaper traitid (pivot on traitid)
+    ?g_trait gnt:name "BXDPublish" ;
+        gnt:traitId ?traitid.
+    # --- g_snp is the SNP scored within a gemma trait run
+    ?g_snp gnt:mappedSnp ?g_trait;
+         gnt:lodScore ?g_lrs ;
+         gnt:locus ?snp2 .
+    # --- get Chr positions of both snps
+    ?snp gnt:chr ?chr1 .
+    ?snp2 gnt:chr ?chr2 .
+    MINUS { ?g_snp gnt:locus ?snp . }
+    filter(?g_lrs >= 4.0).
+    filter(?chr2 != ?chr1) .
+    BIND(REPLACE(?traitid, "(\\d+)","https://genenetwork.org/show_trait?trait_id=$1&dataset=BXDPublish") AS ?url)
+} LIMIT 15
+```
+
+What I am trying is set analysis and SPARQL is so powerful that you actually try, but it is far simpler to do in any programming language. I tooted about this rediscovery:
+
+=> https://genomic.social/@pjotrprins@mastodon.social/115059451578588805
+
+I created list for Rob using some simple shell commands, so he can see what the challenge is. I wrote
+
+> Attached a list of traits that show a reaper SNP that is not significant (LOD 4.0) for GEMMA and still show a significant hit for GEMMA. You can test run them on GN2 and see that the story is ambiguous. To do a proper job we should store more hits for GEMMA (say from LOD 3.0) and do a precompute exercise with reaper storing all top hits. That way we can probably do better and even get a list for Claude.
+
+One example is trait 23777 where reaper has rsm10000008413 and gemma ranks SNPs, and rsm10000008413 with LRS 3.44 is be low the threshold. That makes not such a strong case because both results are on Chr11 and not to far from each other (58 vs 73 Mb). Still, it may be a difference of interest. GEMMA's main hit rs13480386 is also ranked by reaper (in GN2). I think we need to refine our method. Peaks on Chr9 and 15 are also of interest.
+
+See
+
+=> https://genenetwork.org/show_trait?trait_id=23777&dataset=BXDPublish
+
+Another trait 14905 shows a whopper on Chr4 with gemma and and one on Chr8 with reaper. This is rather a good example. To improve the power of our search I think I should extend the GEMMA results with all hi ts above 3.0. That greatly increase the chance that a reaper marker is seen. To do an even better job we should run rea per precompute and also store the highest ranked markers (rather than one single hit). That way we get a true picture o f the overlap and differences. While we are at it, we should store the trait values with the sample size etc.
+
+So, rerunning GEMMA and reaper are on the books. While we are at it we can adapt reruns for
+
+* qnormalized data*
+* auto winsorizing
+* sex covariate
+* run gemma without LOCO
+* cis covariate, using the current hit and recompute with that as a covariate*
+* epistatic covariates
+
+and that should all be reasonably easy for the 13K traits.
+
+## More metadata
+
+But first we set up a new run with more metadata. In the lmdb files we should add the trait values, the mean, SE, skew, kurtosis, any DOIs.
+
+gemma-wrapper can take trait values as produced by our gn-guile endpoint (in .json). First step is to add thes values to the meta data. The existing permutate switch takes a pheno file and outputs that during a run. We can use that to pass in the pheno file.
+
+
+Now we should write out the gemma phenotypes to make sure they align. Now we essentially moved the functionality from gn-pheno-to-gemma.rb into gemma-wrapper, so we need to pass in the geno information too.
+
+The command becomes
+
+```
+./bin/gemma-wrapper --force --json --loco -- -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -n 2 -gk > K.json
+./bin/gemma-wrapper --json --lmdb --geno-json BXD.geno.json --lmdb --phenotypes 10002-pheno.json --population BXD --name BXDPublish --trait $id --loco --input K.json -- -g BXD.geno.txt -a BXD.8_snps.txt -lmm 9 -maf 0.1 -n 2 -debug > GWA.json
+```
+
+We now store the trait values into the metadata and they go into lmdb!
+
+```
+  "meta": {
+    "type": "gemma-wrapper",
+    "version": "1.00-pre1",
+    "population": "BXD",
+    "name": "BXDPublish",
+    "trait": "1",
+    "geno_filename": "BXD.geno.txt",
+    "geno_hash": "3b65ed252fa47270a3ea867409b0bdc5700ad6f6",
+    "loco": true,
+    "url": "https://genenetwork.org/show_trait?trait_id=1&dataset=BXDPublish",
+    "archive_GRM": "185eb08dc3897c7db5d7ea987170898035768f93-gemma-cXX.tar.xz",
+    "archive_GWA": "c143bc7928408fdc53affed0dacdd98d7c00f36d-BXDPublish-1-gemma-GWA.tar.xz",
+    "trait_values": {
+      "BXD1": 54.099998,
+      "BXD2": 50.099998,
+      "BXD5": 53.299999,
+...
+```
+
+Commit is here:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/commit/9ad5f762823031da08fc51c2a6adae983e6e8314
+
+Now gemma2lmdb is actually written in python, so we can make use of scipy functions using the trait values.
+
+So, for example, we can compute:
+
+```
+mean= 52.22058749999999  std= 2.968538937833582  kurtosis= 0.03143766680654192  skew= -0.1315270039489698
+for
+[54.099998, 50.099998, 53.299999, 55.099998, 57.299999, 51.200001, 53.599998, 46.799999, 50.599998, 49.299999, 45.700001, 52.5, 52.0, 51.099998, 52.400002, 49.0, 51.599998, 50.700001, 55.5, 52.599998, 53.099998, 53.5, 53.200001, 58.700001, 50.799999, 53.299999, 51.900002, 54.099998, 52.299999, 46.099998, 51.799999, 57.0, 48.599998, 56.599998]
+```
+
+Using
+
+=> https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.skew.html
+=> https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kurtosis.html
+
+Code in gemma-wrapper repo.
+
+I'll set up a new run and export to RDF. Some additions first.
+
+Even though we store trait values, I should add the number of indiduals too. We store that as nind.
+
+Now we have these metrics, no metadata is complete without its publication. PublishXRef contains a PublicationID. It points into the Publication table that contains, for example:
+
+```
+| Id  | PubMed_ID | Abstract | Authors | Title | Journal | Volume | Pages | Month | Year |
+| 116 |  11438585 | To discover genes influencing cerebellum development, we conducted a complex trait analysis of variation in the size of the adult mouse cerebellum. We analyzed two sets of recombinant inbred BXD strains and an F2 intercross of the common inbred strains, C57BL/6J and DBA/2J. We measured cerebellar size as the weight or volume of fixed or histologically processed tissue. Among BXD recombinant inbred strains, the cerebellum averages 52 mg (12.4% of the brain) and ranges 18 mg in size. In F2 mice, the cerebellum averages 62 mg (12.9% of the brain) and ranges approximately 20 mg in size. Five quantitative trait loci (QTLs) that significantly control variation in cerebellar size were mapped to chromosomes 1 (Cbs1a), 8 (Cbs8a), 14 (Cbs14a), and 19 (Cbs19a, Cbs19b). In combination, these QTLs can shift cerebellar size to an appreciable 35% of the observed range. To assess regional genetic control of the cerebellum, we also measured the volume of the cell-rich, internal granule layer (IGL) in a set of BXD strains. The IGL ranges from 34 to 43% of total cerebellar volume. The QTL Cbs8a is significantly linked to variation in IGL volume and is suggestively linked to variation in the number of cerebellar folia. The QTLs we have discovered are among the first loci shown to modulate the size and architecture of the adult mouse cerebellum. | Airey DC, Lu L, Williams RW | Genetic control of the mouse cerebellum: identification of quantitative trait loci modulating size and architecture | J Neuroscience | 21     | 5099-5109 | NULL  | 2001 |
+```
+
+That is a nice example.
+But we also find many publications without abstracts, e.g. | 7276 |     15792 | NULL | Williams EG, Andreux P, Houtkooper R, Auwerx J | Recombinant Inbred BXD Mice as a Model for the Metabolic Syndrome.
+
+In fact, 22K entries out of 29K miss the abstract. Also I can't find this last paper by Evan Williams. The closest is "Systems Genetics of Metabolism: The Use of the BXD Murine Reference Panel for Multiscalar Integration of Traits" which is probably worth reading.
+
+=> https://www.cell.com/cell/pdfExtended/S0092-8674(12)01007-0?__cf_chl_tk=kYZ49R4P29zOzYPeuWdrXVJC61HyhpHwFtq8lS2_rlk-1756022056-1.0.1.1-uY.PpAbgi8FO54P4_wYp_f6Nm84CdfHNQEI1WOmngFE
+
+I have no idea where the number 15792 comes from. It is not a pubmed ID. Some quick checks:
+
+```
+MariaDB [db_webqtl]> select count(*) from Publication WHERE Pubmed_ID>0 limit 3;
++----------+
+|      427 |
++----------+
+MariaDB [db_webqtl]> select count(*) from Publication WHERE Pubmed_ID>0 and Pubmed_ID<99999 limit 3;
++----------+
+|        2 |
++----------+
+MariaDB [db_webqtl]> select count(*) from Publication WHERE Pubmed_ID>0 and Pubmed_ID<999999 limit 3;
++----------+
+|       10 |
++----------+
+select count(*) from Publication WHERE NOT Abstract is NULL limit 3;
++----------+
+|     6750 |
++----------+
+```
+
+so, out of 29K entries, we have a very limited number of useful PMIDs, but we have some 6750 abstracts - mostly related to the BXD. Meanwhile some 16572 entries (about half) appear to have valid titles. Almost all records have authors, however.
+
+It really is a bit of a mess. What we need to do is harvest what we have and then collect pubmed ids for the missing BXD PublishData records and use that to fetch up-to-date abstracts and author lists. We can even adapt my Pubmed script that I use for bibtex. A search for just the combination of these authors
+
+```
+pubmed2bib.sh 'Williams EG, Andreux P, Houtkooper R, Auwerx J  [au]'
+```
+
+renders
+
+```
+@article{Andreux:2012,
+  keywords     = { },
+  pmid         = {22939713},
+  pmcid        = {3604687},
+  note         = {{PMC3604687}},
+  IDS          = {PMC3604687, PMID:22939713},
+  author       = {Andreux, P. A. and Williams, E. G. and Koutnikova, H. and Houtkooper, R. H. and Champy, M. F. and Henry, H. and Schoonjans, K. and Williams, R. W. and Auwerx, J.},
+  title        = {{Systems genetics of metabolism: the use of the BXD murine reference panel for multiscalar integration of traits}},
+  journal      = {Cell},
+  year         = {2012},
+  volume       = {150},
+  number       = {6},
+  pages        = {1287-1299},
+  doi          = {10.1016/j.cell.2012.08.012},
+  url          = {http://www.ncbi.nlm.nih.gov/pubmed/22939713},
+  abstract     = {Metabolic homeostasis is achieved by complex molecular and cellular networks that differ significantly among individuals and are difficult to model with genetically engineered lines of mice optimized to study single gene function. Here, we systematically acquired metabolic phenotypes by using the EUMODIC EMPReSS protocols across a large panel of isogenic but diverse strains of mice (BXD type) to study the genetic control of metabolism. We generated and analyzed 140 classical phenotypes and deposited these in an open-access web service for systems genetics (www.genenetwork.org). Heritability, influence of sex, and genetic modifiers of traits were examined singly and jointly by using quantitative-trait locus (QTL) and expression QTL-mapping methods. Traits and networks were linked to loci encompassing both known variants and novel candidate genes, including alkaline phosphatase (ALPL), here linked to hypophosphatasia. The assembled and curated phenotypes provide key resources and exemplars that can be used to dissect complex metabolic traits and disorders.},
+}
+```
+
+So, yes, it is the likely candidate. We can use this information to suggest updates. It just proves again how useful manual curation is.
+
+Note that this information is collected at the experimental level (rather than the trait level), so it really does not belong in the GEMMA lmdb data. Every trait has an entry in PublishXRef that points back to the Publication ID. So we can take it later (and fix it!).
+
+# Rerun GEMMA precompute
+
+Let's set up a full rerun for the 13K BXD PublishData entries with this new information. That should allow us to see how skew and kurtosis and experimental size affect the outcome. Remember we have the batch run script:
+
+```
+#! /bin/env sh
+
+export TMPDIR=./tmp
+curl http://127.0.0.1:8092/dataset/bxd-publish/list > bxd-publish.json
+jq ".[] | .Id" < bxd-publish.json > ids.txt
+./bin/gemma-wrapper --force --json --loco -- -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -n 2 -gk > K.json
+
+for id in 'cat ids.txt' ; do
+  echo Precomputing $id
+  if [ ! -e tmp/*-BXDPublish-$id-gemma-GWA.tar.xz ] ; then
+    curl http://127.0.0.1:8092/dataset/bxd-publish/values/$id.json > pheno.json
+    ./bin/gn-pheno-to-gemma.rb --phenotypes pheno.json --geno-json BXD.geno.json > BXD_pheno.txt
+    ./bin/gemma-wrapper --json --lmdb --population BXD --name BXDPublish --trait $id --loco --input K.json -- -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -lmm 9 -maf 0.1 -n 2 -debug > GWA.json
+  fi
+done
+```
+
+that can be simplified because gemma-wrapper now replaces gn-pheno-to-gemma.rb. First Guix had to install scipy which pulls in inkscape and Jupyter among other things. It is really too much! But at least Guix makes it easy to reproduce the environment I use on my desktop to the server. Now we get a beautiful record in every lmdb GEMMA run:
+
+```
+"archive_GWA": "c143bc7928408fdc53affed0dacdd98d7c00f36d-BXDPublish-10001-gemma-GWA.tar.xz", "trait_values": {"BXD
+1": 61.400002, "BXD2": 49.0, "BXD5": 62.5, "BXD6": 53.099998, "BXD8": 59.099998, "BXD9": 53.900002, "BXD11": 53.099998,
+ "BXD12": 45.900002, "BXD13": 48.400002, "BXD14": 49.400002, "BXD15": 47.400002, "BXD16": 56.299999, "BXD18": 53.599998
+, "BXD19": 50.099998, "BXD20": 48.200001, "BXD21": 50.599998, "BXD22": 53.799999, "BXD23": 48.599998, "BXD24": 54.90000
+2, "BXD25": 49.599998, "BXD27": 47.400002, "BXD28": 51.5, "BXD29": 50.200001, "BXD30": 53.599998, "BXD31": 49.700001, "
+BXD32": 56.0, "BXD33": 52.099998, "BXD34": 53.700001, "BXD35": 49.700001, "BXD36": 44.5, "BXD38": 51.099998, "BXD39": 5
+4.900002, "BXD40": 49.900002, "BXD42": 59.400002}, "table": "PublishData", "traitid": 10001, "dataid": 0}}, "nind": 34,
+ "mean": 52.1353, "std": 4.1758, "skew": 0.6619, "kurtosis": 0.0523,
+```
+
+and the job is running....
+
+Next stop is to rerun reaper and variations on gemma. Last night it halted at 9K. The webserver gave an SQL error and just stopped/waited. As it is not using threads it will block. It says: SQL Connection ERROR! file not found
+
+# HK
+
+We want to rerun reaper to get more top ranked hits (and peaks). Now I also realize GEMMA can also do LR and it would be interesting to see how that differs from reaper. The '-lm' switch says:
+
+```
+ -lm       [num]          specify analysis options (default 1).
+          options: 1: Wald test
+                   2: Likelihood ratio test
+                   3: Score test
+                   4: 1-3
+```
+
+the documentation points out that we don't need a GRM. Exactly. Now we could try and embed this in gemma-wrapper, but that is overkill. Part of the complexity of gemma-wrapper is related to handling the GRM with LOCO. Here we have a simple command that needs to be iterated. We don't need to record trait values, kurtosis etc. because that is already part of the previous exercise (and is constant). So the main complications are to create the trait vector, run gemma, and write an lmdb file. For now this will be a one-off, so we are not going to bother with caching and all that.
+
+```
+gemma -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -lm 2 -o trait-BXDPublish-$id-gemma-GWA-hk
+```
+
+This produces a file
+
+```
+chr rs  ps  n_mis n_obs allele1 allele0 af  p_lrt
+1 rsm10000000001  3001490 0 237 X Y 0.527 -nan
+1 rs31443144  3010274 0 237 X Y 0.525 -nan
+1 rs6269442 3492195 0 237 X Y 0.525 -nan
+1 rs32285189  3511204 0 237 X Y 0.525 -nan
+```
+
+Hmm. All p_lrt are NaN. Oh, I need to make sure the second column is used:
+
+```
+gemma -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -n 2 -lm 2 -o tmp/trait-BXDPublish-$id-gemma-GWA-hk
+chr rs  ps  n_mis n_obs allele1 allele0 af  p_lrt
+1 rsm10000000001  3001490 0 23  X Y 0.739 8.331149e-01
+1 rs31443144  3010274 0 23  X Y 0.739 8.331149e-01
+1 rs6269442 3492195 0 23  X Y 0.739 8.331149e-01
+1 rs32285189  3511204 0 23  X Y 0.739 8.331149e-01
+1 rs258367496 3659804 0 23  X Y 0.739 8.331149e-01
+```
+
+much better! Now we need to turn this into an lmdb file. We can adapt gemma2lmdb.py to do that. But I am not going to do that. The attraction of repurposing code is always there, but it will mean diluting the meaning of the code - basically ifthen blocks - and making the code less readable. This is one reason the Linux kernel does not share code between device drivers. Even for these simple tools I prefer to split out at the risk of not being DRY. I hope you can see what I mean with:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/gemma2lmdb.py
+
+which is now pretty straightforward for parsing LMM output of GEMMA into lmdb. We are going to do the same thing for a simpler output. But when writing it suddenly struck me we don't need lmdb here in the first place! lmdb is for the full vector output and there is no reason to retain it. All we want is the top hits. Great, that simplifies matters even more. Which btw points out how baffling it is to me that people think they can replace programmers with AI. Well, maybe for the obvious code... You just see how much code will be garbage.
+
+Now we have the same idea in gemma-mdb-to-rdf.rb - and for the same reason as before I am not going to adapt that code.
+
+Fun fact, HK returns the same hits for GEMMA and reaper versions. Good. the log10 of the GEMMA's p_LRT returns a value of 2.720446e-06 where -log10/LOD is 5.56 and the multiplier with 4.61 renders 25 where GN2 shows an LRS of 22. Oh well, we are not too concerned, as long as the ranking is correct.
+
+So for GN trait
+
+=> https://genenetwork.org/show_trait?trait_id=10002&dataset=BXDPublish
+
+we now get for GEMMA HK:
+
+```
+gn:HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt a gnt:mappedTrait;
+        rdfs:label "GEMMA_BXDPublish output/trait-BXDPublish-1-gemma-GWA-hk.assoc.txt trait HK mapped";
+        gnt:GEMMA_HK true;
+        gnt:belongsToGroup gn:setBxd;
+        gnt:trait gn:publishXRef_1;
+        gnt:time "2025-08-25 10:14:23 +0000";
+        gnt:belongsToGroup gn:setBxd;
+        gnt:name "BXDPublish";
+        gnt:traitId "1";
+        skos:altLabel "BXD_1".
+gn:rsm10000005699_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt a gnt:mappedLocus;
+       gnt:mappedSnp gn:rsm10000005699_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt ;
+       gnt:locus gn:Rsm10000005699 ;
+       gnt:lodScore 5.6 .
+gn:rs47899232_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt a gnt:mappedLocus;
+       gnt:mappedSnp gn:rs47899232_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt ;
+       gnt:locus gn:Rs47899232 ;
+       gnt:lodScore 5.6 .
+gn:rs3661882_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt a gnt:mappedLocus;
+       gnt:mappedSnp gn:rs3661882_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt ;
+       gnt:locus gn:Rs3661882 ;
+       gnt:lodScore 5.3 .
+gn:rs33490412_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt a gnt:mappedLocus;
+       gnt:mappedSnp gn:rs33490412_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt ;
+       gnt:locus gn:Rs33490412 ;
+       gnt:lodScore 5.3 .
+gn:rsm10000005703_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt a gnt:mappedLocus;
+       gnt:mappedSnp gn:rsm10000005703_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt ;
+       gnt:locus gn:Rsm10000005703 ;
+       gnt:lodScore 5.3 .
+(...)
+```
+
+Code is here:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/commit/a17901d927d21a1686c0ac0d1552695f0096b84b
+
+Generate RDF incl. skew, kurtosis etc
+
+```
+./bin/gemma-mdb-to-rdf.rb --header > test.ttl
+time for x in tmp/*.xz ; do
+    ./bin/gemma-mdb-to-rdf.rb $x --anno BXD.8_snps.txt --sort >> test.ttl
+done
+```
+
+Renders
+
+```
+gn:GEMMAMapped_LOCO_BXDPublish_10001_gemma_GWA_7c00f36d a gnt:mappedTrait;
+      rdfs:label "GEMMA BXDPublish trait 10001 mapped with LOCO (defaults)";
+      gnt:trait gn:publishXRef_10001;
+      gnt:loco true;
+      gnt:time "2025/08/24 08:22";
+      gnt:belongsToGroup gn:setBxd;
+      gnt:name "BXDPublish";
+      gnt:traitId "10001";
+      gnt:nind 34;
+      gnt:mean 52.1353;
+      gnt:std 4.1758;
+      gnt:skew 0.6619;
+      gnt:kurtosis 0.0523;
+      skos:altLabel "BXD_10001".
+gn:Rsm10000005700_BXDPublish_10001_gemma_GWA_7c00f36d a gnt:mappedLocus;
+      gnt:mappedSnp gn:GEMMAMapped_LOCO_BXDPublish_10001_gemma_GWA_7c00f36d;
+      gnt:locus gn:Rsm10000005700;
+      gnt:lodScore 6.2;
+      gnt:af 0.382;
+      gnt:effect 1.626.
+n:Rs32133186_BXDPublish_10001_gemma_GWA_7c00f36d a gnt:mappedLocus;
+      gnt:mappedSnp gn:GEMMAMapped_LOCO_BXDPublish_10001_gemma_GWA_7c00f36d;
+      gnt:locus gn:Rs32133186;
+      gnt:lodScore 6.2;
+      gnt:af 0.382;
+      gnt:effect 1.626.
+...
+```
+
+Funny thing is that the hash values are now all the same because gemma-wrapper no longer includes the trait values. That is a harmless bug that I'll fix for the next run.
+
+The GEMMA run ended up generating 1,576,110 triples. The gemma-mdb-to-rdf script took 42 minutes.
+
+After GEMMA LMM completed its run we set up the HK run which should reflect reaper.
+
+# On bimodality (of trait values)
+
+Kurtosis is not a great predictor of bimodality.
+
+=> https://aldenbradford.com/bimodality.html
+
+Rob says that for the BXD bimodality works best. Maybe annotate with
+
+=> https://skeptric.com/dip-statistic/
+
+We'll skip it for now - I added a task above.
+
+# Combine results
+
+First we upload the data into virtuoso after dropping the old graph. We can do again, now introducing new sub graphs
+
+```
+rapper -i turtle test.ttl > test.n3
+guix shell -C -N --expose=/export/guix-containers/virtuoso/data/virtuoso/ttl/=/export/data/virtuoso/ttl virtuoso-ose -- isql -S 8891
+SQL> log_enable(3,1);
+SQL> DELETE FROM rdf_quad WHERE g = iri_to_id ('http://pjotr.genenetwork.org');
+SQL> SPARQL SELECT count(*) FROM <http://pjotr.genenetwork.org> WHERE { ?s ?p ?o };
+  0
+SQL> ld_dir('/export/data/virtuoso/ttl','test.n3','http://lmm2.genenetwork.org');
+  Done. -- 3 msec.
+# for testing the validity and optional delete problematic ones:
+SQL> SELECT * FROM DB.DBA.load_list;
+SQL> DELETE from DB.DBA.LOAD_LIST where ll_error IS NOT NULL ;
+# commit changes
+SQL> rdf_loader_run ();
+SQL> checkpoint;
+Done. -- 16 msec.
+SQL> SPARQL SELECT count(*) FROM <http://pjotr.genenetwork.org> WHERE { ?s ?p ?o };
+  1576102
+```
+
+and after HK we are at 6838444 triples for this exercise. Note that you can clean up the load list with
+
+```
+DELETE from DB.DBA.LOAD_LIST;
+```
+
+
+Let's list all the tissues we have with
+
+```
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX gn: <http://genenetwork.org/id/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX gnc: <http://genenetwork.org/category/>
+PREFIX gnt: <http://genenetwork.org/term/>
+PREFIX sdmx-measure: <http://purl.org/linked-data/sdmx/2009/measure#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX qb: <http://purl.org/linked-data/cube#>
+PREFIX xkos: <http://rdf-vocabulary.ddialliance.org/xkos#>
+PREFIX pubmed: <http://rdf.ncbi.nlm.nih.gov/pubmed/>
+
+SELECT * WHERE { ?s rdf:type gnc:tissue . ?s rdfs:label ?o . }
+
+"http://genenetwork.org/id/tissueA1c" "Primary Auditory (A1) Cortex mRNA"
+"http://genenetwork.org/id/tissueAcc" "Anterior Cingulate Cortex mRNA"
+"http://genenetwork.org/id/tissueAdr" "Adrenal Gland mRNA"
+"http://genenetwork.org/id/tissueAmg" "Amygdala mRNA"
+"http://genenetwork.org/id/tissueBebv"  "Lymphoblast B-cell mRNA"
+"http://genenetwork.org/id/tissueBla" "Bladder mRNA"
+(...)
+```
+
+To other quick queries confirm that our data is loaded correctly. One quick test we would want to do is to see if all reaper hits overlap with GEMMA_HK. That would be a comfort.
+
+The reaper hits are found with
+
+```
+SELECT * WHERE {
+    ?s gnt:belongsToGroup gn:setBxd;
+         gnt:traitId ?id;
+         gnt:locus ?locus;
+         gnt:lodScore ?lrs;
+         dct:description ?descr.
+} limit 50
+```
+
+The HK hits are defined as
+
+```
+gn:HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt a gnt:mappedTrait;
+        rdfs:label "GEMMA_BXDPublish output/trait-BXDPublish-1-gemma-GWA-hk.assoc.txt trait HK mapped";
+        gnt:GEMMA_HK true;
+        gnt:belongsToGroup gn:setBxd;
+        gnt:trait gn:publishXRef_1;
+        gnt:time "2025-08-25 10:14:23 +0000";
+        gnt:belongsToGroup gn:setBxd;
+        gnt:name "BXDPublish";
+        gnt:traitId "1";
+        skos:altLabel "BXD_1".
+gn:rsm10000005699_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt a gnt:mappedLocus;
+       gnt:mappedSnp gn:rsm10000005699_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt ;
+       gnt:locus gn:Rsm10000005699 ;
+       gnt:lodScore 5.6 .
+gn:rs47899232_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt a gnt:mappedLocus;
+       gnt:mappedSnp gn:rs47899232_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt ;
+       gnt:locus gn:Rs47899232 ;
+       gnt:lodScore 5.6 .
+```
+
+So the hits can be listed as
+
+```
+SELECT count(*) WHERE {
+    ?reaper gnt:belongsToGroup gn:setBxd;
+         gnt:traitId ?traitid;
+         gnt:locus ?locus;
+         gnt:lodScore ?lrs .
+    ?gemma gnt:mappedSnp ?id2;
+         gnt:locus ?locus;
+         gnt:lodScore ?lrs2.
+    ?id2 gnt:name "BXDPublish" ;
+        gnt:GEMMA_HK true;
+        gnt:traitId ?traitid.
+} limit 5
+```
+
+Unfortunately I made a mistake mapping the SNPs. This should have linked back. So instead of:
+
+```
+gn:rsm10000005699_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt a gnt:mappedLocus;
+       gnt:mappedSnp gn:rsm10000005699_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt ;
+```
+
+I should have generated
+
+```
+gn:rsm10000005699_HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt a gnt:mappedLocus;
+       gnt:mappedSnp gn:HK_output_trait_BXDPublish_1_gemma_GWA_hk_assoc_txt ;
+
+```
+
+Doh! These SNPs are dangling now. Bit hard to see sometimes with these identifiers. OK, set up another rdf generation run.
+Now I see it show an error for a few traits, e.g.
+
+```
+./bin/gemma2rdf.rb:74:in `initialize': No such file or directory @ rb_sysopen - ./tmp/trait-BXDPublish-18078-gemma-GWA-hk.assoc.txt (Errno::ENOENT)
+```
+
+For later (again) as the majority is coming through.
+
+```
+SQL> ld_dir('/export/data/virtuoso/ttl','gemma-GWA-hk.ttl','http://hk.genenetwork.org');
+SQL> rdf_loader_run ();
+SQL> SPARQL SELECT count(*) FROM <http://hk.genenetwork.org> WHERE { ?s ?p ?o };
+  5262347
+```
+
+Try again
+
+```
+SELECT count(*) WHERE {
+    ?reaper gnt:belongsToGroup gn:setBxd;
+         gnt:traitId ?traitid;
+         gnt:locus ?locus;
+         gnt:lodScore ?lrs .
+    ?trait gnt:GEMMA_HK true;
+        gnt:traitId ?traitid.
+    # filter(?lrs2 >= 4.0).
+    ?snp gnt:mappedSnp ?trait ;
+        gnt:locus ?locus ;
+        gnt:lodScore ?lrs2 .
+}
+"traitid","locus","lrs","lrs2"
+"21188","http://genenetwork.org/id/Rs31400538",2.73982,3.42
+"21194","http://genenetwork.org/id/Rs29514307",3.94845,4.7
+"21199","http://genenetwork.org/id/Rs50530980",2.60066,3.27
+"21203","http://genenetwork.org/id/Rs13483656",2.57406,3.24
+"21205","http://genenetwork.org/id/Rsm10000000057",2.90985,3.6
+"21210","http://genenetwork.org/id/Rsm10000000182",2.67097,3.34
+"21217","http://genenetwork.org/id/Rs29525970",3.80402,4.54
+"21220","http://genenetwork.org/id/Rs46586055",2.50946,3.17
+"21221","http://genenetwork.org/id/Rs47967883",2.54473,3.21
+"21223","http://genenetwork.org/id/Rs29327089",3.94623,4.69
+"21230","http://genenetwork.org/id/Rs30026335",2.78151,3.46
+"21238","http://genenetwork.org/id/Rs32170136",2.83393,3.52
+"21267","http://genenetwork.org/id/Rsm10000000063",2.54818,3.21
+```
+
+counts 9261 overlapping SNPs. So, about 4000 traits are not mapping exactly. Also interesting is that GEMMA HK LRS/LOD is consistently higher than reaper.
+
+For the non-overlapping traits we find, for example 10023, has no significant HK hit. For GEMMA_HK it is simply ignored and for reaper Bonz included the lodScore of 1.77. If we count the significant hits for reaper LOD>3.0 we find 4541 hits. Out of these 4506 hits overlap with GEMMA_HK. That is perfect!
+
+```
+SELECT ?traitid WHERE {
+    ?reaper gnt:belongsToGroup gn:setBxd;
+         gnt:traitId ?traitid;
+         gnt:locus ?locus;
+         gnt:lodScore ?lrs .
+    ?trait gnt:GEMMA_HK true;
+        gnt:traitId ?traitid.
+    filter(?lrs >= 3.0).
+    ?snp gnt:mappedSnp ?trait ;
+        gnt:locus ?locus ;
+        gnt:lodScore ?lrs2 .
+}
+```
+
+Essentially every reaper result is replicated in GEMMA_HK and now we have all SNPs that can be compared against the LMM results.
+
+# On Normality
+
+But first we want to take a look normality for the datasets now we stored ninds, mean, std, skew and kurtosis. At this stage let's just count datasets. So, out of 13427 GEMMA LMM traits 12416 have more than 16 individuals. When looking at abs(skew)<0.8 we have 7691 fairly normal traits. Adding an abs(kurtosis)<1.0 we have 6289 traits. So about half of them are fairly normal. So if we quantile normalize these vectors it may have some impact. Let that be another task I add above (run gemma with qnorm).
+
+The query was
+
+```
+SELECT count(*) WHERE {
+    ?trait gnt:loco true;
+        gnt:traitId ?traitid;
+        gnt:nind ?nind;
+        gnt:skew ?skew;
+        gnt:kurtosis ?kurtosis.
+    filter(?nind > 16 and abs(?skew) < 0.8 and abs(?kurtosis) < 1.0).
+} LIMIT 40
+```
+
+# Pubmed
+
+As an aside, I did an interesting discovery. Some of the pubmed IDs that I thought were wrong may actually be OK. Maybe Bonz did some screening because his RDF differs from what is in MySQL.
+
+# Preparing for comparison
+
+OK, we are finally at the point where we can compare LMM results with HK (read reaper). This is a 'set analysis' because we want to see what SNPs differ between the two results for every trait and highlight those where peaks are different. We have captured in RDF all the SNPs that are considered (fairly) significant for both LMM and HK.
+
+The easiest way is to capture all SNPs and write the analysis in code. There may be a way to do this in SPARQL but it will take me more time and we'll end with less flexibility. Now there are two main ways to go about it. I can dump a table with all SNPs using SPARQL itself and process the tabular data (this, btw, may be a good input for AI). Another option is to use an RDF library and parse the RDF triples directly (without Virtuoso) in the middle. That should allow for quicker processing and also a shorter turnaround if I need to modify RDF (the process of updating, uploading, checking and writing SPARQL queries, is quite long). There is one thing in writing software that is very important: you want a quick turnaround, otherwise you are just staring at a prompt ;). So it pays to learn these short cuts. It also allows accessing lmdb files and even SQL if useful.
+Note that we still can also use SPARQL *also* to output RDF triples. So if we want more powerful filtering and/or add metadata it will all work.
+
+## Reading RDF
+
+So, I wrote a first script to digest our RDF from GEMMA. The RDF library in Guix is a bit old, so we have to upgrade that in Guix.
+
+For testing I created a small TTL file and convert to N3 with wrapper.
+
+```
+rapper -i turtle test-2000.ttl > test-2000.n3
+```
+
+What we want to do is walk the dataset and harvest SNPs that belong to a run. As a start.
+
+First I needed to add the relevant RDF packages to Guix.
+
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=fcbe2919a1e4b168e8ec9ac995a6512360d56ac8
+
+The following code fetches all traits with all SNPs:
+
+```
+  graph = RDF::Graph.load(fn)
+  datasets = graph.query(RDF::Query.new {
+                           pattern [:dataset, RDF.type, GNT.mappedTrait]
+                         })
+  datasets.each { |trait|
+    p "-------"
+    p trait.dataset
+    snps = graph.query(RDF::Query.new {
+                         pattern [ :snp, GNT.mappedSnp, trait.dataset ]
+                       })
+    p snps
+  }
+```
+
+Resulting in
+
+```
+"-------"
+#<RDF::URI:0x9ec0 URI:http://genenetwork.org/id/GEMMAMapped_LOCO_BXDPublish_10007_gemma_GWA_7c00f36d>
+[#<RDF::Query::Solution:0x9ed4({:snp=>#<RDF::URI:0x9ee8 URI:http://genenetwork.org/id/Rsm10000005697_BXDPublish_10007_gemma_GWA_7c00f36d>})>]
+```
+
+At the next step we want to do a bit more sophisticated queries. This thing has SPARQL support with the graph in RAM, but I want to try the native interface first.
+
+The first hurdle was that loading RDF triples is extremely slow. So I wanted to try the RDF Raptor C extension, but that sent me down a temporary Guix rabbit hole because nss-certs moved. Also the raptor gem was ancient, and was showing errors, so I updated to the latest github code.
+
+Anyway guix-bioinformatics was updated to support that. Next I tried loading with raptor and that made the difference. At least the triples are read in minutes rather than hours, but the next step building the large graph takes a lot of time too. This sucks.
+
+Creating and inspecting each statement is fast enough that look like:
+
+```
+#<RDF::Statement:0x7a8(<http://genenetwork.org/id/HK_trait_BXDPublish_10001_gemma_GWA_hk_assoc_txt> <http://genenetwork.org/term/trait> <http://genenetwork.org/id/publishXRef_10001> .)>
+```
+
+So, rather than including all triples, we first filter out the ones we are not interested in and that speeds things up. That worked until I included all SNPs. Are we delivered here? These libraries may be too slow. Analysing 200K triples took forever. Constructing the graph through an enumerator is a really slow step. The graph query is also slow. But adding the raptor read triples to an array only took 7s. It makes pretty clear we should process the 'raw' data directly.
+
+The current script collects all SNPs by GEMMA trait:
+
+```
+time ./bin/rdf-analyse-gemma-hits.rb test.nt
+Parsing test.nt...
+
+real    0m12.314s
+user    0m12.117s
+sys     0m0.196s
+```
+
+Next stop we make it a set and do the same for HK. And we can do set analysis. The first round is pretty impressive, it looks like trait 10001 has exactly the same SNPs for HK and GEMMA. That is a nice confirmation. Actually 10001 is an interesting test case because in GN you can see HK and GEMMA find different secondary peaks:
+
+=> https://genenetwork.org/show_trait?trait_id=10001&dataset=BXDPublish
+
+At the GEMMA threshold we set (LOD>4.0) all hits are on chr8 and they overlap with HK. Down the line we could look at lower values, but lets stick with this for now.
+
+For 10004 we find some different SNPs. The mapping looks similar in GN:
+
+=> https://genenetwork.org/show_trait?trait_id=10001&dataset=BXDPublish
+
+The difference is:
+
+```
+["10004", #<Set: {#<RDF::URI:0x1a18 URI:http://genenetwork.org/id/Rs47899232>, #<RDF::URI:0x1a54 URI:http://genenetwork.org/id/Rsm10000005699>, #<RDF::URI:0xf78 URI:http://genenetwork.org/id/Rsm10000005700>, #<RDF::URI:0xf3c URI:http://genenetwork.org/id/Rs32133186>, #<RDF::URI:0xf00 URI:http://genenetwork.org/id/Rs32818171>, #<RDF::URI:0xec4 URI:http://genenetwork.org/id/Rsm10000005701>, #<RDF::URI:0xe88 URI:http://genenetwork.org/id/Rsm10000005702>, #<RDF::URI:0xdd4 URI:http://genenetwork.org/id/Rsm10000005703>, #<RDF::URI:0xfb4 URI:http://genenetwork.org/id/Rs33490412>, #<RDF::URI:0xff0 URI:http://genenetwork.org/id/Rs3661882>, #<RDF::URI:0x102c URI:http://genenetwork.org/id/Rsm10000005704>, #<RDF::URI:0x1068 URI:http://genenetwork.org/id/Rs32579649>, #<RDF::URI:0x10a4 URI:http://genenetwork.org/id/Rsm10000005705>}>]
+```
+
+This locus Rs47899232 is not in my test set, so it looks like it is under the threshold. If you look at Chr8 you can see the GEMMA hit shifted somewhat to the right from HK Chr8: 68.799000 to LOCO Chr8: 95.704608. The LOCO hit is also visible in HK, but dropped below significance.
+
+So we can do this analysis now! But just looking at SNPs is going to be laborious. At this stage we are mostly interested in the highest peak and whether it changed. What we need to do is capture regions, i.e. the chromosome positions, and map out if they moved.
+
+In the next phase I am going to take all SNP positions and map their region (+- 10,000 bps). For every trait we'll have a list of *regions* linked to significant hits. If these regions differ then the peaks differ, and we can highlight them.
+
+# Getting SNPs and their positions
+
+To get SNPs and their positions a simple SPARQL query will do. Bonz has created a TTL, e.g.
+
+```
+gn:Rs47899232 rdf:type gnc:Genotype .
+gn:Rs47899232 rdfs:label "rs47899232" .
+gn:Rs47899232 gnt:chr "8" .
+gn:Rs47899232 gnt:mb "95.704608"^^xsd:double .
+gn:Rs47899232 gnt:belongsToSpecies gn:Mus_musculus .
+gn:Rs47899232 gnt:chrNum "0"^^xsd:int .
+gn:Rsm10000005700 rdf:type gnc:Genotype .
+gn:Rsm10000005700 rdfs:label "rsm10000005700" .
+gn:Rsm10000005700 gnt:chr "8" .
+gn:Rsm10000005700 gnt:mb "95.712996"^^xsd:double .
+gn:Rsm10000005700 gnt:belongsToSpecies gn:Mus_musculus .
+gn:Rsm10000005700 gnt:chrNum "0"^^xsd:int .
+```
+
+A few things are a bit puzzling, but at this stage we mostly care for are the identifier, label, chr and mb. GN, for some reason tracks mb as a floating point. I don't like that, but it will work for tracking positions. To get a table we use the following query:
+
+```
+SELECT * WHERE {
+    ?snp a gnc:Genotype;
+             gnt:belongsToSpecies gn:Mus_musculus ;
+             rdfs:label ?name ;
+             gnt:chr ?chr ;
+             gnt:mb ?mb .
+
+}
+```
+
+we save that as a TSV and have 120K SNPs formatted like:
+
+```
+"http://genenetwork.org/id/Rs47899232"   "rs47899232"    "8"     95.7046
+```
+
+# Ranges
+
+In the next step we want do define peak ranges. It would be nice to visualize them as a line, e.g. for HK and LOCO:
+
+```
+Chr   1              2             3 ...
+HK    ---X-------------------X-----
+LOCO  ---X----X--------------X-----
+```
+
+That way we can see that a peak appeared on Chr 1. Down the line we can use the same info to compare traits A and B:
+
+```
+Chr   1              2             3 ...
+A     ---X-------------------X-----
+B     ---X-------------------------
+```
+
+where we see some chromosome area is shared. Rob sent me this nice 2008 paper:
+
+=> https://pubmed.ncbi.nlm.nih.gov/19008955/
+
+which states that a remarkably diverse set of traits maps to a region on mouse distal chromosome 1 (Chr 1) that corresponds to human Chr 1q21-q23. This region is highly enriched in quantitative trait loci (QTLs) that control neural and behavioral phenotypes, including motor behavior, escape latency, emotionality, seizure susceptibility (Szs1), and responses to ethanol, caffeine, pentobarbital, and haloperidol.
+
+And we are still doing this research today.
+
+Anyway, for our purposes, for each trait we have a range of SNPs. If they are close to each other they form a 'peak'. What I am going to do is combine the SNPs we are comparing into one set first. Use that to define the ranges (say within 10K BPs). Next we go back to the computed SNPs and figure out what fits a range. We will pick out those ranges that are unique to a trait. But first we'll just visualize.
+
+As this involves some logic we will have to do it in real code (again). First we show how many SNPs we have combined for HK+LOCO and how many differ, e.g.
+
+```
+["10001",  78,  0]
+["10002", 208, 92]
+["10003",  96,  0]
+["10004",  35, 13]
+["10005",  76,  0]
+```
+
+so, for 10001 we have 78 SNPs and the LOCO ones overlap with HK. We showed before that for every set we have the SNP ids.
+
+For the first time this exercise I have to write some real new code (before I was just tying together existing work and fixing bugs on the fly). The reason is that we have to track QTL peak ranges by inserting SNP positions. Not only that, we also need to make sure that these ranges do not overlap and build faithfully. For example, the order of adding SNPs matters - we grow a range by adding SNPs on the same chromosome. If a SNP falls out of range (e.g. 10K BPs away) we create a new range. But when a nother SNP falls in the middle we need to merge them into one range (or peak). This requires some logic and I am creating a new module for it.
+
+The current code creates the following peaks on chr1:
+
+```
+@chromosome={"1"=>[#<QRange 𝚺14 173.339..173.679>, #<QRange 𝚺9 175.615..176.205>, #<QRange 𝚺2 174.541..174.679>, #<QRange 𝚺7 175.437..176.032>, #<QRange 𝚺15 72.2551..73.3771>, #<QRange 𝚺10 179.862..180.284>, #<QRange 𝚺22 181.476..183.154>, #<QRange 𝚺9 179.916..180.412>, #<QRange 𝚺4 177.555..177.901>, #<QRange 𝚺29 171.749..173.532>, #<QRange 𝚺8 171.172..172.175>]
+```
+
+The sigma tells you how many SNPs are in there. There is some overlap, so I need to fix that. When I set the distance at 50,000 BPS we get too many peaks. We need some other heuristic to decide what is a peak and what not. Probably look at the direction the significance is going. I.e. when it drops and rises again we may have a local peak. Would be nice to track those as separate ranges.
+
+Rob suggested a bin size of 500,000 BPs for the BXD. Let's try that first. This results in an orderly combined LOCO+HK results for trait 10002:
+
+```
+#<QTL::QRanges:0x00007f99f277c840 @chromosome={"1"=>[#<QRange 𝚺15 72.2551..73.3771>, #<QRange 𝚺91 171.172..183.154>], "8"=>[#<QRange 𝚺102 94.3743..112.929>]}>
+```
+
+Next we do this for LOCO and HK separately:
+
+```
+[10002,combined] =>{"1"=>[#<QRange 𝚺15 72.2551..73.3771>, #<QRange 𝚺91 171.172..183.154>], "8"=>[#<QRange 𝚺102 94.3743..112.929>]}
+[10002,HK]       =>{"1"=>[#<QRange 𝚺14 179.862..181.546>], "8"=>[#<QRange 𝚺102 94.3743..112.929>]}
+[10002,LOCO]     =>{"1"=>[#<QRange 𝚺15 72.2551..73.3771>, #<QRange 𝚺91 171.172..183.154>], "8"=>[#<QRange 𝚺32 94.4792..97.3382>]}
+["10003", 96, 0]
+["10004", 35, 13]
+[10004,combined] =>{"8"=>[#<QRange 𝚺35 68.7992..97.3516>]}
+[10004,HK]       =>{"8"=>[#<QRange 𝚺22 68.7992..74.9652>]}
+[10004,LOCO]     =>{"8"=>[#<QRange 𝚺13 95.6926..97.3516>]}
+```
+
+Resulting in a new QTL for 10002,LOCO. And with 10004 we see the QTL shift to the right. Nice!
+
+We'll want to track the LOD score too, so let's load that using the RDF file we parse anyway.
+
+```
+[10002,HK]       =>{"1"=>[#<QRange 𝚺14 179.862..181.546 LOD=3.07..3.07>], "8"=>[#<QRange 𝚺102 94.3743..112.929 LOD=3.1..5.57>]}
+[10002,LOCO]     =>{"1"=>[#<QRange 𝚺15 72.2551..73.3771 LOD=4.0..5.1>, #<QRange 𝚺91 171.172..183.154 LOD=4.5..5.3>], "8"=>[#<QRange 𝚺32 94.4792..97.3382 LOD=4.5..4.8>]}
+[10004,HK]       =>{"8"=>[#<QRange 𝚺22 68.7992..74.9652 LOD=3.14..3.23>]}
+[10004,LOCO]     =>{"8"=>[#<QRange 𝚺13 95.6926..97.3516 LOD=4.1..4.6>]}
+```
+
+Speaks for itself.
+
+# Analyzing peaks
+
+Now we have the peaks for different runs (HK and LOCO). We would like to see how many of the traits are affected - gaining or losing or moving peaks. Also, before we introduce the GEMMA values to GN, we would like to assess how many of the peaks are really different.
+
+With above example we can see that 10002 gained a peak on chr1. With 10004 we see that the peak on chr8 shifted position. These are the things we want to capture. Also we want to bring back some metadata to show what the trait is about. Finally we want to point to the full vector lmdb file which I forgot to include in the original parsing though I did include the hash, e.g.
+
+```
+gn:GEMMAMapped_LOCO_BXDPublish_10001_gemma_GWA_7c00f36d a gnt:mappedTrait;
+      rdfs:label "GEMMA BXDPublish trait 10001 mapped with LOCO (defaults)";
+      gnt:trait gn:publishXRef_10001;
+      gnt:loco true;
+      gnt:time "2025/08/24 08:22";
+      gnt:belongsToGroup gn:setBxd;
+      gnt:name "BXDPublish";
+      gnt:traitId "10001";
+```
+
+I shoud add
+
+```
+      gnt:filename "c143bc7928408fdc53affed0dacdd98d7c00f36d-BXDPublish-10001-gemma-GWA.tar.xz"
+      gnt:hostname "balg01"
+```
+
+so we can find it back easily.
+
+Next step is to say something about the peaks. Let's enrich our RDF store to show these results. Basically for 10002 we can add RDF statements for
+
+```
+[10002,HK]       =>{"1"=>[#<QRange 𝚺14 179.862..181.546 LOD=3.07..3.07>], "8"=>[#<QRange 𝚺102 94.3743..112.929 LOD=3.1..5.57>]}
+[10002,LOCO]     =>{"1"=>[#<QRange 𝚺15 72.2551..73.3771 LOD=4.0..5.1>, #<QRange 𝚺91 171.172..183.154 LOD=4.5..5.3>], "8"=>[#<QRange 𝚺32 94.4792..97.3382 LOD=4.5..4.8>]}
+```
+
+e.g.
+
+```
+gn:qtl00001_LOCO
+    gnt:qtlChr      "1";
+    gnt:qtlStart    72.2551 ;
+    gnt:qtlStop     73.3771 ;
+    gnt:qtlLOD      5.1 ;
+    gnt:SNPs        15 ;
+gn:qtl00002_LOCO
+    gnt:qtlChr      "1";
+    gnt:qtlStart    171.172 ;
+    gnt:qtlStop     183.154 ;
+    gnt:qtlLOD      5.3 ;
+    gnt:SNPs        91 ;
+    gnt:qtlOverlaps gn:qtl00001_HK.
+```
+
+This way, in SPARQL, we can query all QTL that are not in HK. For the QTL that are in HK we can also see if they shifted. Actually for SPARQL we don't really need the last statement - it is just a convenience. We will also add the actual SNP identifiers so the SNP counter is not really necessary either (let SPARQL count):
+
+```
+gn:QTL_CHR1_722551_GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d
+    gnt:mappedQTL gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d
+    rdfs:label     "GEMMA BXDPublish LOCO QTL on 1:722551 trait 10002";
+    gnt:qtlChr     "1";
+    gnt:qtlStart   72.2551 ;
+    gnt:qtlStop    73.3771 ;
+    gnt:qtlLOD     5.1 ;
+    gnt:qtlSNP     gn:Rs13475920_BXDPublish_10002_gemma_GWA_7c00f36d
+    gnt:qtlSNP     gn:Rs31428112_BXDPublish_10002_gemma_GWA_7c00f36d
+    (...)
+```
+
+I have two things to solve now. First we need to check whether QTLs between the two runs overlap. And then there is a bug in the QTL computation from SNP positions. I am seeing some inconsistencies wrt binning.
+
+The problem I was referring to yesterday turns out to be alright. I thought that when I was using the combined SNPs from HK and LOCO that there was only one peak. But there are two:
+
+```
+[10002,combined] =>{"1"=>[#<QRange 𝚺15 72.2551..73.3771 LOD=..>,       #<QRange 𝚺91 171.172..183.154 LOD=..>]},
+[10002,HK]       =>{"1"=>                                              #<QRange 𝚺14 179.862..181.546 LOD=3.07..3.07>],
+[10002,LOCO]     =>{"1"=>[#<QRange 𝚺15 72.2551..73.3771 LOD=4.0..5.1>, #<QRange 𝚺91 171.172..183.154 LOD=4.5..5.3>]
+```
+
+It is interesting to see that HK misses out on one peak completely and the second peak completely overlaps with LOCO (including all SNPs). All good, so far. OK. Let's add some logic to see what peaks match or don't match:
+
+```
+[10002,HK] =>{"1"=>[#<QRange Chr1 𝚺14 179.862..181.546 LOD=3.07..3.07>], "8"=>[#<QRange Chr8 𝚺102 94.3743..112.929 LOD=3.1..5.57>]}
+[10002,LOCO] =>{"1"=>[#<QRange Chr1 𝚺15 72.2551..73.3771 LOD=4.0..5.1>, #<QRange Chr1 𝚺91 171.172..183.154 LOD=4.5..5.3>], "8"=>[#<QRange Chr8 𝚺32 94.4792..97.3382 LOD=4.5..4.8>]}
+["10002: NO HK match for LOCO Chr 1 QTL!", #<QRange Chr1 𝚺15 72.2551..73.3771 LOD=4.0..5.1>]
+[10004,HK] =>{"8"=>[#<QRange Chr8 𝚺22 68.7992..74.9652 LOD=3.14..3.23>]}
+[10004,LOCO] =>{"8"=>[#<QRange Chr8 𝚺13 95.6926..97.3516 LOD=4.1..4.6>]}
+["10004: NO HK match for LOCO Chr 8 QTL!", #<QRange Chr8 𝚺13 95.6926..97.3516 LOD=4.1..4.6>]
+```
+
+So 10002 correctly says there is a new QTL on chr1 and for 10004 a new QTL on chr8. Now, for 10004 it appears the HK version is in a different location, but I think it suffices to point out 'apparently' new QTL.
+
+Alright, so we can now annotate new/moved QTL! We are going to feed this back into virtuoso by writing RDF as I showed yesterday.
+
+Next step is to say something about the peaks. Let's enrich our RDF store to show these results. Basically for 10002 we add RDF statements for
+
+```
+[10002,HK]       =>{"1"=>[#<QRange 𝚺14 179.862..181.546 LOD=3.07..3.07>], "8"=>[#<QRange 𝚺102 94.3743..112.929 LOD=3.1..5.57>]}
+[10002,LOCO]     =>{"1"=>[#<QRange 𝚺15 72.2551..73.3771 LOD=4.0..5.1>, #<QRange 𝚺91 171.172..183.154 LOD=4.5..5.3>], "8"=>[#<QRange 𝚺32 94.4792..97.3382 LOD=4.5..4.8>]}
+```
+
+E.g.
+
+```
+gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_QTL_Chr8_94_97
+    gnt:mappedQTL   gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d;
+    rdfs:label      "GEMMA BXDPublish QTL";
+    gnt:qtlChr      "8";
+    gnt:qtlStart    94.4792 ;
+    gnt:qtlStop     97.3382 ;
+    gnt:qtlLOD      4.8 .
+gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_QTL_Chr8_94_97 gnt:mappedSnp gn:Rsm10000005689_BXDPublish_10002_gemma_GWA_7c00f36d .
+gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_QTL_Chr8_94_97 gnt:mappedSnp gn:Rs232396986_BXDPublish_10002_gemma_GWA_7c00f36d .
+gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_QTL_Chr8_94_97 gnt:mappedSnp gn:Rsm10000005690_BXDPublish_10002_gemma_GWA_7c00f36d .
+(...)
+```
+
+and if it is a new QTL compared to HK we annotate a newly discovered QTL:
+
+```
+gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_1_72_73 a gnt:newlyDiscoveredQTL .
+gn:GEMMAMapped_LOCO_BXDPublish_10004_gemma_GWA_7c00f36d_8_96_97 a gnt:newlyDiscoveredQTL .
+```
+
+Note we skipped the results that show no SNP changes - I should add them later to give full QTL cover.
+
+Code is here:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/rdf-analyse-gemma-hits.rb
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/lib/qtlrange.rb
+
+Now we have all the RDF to figure out what traits have new QTL compared to reaper!
+I'll upload them in virtuoso for further analysis.
+
+I want to do a run that shows what traits have changed QTLs.
+Basically the command is
+
+```
+./bin/rdf-analyse-gemma-hits.rb test-hk-2000.ttl test-2000.ttl -o RDF
+```
+
+let's try to run with the full ttl files. Actually I converted them to n3 because of some error:
+
+```
+rapper --input turtle gemma-GWA.ttl > gemma-GWA.n3
+rapper --input turtle gemma-GWA-hk.ttl > gemma-GWA-hk.n3
+time ./bin/rdf-analyse-gemma-hits.rb gemma-GWA-hk.n3 gemma-GWA.n3 > test.out
+real    3m21.979s
+user    3m21.076s
+sys     0m0.716s
+```
+
+3.5 minutes is fine for testing stuff (if already a little tedious). The first run failed because I have renamed GEMMA_HK to GemmaHK. Another bug I hit was with:
+
+```
+[10009,HK] =>{"15"=>[#<QRange Chr15 𝚺30 25.6987..74.5398 LOD=3.01..3.27>]}
+[10009,LOCO] =>{"10"=>[#<QRange Chr10 𝚺1 76.2484..76.2484 LOD=3.5..3.5>]}
+/export/local/home/wrk/iwrk/opensource/code/genetics/gemma-wrapper/lib/qtlrange.rb:126:in `block (2 levels) in qtl_diff': undefined method `each' for nil (NoMethodError)
+```
+
+There are a few more bugs to fix - mostly around empty results, e.g. if a trait had no SNPs. Also HK would render a lodScore of infinite `gnt:lodScore Infinity` and that reduced the result set. I set a LOD of infinity to 99.0. So at least it'll stand out. Fixing it at 12 minutes made the run a lot slower than 3.5 minutes! Still OK, for now.
+
+The first run shows 7943 new QTL. Turns out that a bunch of them are non-significant, so need to filter those. Remember we kept the highest hit, even if significance was low. A quick filter shows that with LMM 2802 traits show new QTLs (out of 13K). Out of those 1984 traits did not compute a QTL at all with HK. That looks exciting, but we need to validate. Lets take a look at
+
+```
+[10727,HK] =>{}
+[10727,LOCO] =>{"15"=>[#<QRange Chr15 𝚺9 62.3894..63.6584 LOD=4.4..4.4>]}
+["10727: NO HK match for LOCO Chr 15 QTL!", [#<QRange Chr15 𝚺9 62.3894..63.6584 LOD=4.4..4.4>]]
+```
+
+=> https://genenetwork.org/show_trait?trait_id=10727&dataset=BXDPublish
+
+That looks correct to me. Rob you may want to check. And another:
+
+```
+[51064,HK] =>{"10"=>[#<QRange Chr10 𝚺12 92.3035..108.525 LOD=3.08..4.15>], "19"=>[#<QRange Chr19 𝚺34 8.93047..34.2017 LOD=3.06..3.41>], "3"=>[#<QRange Chr3 𝚺5 138.273..138.581 LOD=3.06..3.06>], "X"=>[#<QRange ChrX 𝚺5 160.766..163.016 LOD=3.48..3.48>]}
+[51064,LOCO] =>{"19"=>[#<QRange Chr19 𝚺37 29.9654..34.2017 LOD=4.3..5.5>]}
+```
+
+=> https://genenetwork.org/show_trait?trait_id=51064&dataset=BXDPublish
+
+Looks correct. With HK we see QTL on Chr 3,10,19 and X. On GN LMM we see a whopper on chr 19, as well as X. I need to see why GEMMA is not finding that X in precompute! Made a note of that too.

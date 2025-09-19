@@ -1,0 +1,64 @@
+# UTHSC E-mail
+
+Similar to many organizations UT uses outlook and exchange for their E-mail. Thanks to mobile support it is possible to work with email using other tools outside the UT network.
+
+## Prospect E-mail client
+
+People have success using Prospect as an E-mail client. You can follow the instructions on the UT website that are similar to Android support.
+
+## Davmail IMAP bridge
+
+An interesting solution is to create an IMAP bridge. It is a little slower, but can be set up! That way you can use your favorite E-mail tool (and filters!).
+
+I have had success setting up davmail with the following settings and testing with thunderbird first:
+
+```
+apt install davmail openjfx thunderbird
+```
+
+Start davmail with
+
+```
+davmail -d
+```
+
+Stop davmail and edit the ~/.davmail.properties file with the following.
+
+```
+davmail.mode=O365Interactive
+davmail.url=https://outlook.office365.com/EWS/Exchange.asmx
+davmail.oauth.clientId=d3590ed6-52b3-4102-aeff-aad2292ab01c
+davmail.enableOauth2=true
+davmail.oauth.deviceCode=true
+davmail.oauth.enableOauth2=true
+davmail.oauth.redirectUri=urn:ietf:wg:oauth:2.0:oob
+davmail.oauth.tenantId=common
+davmail.imapPort=1143
+davmail.smtpPort=1025
+davmail.logFilePath=/home/yours/.davmail/davmail.log
+log4j.logger.httpclient.wire=DEBUG
+log4j.rootLogger=DEBUG
+log4j.logger.org.apache.http.wire=DEBUG
+```
+
+Restart davmail and point thunderbird to
+
+```
+IMAP Server: localhost:1143
+SMTP Server: localhost:1025
+Username: your-email@uthsc.edu
+```
+
+Note that you should set the UT password in the 2FA browser when it pops up. Do *not* set it in Thunderbird, also when it asks for it to send out SMTP.
+
+When something fails make sure to track the log in ~/.davmail/davmail.log
+
+# Using Mutt
+
+Some useful links:
+
+=> https://jonathanh.co.uk/blog/exchange-mutt/
+=> https://movementarian.org/blog/posts/mutt-and-office365/
+=> https://www.vanormondt.net/~peter/blog/2021-03-16-mutt-office365-mfa.html
+
+If someone can get the last one to work we won't even need davmail any more!

@@ -1,23 +1,28 @@
 # Update production checklist
 
+Last migration round is the move to tux03 (Sept2025)!
 
 # Tasks
 
 * [X] Install underlying Debian
 * [X] Get guix going
-* [ ] Check database
-* [ ] Check gemma working
-* [ ] Check global search
-* [ ] Check authentication
-* [ ] Check sending E-mails
-* [ ] Make sure info.genenetwork.org can reach the DB
+* [X] Check database settings
+* [X] Check gemma working
+* [X] Check global search
+* [X] Check authentication
+* [X] Check sending E-mails
+* [X] Check SPARQL
+* [X] Make sure info.genenetwork.org and 'space' can reach the DB
 * [ ] Backups
 
 The following are at the system level
 
-* [ ] Make journalctl presistent
-* [ ] Update certificates in CRON
-* [ ] Run trim in CRON
+* [X] Firewalling and other security measures (sshd)
+* [X] Check tmpdirs (cleanup?)
+* [X] Make sure journalctl persistent (check for reboots)
+* [X] Update certificates in CRON (no longer if not part of Guix)
+* [X] Run trim in CRON
+* [ ] Monitors (sheepdog)
 
 # Install underlying Debian
 
@@ -27,7 +32,9 @@ For our production systems we use Debian as a base install. Once installed:
 * [X] add ttyS0 support for grub and kernel - so out-of-band works
 * [X] start ssh server and configure not to use with passwords
 * [X] start nginx and check external networking
-* [ ] set up E-mail routing
+* [X] mount old root
+* [X] Clean up /etc/profile (remove global profile.d loading)
+* [X] set up E-mail routing
 
 It may help to mount the old root if you have it. Now it is on
 
@@ -37,25 +44,30 @@ mount /dev/sdd2 /mnt/old-root/
 
 # Get Guix going
 
-* [X] Install Guix daemon
+* [X] Mount bind /gnu on a large partition
 * [X] Move /gnu/store to larger partition
-* [X] Update Guix daemon and setup in systemd
+* [X] Install Guix daemon
+* [X] Update Guix daemon and setup in systemd (if necessary)
 * [X] Make available in /usr/local/guix-profiles
-* [X] Clean up /etc/profile
 
-We can bootstrap with the Debian guix package. Next move the store to a large partion and hard mount it in /etc/fstab with
+Next move the /gnu store to a large partion and hard mount it in /etc/fstab with
 
 ```
 /export2/gnu /gnu none defaults,bind 0 0
 ```
 
+We can bootstrap with the Debian guix package (though I prefer the guix-install.sh script these days, mostly because it is more modern).
+
+=> https://guix.gnu.org/manual/en/html_node/Binary-Installation.html
+
+
 Run guix pull
 
 ```
-wrk@tux04:~$ guix pull -p ~/opt/guix-pull --url=https://codeberg.org/guix/guix-mirror.git
+guix pull --url=https://codeberg.org/guix/guix  -p ~/opt/guix-pull
 ```
 
-Use that to install guix in /usr/local/guix-profiles
+Use that also to install guix in /usr/local/guix-profiles
 
 ```
 guix package -i guix -p /usr/local/guix-profiles/guix
@@ -68,9 +80,9 @@ The Debian installer configures guix. I tend to remove the profiles from /etc/pr
 # Check database
 
 * [X] Install mariadb
-* [ ] Recover database
-* [ ] Test permissions
-* [ ] Mariadb update my.cnf
+* [X] Recover database
+* [X] Test permissions
+* [X] Mariadb update my.cnf
 
 Basically recover the database from a backup is the best start and set permissions. We usually take the default mariadb unless production is already on a newer version - so we move to guix deployment.
 
@@ -180,3 +192,6 @@ swaks --to myemailaddress --from john@network --server localhost
 * [ ] Create an ibackup user.
 * [ ] Install borg (usually guix version)
 * [ ] Create a borg passphrase
+
+=> topics/systems/backups-with-borg.gmi
+=> topics/systems/backup-drops.gmi

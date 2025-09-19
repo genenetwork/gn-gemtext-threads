@@ -4,7 +4,7 @@
 * assigned: alexm, jnduli
 * keywords: llm, genenetwork2, xapian, transform
 * type: feature
-* status: in-progress
+* status: closed,  completed 
 
 ## Description:
 
