@@ -26,18 +26,29 @@ So we can convert a .geno file to BIMBAM. I need to extract GN traits to a R/qtl
 * [X] Run virtuoso server
 * [X] When loading traits compute mean, se, skew, kurtosis and store them as metadata in lmdb
 * [ ] Why is X not showing in LMM precompute for trait 51064
+* [X] Correctly handle Infinite LOD
 * [X] Ask interesting questions about the overlap between reaper and gemma
 * [ ] Update PublishXRef and store old reaper value(?)
 * [ ] Correctly Handle gn-guile escalating errors
+* [X] RDF point back to original data file
+* [ ] Fix Infinity also in LMM run (156 SNPs only)
+* [ ] Make time stamp, host, user a compute 'origin' block in RDF
+* [ ] RDF mark QTL
 * [ ] Make sure the trait fetcher handles authorization or runs localhost only
 * [ ] gemma-wrapper --force does not work for GRM and re-check GRM does not change on phenotype
 * [ ] Use SNP URIs when possible (instead of inventing our own) - and BED information so we can locate them
 * [ ] Check lmdb duplicate key warning
+* [ ] run gemma with pangenome-derived genotypes
 * [ ] run gemma with qnorm
 * [ ] run gemma with sex covariate
 * [ ] run gemma again with the hit as a covariate
 * [ ] Check invalid data sets/traits and feed them to Rob/Arthur
 * [ ] Add metadata for bimodality indicator in addition to kurtosis (see below)
+* [ ] Provide SPARQL to find QTL and return metadata about traits
+* [ ] Provide PheWAS examples
+* [ ] Add BED information on Genes
+* [ ] Update Xapian search - also to handle gene aliases
+* [ ] Create GN UI with Zach
 
 For the last we should probably add a few columns. Initially we'll only store the maximum hit.
 
@@ -2780,6 +2791,8 @@ Speaks for itself.
 
 # Analyzing peaks
 
+
+
 Now we have the peaks for different runs (HK and LOCO). We would like to see how many of the traits are affected - gaining or losing or moving peaks. Also, before we introduce the GEMMA values to GN, we would like to assess how many of the peaks are really different.
 
 With above example we can see that 10002 gained a peak on chr1. With 10004 we see that the peak on chr8 shifted position. These are the things we want to capture. Also we want to bring back some metadata to show what the trait is about. Finally we want to point to the full vector lmdb file which I forgot to include in the original parsing though I did include the hash, e.g.
@@ -2957,3 +2970,108 @@ That looks correct to me. Rob you may want to check. And another:
 => https://genenetwork.org/show_trait?trait_id=51064&dataset=BXDPublish
 
 Looks correct. With HK we see QTL on Chr 3,10,19 and X. On GN LMM we see a whopper on chr 19, as well as X. I need to see why GEMMA is not finding that X in precompute! Made a note of that too.
+
+# Updating RDF
+
+Now we have QTL output we can upload that to RDF.
+
+Making the traits accessible we need to add some metadata on description of trait, publication and authors. All this information can also be used to build a UI.
+
+For this I am going to regenerate the RDF without running gemma again to sure it is complete and mark the new QTL. One change is that if a LOD is infinite we set it to 99.1. The number will stand out. The idea is that when a P-value ends up rounded to zero we can pick it up easily as a conversion. This turns out to be relevant for example:
+
+```
+gn:HK_trait_BXDPublish_13032_gemma_GWA_hk_assoc_txt a gnt:mappedTrait;
+        rdfs:label "GEMMA_BXDPublish ./tmp/trait-BXDPublish-13032-gemma-GWA-hk.assoc.txt trait HK mapped";
+        gnt:GEMMA_HK true;
+        gnt:belongsToGroup gn:setBxd;
+        gnt:trait gn:publishXRef_13032;
+        gnt:time "2025-08-27 06:44:45 +0000";
+        gnt:name "BXDPublish";
+        gnt:traitId "13032";
+        skos:altLabel "BXD_13032".
+
+gn:rsm10000005888_HK_trait_BXDPublish_13032_gemma_GWA_hk_assoc_txt a gnt:mappedLocus;
+       gnt:mappedSnp gn:HK_trait_BXDPublish_13032_gemma_GWA_hk_assoc_txt ;
+       gnt:locus gn:Rsm10000005888 ;
+       gnt:lodScore Infinity .
+
+gn:rsm10000005889_HK_trait_BXDPublish_13032_gemma_GWA_hk_assoc_txt a gnt:mappedLocus;
+       gnt:mappedSnp gn:HK_trait_BXDPublish_13032_gemma_GWA_hk_assoc_txt ;
+       gnt:locus gn:Rsm10000005889 ;
+       gnt:lodScore Infinity .
+```
+
+The trait has +1 and -1 values:
+
+=> https://genenetwork.org/show_trait?trait_id=13032&dataset=BXDPublish
+
+HK on GN show a map, but no result table. Hmmm. The SNPs listed here as Infinity don't really show in GN - and GEMMA finds no hits there. I think, on consideration, since we don't use HK other than for comparison I should just drop these results. It looks dodgy. Aha, in the GEMMA run these actually show up as not a number (NaN), so I should drop them!
+
+```
+chr rs  ps  n_mis n_obs allele1 allele0 af  p_lrt
+9 rsm10000005888  31848339  0 23  X Y 0.348 -nan
+9 rsm10000005864  27578739  0 23  X Y 0.391 1.770379e-10
+```
+
+Funny enough they are on the same chromosome as the highest ranking hits.
+
+Let's generate RDF and look at the differences:
+
+```
+export RDF=gemma-GWA-hk2.ttl
+wrk@balg01 ~/services/gemma-wrapper [env]$ ./bin/gemma2rdf.rb --header > $RDF
+wrk@balg01 ~/services/gemma-wrapper [env]$ for id in 'cat ids.txt' ; do traitfn=trait-BXDPublish-$id-gemma-GWA-hk ; ./bin/gemma2rdf.rb $TMPDIR/$traitfn.assoc.txt >> $RDF ; done
+```
+
+Took 43 min. The diff with the orignal looks good. Note I don't track origin files for this. Maybe I should, but I don't think we'll really use those. Next generate GEMMA LOCO RDF again
+
+```
+RDF=gemma-GWA.ttl
+wrk@balg01 ~/services/gemma-wrapper [env]$ ./bin/gemma-mdb-to-rdf.rb --header > $RDF
+time for x in tmp/*.xz ; do
+    ./bin/gemma-mdb-to-rdf.rb $x --anno BXD.8_snps.txt --sort >> $RDF
+done
+```
+
+Runs in 50min for 13K traits.
+
+The output now points to the lmdb vector files:
+
+```
++      gnt:filename "c143bc7928408fdc53affed0dacdd98d7c00f36d-BXDPublish-10080-gemma-GWA.tar.xz";
++      gnt:hostname "balg01";
+```
+
+## Digest QTL to RDF
+
+In the next step we want to show the QTL in RDF. First I created a small subset for testing that I can run with
+
+```
+time ./bin/rdf-analyse-gemma-hits.rb test-hk-2000.n3 test-2000.n3
+```
+
+It shows, for example,
+
+```
+gn:GEMMAMapped_LOCO_BXDPublish_10012_gemma_GWA_7c00f36d_QTL_Chr4_25_25
+    gnt:mappedQTL   gn:GEMMAMapped_LOCO_BXDPublish_10012_gemma_GWA_7c00f36d;
+    rdfs:label      "GEMMA BXDPublish QTL";
+    gnt:qtlChr      "4";
+    gnt:qtlStart    24.7356 ;
+    gnt:qtlStop     24.7356 ;
+    gnt:qtlLOD      3.6 .
+gn:GEMMAMapped_LOCO_BXDPublish_10012_gemma_GWA_7c00f36d_QTL_Chr4_25_25 gnt:mappedSnp gn:Rsm10000001919_BXDPublish_10012
+_gemma_GWA_7c00f36d .
+gn:GEMMAMapped_LOCO_BXDPublish_10012_gemma_GWA_7c00f36d_QTL_Chr4_25_25 a gnt:newQTL .
+```
+
+in other words a QTL with LOD 3.6 and a single SNP that is new compared to the HK output. We want to annotate a bit more, because I want to show the maximum allele frequency contained by the SNPs. That is not too hard as it is contained in the mapped SNP info:
+
+```
+gn:Rsm10000005700_BXDPublish_10001_gemma_GWA_7c00f36d a gnt:mappedLocus;
+      gnt:mappedSnp gn:GEMMAMapped_LOCO_BXDPublish_10001_gemma_GWA_7c00f36d;
+      gnt:locus gn:Rsm10000005700;
+      gnt:lodScore 6.2;
+      gnt:af 0.382;
+      gnt:effect 1.626.
+```
