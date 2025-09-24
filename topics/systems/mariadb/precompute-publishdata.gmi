@@ -31,6 +31,8 @@ So we can convert a .geno file to BIMBAM. I need to extract GN traits to a R/qtl
 * [ ] Update PublishXRef and store old reaper value(?)
 * [ ] Correctly Handle gn-guile escalating errors
 * [X] RDF point back to original data file
+* [ ] Fix Infinity also in LMM run (156 SNPs only)
+* [ ] Make time stamp, host, user a compute 'origin' block in RDF
 * [ ] RDF mark QTL
 * [ ] Make sure the trait fetcher handles authorization or runs localhost only
 * [ ] gemma-wrapper --force does not work for GRM and re-check GRM does not change on phenotype
@@ -3040,4 +3042,36 @@ The output now points to the lmdb vector files:
 +      gnt:hostname "balg01";
 ```
 
-## Digest QTL
+## Digest QTL to RDF
+
+In the next step we want to show the QTL in RDF. First I created a small subset for testing that I can run with
+
+```
+time ./bin/rdf-analyse-gemma-hits.rb test-hk-2000.n3 test-2000.n3
+```
+
+It shows, for example,
+
+```
+gn:GEMMAMapped_LOCO_BXDPublish_10012_gemma_GWA_7c00f36d_QTL_Chr4_25_25
+    gnt:mappedQTL   gn:GEMMAMapped_LOCO_BXDPublish_10012_gemma_GWA_7c00f36d;
+    rdfs:label      "GEMMA BXDPublish QTL";
+    gnt:qtlChr      "4";
+    gnt:qtlStart    24.7356 ;
+    gnt:qtlStop     24.7356 ;
+    gnt:qtlLOD      3.6 .
+gn:GEMMAMapped_LOCO_BXDPublish_10012_gemma_GWA_7c00f36d_QTL_Chr4_25_25 gnt:mappedSnp gn:Rsm10000001919_BXDPublish_10012
+_gemma_GWA_7c00f36d .
+gn:GEMMAMapped_LOCO_BXDPublish_10012_gemma_GWA_7c00f36d_QTL_Chr4_25_25 a gnt:newQTL .
+```
+
+in other words a QTL with LOD 3.6 and a single SNP that is new compared to the HK output. We want to annotate a bit more, because I want to show the maximum allele frequency contained by the SNPs. That is not too hard as it is contained in the mapped SNP info:
+
+```
+gn:Rsm10000005700_BXDPublish_10001_gemma_GWA_7c00f36d a gnt:mappedLocus;
+      gnt:mappedSnp gn:GEMMAMapped_LOCO_BXDPublish_10001_gemma_GWA_7c00f36d;
+      gnt:locus gn:Rsm10000005700;
+      gnt:lodScore 6.2;
+      gnt:af 0.382;
+      gnt:effect 1.626.
+```
