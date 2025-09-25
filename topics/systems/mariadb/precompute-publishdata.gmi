@@ -3075,3 +3075,234 @@ gn:Rsm10000005700_BXDPublish_10001_gemma_GWA_7c00f36d a gnt:mappedLocus;
       gnt:af 0.382;
       gnt:effect 1.626.
 ```
+
+
+With precompute I added allele frequencies to the QTL. So for trait 10002 we get:
+
+```
+[10002,HK] =>{"1"=>[#<QRange Chr1 𝚺14 179.862..181.546 LOD=3.07..3.07>], "8"=>[#<QRange Chr8 𝚺102 94.3743..112.929 LOD=3.1..5.57>]}
+[10002,LOCO] =>{"1"=>[#<QRange Chr1 𝚺15 72.2551..73.3771 AF=0.574 LOD=4.0..5.1>, #<QRange Chr1 𝚺91 171.172..183.154 AF=0.588 LOD=4.5..5.3>], "8"=>[#<QRange Chr8 𝚺32 94.4792..97.3382 AF=0.441 LOD=4.5..4.8>]}
+```
+
+and with RDF:
+
+```
+gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_QTL_Chr1_72_73
+    gnt:mappedQTL   gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d;
+    rdfs:label      "GEMMA BXDPublish QTL";
+    gnt:qtlChr      "1";
+    gnt:qtlStart    72.2551 ;
+    gnt:qtlStop     73.3771 ;
+    gnt:qtlAF       0.574 ;
+    gnt:qtlLOD      5.1 .
+gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_QTL_Chr1_72_73 gnt:mappedSnp gn:Rsm10000000582_BXDPublish_10002_gemma_GWA_7c00f36d .
+gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_QTL_Chr1_72_73 gnt:mappedSnp gn:Rsm10000000583_BXDPublish_10002_gemma_GWA_7c00f36d .
+gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_QTL_Chr1_72_73 gnt:mappedSnp gn:Rs37034472_BXDPublish_10002_gemma_GWA_7c00f36d .
+...etc...
+gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d_QTL_Chr1_72_73 a gnt:newQTL .
+```
+
+Important: we only store LOCO QTL (which we reckon are 'truth'), not the HK QTL. We also marked QTL that are *not* in HK with the gnt:newQTL annotation.
+
+For AF filtering we track this information on the trait:
+
+```
+gn:GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d a gnt:mappedTrait;
+      rdfs:label "GEMMA BXDPublish trait 10002 mapped with LOCO (defaults)";
+      gnt:trait gn:publishXRef_10002;
+      gnt:loco true;
+      gnt:time "2025/08/24 08:22";
+      gnt:belongsToGroup gn:setBxd;
+      gnt:name "BXDPublish";
+      gnt:traitId "10002";
+      gnt:nind 34;
+      gnt:mean 52.2206;
+      gnt:std 2.9685;
+      gnt:skew -0.1315;
+      gnt:kurtosis 0.0314;
+      skos:altLabel "BXD_10002";
+      gnt:filename "c143bc7928408fdc53affed0dacdd98d7c00f36d-BXDPublish-10002-gemma-GWA.tar.xz";
+      gnt:hostname "balg01";
+      gnt:user "wrk".
+```
+
+So, for the first QTL, an AF of 0.574 is based on (1-0.574)*34 = 14 out of 34 individuals is great. When we get to 1 or 2 individuals it may be kinda dodgy. For a dataset this size the AF threshold should be 0.06 (and 0.94). If we have 15 individuals we should be closer to 0.1 (0.9). Anyway, we can compute these on the fly in SPARQL. I rather show too many false positives.
+
+Also note that AF is not a problem with our BXD genotyping. Even so, we are going to use pangenome genotypes next and it will be important for that.
+
+Let's do a full QTL compute with
+
+```
+time ./bin/rdf-analyse-gemma-hits.rb gemma-GWA-hk2.n3 gemma-GWA.n3 -o RDF > QTL.rdf
+```
+
+And we should have the queriable mapped QTL we wished for! But some inspection shows:
+
+```
+[10015,HK] =>{"12"=>[#<QRange Chr12 𝚺2 3.2..9.74252 LOD=3.74..3.74>], "2"=>[#<QRange Chr2 𝚺259 4.03246..52.4268 LOD=3.11..16.01>]}
+[10015,LOCO] =>{"2"=>[#<QRange Chr2 𝚺256 4.03246..57.8635 AF=0.542 LOD=4.0..15.2>]}
+["10015: NO HK match, QTL LOCO Chr 2!", #<QRange Chr2 𝚺256 4.03246..57.8635 AF=0.542 LOD=4.0..15.2>]
+```
+
+which is strange because there is overlap on that particular QTL Chr2! They are obviously the same. As subtle bug. Instead of
+
+```
+-      return true if qtl.min > @min and qtl.max < @max
+-      return true if qtl.min < @min and qtl.max > @min
+-      return true if qtl.min < @max and qtl.max > @max
+```
+
+I now  have:
+
+```
++      return true if qtl.min >= @min and qtl.max <= @max # qtl falls within boundaries
++      return true if qtl.min <= @min and qtl.max >= @min # qtl over left boundary
++      return true if qtl.min <= @max and qtl.max >= @max # qtl over right boundary
+
+```
+
+I had to include the boundaries themselves.
+
+Now we also still log false positives with
+
+```
+[10009,HK] =>{"15"=>[#<QRange Chr15 𝚺30 25.6987..74.5398 LOD=3.01..3.27>]}
+[10009,LOCO] =>{"10"=>[#<QRange Chr10 𝚺1 76.2484..76.2484 AF=0.5 LOD=3.5..3.5>]}
+["10009: NO HK results, new QTL(s) LOCO Chr 10!", [#<QRange Chr10 𝚺1 76.2484..76.2484 AF=0.5 LOD=3.5..3.5>]]
+```
+
+note the LOD score. I should not mark new QTL that are below 4.0. Now we count 2351 new QTL and that is in line with my earlier quick counts.
+
+Note the current script eats RAM because it holds all LOD scorer and SNPs in memory. That is fine for our 13K classical traits but will probably not work for millions of traits. It runs in 8 minutes. That is cool too.
+
+# Updating RDF in virtuoso
+
+Similar to what we did before we are going to update Virtuoso on the sparql-test server using the CLI isql commands discussed above.
+
+
+Similar to what we did before we are going to update Virtuoso on the sparql-test server using the CLI isql commands discussed above.
+
+In August I uploaded:
+
+```
+SELECT * FROM DB.DBA.load_list;
+/export/data/virtuoso/ttl/gemma-GWA-hk.ttl                                     http://hk.genenetwork.org                                                         2           2025.8.27 8:31.57 122123000  2025.8.27 8:32.6 104530000  0           NULL        NULL
+/export/data/virtuoso/ttl/test.n3                                                 http://lmm2.genenetwork.org                                                       2           2025.8.27 6:47.44 947047000  2025.8.27 6:47.49 73865000  0           NULL        NULL
+```
+
+Also, to list all available graphs you can do
+
+```
+SELECT  DISTINCT ?g
+   WHERE  { GRAPH ?g {?s ?p ?o} }
+ORDER BY  ?g
+http://genenetwork.org
+http://hk.genenetwork.org
+http://lmm2.genenetwork.org
+```
+
+The first graph is for all Bonz' RDF. I can now safely delete the other two, to start with a fresh slate.
+The graph has 36584993 triples. Deleting HK remains 31322646 and LMM2 remains 29746544 triples.
+
+```
+ld_dir('/export/data/virtuoso/ttl','QTL.rdf','http://qtl.genenetwork.org');
+```
+
+Ouch, we got an error. With the proper prefix values and renaming the file to QTL.ttl it worked with 183562 new triples!
+Next we loaded the updated TTL files. HK imported 3196834 triples. LMM imported 1616383 and we total 34743323 triples. Which is less than the previous set - because we cleaned out the SNPs that had a LOD of infinite.
+
+After a checkpoint, time to SPARQL! This query lists all new QTL with their traits:
+
+```
+PREFIX gn: <http://genenetwork.org/id/>
+PREFIX gnt: <http://genenetwork.org/term/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?trait, ?chr, ?start, ?stop, ?lod  WHERE {
+   ?qtl gnt:mappedQTL ?traitid ;
+          gnt:qtlChr ?chr ;
+          gnt:qtlStart ?start ;
+          gnt:qtlStop ?stop ;
+          a gnt:newQTL ;
+          gnt:qtlLOD ?lod .
+   ?traitid gnt:traitId ?trait .
+} LIMIT 20
+
+"trait" "chr"   "start" "stop"  "lod"
+"26116" "7"     36.9408 36.9408 4
+"26118" "2"     3.19074 4.29272 4.3
+"26118" "9"     60.6863 64.4059 4.3
+"26126" "17"    71.754  72.1374 4.7
+"26135" "15"    93.3404 94.2523 5.5
+(...)
+```
+
+So we list all traits that have a *NEW* QTL using GEMMA compared to HK. We have a few thousand trait updates that have new QTL. Let's add the number of samples/genometypes, se we can ignore the smaller sets. Or better, count them first. We simplify the query first:
+
+```
+SELECT count(DISTINCT ?trait)  WHERE {
+   ?qtl a gnt:newQTL ;
+          gnt:mappedQTL ?traitid .
+   ?traitid gnt:traitId ?trait ;
+               gnt:nind ?nind.
+} LIMIT 20
+```
+
+Counts 2040 traits with at least one new QTL. When we FILTER (?nind > 16) we get 2019 traits. That is a tiny minority with fewer individuals. So we can ignore filtering them.
+
+Of course we visited several traits before to see if the QTL were correct. I'll make a list for Rob to check, expanding the trait to a clickable URL:
+
+Let's look for the new QTL.
+
+```
+SELECT ?trait, ?chr, ?start, ?stop, ?lod  WHERE {
+   ?qtl gnt:mappedQTL ?traitid ;
+          gnt:qtlChr ?chr ;
+          gnt:qtlStart ?start ;
+          gnt:qtlStop ?stop ;
+          a gnt:newQTL ;
+          gnt:qtlLOD ?lod .
+   ?traitid gnt:traitId ?trait .
+   BIND(REPLACE(?trait, "(\\d+)","https://genenetwork.org/show_trait?trait_id=$1&dataset=BXDPublish") AS ?url)
+} LIMIT 20
+
+"trait" "chr"   "start" "stop"  "lod"   "url"
+"26116" "7"     36.9408 36.9408 4       "https://genenetwork.org/show_trait?trait_id=26116&dataset=BXDPublish"
+"26118" "2"     3.19074 4.29272 4.3     "https://genenetwork.org/show_trait?trait_id=26118&dataset=BXDPublish"
+"26118" "9"     60.6863 64.4059 4.3     "https://genenetwork.org/show_trait?trait_id=26118&dataset=BXDPublish"
+"26126" "17"    71.754  72.1374 4.7     "https://genenetwork.org/show_trait?trait_id=26126&dataset=BXDPublish"
+"26135" "15"    93.3404 94.2523 5.5     "https://genenetwork.org/show_trait?trait_id=26135&dataset=BXDPublish"
+```
+
+Now when I click the link for 26118 I can run HK and GEMMA and I can confirm we have a new result on CHR2 and CHR9.
+Very cool. Now we want to show the trait info and authors, so we can see who we want to approach with this new information.
+
+Now in the phenotype RDF we have
+
+```
+gn:traitBxd_10001 rdf:type gnc:Phenotype .
+gn:traitBxd_10001 gnt:belongsToGroup gn:setBxd .
+gn:traitBxd_10001 gnt:traitId "10001" .
+gn:traitBxd_10001 dct:description "Central nervous system, morphology: Cerebellum weight, whole, bilateral in adults of
+ both sexes [mg]" .
+gn:traitBxd_10001 gnt:submitter "robwilliams" .
+gn:traitBxd_10001 dct:isReferencedBy pubmed:11438585 .
+```
+
+The submitter is mostly one of the GN team. The pubmed id may help find the authors. Bonz RDF'd it as
+
+```
+pubmed:11438585 rdf:type fabio:ResearchPaper .
+pubmed:11438585 fabio:hasPubMedId pubmed:11438585 .
+pubmed:11438585 dct:title "Genetic control of the mouse cerebellum: identification of quantitative trait loci modulatin
+g size and architecture" .
+pubmed:11438585 fabio:Journal "J Neuroscience" .
+pubmed:11438585 prism:volume "21" .
+pubmed:11438585 fabio:page "5099-5109" .
+pubmed:11438585 fabio:hasPublicationYear "2001"^^xsd:gYear .
+pubmed:11438585 dct:creator "Airey DC" .
+pubmed:11438585 dct:creator "Lu L" .
+pubmed:11438585 dct:creator "Williams RW" .
+```
+
+So we can fetch that when it is available.
