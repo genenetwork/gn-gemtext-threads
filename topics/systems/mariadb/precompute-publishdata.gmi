@@ -33,7 +33,7 @@ So we can convert a .geno file to BIMBAM. I need to extract GN traits to a R/qtl
 * [X] RDF point back to original data file
 * [ ] Fix Infinity also in LMM run (156 SNPs only)
 * [ ] Make time stamp, host, user a compute 'origin' block in RDF
-* [ ] RDF mark QTL
+* [X] RDF mark QTL
 * [ ] Make sure the trait fetcher handles authorization or runs localhost only
 * [ ] gemma-wrapper --force does not work for GRM and re-check GRM does not change on phenotype
 * [ ] Use SNP URIs when possible (instead of inventing our own) - and BED information so we can locate them
@@ -3305,4 +3305,47 @@ pubmed:11438585 dct:creator "Lu L" .
 pubmed:11438585 dct:creator "Williams RW" .
 ```
 
-So we can fetch that when it is available.
+So we can fetch that when it is available. You can run the query here:
+
+=> http://sparql-test.genenetwork.org/sparql/
+
+Just copy paste:
+
+```
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX pubmed: <http://rdf.ncbi.nlm.nih.gov/pubmed/>
+PREFIX gn: <http://genenetwork.org/id/>
+PREFIX gnt: <http://genenetwork.org/term/>
+PREFIX gnc: <http://genenetwork.org/category/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX fabio: <http://purl.org/spar/fabio/>
+
+SELECT ?trait, ?chr, ?start, ?stop, ?lod, ?year, ?submitter, SAMPLE(?author as ?one_author), ?url, ?descr  WHERE {
+   ?qtl gnt:mappedQTL ?traitid ;
+          gnt:qtlChr ?chr ;
+          gnt:qtlStart ?start ;
+          gnt:qtlStop ?stop ;
+          a gnt:newQTL ;
+          gnt:qtlLOD ?lod .
+   ?traitid gnt:traitId ?trait .
+   OPTIONAL { ?phenoid gnt:traitId ?trait ;
+          a gnc:Phenotype ;
+          gnt:belongsToGroup gn:setBxd ;
+          gnt:submitter ?submitter ;
+          dct:description ?descr ;
+          dct:isReferencedBy ?pubid . } .
+         ?pubid dct:creator ?author ;
+                     fabio:hasPublicationYear ?pubyear .
+   BIND(concat(str(?pubyear)) as ?year)
+   BIND(REPLACE(?trait, "(\\d+)","https://genenetwork.org/show_trait?trait_id=$1&dataset=BXDPublish") AS ?url)
+} ORDER by ?trait
+LIMIT 100
+"10002" "1" 72.2551 73.3771 5.1 "2001"  "robwilliams" "Lu L"  "https://genenetwork.org/show_trait?trait_id=10002&dataset=BXDPublish"  "Central nervous system, morphology: Cerebellum weight after adjustment for covariance with brain size [mg]"
+"10004" "8" 95.6926 97.3516 4.6 "2001"  "robwilliams" "Lu L"  "https://genenetwork.org/show_trait?trait_id=10004&dataset=BXDPublish"  "Central nervous system, morphology: Cerebellum volume [mm3]"
+"10013" "2" 160.117 160.304 4.8 "1996"  "robwilliams" "Alexander RC"  "https://genenetwork.org/show_trait?trait_id=10013&dataset=BXDPublish"  "Central nervous system, behavior: Saline control response 0.9% ip, locomotor activity from 0-60 min after injection just prior to injection of 5 mg/kg amphetamine [cm]"
+(...)
+```
+
+
+Currently authors are not 'ranked' in RDF, so I pick a random one. I can add ranking later, so we get the first author. We also have the option to fetch all traits that, for example, involve Dave Ashbrook.
