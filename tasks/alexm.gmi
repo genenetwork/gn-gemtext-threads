@@ -138,11 +138,19 @@ e
 ## 25/8/2025
 * [-] script to dump phenotypes and cross metadata to lmdb
 
-## 25/8/2025
+## 31/8/2025
 
 * [] generic script that can  parse json cross files and dump the metadata to lmdb 
 * [] follow up on dumped phenotypes in LMDB for GeneNetwork cc @bons
 * [] integrating lmdb rqtl2 adapter to CD (test this on cd for bxd.)
+
+## 23/9/2025
+* [x] dumping  phenotypes to lmdb (BXDPublish)
+* [x] dumping cross metadata to lmdb
+
+## 30/9/2025
+* []  profiling and benchmarking  read_lmdb_cross against read_cross
+* [] Run this on tux02 and integrate to CD
 
 
 
