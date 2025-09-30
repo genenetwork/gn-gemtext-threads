@@ -12,10 +12,9 @@
 
 * [] Document work on issue tracker
 
-* [] Find more affordable options for GNQA
+* [] Make naturalization faster
 
-* [] Replace GNQA backend with Bonz
-
+* [] Proceed with QTL
 
 ### Later
 
@@ -45,3 +44,7 @@
 * [X] Make RAG agentic -> AI system
 
 * [X] Visit precompute issue
+
+* [X] Find more affordable options for GNQA
+
+* [X] Replace GNQA backend with Bonz
