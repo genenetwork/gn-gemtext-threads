@@ -23,15 +23,14 @@
 * Share PhD concept note with PJ for polishing
 
 ### This week
-* [X] Fix CD tests.
-* [ ] Install OpenCL in Penguin2 and try LLM script.  Check differences between OpenCL and CUDA.
 * [ ] Look at different provider(s) for LLMs.
+* [~] Set-up wolfshead.
+* [ ] Install OpenCL in Penguin2 and try LLM script.  Check differences between OpenCL and CUDA.
 * [~] Look at container work.  Look at permissions issue.
 * [~] Dump all genotypes from tux02 to LMDB.
 *     - PJ sync tux01 genotypes with tux02/04.
 *     - Yet to set-up 2FA on new device
 * [~] Look at deep-seek/anthropic (also really doc deployment in balg01).  Run in debian machine.
-* [~] Set-up wolfshead.
 * [~] Adapter to LMDB into a cross object.
 *     - Try computations with R/qtl2.
 *     - Look at R LMDB libraries.
@@ -166,3 +165,4 @@ Currently closed issues are:
 * [X] Merged rate-limiter.
 * [X] Look at slow running CD (look at issue tracker and be systematic).
 * [X] Fix CD.  Build guix against a recent pinned profile.
+* [X] Fix CD tests.
