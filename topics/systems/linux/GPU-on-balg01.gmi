@@ -66,6 +66,19 @@ Note I installed the nvidia-open drivers. If things are not working we should lo
 
 => https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/index.html#debian-installation
 
+
+```
+apt-get -y install nvidia-libopencl1 nvidia-open nvidia-driver-cuda
+```
+
+The first one is to prevent
+
+```
+libnppc11 : Conflicts: nvidia-libopencl1
+```
+
+now this should run
+
 ```
 balg01:~# nvidia-smi
 Sat Oct  4 11:56:19 2025
