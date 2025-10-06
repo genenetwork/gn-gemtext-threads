@@ -62,7 +62,9 @@ apt install linux-headers-$(uname -r)
 
 The debian selector, choose data center and L series: Driver Version:580.95.05 CUDA Toolkit:13.0 Release Date:Wed Oct 01, 2025 File Size:844.44 MB
 
-Note I installed the nvidia-open drivers. If things are not working we should look at the proprietary stuff.
+Note I installed the nvidia-open drivers. If things are not working we should look at the proprietary stuff. I used the 'local repository installation' instructions of
+
+=> https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/index.html#debian-installation
 
 ```
 balg01:~# nvidia-smi
