@@ -68,7 +68,7 @@ Note I installed the nvidia-open drivers. If things are not working we should lo
 
 
 ```
-apt-get -y install nvidia-libopencl1 nvidia-open nvidia-driver-cuda
+apt-get install nvidia-libopencl1 nvidia-open nvidia-driver-cuda
 ```
 
 The first one is to prevent
@@ -132,3 +132,70 @@ make
 ...
 Test passed
 ```
+
+Note that this removed nvidia-smi. Let's look at versions:
+
+```
+pool/non-free/n/nvidia-graphics-drivers/nvidia-libopencl1_535.247.01-1~deb12u1_amd64.deb
+pool/contrib/n/nvidia-cuda-samples/nvidia-cuda-samples_11.8~dfsg-2_all.deb
+pool/non-free/n/nvidia-cuda-toolkit/nvidia-cuda-toolkit-gcc_11.8.0-5~deb12u1_amd64.deb
+pool/non-free/n/nvidia-graphics-drivers/nvidia-libopencl1_535.247.01-1~deb12u1_amd64.deb
+```
+
+while
+
+```
+Filename: ./nvidia-open_580.95.05-1_amd64.deb
+Package: nvidia-driver-cuda
+Version: 580.95.05-1
+Section: NVIDIA
+Source: nvidia-graphics-drivers
+Provides: nvidia-cuda-mps, nvidia-smi
+```
+
+and it turns out to be a mixture. I have to take real care not to mix in Debian packages! For example this package is a Debian original:
+
+```
+ii  nvidia-cuda-gdb                             11.8.86~11.8.0-5~deb12u1                amd64        NVIDIA CUDA Debugger (GDB)
+```
+
+```
+apt remove --purge nvidia-* cuda-* libnvidia-*
+```
+
+says
+
+```
+Note, selecting 'libnvidia-gpucomp' instead of 'libnvidia-gpucomp-580.95.05'
+```
+
+To view installed packages belonging to Debian itself:
+
+```
+dpkg -l|grep nvid|grep deb12
+dpkg -l|grep cuda|grep deb12
+```
+
+Let's reinstall and make sure only NVIDIA packages are used:
+
+```
+wget https://developer.download.nvidia.com/compute/cuda/repos/debian12/x86_64/cuda-keyring_1.1-1_all.deb
+dpkg -i cuda-keyring_1.1-1_all.deb
+apt-get update
+apt-get install cuda-toolkit  cuda-compiler-12-2
+```
+
+Now we have:
+
+```
+/usr/local/cuda-12.3/bin/nvcc --version
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2023 NVIDIA Corporation
+Built on Wed_Nov_22_10:17:15_PST_2023
+```
+
+# Pytorch
+
+CUDA environment variable for pytorch is probably useful:
+
+=> https://docs.pytorch.org/docs/stable/cuda_environment_variables.html
