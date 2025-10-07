@@ -37,8 +37,8 @@ Steps (flesh out better):
 
 ## Set Up the Database
 
-* Extract: detail this — link to existing document in this repo. Also, probably note that we symlink the extraction back to `/var/lib/mysql`?
-* Configure: detail this — link to existing document in this repo
+=> /topics/systems/restore-backups Extract the latest database from the backups.
+=> /topics/deploy/installation Configure MariaDB according to this document.
 
 ## Set Up the File System
 
