@@ -49,9 +49,9 @@ The container(s) need access to various files and directories from the host syst
 
 Filesystem bindings could be linked to wildly different paths on different physical host machines, therefore, we shall examine the bindings from the point of view of the paths within the container, rather than forcing a particular file system layout on the host systems themselves.
 
-### File System Bindings
+Each of the sections below details a specific binding:
 
-#### /var/genenetwork
+### /var/genenetwork
 
 This binding must be READWRITE within the container.
 
@@ -61,25 +61,25 @@ The purpose is to hold varying files that are specific to the genenetwork system
 * genotype files
 * session files for various systems (GN2, gn-uploader, etc.)
 
-#### /var/lib/acme
+### /var/lib/acme
 
 This binding must be READWRITE within the container.
 
 This is used to store TLS certificates for the various services within the container by the ACME (Automatic Certificate Management Environment) script.
 
-#### /var/lib/redis
+### /var/lib/redis
 
 This binding must be READWRITE within the container.
 
 This is used by the redis daemon to persist its state(s).
 
-#### /var/lib/virtuoso
+### /var/lib/virtuoso
 
 This binding must be READWRITE within the container.
 
 Used by the virtuoso daemon to save its state, and maybe some log files.
 
-#### /export/data/virtuoso/
+### /export/data/virtuoso/
 
 This binding must be READONLY within the container. (Really?)
 
@@ -88,31 +88,31 @@ This is used for importing data into virtuoso, say by sharing Turtle (TTL) files
 ---
 At this point the binding is READONLY because any TTL files to load are imported from outside the container. If the transformation of data from MariaDB to TTL form is built into the production containers down the line, then this might change to READWRITE to allow the tranformation tool to write to it.
 
-#### /var/log
+### /var/log
 
 This binding must be READWRITE within the container.
 
 Allows logs from various services running in the container be accessible in the host system. This is useful for debugging issues with the running systems.
 
-#### /etc/genenetwork
+### /etc/genenetwork
 
 This binding must be READWRITE within the container.
 
 Useful for storing various configuration files/data for the service(s) running inside the running container.
 
-#### /var/lib/xapian
+### /var/lib/xapian
 
 This binding must be READWRITE within the container.
 
 Stores the processed search indexes for the xapian search system.
 
-#### /var/lib/genenetwork/sqlite/gn-auth
+### /var/lib/genenetwork/sqlite/gn-auth
 
 This binding must be READWRITE within the container.
 
 The authorisation database is stored here. The directory needs to be writable to avoid permissions issues within the container when attempting to write data into the database.
 
-#### /var/lib/genenetwork/sqlite/genenetwork3
+### /var/lib/genenetwork/sqlite/genenetwork3
 
 This binding must be READWRITE within the container.
 
@@ -121,19 +121,19 @@ This stores various SQLite databases in use with GN3. These are:
 * Database for the GNQA system
 * ...
 
-#### /run/mysqld
+### /run/mysqld
 
 This binding must be READWRITE within the container.
 
 This binding is the link to the host directory that holds the socket file for the running MariaDB instance.
 
-#### /var/lib/gn-docs.git
+### /var/lib/gn-docs.git
 
 This binding must be READWRITE within the container.
 
 * **TODO**: What is this binding for?
 
-#### /opt/gn/tmp
+### /opt/gn/tmp
 
 This binding must be READWRITE within the container.
 
@@ -142,13 +142,13 @@ Holds temporary files for the various services that run within the container. So
 **PROPOSAL**: Move all generated files here, or have a dedicated directory for holding generated files?
 
 
-#### /var/genenetwork/sessions
+### /var/genenetwork/sessions
 
 This binding must be READWRITE within the container.
 
 Holds session files for various services within the container. See also the /var/genenetwork binding.
 
-#### /var/lib/genenetwork/uploader
+### /var/lib/genenetwork/uploader
 
 This binding must be READWRITE within the container.
 
@@ -158,7 +158,7 @@ This binding must be READWRITE within the container.
 * (Reusable) Cache files and generated files
 * ... others?
 
-#### /var/lib/genenetwork/sqlite/gn-uploader
+### /var/lib/genenetwork/sqlite/gn-uploader
 
 This binding must be READWRITE within the container.
 
@@ -167,7 +167,7 @@ Holds various SQLite databases used with the **gn-uploader** service, e.g.:
 * Background jobs database
 * ...
 
-#### /var/lib/genenetwork/gn-guile
+### /var/lib/genenetwork/gn-guile
 
 This binding must be READWRITE within the container.
 
