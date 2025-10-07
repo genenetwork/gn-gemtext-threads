@@ -45,6 +45,90 @@ Steps (flesh out better):
 * TODO: List the necessary directories and describe what purpose each serves. This will be from the perspective of the container — actual paths on the host system are left to the builders choice, and can vary wildly.
 * TODO: Prefer explicit binding rather than implicit — makes the shell scripts longer, but no assumptions have to be made, everything is explicitly spelled out.
 
+The container(s) need access to various files and directories from the host system in order to work correctly.
+
+Filesystem bindings could be linked to wildly different paths on different physical host machines, therefore, we shall examine the bindings from the point of view of the paths within the container, rather than forcing a particular file system layout on the host systems themselves.
+
+### File System Bindings
+
+#### /var/genenetwork
+
+This binding must be READ/WRITE within the container.
+
+The purpose is to hold varying files that are specific to the genenetwork system(s). Examples of the files are:
+
+* "gn-meta" and "synteny" files for GN3
+* genotype files
+* session files for various systems (GN2, gn-uploader, etc.)
+
+#### /var/lib/acme
+
+* **TODO**: Describe this: Writable? What is this binding for?
+
+#### /var/lib/redis
+
+* **TODO**: Describe this: Writable? What is this binding for?
+
+#### /var/lib/virtuoso
+
+* **TODO**: Describe this: Writable? What is this binding for?
+
+#### /var/log
+
+* **TODO**: Describe this: Writable? What is this binding for?
+
+#### /etc/genenetwork
+
+* **TODO**: Describe this: Writable? What is this binding for?
+
+#### /var/lib/xapian
+
+* **TODO**: Describe this: Writable? What is this binding for?
+
+#### /var/lib/genenetwork/sqlite/gn-auth
+
+* **TODO**: Describe this: Writable? What is this binding for?
+
+#### /var/lib/genenetwork/sqlite/genenetwork3
+
+* **TODO**: Describe this: Writable? What is this binding for?
+
+#### /run/mysqld
+
+* **TODO**: Describe this: Writable? What is this binding for?
+
+#### /var/lib/gn-docs.git
+
+* **TODO**: Describe this: Writable? What is this binding for?
+
+#### /opt/gn/tmp
+
+* **TODO**: Describe this: Writable? What is this binding for?
+
+#### /export/data/virtuoso/
+
+* **TODO**: Describe this: Writable? What is this binding for?
+
+#### /export/data/gn-docs
+
+* **TODO**: Describe this: Writable? What is this binding for?
+
+#### /var/genenetwork/sessions
+
+* **TODO**: Describe this: Writable? What is this binding for?
+
+#### /var/lib/genenetwork/uploader
+
+* **TODO**: Describe this: Writable? What is this binding for?
+
+#### /var/lib/genenetwork/sqlite/gn-uploader
+
+* **TODO**: Describe this: Writable? What is this binding for?
+
+#### /var/lib/genenetwork/gn-guile
+
+* **TODO**: Describe this: Writable? What is this binding for?
+
 ## Redis
 
 We currently (2025-06-11) use Redis for:
