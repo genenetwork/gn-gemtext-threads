@@ -23,17 +23,17 @@ We need to synchronise the authorisation database. We can copy this over from th
 
 Steps (flesh out better):
 
-- Extract backup (or copy from existing production system)
-- Stop the (new) container (if it's running)
-- Backup the (new) container's auth-db file (
-- Place the auth db file in the correct place in the container's filesystem:
-- Backup existing secrets
-- Login to the `/auth/admin/dashboard` of the auth server (e.g. https://cd.genenetwork.org/auth/admin/dashboard)
-- If client with the CLIENT_ID in the secrets exists
-- 1. update the uris for that client, if it doesn't exist, create an entirely new client and replace both the CLIENT_ID and CLIENT_SECRET in the secrets file.
-- 2. Click on the "Change Secret" button and generate a new secret. Replace the secret in the secrets file with the newly generated secret
-- If client with the CLIENT_ID in the secrets DOES NOT exist, register a new client, setting up the appropriate URIs and endpoints, and then add/replace both the CLIENT_ID and CLIENT_SECRET in the secrets file.
-- Restart (new) container
+* Extract backup (or copy from existing production system)
+* Stop the (new) container (if it's running)
+* Backup the (new) container's auth-db file (
+* Place the auth db file in the correct place in the container's filesystem:
+* Backup existing secrets
+* Login to the `/auth/admin/dashboard` of the auth server (e.g. https://cd.genenetwork.org/auth/admin/dashboard)
+* If client with the CLIENT_ID in the secrets exists
+* 1. update the uris for that client, if it doesn't exist, create an entirely new client and replace both the CLIENT_ID and CLIENT_SECRET in the secrets file.
+* 2. Click on the "Change Secret" button and generate a new secret. Replace the secret in the secrets file with the newly generated secret
+* If client with the CLIENT_ID in the secrets DOES NOT exist, register a new client, setting up the appropriate URIs and endpoints, and then add/replace both the CLIENT_ID and CLIENT_SECRET in the secrets file.
+* Restart (new) container
 
 ## Set Up the Database
 
@@ -49,10 +49,10 @@ Steps (flesh out better):
 
 We currently (2025-06-11) use Redis for:
 
-- Tracking user collection (this will be moved to SQLite database)
-- Tracking background jobs (this is being moved out to SQLite databases)
-- Tracking running-time (not sure what this is about)
-- Others?
+* Tracking user collection (this will be moved to SQLite database)
+* Tracking background jobs (this is being moved out to SQLite databases)
+* Tracking running-time (not sure what this is about)
+* Others?
 
 We do need to copy over the redis save file whenever we do a migration, at least until the user collections and background jobs features have been moved completely out of Redis.
 
