@@ -149,10 +149,14 @@ e
 * [x] dumping cross metadata to lmdb
 
 ## 30/9/2025
-* []  profiling and benchmarking  read_lmdb_cross against read_cross
-* [] Run this on tux02 and integrate to CD
+* [x]  profiling and benchmarking  read_lmdb_cross against read_cross
+* [-] Run this on tux02 and integrate to CD
 
 
+## 7/9/2025
+
+* [] integrate rqtl2-lmdb adapter to CD cc @bons with directory setup.
+* [] improvement on rqtl2-lmdb adapter script;  add covariates supports.
 
 ## Next week(s)
 
