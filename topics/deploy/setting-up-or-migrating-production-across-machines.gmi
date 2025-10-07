@@ -127,12 +127,6 @@ This binding must be READWRITE within the container.
 
 This binding is the link to the host directory that holds the socket file for the running MariaDB instance.
 
-### /var/lib/gn-docs.git
-
-This binding must be READWRITE within the container.
-
-* **TODO**: What is this binding for?
-
 ### /opt/gn/tmp
 
 This binding must be READWRITE within the container.
