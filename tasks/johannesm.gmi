@@ -10,11 +10,11 @@
 
 ### Ongoing
 
-* [] Document work on issue tracker
+* [~] Document work on issue tracker
 
-* [] Make naturalization faster
+* [~] Make naturalization faster
 
-* [] Proceed with QTL
+* [~] Proceed with QTL
 
 ### Later
 
@@ -48,3 +48,7 @@
 * [X] Find more affordable options for GNQA
 
 * [X] Replace GNQA backend with Bonz
+
+* [X] Test GPU
+
+* [X] Test new AI system
