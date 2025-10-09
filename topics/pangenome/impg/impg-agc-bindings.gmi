@@ -1,0 +1,135 @@
+# IMPG AGC bindings
+
+In this document we will create a build setup that allows us to use AGC (a C++ library) from a recent Rust compiler. The original binding proves tricky. So we break it down into parts. Also we try out the new Rust cargo support in Guix.
+
+Fortunately the AGC include file contains a limited list of functions that have C ABI bindings:
+
+```c
+EXTERNC agc_t* agc_open(char* fn, int prefetching);
+EXTERNC int agc_close(agc_t* agc);
+EXTERNC int agc_get_ctg_len(const agc_t *agc, const char *sample, const char *name);
+EXTERNC int agc_get_ctg_seq(const agc_t *agc, const char *sample, const char *name, int start, int end, char *buf);
+EXTERNC int agc_n_sample(const agc_t* agc);
+EXTERNC int agc_n_ctg(const agc_t *agc, const char *sample);
+EXTERNC char* agc_reference_sample(const agc_t* agc);
+EXTERNC char **agc_list_sample(const agc_t *agc, int *n_sample);
+EXTERNC char **agc_list_ctg(const agc_t *agc, const char *sample, int *n_ctg);
+EXTERNC int agc_list_destroy(char **list);
+EXTERNC int agc_string_destroy(char *sample);
+```
+
+Even for a C++ library it is very thoughtful to provide a C ABI! Both the current Rust binding and the Python example in AGC actually use the C++ class - which means they need to build against a matching C++ source tree.
+It should be straightforward to create a Rust module that calles into the shared library directly using the C ABI instead of importing and building all the source code.
+
+One early choice is a separation of concerns. We will try to build the library independently of the Rust package. This follows a standard model. For example cargo should not build zlib - it is provided by the environment. The bindings, meanwhile, are defined and built in cargo.
+
+## Setting up Guix with rust
+
+Guix provides a reproducible build environment. If you get over the fact that it is Lisp, it proves a remarkably nice way to handle dependencies. The first step is to set up guix so you get a recent set of dependencies. For this run guix pull and set it up in a profile
+
+```sh
+guix pull -p ~/opt/guix-pull --url=https://codeberg.org/guix/guix
+```
+
+it takes a few minutes. Next set the environment
+
+```sh
+unset GUIX_PROFILE
+. ~/opt/guix-pull/etc/profile
+```
+
+and list the packages
+
+```sh
+guix package -A rust
+rust                    1.85.1                  rust-src,tools,out,cargo        gnu/packages/rust.scm:1454:4
+```
+
+should show a recent edition of rust (typically about half a year old, the rust-team in guix is now working on 1.89). Note you can also pull an older version of guix (and rust) by passing in the git hash value of the codeberg repo. This allows you to go back to the dependency tree of, say, three months ago. It allows for a level of sanity not seen in other software deployment systems.
+
+Note that we tend not to be too recent with packages as Guix is used to deploy *stable* systems. If you want a more recent version of rust you can write your own guix package - it is not that hard. We may attempt it later for this exercise.
+
+Note also that newbies run guix-pull too often. I typically do it every three months, or so. So the slowness of guix-pull should not really count.
+
+One thing that is a bit funny now is that we currently can't list most cargo packages in guix because they the crates are now 'local' to a package. We have to check the source tree:
+
+=> https://codeberg.org/guix/guix/src/branch/master/gnu/packages/rust-crates.scm
+
+## Building AGC in guix
+
+AGC is a C++ program with a C ABI. The README suggests there are no dependencies, but that is misleading. It sources other dependencies and builds them (bit like git submodules). I managed to build AGC using a guix shell with:
+
+```sh
+guix shell -C guix gcc-toolchain make libdeflate pkg-config xz mimalloc coreutils sed minizip-ng lzlib zlib:static zstd:static zstd:lib zstd zlib
+make PLATFORM=avx2 libagc
+```
+
+Note it pulls in too much. To make it compile the patch I applied is
+
+```diff
+--- a/agc/makefile
++++ b/agc/makefile
+@@ -14,14 +14,14 @@ $(call SET_SRC_OBJ_BIN,src,obj,bin)
+
+ # *** Project configuration
+ $(call CHECK_NASM)
+-$(call ADD_MIMALLOC, $(3RD_PARTY_DIR)/mimalloc)
++# $(call ADD_MIMALLOC, $(3RD_PARTY_DIR)/mimalloc)
+ $(call PROPOSE_ISAL, $(3RD_PARTY_DIR)/isa-l)
+-$(call PROPOSE_ZLIB_NG, $(3RD_PARTY_DIR)/zlib-ng)
+-$(call CHOOSE_GZIP_DECOMPRESSION)
+-$(call ADD_LIBDEFLATE, $(3RD_PARTY_DIR)/libdeflate)
+-$(call ADD_LIBZSTD, $(3RD_PARTY_DIR)/zstd)
++# $(call PROPOSE_ZLIB_NG, $(3RD_PARTY_DIR)/zlib-ng)
++# $(call CHOOSE_GZIP_DECOMPRESSION)
++# $(call ADD_LIBDEFLATE, $(3RD_PARTY_DIR)/libdeflate)
++# $(call ADD_LIBZSTD, $(3RD_PARTY_DIR)/zstd)
+ $(call ADD_RADULS_INPLACE,$(3RD_PARTY_DIR)/raduls-inplace)
+-$(call ADD_PYBIND11,$(3RD_PARTY_DIR)/pybind11/include)
++# $(call ADD_PYBIND11,$(3RD_PARTY_DIR)/pybind11/include)
+ $(call SET_STATIC, $(STATIC_LINK))
+
+ $(call SET_C_CPP_STANDARDS, c11, c++20)
+@@ -57,7 +57,7 @@ $(OUT_BIN_DIR)/agc: \
+        $(CXX) -o $@  \
+        $(MIMALLOC_OBJ) \
+        $(OBJ_APP) $(OBJ_CORE) $(OBJ_COMMON) \
+-       $(LIBRARY_FILES) $(LINKER_FLAGS) $(LINKER_DIRS)
++       $(LIBRARY_FILES) -lzstd -lz -ldeflate $(LINKER_FLAGS) $(LINKER_DIRS)^M
+
+ libagc: $(OUT_BIN_DIR)/libagc
+ $(OUT_BIN_DIR)/libagc:
+```
+
+Essentially disables 3rd-party dependency builds, in favour of using the Guix ones.
+
+Note that Bioconda installes AGC as a binary:
+
+=> https://github.com/bioconda/bioconda-recipes/blob/master/recipes/agc/meta.yaml
+
+So it circumvents building AGC by downloading the provided static binaries. In only downloads the binary, not the library.
+
+## The current cargo package
+
+The current cargo bindings package named agc-rs vendors in (in its turn) the AGC github repository. Similarly to git modules. It is kinda ironic that we left git submodules for something that is not better (maybe even worse because it does not do the hash values, but a versioned branch/tag -- who is to say what happened upstream).
+
+## Changes
+
+So we propose to take a different approach when it comes to distributing software. First premise is that we will prepare pre-built *binaries* for external use that can be handled by conda and singularity. Both these deployers can handle external dependencies, so we can just use a standard AGC build/distribution. That is key to keeping sane - so not have cargo build AGC itself as it is just a library with a decent C ABI.
+
+To make it work with Rust we can create a cargo module that binds to the C ABI using FFI (and not care where the AGC library comes from). One great feature is we can use the C ABI without having to generate bindings using clang and all that. A C ABI can be written and maintained by hand in Rust.
+
+For C++ only libraries, the narrative gets a bit harder. If the C++ interface is rich it may be best to use a bindings generator. In general it should be possible to provide a C ABI that calls into C++, however, in C. This means we can take the same deployment approach (in general) for pure C++ libraries, provided we can write a short C ABI. I have done this for vcflib, for example, to write the Zig version of vcflib:
+
+=> https://github.com/vcflib/vcflib/blob/master/src/vcf-c-api.cpp
+
+To support AGC in Rust we need to:
+
+* [ ] Create a Rust binding that uses the AGC C ABI instead of the C++ one, so we can use a statically built AGC lib and don't need the source tree for cargo
+
+We will also write a
+
+* [ ] Guix build to create the optimized AGC static lib
+* [ ] Guix build that creates an optimized impg
+
+And that last one allows us to distribute prebuilt binaries in CONDA and apptainer/singularity/docker.
