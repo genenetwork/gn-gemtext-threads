@@ -23,6 +23,16 @@ It should be straightforward to create a Rust module that calles into the shared
 
 One early choice is a separation of concerns. We will try to build the library independently of the Rust package. This follows a standard model. For example cargo should not build zlib - it is provided by the environment. The bindings, meanwhile, are defined and built in cargo.
 
+# Tasks
+
+* [ ] Get guix to compile impg with AGC
+* [ ] Add optimization
+* [ ] Make sure spoa build in spoa-rs is optimized
+* [ ] Create static binary for distribution
+* [ ] Create singularity example
+
+# Steps
+
 ## Setting up Guix with rust
 
 Guix provides a reproducible build environment. If you get over the fact that it is Lisp, it proves a remarkably nice way to handle dependencies. The first step is to set up guix so you get a recent set of dependencies. For this run guix pull and set it up in a profile
@@ -133,3 +143,69 @@ We will also write a
 * [ ] Guix build that creates an optimized impg
 
 And that last one allows us to distribute prebuilt binaries in CONDA and apptainer/singularity/docker.
+
+Note that this is the same approach as taken by
+
+=> https://github.com/rust-lang/libz-sys/blob/main/build.rs
+
+which binds against libz. It *optionally* builds the source tree of zlib which is included as a submodule
+
+=> https://github.com/rust-lang/libz-sys/tree/main/src
+
+In our case, a rebuild can be useful when AGC lib can not be found. Note that the cargo edition of libz-sys does not invoke make or cmake. It builds it by 'hand'!
+
+There is also libz-rs, but that is a somewhat typical Rust rewrite of libz:
+
+=> https://github.com/trifectatechfoundation/zlib-rs
+
+I also took a quick look at the rust spoa crate. Here a build is always forced, but I don't think it actually optimizes the build. Add a note to my tasks.
+
+## First guix package by Fred
+
+Fred drafted a first guix package which can build impg with
+
+```
+guix build -L .guix/modules -f guix.scm
+
+/gnu/store/cdjiq6aalpc849hl8irmbn8xax9mq2b6-impg-0.3.1/bin/impg
+Command-line tool for querying overlaps in PAF files
+
+Usage: impg <COMMAND>
+
+Commands:
+  index       Create an IMPG index
+  lace        Lace files together (graphs or VCFs)
+  partition   Partition the alignment
+  query       Query overlaps in the alignment
+  similarity  Compute pairwise similarity between sequences in a region
+  stats       Print alignment statistics
+
+Options:
+  -h, --help     Print help
+  -V, --version  Print version
+```
+
+It builds against rust 1.85 and uses the new cargo support in Guix. It does not have to rebuild the cargo packages already in guix. Nice and a good start!
+
+=> https://github.com/pangenome/impg/blob/f5ebaf8b511ee06bdeb193ef509836c26cd4793a/.guix/modules/impg/impg.scm#L4
+
+we'll still need to add AGC, static output and optimizations.
+
+## Adding a guix package for AGC
+
+As a first step we build a package for AGC that compiles libagc.a using AVX2:
+
+=> https://github.com/pjotrp/impg/commit/ed16948cc4145ff933a19ba54c3bc1fe4cec709f
+
+we used the vendored in source for raduls-inplace and isa-l. Not sure they are really required, but I think it is harmless here.
+
+## Make sure libagc.a is linked to impg
+
+To create a rust package for binding libagc it is worth reading:
+
+=> https://doc.rust-lang.org/cargo/reference/build-scripts.html#a-sys-packages
+
+* The library crate should link to the native library libfoo. This will often probe the current system for libfoo before resorting to building from source.
+* The library crate should provide declarations for types and functions in libfoo, but not higher-level abstractions.
+
+So we should create an agc-rs crate that provides a high-level interface to the upcoming libagc-sys crate. No wonder these crates proliferate.
