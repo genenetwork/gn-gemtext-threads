@@ -118,6 +118,20 @@ The reason that we don't get the automatically resolving libraries that you norm
 
 I just did above to build spoa-rs. Only had to add cmake to the shell packages.
 
+# sweepga on octopus01
+
+I just built sweepga. Only had the add clang to the shell:
+
+```
+guix shell --share=$HOME/.cargo  --share=$HOME/.rustup -C -N -D -F -v 3 guix gcc-toolchain make libdeflate pkg-config xz coreutils sed zstd zlib nss-certs openssl curl zlib cmake clang
+. ~/.cargo/env
+env LD_LIBRARY_PATH=$GUIX_ENVIRONMENT/lib cargo build
+env LD_LIBRARY_PATH=$GUIX_ENVIRONMENT/lib ./target/debug/sweepga
+[sweepga::start::0.000*1.00] 2025-10-11 15:27:28 | ./target/debug/sweepga
+[sweepga::detect::0.000*1.00] Using .1aln workflow (FastGA native format)
+[sweepga] ERROR: No valid input provided
+```
+
 # Updating the container
 
 Now your build may fail because you miss a crucial library or tool. This is a feature of guix containers as it makes dependencies explicit.
