@@ -122,7 +122,7 @@ I just did above to build spoa-rs. Only had to add cmake to the shell packages.
 
 I just built sweepga. Only had the add clang to the shell:
 
-```
+```sh
 guix shell --share=$HOME/.cargo  --share=$HOME/.rustup -C -N -D -F -v 3 guix gcc-toolchain make libdeflate pkg-config xz coreutils sed zstd zlib nss-certs openssl curl zlib cmake clang
 . ~/.cargo/env
 env LD_LIBRARY_PATH=$GUIX_ENVIRONMENT/lib cargo build
@@ -130,6 +130,20 @@ env LD_LIBRARY_PATH=$GUIX_ENVIRONMENT/lib ./target/debug/sweepga
 [sweepga::start::0.000*1.00] 2025-10-11 15:27:28 | ./target/debug/sweepga
 [sweepga::detect::0.000*1.00] Using .1aln workflow (FastGA native format)
 [sweepga] ERROR: No valid input provided
+```
+
+To run on the cluster you likely don't want to use the container. Make a note of GUIX_ENVIRONMENT:
+
+```
+echo $GUIX_ENVIRONMENT/
+/gnu/store/6khi7iv7l75595hwlfc1nwmdcv72m24s-profile/
+```
+
+It has your libs! So, outsite the container you can run
+
+```
+export GUIX_ENVIRONMENT=/gnu/store/6khi7iv7l75595hwlfc1nwmdcv72m24s-profile
+env LD_LIBRARY_PATH=$GUIX_ENVIRONMENT/lib /home/wrk/tmp/sweepga/target/debug/sweepga
 ```
 
 # Updating the container
