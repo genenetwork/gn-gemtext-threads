@@ -3,7 +3,7 @@
 ## Tags
 
 * type: bug
-* status: open
+* status: stalled
 * priority: medium
 * assigned: zachs, fredm, flisso
 * keywords: gn2, genenetwork2, genenetwork 2, mapping
@@ -49,3 +49,7 @@ TypeError: 'NoneType' object is not iterable
 ### Updates
 
 This is likely just because the genotype file doesn't exist in the necessary format (BIMBAM). We probably need to convert the R/qtl2 genotypes to BIMBAM.
+
+## Stalled
+
+This is currently stalled, until we can upload genotypes via the uploader.
