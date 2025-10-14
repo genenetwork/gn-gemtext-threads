@@ -3,7 +3,7 @@
 ## Tags
 
 * type: improvement
-* status: open
+* status: closed, completed
 * priority: medium
 * assigned: fredm, bonfacem, alexm, zachs
 * interested: pjotrp, aruni
@@ -25,8 +25,8 @@ This issue tracks the process, and problems that come up during the move to reti
 * [x] Document how to run unit tests without the script
 * [x] Identify how to run mechanical-rob tests without the script
 * [x] Document how to run mechanical-rob tests without the script
-* [ ] Update CI/CD definitions to get rid of the references to the script
-* [ ] Delete the script from the repository
+* [x] Update CI/CD definitions to get rid of the references to the script
+* [x] Delete the script from the repository
 
 ### Setup
 
@@ -107,3 +107,8 @@ gunicorn --reload \
 ```
 
 You can change the gunicorn setting to fit your scenario.
+
+
+## Close as completed
+
+The script has been deleted.
