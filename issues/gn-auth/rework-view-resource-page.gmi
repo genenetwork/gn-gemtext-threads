@@ -2,7 +2,7 @@
 
 ## Tags
 
-* status: open
+* status: closed, completed
 * priority: medium
 * type: enhancement
 * assigned: fredm, zsloan
@@ -15,3 +15,8 @@ The view resource page ('/oauth2/resource/<uuid>/view') was built with only Geno
 We have since moved on, and added more types of resources (group, system, inbredset-group, etc). This leads to the page breaking for these other types of resources.
 
 We need to update the UI and route to ensure the page renders correctly for each type, or at the very least, redirects to the correct page (e.g. in the case of groups, which have a separate "view group" page).
+
+
+## Close as complete
+
+This is fixed now.
