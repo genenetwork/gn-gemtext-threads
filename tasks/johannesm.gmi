@@ -12,13 +12,9 @@
 
 * [~] Document work on issue tracker
 
-* [~] Make naturalization faster
-
 * [~] Proceed with QTL
 
 ### Later
-
-* [~] Fix bugs with AI system
 
 * [~] Catch up with SPARQL
 
@@ -52,3 +48,7 @@
 * [X] Test GPU
 
 * [X] Test new AI system
+
+* [X] Make naturalization faster
+
+* [X] Fix bugs and optimize AI system
