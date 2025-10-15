@@ -2,7 +2,7 @@
 
 ## Tags 
 * assigned: fredm 
-* status: open 
+* status: closed, obsoleted
 * priority: critical 
 * type: error 
 * key words: authorisation, permission 
@@ -64,3 +64,7 @@ Genetic type: intercross
 
 And when pressed the `Create Population` icon, it led to the error above.  
 
+## Closed as Obsolete
+
+* The service this was happening on (https://staging-uploader.genenenetwork.org) is no longer running
+* Most of the authorisation issues are resolved in newer code
