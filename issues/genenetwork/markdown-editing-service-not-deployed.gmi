@@ -3,7 +3,7 @@
 ## Tags
 
 * type: bug
-* status: open
+* status: closed, completed, fixed
 * assigned: fredm
 * priority: critical
 * keywords: production, container, tux04
@@ -32,3 +32,8 @@ If you do an edit and refresh the page, it will show up in the system, but it wi
 Set `CGIT_REPO_PATH="https://git.genenetwork.org/gn-guile"` which seems to allow the commit to work, but we do not actually get the changes pushed to the remote in any useful sense.
 
 It seems to me, that we need to configure the environment in such a way that it will be able to push the changes to remote.
+
+
+## Close as Completed
+
+The markdown editing service is deployed and configured correctly.
