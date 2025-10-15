@@ -4,7 +4,7 @@
 
 * assigned: fredm
 * priority: normal
-* status: open
+* status: closed, obsoleted
 * keywords: configuration, config, gn2, genenetwork, genenetwork2
 * type: bug
 
@@ -72,3 +72,10 @@ For `wqflask/run_gunicorn.py`, the route can remain as is, since this is an entr
 ### Non-Executable Configuration Files
 
 Eschew executable formats (*.py) for configuration files and prefer non-executable formats e.g. *.cfg, *.json, *.conf etc
+
+
+## Closed as obsoleted
+
+I am closing this issue as obsoleted, since a lot of things have changed since this issue was set up. The `bin/genenetwork2` script no longer exists and most of the paths mentioned have changed.
+
+The configuration issue(s) mentioned above still abound, but the changes will have to be incremental to avoid breaking the system.
