@@ -2,7 +2,7 @@
 
 ## Tags
 
-* status: open
+* status: closed, completed, fixed
 * priority: high
 * type: bug
 * assigned: bonfacem, fredm, aruni
@@ -51,3 +51,7 @@ which starts the service as expected. We can also simply restart the entire cont
 
 => https://git.genenetwork.org/gn-machines/tree/genenetwork/services/genenetwork.scm?id=e425671e69a321a032134fafee974442e8c1ce6f#n167 [1] "genenetwork" user declaration
 => https://git.genenetwork.org/gn-machines/tree/genenetwork/services/genenetwork.scm?id=e425671e69a321a032134fafee974442e8c1ce6f#n680 [2] Activation of services (see also the account-service-type being extended with the "genenetwork" user).
+
+## Close as Fixed
+
+This issue is fixed, with newer Guix and changes that @bonz did to the gn-machines repo.
