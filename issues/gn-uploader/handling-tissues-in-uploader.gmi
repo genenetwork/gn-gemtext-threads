@@ -2,11 +2,11 @@
 
 ## Tags
 
-* status: open
+* status: closed, wontfix
 * priority: high
 * assigned: fredm
 * type: feature-request
-* keywords: gn-uploader, tissues
+* keywords: gn-uploader, tissues, archived
 
 ## Description
 
@@ -112,3 +112,9 @@ ALTER TABLE Tissue MODIFY Id INT(5) UNIQUE NOT NULL;
 
 * [1] https://gn1.genenetwork.org/webqtl/main.py?FormID=schemaShowPage#ProbeFreeze
 * [2] https://gn1.genenetwork.org/webqtl/main.py?FormID=schemaShowPage#Tissue
+
+## Closed as WONTFIX
+
+I am closing this issue because it was created (2024-03-28) while I had a fundamental misunderstanding of the way data is laid out in the database.
+
+The information on the schema/layout of the tables is still useful, but chances are, we'll look at the tables themselves anyway should we need to figure out the schema.
