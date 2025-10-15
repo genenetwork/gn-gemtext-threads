@@ -128,21 +128,21 @@ e
 
 ##  11/8/2025
 
-* [-] integrating lmdb genotypes  for rqtl2 computation for BXD 
+* [x] integrating lmdb genotypes  for rqtl2 computation for BXD
 
 
 ##  18/8/2025
 
-* [-] integrating lmdb genotypes for rqtl2 computation for BXD 
+* [x] integrating lmdb genotypes for rqtl2 computation for BXD
 
 ## 25/8/2025
-* [-] script to dump phenotypes and cross metadata to lmdb
+* [x] script to dump phenotypes and cross metadata to lmdb
 
 ## 31/8/2025
 
-* [] generic script that can  parse json cross files and dump the metadata to lmdb 
-* [] follow up on dumped phenotypes in LMDB for GeneNetwork cc @bons
-* [] integrating lmdb rqtl2 adapter to CD (test this on cd for bxd.)
+* [x] generic script that can  parse json cross files and dump the metadata to lmdb
+* [x] follow up on dumped phenotypes in LMDB for GeneNetwork cc @bons
+* [x] integrating lmdb rqtl2 adapter to CD (test this on cd for bxd.)
 
 ## 23/9/2025
 * [x] dumping  phenotypes to lmdb (BXDPublish)
@@ -155,8 +155,14 @@ e
 
 ## 7/9/2025
 
-* [] integrate rqtl2-lmdb adapter to CD cc @bons with directory setup.
-* [] improvement on rqtl2-lmdb adapter script;  add covariates supports.
+* [-] integrate rqtl2-lmdb adapter to CD cc @bons with directory setup.
+* [x] improvement on rqtl2-lmdb adapter script;  add covariates supports.
+
+
+## 15/9/2025
+
+* [-] clone qtl2 repo and  build rqtl2-lmdb package locally.
+* [] package rqtl2-lmdb package to guix-bioinformatics.
 
 ## Next week(s)
 
