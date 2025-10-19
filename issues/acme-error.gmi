@@ -1,0 +1,66 @@
+# uACME Error: "urn:ietf:params:acme:error:unauthorized"
+
+## Tags
+
+* status: open
+* priority: high
+* type: bug
+* assigned: fredm
+* keywords: uacme, certificates, "urn:ietf:params:acme:error:unauthorized"
+
+## Description
+
+Sometimes, when we attempt to request TLS certificates from Let's Encrypt using uacme, we run into an error of the following form:
+
+```
+uacme: polling challenge status at https://acme-v02.api.letsencrypt.org/acme/chall/2399017717/599167439271/jFB2Pg
+uacme: challenge https://acme-v02.api.letsencrypt.org/acme/chall/2399017717/599167439271/jFB2Pg failed with status invalid
+uacme: the server reported the following error:
+{
+    "type": "urn:ietf:params:acme:error:unauthorized",
+    "detail": "128.xxx.xxx.xxx: Invalid response from http://sparql.genenetwork.org/.well-known/acme-challenge/N-P-mhiK04c-Iophbem4iFYsaB
+yeaxeSyXHSijx3e6k: 404",
+    "status": 403
+}
+uacme: running /gnu/store/zwqavgjqyk0f0krv8ndwhv3767f6cnx1-uacme-hook failed http-01 sparql.genenetwork.org N-P-mhiK04c-Iophbem4iFYsaBy
+eaxeSyXHSijx3e6k N-P-mhiK04c-Iophbem4iFYsaByeaxeSyXHSijx3e6k.9dRdXFhCbqeDGWYndRd_hTh920rplmy-ef-_aLgjJJE
+uacme: failed to authorize order at https://acme-v02.api.letsencrypt.org/acme/order/2399017717/438986245271
+
+```
+
+From the above error, we note that the request for the "/.well-known/..." path fails with a 404 code: Why.
+
+Let's try figuring it out; connect to the running container:
+
+```
+$ sudo guix container exec 89086 /run/current-system/profile/bin/bash --login
+root@sparql /# cd /var/run/acme/acme-challenge/
+root@sparql /var/run/acme/acme-challenge# while true; do ls; sleep 0.5; clear; done
+```
+
+In a separate terminal, connect to the same container and run `/usr/bin/acme renew`.
+
+The loop we created to list what files are created in the challenge directory outputs the file
+
+```
+root@sparql /var/run/acme/acme-challenge# while true; do ls; sleep 0.5; clear; done
+Rm7qCec3naVvqPldGSGI9W4i9AceW0X3MUNSAbC7SVE
+Rm7qCec3naVvqPldGSGI9W4i9AceW0X3MUNSAbC7SVE
+⋮
+```
+
+but we are still getting the same error:
+
+```
+uacme: challenge https://acme-v02.api.letsencrypt.org/acme/chall/2399017717/599184604221/7mTNdA failed with status invalid
+uacme: the server reported the following error:
+{   
+    "type": "urn:ietf:params:acme:error:unauthorized",
+    "detail": "128.169.5.101: Invalid response from http://sparql.genenetwork.org/.well-known/acme-challenge/Rm7qCec3naVvqPldGSGI9W4i9AceW0X3MUNSAbC7SVE: 404",
+    "status": 403
+}
+uacme: running /gnu/store/zwqavgjqyk0f0krv8ndwhv3767f6cnx1-uacme-hook failed http-01 sparql.genenetwork.org Rm7qCec3naVvqPldGSGI9W4i9AceW0X3MUNSAbC7SVE Rm7qCec3naVvqPldGSGI9W4i9AceW0X3MUNSAbC7SVE.9dRdXFhCbqeDGWYndRd_hTh920rplmy-ef-_aLgjJJE
+uacme: failed to authorize order at https://acme-v02.api.letsencrypt.org/acme/order/2399017717/438997397751
+```
+
+meaning that somehow, nginx is not able to serve up this file.
