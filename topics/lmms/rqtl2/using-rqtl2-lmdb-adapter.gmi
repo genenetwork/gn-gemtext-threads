@@ -23,7 +23,7 @@ Currently, R/qtl2 (https://kbroman.org/qtl2/) only supports reading from CSV fil
 ### Dumping the Genotypes
 You can find the `lmdb_matrix.py` script here:
 
-=> https://github.com/genenetwork/genenetwork3/scripts/lmdb_matrix.py
+=> https://github.com/genenetwork/genenetwork3/blob/main/scripts/lmdb_matrix.py
 
 ```sh
 guix shell python-click python-lmdb python-wrapper python-numpy -- \
