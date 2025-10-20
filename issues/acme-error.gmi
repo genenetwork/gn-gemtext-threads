@@ -2,7 +2,7 @@
 
 ## Tags
 
-* status: open
+* status: closed, completed
 * priority: high
 * type: bug
 * assigned: fredm
@@ -64,3 +64,43 @@ uacme: failed to authorize order at https://acme-v02.api.letsencrypt.org/acme/or
 ```
 
 meaning that somehow, nginx is not able to serve up this file.
+
+## Discovered Cause: 2025-10-20
+
+There are 2 layers of nginx, the host nginx, and the internal/container nginx.
+
+The host nginx was proxying directly to the virtuoso http server rather than proxying to nte internal/container nginx. This led to the failure because the internal/container nginx handles the TLS/SSL certificates for the site. The host nginx should have offloaded the handling of the TLS/SSL certificates to the internal/container nginx, but since it was not going through the internal nginx, that led to the failure.
+
+A simile of the error condition and the solution are in the sections below:
+
+### Error Condition: Wrong proxying
+
+In host's "nginx.conf":
+```
+⋮
+ proxy_pass http://localhost:<virtuoso-http-server-port>;
+⋮
+```
+
+In internal/container "nginx.conf":
+```
+⋮
+ proxy_pass http://localhost:<virtuoso-http-server-port>;
+⋮
+```
+
+### Solution/Fix
+
+In host's "nginx.conf":
+```
+⋮
+ proxy_pass http://localhost:<container-nginx-http-port>;
+⋮
+```
+
+In internal/container "nginx.conf":
+```
+⋮
+ proxy_pass http://localhost:<virtuoso-http-server-port>;
+⋮
+```
