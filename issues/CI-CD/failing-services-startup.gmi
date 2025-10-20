@@ -3,7 +3,7 @@
 ## Tags
 
 * type: bug
-* status: open, in progress
+* status: closed, completed
 * priority: high
 * assigned: fredm, bonfacem
 * interested: pjotrp, bonfacem, aruni
