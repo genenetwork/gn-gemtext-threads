@@ -25,6 +25,7 @@ One early choice is a separation of concerns. We will try to build the library i
 
 # Tasks
 
+* [ ] Fix AGC passing exceptions through C ABI
 * [ ] Get guix to compile impg with AGC
 * [ ] Add optimization
 * [ ] Make sure spoa build in spoa-rs is optimized
