@@ -10,13 +10,19 @@
 
 ### Ongoing
 
-* [~] Document work on issue tracker
+* [] Draft outline paper
 
-* [~] Proceed with QTL
+* [] Test AI system with descriptions
+
+* [] Package code AI system and deploy in GN
+
+* [~] Read literature AI genomics
+
+* [~] Document work on issue tracker
 
 ### Later
 
-* [~] Catch up with SPARQL
+* [~] Catch up on SPARQL
 
 * [~] Catch up on LMDB
 
@@ -49,6 +55,16 @@
 
 * [X] Test new AI system
 
-* [X] Make naturalization faster
+* [X] Use GPU to make naturalization faster
 
 * [X] Fix bugs and optimize AI system
+
+* [X] Test and validate AI system working
+
+* [X] Read up on performance evaluation for AI systems
+
+* [X] Refetch all data from SPARQL
+
+* [X] Preproces RDF for improved naturalization
+
+* [X] Make asynchronous requests to server for naturalization
