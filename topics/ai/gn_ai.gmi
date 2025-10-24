@@ -20,7 +20,7 @@ This work is an extension of the GNQA system initiated by Shelby and Pjotr.
 * [X] Build a RAG system and test with small corpus of mapping results
 * [X] Experiment with actual mapping results and metadata
 * [X] Move from RAG to agent
-* [] Optimize AI system
+* [X] Optimize AI system
 * [] Scale analysis to more data
 * [] Compare performance of open LLMs with Claude in the system
 
@@ -203,7 +203,7 @@ You can clearly see differences between *rag_langchain.py* and *rag_langgraph.py
 Basically,
 
 ```
-ef ask_question(self, question: str):
+def ask_question(self, question: str):
         start=time.time()
         memory_var=self.memory.load_memory_variables({})
         chat_history=memory_var.get('chat_history', '')
@@ -583,3 +583,208 @@ Printing the documents after retrieval showed that I was actually right. I also 
 
 ### Optimize AI system
 
+A couple of things needed to be optimized. This included retrieval, node orchestration and GPU acceleration.
+
+* Retrieval
+
+Let's start with retrieval. I played with different parameters of the retriever. It was an EnsembleRetriever using both keyword and semantic search as illustrated below:
+```
+ensemble_retriever = EnsembleRetriever(
+            retrievers=[
+                self.chroma_db.as_retriever(search_kwargs={"k": 10}),
+                bm25_retriever,
+            ],
+            weights=[0.4, 0.6],
+        )
+```
+I opted for trying different combinations of weights to get to this selection. But more rigorous work needs to be done to systematically identify the best hyparameters for retrieval.
+
+* Node orchestration
+
+Moving to node orchestration. It took me some time and reflection to realize that the nodes, I had at the moment, make only sense to be executed sequentially. Analysis (analyze node) should always be followed with relevance checking (check_relevance node), finding summarization (summarize node), and in that order. Any other sequence of execution is not useful. I had to modify the code to comply to this and prevent getting into some unnecessary loops :)
+
+But this also highlighted other limitations of the system: lack of flexibility and lack of autonomy
+
+To address the lack of flexibility, I introduced a new node to split a query into multiple queries that can be solved independently and asynchronously. The node split_query works as follows:
+```
+def split_query(self, query: str) -> list[str]:
+
+        prompt = f"""
+            <|im_start|>system
+            You are a very powerful task generator.
+        
+            Split the query into task and context based on tags.
+            Based on the context, ask relevant questions that help achieve the task. Make sure the subquestions are atomic and do not rely on each other.
+            Return only the subquestions.
+            Return strictly a JSON list of strings, nothing else.
+            <|im_end|>
+            <|im_start|>user
+            Query:
+            Task: Identify traits with a lod score > 3.0 for the marker Rsm10000011643. Tell me what marker Rsm10000011643 is involved in biology.
+            Context: A trait has a long name and contain generally strings like GWA or GEMMA. The goal is to know the biological processes which might be related to the marker previously mentioned.
+        
+            Result:
+            <|im_end|>
+            <|im_start|>assistant
+            ["What traits (containing GWA or GEMMA) have a lod score > 3.0 at Rsm10000011643?", "Which biological processes are related to Rsm10000011643?"]
+            <|im_end|>
+            <|im_start|>user
+            Query:
+            {query}
+            Result:
+            <|im_end|>
+            <|im_start|>assistant"""
+
+        with self.generative_lock:
+            response = GENERATIVE_MODEL.invoke(prompt)
+        print(f"Subqueries in split_query: {response}")
+
+        if isinstance(response, str):
+            start = response.find("[")
+            end = response.rfind("]") + 1
+            subqueries = json.loads(response[start:end])
+        else:
+            subqueries = [query]
+
+        return subqueries
+
+```
+
+There is need for another node to reconcile answers generated for each subquery. This motivated the addition of the node finalize:
+```
+def finalize(self, query: str, subqueries: list[str], answers: list[str]) -> dict:
+
+        prompt = f"""
+            <|im_start|>system
+            You are an experienced biology scientist. Given the subqueries and corresponding answers, generate a comprehensive explanation to address the query using all information provided.
+            Ensure the response is insightful, concise, and draws logical inferences where possible.
+            Do not modify entities names such as trait and marker.            
+            Make sure to link based on what is common in the answers.
+            Provide only the story, nothing else.
+            Do not repeat answers. Use only 200 words max.
+            <|im_end|>
+            <|im_start|>user
+            Query:
+            Identify two traits related to diabetes.
+            Compare their lod scores at Rsm149505.
+            Subqueries:
+            ["Identify two traits related to diabetes",
+            "Compare lod scores of same traits at Rsm149505"]
+            Answers:
+            ["Traits A and B are related to diabetes", \
+            "The lod score at Rsm149505 is 2.3 and 3.4 for trait A and B"]
+            Conclusion:
+            <|im_end|>
+            <|im_start|>assistant
+            Traits A and B are related to diabetes and have a lod score of\
+            2.3 and 3.4 at Rsm149505. The two traits could interact via a\
+            gene close to the marker Rsm149505.
+            <|im_end|>
+            <|im_start|>user
+            Query:
+            {query}
+            Subqueries:
+            {subqueries}
+            Answers:
+            {answers}
+            Conclusion:
+            <|im_end|>
+            <|im_start|>assistant"""
+	with self.generative_lock:
+            response = GENERATIVE_MODEL.invoke(prompt)
+        print(f"Response in finalize: {response}")
+
+        final_answer = (
+            response
+            if response
+            else "Sorry, we are unable to \
+            provide an overall feedback due to lack of relevant data."
+        )
+
+        return final_answer
+```
+
+The system could now take a multi-faceted query, split it into multiple subqueries, address each one of them asynchronously using sequentially retriever, analysis, check_relevance and summarize. Results are combined in the end before giving a feedback to the user.
+
+Time to make the system really agentic - so far it is not trulty because of the lack of autonomy! An agentic system requires access to many tools and a core LLM that can reason on its own about sequence of tools to call in order to solve a problem. This sounds scary but not quite if well designed :) I was also planning to add some safeguards to prevent infinite looping that could consume a lot of tokens very quickly.
+
+What I did was to register the graph I have so far as a subgraph a bigger graph (real AI system). This arm of the AI system is called researcher and has the following definition:
+```
+def researcher(self, state: AgentState) -> Any:
+        if len(state.messages) < 3:
+            input = state.messages[0]
+        else:
+            input = state.messages[-1]
+        input = input.content
+        logging.info(f"Input in researcher: {input}")
+        result = self.manage_subtasks(input)
+        end = time.time()
+        logging.info(f"Result in researcher: {result}")
+
+        return {
+            "messages": [result],
+        }
+```
+
+I also designed a planner, reflector and supervisor that the system can use. As the name indicates, the planner helps with planning steps to take to solve the problem. The reflector provides feedback and helps improve the output of the researcher. The supervisor is the core handler. It manages interations between planner, researcher and reflector.
+
+You can inspect design code for planner, reflector and supervisor below:
+```
+def planner(self, state: AgentState) -> Any:
+    input = [self.plan_system_prompt] + state.messages
+    result = plan(background=input)
+    answer = result.get("answer")
+    return {
+            "messages": [answer],
+        }
+
+def reflector(self, state: AgentState) -> Any:
+    trans_map = {AIMessage: HumanMessage, HumanMessage: AIMessage}
+    translated_messages = [self.refl_system_prompt, state.messages[0]] + [
+    trans_map[msg.__class__](content=msg.content) for msg in state.messages[1:]
+        ]
+    result = tune(background=translated_messages)
+    answer = result.get("answer")
+    answer = (
+            "Progress has been made. Use now all the resources to addess this new suggestion: "
+            + answer
+        )
+    return {
+            "messages": [HumanMessage(answer)],
+        }
+
+def supervisor(self, state: AgentState) -> Any:
+    messages = [
+            ("system", self.sup_system_prompt1),
+            *state.messages,
+            ("system", self.sup_system_prompt2),
+        ]
+
+    if len(messages) > self.max_global_visits:
+       return {"next": "end"}
+
+    result = supervise(background=messages)
+    next = result.get("next")
+
+    return {
+            "next": next,
+        }
+```
+
+* GPU acceleration
+
+The last point is GPU acceleration. Pjotr installed a GPU on balg01 to allow for acceleration. You can check out the details here:
+=> https://issues.genenetwork.org/topics/systems/linux/GPU-on-balg01
+
+The GPU is automatically used for LLM related work. I just started using it at first. Later, I learnt about SGLang which allows for deployment of LLM server and even faster inference. Code for deployment of the server is here:
+=> https://github.com/johanmed/gn-rag/blob/543a7835f5620a541cdb679b852c91e62bca2698/src/agent_system/config.sh
+
+With DSPy, I could literally switch between any model, closed or open. Consequently, I added support for DSPy. For details, check out the following commit:
+=> https://github.com/johanmed/gn-rag/commit/ec0d8ffc174cca0ccf32cb98d82ebdc7106b4ac2
+
+Small gotcha, for locally served model using SGLang, not all open models could be run given VRAM (GPU's RAM) constraint. Took me some experiments to find workable models that are finetuned for instruction following and have decent performance. At the time of writing, I am working with Qwen/Qwen2.5-7B-Instruct accessed via HuggingFace. This is the LLM. There is also an embedding model but I have not added GPU acceleration support for it to improve memory management. We have limited resources for now :)
+
+I also performed a series of refactoring and formatting to improve readability of the source code. Find it here:
+=> https://github.com/johanmed/gn-rag/tree/main/src
+
+### Scale analysis to more data
