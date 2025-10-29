@@ -3,8 +3,10 @@
 => https://aider.chat/
 
 ```
+apt-get install python3-venv # or use guix
 python3 -m venv ~/opt/python-aider
 ~/opt/python-aider/bin/python3 -m pip install aider-install
+export PATH="/home/wrk/.local/bin:$PATH"
 ~/opt/python-aider/bin/aider-install
 ```
 
@@ -12,5 +14,6 @@ Installed 1 executable: aider
 Executable directory /home/wrk/.local/bin is already in PATH
 
 ```
+aider --model sonnet --api-key anthropic=sk-ant...
 aider --model gpt-4o --openai-api-key aa...
 ```
