@@ -3349,3 +3349,10 @@ LIMIT 100
 
 
 Currently authors are not 'ranked' in RDF, so I pick a random one. I can add ranking later, so we get the first author. We also have the option to fetch all traits that, for example, involve Dave Ashbrook.
+
+We can also look for details like skewness by adding
+
+```
+     ?traitid gnt:traitId ?trait  ;
+            gnt:skew ?skew .
+```
