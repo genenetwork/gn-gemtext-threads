@@ -1,5 +1,7 @@
 # Pangenotypes
 
+Here we discuss different storage solutions for pangenotypes.
+
 ## GRG format
 
 
@@ -44,3 +46,7 @@ I did some tests and read the source code. The nice thing is that they have very
 I would like to take similar ideas and take it to an efficient in-memory graph structure that is easily extensible. RDF is key for extensions (and queries). A fast RDF implementation we are going to try is
 
 => https://pyoxigraph.readthedocs.io/en/stable/index.html
+
+Toshiaki pointed out we should look at qlever instead:
+
+=> https://github.com/ad-freiburg/qlever
