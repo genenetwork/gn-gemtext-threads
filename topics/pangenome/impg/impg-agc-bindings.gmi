@@ -211,7 +211,7 @@ To create a rust package for binding libagc it is worth reading:
 
 So we should create an agc-rs crate that provides a high-level interface to the upcoming libagc-sys crate. No wonder these crates proliferate.
 
-# Shifting to a dynamic libagc.so
+# Using a linked libagc.so
 
 I managed to create a crate that binds libagc.so against Rust:
 
