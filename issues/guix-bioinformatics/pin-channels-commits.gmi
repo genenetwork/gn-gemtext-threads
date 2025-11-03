@@ -29,5 +29,5 @@ We depend on the following channels in guix-bioinformatics:
 * [x] Pin guix channel
 * [x] Pin guix-past
 * [x] Pin guix-rust-past-crates channel
-* [ ] Pin guix-forge channel
+* [x] Pin guix-forge channel
 * [ ] Move packages from (gn packages bioinformatics) to (gnu packages bioinformatics)
