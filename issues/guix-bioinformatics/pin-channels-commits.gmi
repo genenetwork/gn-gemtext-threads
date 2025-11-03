@@ -7,6 +7,7 @@
 * type: enhancement
 * assigned: fredm, bonfacem
 * keywords: guix-bioinformatics, guix
+* interested: pjotrp, aruni
 
 ## Description
 
