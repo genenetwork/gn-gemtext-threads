@@ -1,0 +1,195 @@
+# Test pangenome derived genotypes
+
+Here we follow up on the work we did on precompute PublishData:
+
+=> ../genetics/systems/mariadb/precompute-publishdata
+
+But now run against pangenome derived genotypes.
+For the BXD we have 23M markers(!) whereof 8M *not* on the reference genome.
+
+# Tasks
+
+* [ ] Reintroduce nodes that were not annotated for position
+
+# Prior work
+
+For the first traits (presented at CTC'25) gemma was run as
+
+```
+echo "[$(date)] Starting kinship matrix calculation for PERCENTILE..."
+gemma -g ${BIMBAM_DIR}/143samples.percentile.bimbam.bimbam.gz \
+        -p ${PHENO_FILE} \
+              -gk \
+              -o percentile_result > percentile.kinship.143.txt
+
+echo "[$(date)] Kinship matrix calculation completed for PERCENTILE."
+echo "[$(date)] Starting association analysis for PERCENTILE..."
+gemma -g ${BIMBAM_DIR}/143samples.percentile.bimbam.bimbam.gz \
+        -p ${PHENO_FILE} \
+              -k ./output/percentile_result.cXX.txt \
+              -lmm 4 \
+              -maf 0.05 \
+              -o percentile_association > percentile.assoc.143.txt
+```
+
+Note no LOCO.
+
+The genotype BIMBAM file is 45G uncompressed. Even though GEMMA does not load everything in RAM, it is a bit large for my workstation. I opted to use tux04 since no one is using it. Had to reboot the machine because it is unreliable and had crashed.
+
+There I rebuilt gemma and set up a first run:
+
+```
+tux04:/export/data/wrk/iwrk/opensource/code/genetics/gemma/tmp$
+/bin/time -v ../bin/gemma -g 143samples.percentile.bimbam.bimbam.gz -p 143samples.percentile.bimbam.pheno.gz -gk
+```
+
+Without LOCO this took about 18 minutes (186% CPU), 110Gb of RAM. We ought to work on this ;) Next
+
+```
+/bin/time -v ../bin/gemma -g 143samples.percentile.bimbam.bimbam.gz -p 143samples.percentile.bimbam.pheno.gz -k output/result.cXX.txt -lmm 9 -maf 0.05
+```
+
+To run gemma on the current 23M BXD pangenome derived genotypes takes 2.5 hours (@ 200% CPU). That is a bit long :). 13K traits would be 43 months on a single machine. We'll need something better. As Rob writes:
+
+> The huge majority of variants will have r2 of 1 with hundreds ir thousands of neighbors. This is just a monster distraction. We just want proximal and distal haplotype boundaries for each BXD. Then we want to layer on the weird non-SNP variants and inversions.
+
+A few days later I had to rerun gemma because the output was wrong (I should have checked!). It shows:
+
+```
+chr     rs      ps      n_miss  allele1 allele0 af      beta    se      logl_H1 l_remle l_mle   p_wald  p_lrt   p_score
+-9      A1-0    -9      0       A       T       0.171   -nan    -nan    -nan    1.000000e+05    1.000000e+05    -nan  -nan     -nan
+-9      A2-0    -9      0       A       T       0.170   -nan    -nan    -nan    1.000000e+05    1.000000e+05    -nan  -nan     -nan
+```
+
+Turns out I was using the wrong pheno file. Let's try again.
+
+```
+/bin/time -v ../bin/gemma -g 143samples.percentile.bimbam.bimbam.gz -p 10354082_143.list.pang.txt -k output/result.cXX.txt -lmm 9 -maf 0.05
+```
+
+As a check I can diff against the original output. So, I replicated the original run! It also ran faster at 400% CPU in 35 minutes.
+
+(btw tux04 crashed, so I upgraded the BIOS and iDRAC remotely, let's see if this improves things).
+
+## Moving to gemma-wrapper
+
+gemma-wrapper has extra facilities, such as LOCO and caching and lmdb output. Last time we used it in
+
+=> ../genetics/systems/mariadb/precompute-publishdata
+
+in a guix container it looked like
+
+```
+#! /bin/env sh
+
+export TMPDIR=./tmp
+curl http://127.0.0.1:8092/dataset/bxd-publish/list > bxd-publish.json
+jq ".[] | .Id" < bxd-publish.json > ids.txt
+./bin/gemma-wrapper --force --json --loco -- -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -n 2 -gk > K.json
+
+for id in 'cat ids.txt' ; do
+  echo Precomputing $id
+  if [ ! -e tmp/*-BXDPublish-$id-gemma-GWA.tar.xz ] ; then
+    curl http://127.0.0.1:8092/dataset/bxd-publish/values/$id.json > pheno.json
+    ./bin/gn-pheno-to-gemma.rb --phenotypes pheno.json --geno-json BXD.geno.json > BXD_pheno.txt
+    ./bin/gemma-wrapper --json --lmdb --population BXD --name BXDPublish --trait $id --loco --input K.json -- -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -lmm 9 -maf 0.1 -n 2 -debug > GWA.json
+  fi
+done
+```
+
+Let's try running the big stuff instead:
+
+```
+./bin/gemma-wrapper --force --json --loco -- -g tmp/143samples.percentile.bimbam.bimbam.gz -p tmp/143samples.percentile.bimbam.pheno.gz  -gk
+```
+
+## Individuals
+
+gemma does not really track individuals. The order of genotype columns should just be the same as in the pheno file.
+In this case a sample list is provided and we'll generate a geno-json version that we can give to gemma-wrapper. Basically such a file lists the following
+
+```
+{
+  "type": "gn-geno-to-gemma",
+  "genofile": "BXD.geno",
+  "samples": [
+    "BXD1",
+    "BXD2",
+    "BXD5",
+...
+  ],
+  "numsamples": 237,
+  "header": [
+    "# File name: BXD_experimental_DGA_7_Dec_2021",
+...
+```
+
+To get this
+
+```
+cut -f 1 143samples.pc-list.tsv|sed -e s,_.\*,,|sed -e s,^,\",|sed -e s,$,\"\,,| cut -f 1 143samples.pc-list.tsv|sed -e s,_.\*,,|sed -e s,^,\",|sed -e "s,$,\"\\,," > bxd_inds.list.txt
+"BXD100",
+"BXD101",
+"BXD102",
+```
+
+Next I turned it into a JSON file by hand as 'bxd_inds.list.json'.
+
+## Markers
+
+With GEMMA marker names are listed in the geno file. GEMMA also can use a SNP file that gives the chromosome and location.
+Without the SNP filegemma-wrapper complains it needs the SNP/marker annotation file. This is logical because for LOCO it needs to know what chromosome a marker is on.
+
+The next step is to take the nodes file that and extract all rows from the genotype file that match nodes with chromosomes defined. Andrea is going to deliver all positions for all nodes, but for now we can use what we have. Currently we have nodes annotated in mm10+C57BL_6+DBA_2J.p98.s10k.matrix-pos.txt:
+
+```
+mm10#1#chr3     23209565        93886997
+mm10#1#chr3     23209564        93886999
+mm10#1#chr3     23209563        93887016
+...
+```
+
+In the genotype file we find, for example
+
+```
+A23209564-0, A, T, 1.919141867395325,  0.9306930597711228,  1.8201319833577734,  0.7607260422339468,  1.427392726736106,  1.2310230984252724,  1.6633662444541875,  0.6105610229068721, ...
+```
+
+bit funny, but you get the idea. So we can take the mm10 file and write out the genotype file again for all matching nodes with a matching SNP file that should contain for this node:
+
+```
+A23209564-0        93886999        3
+```
+
+To rewrite above mm10+C57BL_6+DBA_2J.p98.s10k.matrix-pos.txt file we can do something like
+
+```
+#! ruby
+
+ARGF.each_line do |line|
+  tag,name,pos = line.strip.split(/\t/)
+  tag =~ /chr(.*)$/
+  chrom = $1
+  print "A#{name}-0\t#{pos}\t#{chrom}\n"
+end
+```
+
+Now, another problem is that not all SNPs have a position in the genotype file (yet). As we can't display them I can drop them at this stage. So we take the SNP file and rewrite the BIMBAM file using that information. That throwaway script looks like
+
+```
+bimbamfn = ARGV.shift
+snpfn = ARGV.shift
+snps = {}
+open(snpfn).each_line do |snpl|
+  name = snpl.split(/\t/)[0]
+  snps[name] = 1
+end
+open(bimbamfn).each_line do |line|
+  marker = line.split(/[,\s]/)[0]
+  if snps[marker]
+    print line
+  end
+end
+```
+
+takes a while to run, but as this is a one-off that does not matter.

@@ -3356,3 +3356,9 @@ We can also look for details like skewness by adding
      ?traitid gnt:traitId ?trait  ;
             gnt:skew ?skew .
 ```
+
+# Testing pangenome derived genotypes
+
+We continue testing new genotypes in this document:
+
+=> ../genetics/test-pangenome-derived-genotypes

@@ -1,0 +1,5 @@
+# Epochs
+
+In the 2019 BXD paper epochs are brought up. Basically, even though the BXD are 'immortal' with identical children, mutations do creep in. An epoch is a period of mice and we track the years a mouse was used. So a BXD1 breeding started at 1971 and production in 2001. In GN we don't make a distinction (per se), but obviously these are (slightly) different mice today. Ashbrook et al. find some interesting results that differ in epochs.
+
+In GN epochs are currently handled as a trait. This can help with covariate mapping. For a different epoch, however, the genotypes should also be adapted. The effect on the kinship matrix will be minor, but genotypes can be used for fine mapping. With pangenome derived genotypes it should get even more interesting.
