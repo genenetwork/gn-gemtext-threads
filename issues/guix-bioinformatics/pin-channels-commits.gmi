@@ -1,0 +1,33 @@
+# Pin Channel Commits; Decouple from Guix
+
+## Tags
+
+* status: open
+* priority: medium
+* type: enhancement
+* assigned: fredm, bonfacem
+* keywords: guix-bioinformatics, guix
+* interested: pjotrp, aruni
+
+## Description
+
+Changes in upstream Guix often lead to deployment issues, due to breakages caused by changes in how GNU Guix does things. This interrupts our day-to-day operations, leading us to scramble to fix the breakages and make the builds sane again.
+
+In order to avoid these breakages in the future, we'll need to actually pin the commit(s) for all the channels we depend on, to avoid surprises down the line.
+
+### Channel Dependencies
+
+We depend on the following channels in guix-bioinformatics:
+
+* guix: Mainline Guix channel
+* guix-past: Channel for old packages, no longer maintained on guix mainline
+* guix-rust-past-crates: Channel for rust packages using the old packaging form
+* guix-forge: Manages building containers and whatnot. The dependence is implicit here, but it is one of the main causes of breakages
+
+### Tasks
+
+* [x] Pin guix channel
+* [x] Pin guix-past
+* [x] Pin guix-rust-past-crates channel
+* [x] Pin guix-forge channel
+* [ ] Move packages from (gn packages bioinformatics) to (gnu packages bioinformatics)

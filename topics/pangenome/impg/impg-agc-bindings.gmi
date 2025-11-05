@@ -25,7 +25,8 @@ One early choice is a separation of concerns. We will try to build the library i
 
 # Tasks
 
-* [ ] Get guix to compile impg with AGC
+* [X] Fix AGC passing exceptions through C ABI
+* [X] Get guix to compile impg (here testlibagc) with AGC
 * [ ] Add optimization
 * [ ] Make sure spoa build in spoa-rs is optimized
 * [ ] Create static binary for distribution
@@ -135,7 +136,7 @@ For C++ only libraries, the narrative gets a bit harder. If the C++ interface is
 
 To support AGC in Rust we need to:
 
-* [ ] Create a Rust binding that uses the AGC C ABI instead of the C++ one, so we can use a statically built AGC lib and don't need the source tree for cargo
+* [X] Create a Rust binding that uses the AGC C ABI instead of the C++ one, so we can use a statically built AGC lib and don't need the source tree for cargo
 
 We will also write a
 
@@ -209,3 +210,37 @@ To create a rust package for binding libagc it is worth reading:
 * The library crate should provide declarations for types and functions in libfoo, but not higher-level abstractions.
 
 So we should create an agc-rs crate that provides a high-level interface to the upcoming libagc-sys crate. No wonder these crates proliferate.
+
+# Using a linked libagc.so
+
+I managed to create a crate that binds libagc.so against Rust:
+
+=> https://github.com/pjotrp/libagc-sys
+
+See also the included test in lib.rs. It binds against the updated agc:
+
+=> https://github.com/refresh-bio/agc/compare/main...pjotrp:agc:main
+
+which contains the fixes that don't allow C++ exceptions to pass through the C ABI.
+Also I fixed one function and added a shared lib as output.
+
+Finally, rather than messing with the impg code tree (which keeps changing), I created a test crate that mirrors impg:
+
+=> https://github.com/pjotrp/testlibagc
+
+which can be build and run with
+
+```
+cargo build --release
+target/release/testagc-sys
+Number of samples: 4
+```
+
+At least we have a reference implementation for binding successfully against a shared C library with a very *light* and standardised interface. It obviously also works in Guix. We can use it to benchmark against the new (impressive) Rust implementation by Erik. It also acts as a template for future bindings.
+
+Note that we should discourage C++ bindings. Mostly because there is no standard C++ ABI (in contrast to the C one), so avoid the use of the cxx crates - unless you really know what you are doing.
+
+Potential future work is:
+
+- [ ] Optimized runtime
+- [ ] Static binary for distribution

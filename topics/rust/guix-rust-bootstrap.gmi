@@ -19,6 +19,7 @@ Important is to have a recent version of Guix. This is achieved with 'guix pull'
 
 
 ```sh
+mkdir -p ~/opt
 guix pull -p ~/opt/guix-pull --url=https://codeberg.org/guix/guix
 ```
 
