@@ -1,0 +1,26 @@
+# Jobs: Allow Job Cascades
+
+## Tags
+
+* status: open
+* priority: medium
+* type: enhancement
+* assigned: fredm, zsloan
+* keywords: gn-libs, genenetwork, async jobs, asynchronous jobs, background jobs
+
+## Description
+
+Some jobs could require more than a single command/script to be run to complete.
+
+Rather than refactoring/rewriting the entire "async jobs" feature, I propose adding a way to note who started a job, i.e.
+* the user, OR
+* another job
+
+This could be tracked in an extra field in the database, say "started_by" which can have values of the form
+* "user:<user-id>"
+* "job:<job-id>"
+where the parts in the angle bracket (i.e. "<user-id>" and "<job-id>") are replaced by actual ids.
+
+## Related Issues
+
+=> /issues/gn-libs/jobs-track-who-jobs-belong-to
