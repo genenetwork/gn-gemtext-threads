@@ -1,0 +1,19 @@
+# Jobs: Track Who Jobs Belong To
+
+## Tags
+
+* status: open
+* priority: medium
+* type: enhancement
+* assigned: fredm, zsloan
+* keywords: gn-libs, genenetwork, async jobs, asynchronous jobs, background jobs
+
+## Description
+
+Some features in Genenetwork require long-running processes to be triggered and run in the background. We have a way to trigger such background processes, but there is no way of tracking who started what job, and therefore, no real way for a user to list only their jobs.
+
+This issue will track the introduction of such tracking. This will enable the building new job-related functionality such as a user being able to:
+* list their past, unexpired jobs
+* delete past jobs
+* possibly rerun jobs that failed but are recoverable
+* see currently running jobs, and their status
