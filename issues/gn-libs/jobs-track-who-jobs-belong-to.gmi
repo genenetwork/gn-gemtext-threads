@@ -17,3 +17,7 @@ This issue will track the introduction of such tracking. This will enable the bu
 * delete past jobs
 * possibly rerun jobs that failed but are recoverable
 * see currently running jobs, and their status
+
+## Related Issues
+
+=> /issues/gn-libs/jobs-allow-job-cascades
