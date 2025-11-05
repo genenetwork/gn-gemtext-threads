@@ -10,15 +10,14 @@
 
 ### Ongoing
 
+* [] Look into system finetuning for any model
+
+* [] Help out deploy system in GN
+
+* [~] Read literature for paper
+
 * [] Draft outline paper
 
-* [] Test AI system with descriptions
-
-* [] Package code AI system and deploy in GN
-
-* [~] Read literature AI genomics
-
-* [~] Document work on issue tracker
 
 ### Later
 
@@ -68,3 +67,15 @@
 * [X] Preproces RDF for improved naturalization
 
 * [X] Make asynchronous requests to server for naturalization
+
+* [X] Document work on issue tracker
+
+* [X] Package code AI system
+
+* [X] Draft API endpoint
+
+* [X] Test package and share with Bonz
+
+* [X] Test AI system with descriptions, qtl and real biology questions
+
+* [X] Compare performance of Claude and open model on GN data before finetuning
