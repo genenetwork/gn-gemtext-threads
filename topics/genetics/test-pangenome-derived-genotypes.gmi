@@ -182,7 +182,7 @@ snpfn = ARGV.shift
 snps = {}
 open(snpfn).each_line do |snpl|
   name = snpl.split(/\t/)[0]
-  snps[name] = 1
+  snps  [name] = 1
 end
 open(bimbamfn).each_line do |line|
   marker = line.split(/[,\s]/)[0]
@@ -192,4 +192,42 @@ open(bimbamfn).each_line do |line|
 end
 ```
 
-takes a while to run, but as this is a one-off that does not matter.
+takes a while to run, but as this is a one-off that does not matter. Reducing the file leads to 13667900 markers with genotypes. The original SNP file has 14927024 lines. Hmmm. The overlap is therefor not perfect (we have more annotations than genotypes now). To check this I'll run a diff.
+
+```
+cut -f 1 -d "," 143samples.percentile.bimbam.bimbam-reduced > 143samples.percentile.bimbam.bimbam-reduced-markers
+sort 143samples.percentile.bimbam.bimbam-reduced-markers > markers-sorted.txt
+diff --speed-large-files  143samples.percentile.bimbam.bimbam-reduced-markers markers-sorted.txt
+< A80951-0
+< A80952-0
+< A80953-0
+...
+cut -f 1 snps.txt |sort > snps-col1-sorted.txt
+diff --speed-large-files snps-col1-sorted.txt markers-sorted.txt
+241773d228996
+< A10314686-0
+241777d228999
+< A10314689-0
+241781d229002
+< A10314692-0
+grep A10314686 snps-col1-sorted.txt markers-sorted.txt
+snps-col1-sorted.txt:A10314686-0
+snps-col1-sorted.txt:A10314686-0
+markers-sorted.txt:A10314686-0
+```
+
+Ah, we have duplicate annotation lines in the SNP file.
+
+```
+grep A10314686-0 snps.txt
+A10314686-0     20257882        8
+A10314686-0     20384895        8
+grep A10314692-0 snps.txt
+A10314692-0     20257575        8
+A10314692-0     20384588        8
+```
+
+so, the same node is considered two snps. This is due to the node covering multiple inds (paths). Turns out a chunk of them map on different chromosomes too. I think we ought to drop them until we have a better understanding of what they represent (they may be mismapping artifacts).
+
+I updated the script. Now I see it skips A280000 because there is no marker annotation for that node. Good. Also the number of genotype markers got further reduced to 13209385.
+I checked the gemma code and the SNP annotation file should match the genotype file line for line. Usurprising, perhaps, but now I need to rewrite both. After adapting the script we now have to files with the same number of lines.
