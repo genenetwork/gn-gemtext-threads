@@ -2,7 +2,7 @@
 
 Here we follow up on the work we did on precompute PublishData:
 
-=> ../genetics/systems/mariadb/precompute-publishdata
+=> ../systems/mariadb/precompute-publishdata
 
 But now run against pangenome derived genotypes.
 For the BXD we have 23M markers(!) whereof 8M *not* on the reference genome.
@@ -10,6 +10,10 @@ For the BXD we have 23M markers(!) whereof 8M *not* on the reference genome.
 # Tasks
 
 * [ ] Reintroduce nodes that were not annotated for position
+* [ ] GWA plotter
+* [ ] Speed up IO for GEMMA
+* [ ] Reduce GEMMA GRM RAM requirements (not urgent)
+* [ ] Fix -lmm 4 ERROR: Enforce failed for Trying to take the sqrt of nan in src/mathfunc.cpp at line 127 in safe_sqrt
 
 # Prior work
 
@@ -231,3 +235,35 @@ so, the same node is considered two snps. This is due to the node covering multi
 
 I updated the script. Now I see it skips A280000 because there is no marker annotation for that node. Good. Also the number of genotype markers got further reduced to 13209385.
 I checked the gemma code and the SNP annotation file should match the genotype file line for line. Usurprising, perhaps, but now I need to rewrite both. After adapting the script we now have to files with the same number of lines.
+
+Rerunning with the new files:
+
+```
+gemma -g new-genotypes.txt -p pheno_filtered_143.txt -gk
+gemma -g new-genotypes.txt -p pheno_filtered_143.txt -k output/result.cXX.txt -maf 0.05 -lmm 4 -a snps-matched.txt
+```
+
+And, even though the results differ somewhat in size -- due to the different number of markers -- the results look very similar to what was produced before. Good!
+
+Now we have confirmation and all the pieces we can run the same set with gemma-wrapper and LOCO.
+
+## gemma-wrapper
+
+The first 'challenge' is that gemma-wrapper computes hash values using a Ruby lib which is rather slow. This is also something we encounter in guix.
+
+```
+/bin/time -v ../bin/gemma-wrapper --json --loco --jobs 8 -v -- -g new-genotypes.txt -p pheno_filtered_143.txt -gk -a snps-matched.txt > K.json
+```
+
+For this computation each gemma maxed out at 80Gb RAM (total 640Gb). We are really hitting limits here. In the near future we need to check why so much data is retained. As we only have 150 individuals it is a marker thing.
+
+```
+/bin/time -v ../bin/gemma-wrapper -v --json --lmdb --loco --input K.json -- -g new-genotypes.txt -p pheno_filtered_143.txt -a snps-matched.txt -debug -maf 0.05 -lmm 9 > GWA.json
+```
+
+This time gemma requires only 25Gb per chromosome, so we can run it in one go in RAM on this large server. Much of the time is spent in IO, so I think that when we start using mmap (lmdb) we can speed it up significantly.
+gemma-wrapper has a wall clock time of 10 minutes utilizing 17 cores.
+
+Some chromosomes failed with 'ERROR: Enforce failed for Trying to take the sqrt of nan in src/mathfunc.cpp at line 127 in safe_sqrt2'. Running the same with -lmm 9 passed. I'll need to keep an eye on that one.
+
+After some fixes we now have loco in an lmdb output. The mdb file comes in at 693Mb. That will make 9TB for 13K traits. Storing the full vector is probably not wise here (and arguably we won't ever use it at this size - we should use the smoothed haplotypes). Only storing the significant values (4.0) made the size 17Mb. That makes it 215Gb total. Which is manageable. I made it even smaller by removing the (superfluous) hits from the metadata. Now down to 7Mb. That'll total some 100Gb for 13K traits.
