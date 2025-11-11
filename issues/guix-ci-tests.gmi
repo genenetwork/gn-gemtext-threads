@@ -38,3 +38,10 @@ cannot build derivation
 /gnu/store/3fwagz1p9vv3h020lwb2ab52f6wj6z1g-profile.drv:
 1 dependencies couldn't be built
 ```
+
+# Resolution
+
+* Inside genenetwork-development.scm, manually create `/var/guix/profiles/per-user/laminar` if it doesn't exist.
+* Update the relevant .guix-channel file to match channels in guix-bioinformatics.
+
+* closed
