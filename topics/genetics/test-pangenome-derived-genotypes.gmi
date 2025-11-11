@@ -9,9 +9,10 @@ For the BXD we have 23M markers(!) whereof 8M *not* on the reference genome.
 
 # Tasks
 
-* [ ] Reintroduce nodes that were not annotated for position
+* [ ] Use ravanan/CWL to push to Octopus
+* [ ] Reintroduce nodes that were not annotated for position (Flavia)
 * [ ] GWA plotter
-* [ ] Speed up IO for GEMMA
+* [ ] Speed up IO for GEMMA by using lmdb for genotypes and marker file
 * [ ] Reduce GEMMA GRM RAM requirements (not urgent)
 * [ ] Fix -lmm 4 ERROR: Enforce failed for Trying to take the sqrt of nan in src/mathfunc.cpp at line 127 in safe_sqrt
 
@@ -249,7 +250,7 @@ Now we have confirmation and all the pieces we can run the same set with gemma-w
 
 ## gemma-wrapper
 
-The first 'challenge' is that gemma-wrapper computes hash values using a Ruby lib which is rather slow. This is also something we encounter in guix.
+The first 'challenge' is that gemma-wrapper computes hash values using a Ruby lib which is rather slow. This is also something we encounter in guix. I replaced that by using our pfff hashing for larger files.
 
 ```
 /bin/time -v ../bin/gemma-wrapper --json --loco --jobs 8 -v -- -g new-genotypes.txt -p pheno_filtered_143.txt -gk -a snps-matched.txt > K.json
@@ -266,4 +267,57 @@ gemma-wrapper has a wall clock time of 10 minutes utilizing 17 cores.
 
 Some chromosomes failed with 'ERROR: Enforce failed for Trying to take the sqrt of nan in src/mathfunc.cpp at line 127 in safe_sqrt2'. Running the same with -lmm 9 passed. I'll need to keep an eye on that one.
 
-After some fixes we now have loco in an lmdb output. The mdb file comes in at 693Mb. That will make 9TB for 13K traits. Storing the full vector is probably not wise here (and arguably we won't ever use it at this size - we should use the smoothed haplotypes). Only storing the significant values (4.0) made the size 17Mb. That makes it 215Gb total. Which is manageable. I made it even smaller by removing the (superfluous) hits from the metadata. Now down to 7Mb. That'll total some 100Gb for 13K traits.
+After some fixes we now have loco in an lmdb output. The mdb file comes in at 693Mb. That will make 9TB for 13K traits. Storing the full vector is probably not wise here (and arguably we won't ever use it at this size - we should use the smoothed haplotypes). Only storing the significant values (4.0) made the size 17Mb. That makes it 215Gb total. Which is manageable. I made it even smaller by removing the (superfluous) hits from the metadata. Now down to 7Mb and 3.2Mb compressed. That'll total less than 100Gb for 13K traits. Good.
+
+## Final hookup
+
+Now gemma-wrapper works (and test results are confirmed) we have to wire it up to fetch traits from the DB. We also have to make sure the trait values align with the individuals in the genotype file. Earlier I was running the script gemma-batch-run.sh:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/gemma-batch-run.sh
+
+which looks like:
+
+```
+export TMPDIR=./tmp
+curl http://127.0.0.1:8092/dataset/bxd-publish/list > bxd-publish.json
+jq ".[] | .Id" < bxd-publish.json > ids.txt
+# ---- Compute GRM
+./bin/gemma-wrapper --json --loco -- -g BXD.geno.txt -p BXD_pheno.txt -a BXD.8_snps.txt -n 2 -gk > K.json
+
+# ---- For all entries run LMM
+for id in 'cat ids.txt' ; do
+  echo Precomputing $id
+  if [ ! -e tmp/*-BXDPublish-$id-gemma-GWA.tar.xz ] ; then
+    curl http://127.0.0.1:8092/dataset/bxd-publish/values/$id.json > pheno.json
+    ./bin/gemma-wrapper --json --lmdb --geno-json BXD.geno.json --phenotypes pheno.json --population BXD --name BXDPublish --trait $id --loco --input K.json -- -g BXD.geno.txt -a BXD.8_snps.txt -lmm 9 -maf 0.1 -n 2 -debug > GWA.json
+  fi
+done
+```
+
+We already have ids.txt and the GRM. What is required is the trait values from the DB. What we need to do is run gn-guile somewhere with access to the DB. Also I need to make sure the current gemma-wrapper tar-balls up the result.
+
+OK, we are running. Looks like the smaller datasets only use 11Gb RES RAM per chromosome. Which means we can run two computes in parallel on this machine.
+
+The first run came through! I forgot the --reduce flag, so it came as 190Mb. I'll fix that. 34 individuals ran in 7 minutes.
+We are currently runnings at a trait in 6 min. We can double that on this machine.
+
+The following puzzles me a bit
+
+```
+## number of analyzed individuals = 31
+## number of covariates = 1
+## number of phenotypes = 1
+## leave one chromosome out (LOCO) =       14
+## number of total SNPs/var        = 13209385
+## number of SNPS for K            = 12322657
+## number of SNPS for GWAS         =   886728
+## number of analyzed SNPs         = 13122153
+```
+
+why is the number of SNPs for GWAS low? Perhaps a threshold of 10% for maf is a bit stringent ;).
+
+Anyway, we are running traits and the first 500 we'll use for analysis.
+
+Meanwhile I'll look at deploying on octopus and maybe speeding up GEMMA. See
+
+=> issues/genetics/speeding-up-gemma
