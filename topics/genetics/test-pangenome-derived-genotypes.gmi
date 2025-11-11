@@ -9,6 +9,7 @@ For the BXD we have 23M markers(!) whereof 8M *not* on the reference genome.
 
 # Tasks
 
+* [ ] Check MAF filter - it may be too stringent
 * [ ] Use ravanan/CWL to push to Octopus
 * [ ] Reintroduce nodes that were not annotated for position (Flavia)
 * [ ] GWA plotter
