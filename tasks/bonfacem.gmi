@@ -23,18 +23,16 @@
 * Share PhD concept note with PJ for polishing
 
 ### This week
-* [~] Set-up wolfshead: Resolving dependency conflicts in Python.  Using DSPY
-* [~] Dump all genotypes from tux02 to LMDB.
-*     - PJ sync tux01 genotypes with tux02/04.
-*     - Yet to set-up 2FA on new device
-* [~] Look at deep-seek/anthropic (also really doc deployment in balg01).  Run in debian machine.
+* [] Look at deep-seek/anthropic (also really doc deployment in balg01).  Run in debian machine.
 * [~] Adapter to LMDB into a cross object.
 *     - Try computations with R/qtl2.
 *     - Look at R LMDB libraries.
 *     - Look at functions that read the files.
 *     - PJ: LMDB adapter in R and cross-type files.
 * [~] gn-guile webhook.
-
+* [~] Dump all genotypes from tux02 to LMDB.
+*     - PJ sync tux01 genotypes with tux02/04.
+*     - Yet to set-up 2FA on new device
 
 ### Later
 * [ ] Generate RDF docs using AI.
@@ -166,3 +164,4 @@ Currently closed issues are:
 * [X] Look at different provider(s) for LLMs.
 * [X] Install OpenCL in Penguin2 and try LLM script.  Check differences between OpenCL and CUDA.  PJ installed CUDA in balg01.
 * [X] Look at container work.  Look at permissions issue.
+* [X] Set-up wolfshead: Resolving dependency conflicts in Python.  Using DSPY
