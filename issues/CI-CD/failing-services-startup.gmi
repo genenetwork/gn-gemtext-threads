@@ -119,7 +119,8 @@ ice-9/boot-9.scm:1685:16: In procedure raise-exception:
 Wrong type (expecting exact integer): #f
 ```
 
-Still unable to work out what the issue with the shell is.
+This is fixed by increasing the value of respawn-delay (default is 0.5s) to 5s.
+
 
 ### Unable to write to a temporary directory and issues with running git inside the g-exp
 
