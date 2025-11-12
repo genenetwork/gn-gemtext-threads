@@ -10,9 +10,15 @@
 
 ### Ongoing
 
-* [] Look into system finetuning for any model
+* [X] Look into system finetuning
 
-* [] Help out deploy system in GN
+* [] Test performance gain
+
+* [] Think about how to show responses of agent system and GNQA in one UI
+
+* [] Get system into use in GN
+
+* [] Talk with Hao about publication on agent system and gain over GNQA
 
 * [~] Read literature for paper
 
