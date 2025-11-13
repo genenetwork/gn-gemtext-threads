@@ -2489,7 +2489,7 @@ Doh! These SNPs are dangling now. Bit hard to see sometimes with these identifie
 Now I see it show an error for a few traits, e.g.
 
 ```
-./bin/gemma2rdf.rb:74:in `initialize': No such file or directory @ rb_sysopen - ./tmp/trait-BXDPublish-18078-gemma-GWA-hk.assoc.txt (Errno::ENOENT)
+./bin/gemma2rdf.rb:74:in "initialize": No such file or directory @ rb_sysopen - ./tmp/trait-BXDPublish-18078-gemma-GWA-hk.assoc.txt (Errno::ENOENT)
 ```
 
 For later (again) as the majority is coming through.

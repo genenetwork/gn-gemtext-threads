@@ -315,10 +315,148 @@ The following puzzles me a bit
 ## number of analyzed SNPs         = 13122153
 ```
 
-why is the number of SNPs for GWAS low? Perhaps a threshold of 10% for maf is a bit stringent ;).
+why is the number of SNPs for GWAS low? Perhaps a threshold of 10% for maf is a bit stringent. See below.
 
 Anyway, we are running traits and the first 500 we'll use for analysis.
 
 Meanwhile I'll look at deploying on octopus and maybe speeding up GEMMA. See
 
 => issues/genetics/speeding-up-gemma
+
+# MAF
+
+GEMMA has a MAF filter. For every SNP a maf is computed by adding the geno value:
+
+```
+maf += geno
+```
+
+when all genotype values are added up MAF is divided by 2x the number of individuals (minus missing).
+
+```
+maf /= 2.0 * (double)(ni_test - n_miss);
+```
+
+and this is held against the maf passed on the command line. The 2.0 therefore assumes all values are between 0 and 2.
+
+Actually I now realise we are using LOCO. So the number of SNPs are the ones on one chromosome. That makes sense!
+Still we have to be careful about the MAF range. In our genotype file the values are between 0 and 2. So that is fine in itself.
+
+# RDF
+
+Next step is to generate RDF. The SNP annotation was slow, so I moved that to lmdb. Parsing 400 traits now takes 3 minutes. The RDF file is under 1Gb and the SNP annotation RDF is 330Mb. Not too bad!
+
+```
+guix shell -C -N --expose=/export/guix-containers/virtuoso/data/virtuoso/ttl/=/export/data/virtuoso/ttl virtuoso-ose -- isql -S 8891
+SQL> ld_dir('/export/data/virtuoso/ttl','pan-test-snps-400.n3','http://pan-test.genenetwork.org');
+Done. -- 3 msec.
+# for testing the validity and optional delete problematic ones:
+SQL> SELECT * FROM DB.DBA.load_list;
+SQL> DELETE from DB.DBA.LOAD_LIST where ll_error IS NOT NULL ;
+# commit changes
+SQL> rdf_loader_run ();
+SQL> ld_dir('/export/data/virtuoso/ttl','pan-test-400.n3','http://pan-test.genenetwork.org');
+SQL> rdf_loader_run ();
+SQL> checkpoint;
+Done. -- 16 msec.
+SQL> SPARQL SELECT count(*) FROM <http://pan-test.genenetwork.org> WHERE { ?s ?p ?o } LIMIT 10;
+34200686
+```
+
+Or in the web interface:
+
+```
+SELECT count(*) FROM <http://pan-test.genenetwork.org> WHERE { ?s ?p ?o }
+```
+
+## Query
+
+The RDF is formed as:
+
+```
+gn:GEMMAMapped_test_LOCO_BXDPublish_10383_gemma_GWA_e6478639 a gnt:mappedTrait;
+      rdfs:label "GEMMA BXDPublish trait 10383 mapped with LOCO (defaults)";
+      gnt:trait gn:publishXRef_10383;
+      gnt:loco true;
+      gnt:run gn:test;
+      gnt:time "2025/11/10 08:12";
+      gnt:belongsToGroup gn:setBxd;
+      gnt:name "BXDPublish";
+      gnt:traitId "10383";
+      gnt:nind 14;
+      gnt:mean 18.0;
+      gnt:std 10.9479;
+      gnt:skew 0.3926;
+      gnt:kurtosis -1.1801;
+      skos:altLabel "BXD_10383";
+      gnt:filename "0233fa0cf277ee7d749de08b32f97c8be6478639-BXDPublish-10383-gemma-GWA.tar.xz";
+      gnt:hostname "napoli";
+      gnt:user "wrk".
+gn:A8828461_0_BXDPublish_10383_gemma_GWA_e6478639 a gnt:mappedLocus;
+      gnt:mappedSnp gn:GEMMAMapped_test_LOCO_BXDPublish_10383_gemma_GWA_e6478639;
+      gnt:locus gn:A8828461_0;
+      gnt:lodScore 4.8;
+      gnt:af 0.536;
+      gnt:effect -32.859.
+```
+
+and SNPs are annotated as
+
+```
+gn:A8828461_0 a gnt:marker;
+                 rdfs:label "A8828461-0";
+                 gnt:chr  "1";
+                 gnt:pos  3304440.
+gn:A8828464_0 a gnt:marker;
+                 rdfs:label "A8828464-0";
+                 gnt:chr  "1";
+                 gnt:pos  3304500.
+```
+
+To get all tested traits you can list:
+
+```
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX gn: <http://genenetwork.org/id/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX gnc: <http://genenetwork.org/category/>
+PREFIX gnt: <http://genenetwork.org/term/>
+PREFIX sdmx-measure: <http://purl.org/linked-data/sdmx/2009/measure#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX qb: <http://purl.org/linked-data/cube#>
+PREFIX xkos: <http://rdf-vocabulary.ddialliance.org/xkos#>
+PREFIX pubmed: <http://rdf.ncbi.nlm.nih.gov/pubmed/>
+
+SELECT * FROM <http://pan-test.genenetwork.org> WHERE {
+?trait a gnt:mappedTrait;
+         gnt:run gn:test ;
+         gnt:traitId ?traitid ;
+         gnt:kurtosis ?kurtosis .
+} limit 100
+```
+
+To get all SNPs for trait "10001"
+
+```
+SELECT * FROM <http://pan-test.genenetwork.org> WHERE {
+?traitid a gnt:mappedTrait;
+         gnt:run gn:test ;
+         gnt:traitId "10381" .
+?snp gnt:mappedSnp ?traitid ;
+        gnt:locus ?locus .
+?locus rdfs:label ?nodeid ;
+         gnt:chr ?chr ;
+         gnt:pos ?pos .
+}
+```
+
+Lists:
+
+```
+| http://genenetwork.org/id/A8828461_0_BXDPublish_10383_gemma_GWA_e6478639 | "A8828461-0" | "1" | 3304440 |
+```
+
+Next step is annotating the QTL in RDF.
