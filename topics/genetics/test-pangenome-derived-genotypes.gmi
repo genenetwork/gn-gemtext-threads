@@ -14,6 +14,7 @@ For the BXD we have 23M markers(!) whereof 8M *not* on the reference genome.
 * [ ] Reintroduce nodes that were not annotated for position (Flavia)
 * [ ] GWA plotter
 * [ ] Speed up IO for GEMMA by using lmdb for genotypes and marker file
+* [ ] Use 1.5LOD score to compute QTLs instead of using 50M distance
 * [ ] Reduce GEMMA GRM RAM requirements (not urgent)
 * [ ] Fix -lmm 4 ERROR: Enforce failed for Trying to take the sqrt of nan in src/mathfunc.cpp at line 127 in safe_sqrt
 
@@ -459,4 +460,76 @@ Lists:
 | http://genenetwork.org/id/A8828461_0_BXDPublish_10383_gemma_GWA_e6478639 | "A8828461-0" | "1" | 3304440 |
 ```
 
-Next step is annotating the QTL in RDF.
+## Annotating QTLs
+
+Next step is annotating the QTL in RDF. Earlier I wrote a script rdf-analyse-gemma-hits. It uses rapper to read two RDF files (two runs) and annotates the QTL and differences between the files. The code is not pretty:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/6d667ac97284013867b6cac451ec7e7a22ffbf4b/bin/rdf-analyse-gemma-hits.rb#L1
+
+The supporting library is a bit better:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/6d667ac97284013867b6cac451ec7e7a22ffbf4b/lib/qtlrange.rb#L1
+
+Basically we have a QTL locus (QLocus) that tracks chr,pos,af and lod for each hit.
+QRange is a set of QLocus which also tracks some stats chr,min,max,snps,max_af,lod.
+It can compute whether two QTL (QRange) overlap.
+Next we have a container that tracks the QTL (QRanges) on a chromosome.
+
+Finally there is a diff function that can show the differences on a chromosome (QRanges) for two mapped traits.
+
+Maybe the naming could be a bit better, but the code is clear as it stands. On thing to note is that we use a fixed distance MAX_SNP_DISTANCE_BPS of 50M that decides whether a SNP falls in the same QTL. It would be worth trying to base it on dropping LOD scores (1.5 from the top). Rob and Flavia pointed out.
+
+So, the library is fine, but the calling program is not great. The reason is that I parse RDF directly, teasing apart the logic we do in above SPARQL. I track state in dictionaries (hashes of hashes) and the result ends up convoluted. Also a lot of state in RAM. I chose RDF direct parsing because it makes for easier development. The downside is that I need to parse the whole file to make sure I have everything related to a trait. To fetch SNP results from SPARQL directly is slow too. I am in a bind.
+
+Using curl:
+
+```
+time curl -G http://sparql -H "Accept: application/json; charset=utf-8" --data-urlencode query="
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX gn: <http://genenetwork.org/id/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX gnc: <http://genenetwork.org/category/>
+PREFIX gnt: <http://genenetwork.org/term/>
+PREFIX sdmx-measure: <http://purl.org/linked-data/sdmx/2009/measure#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX qb: <http://purl.org/linked-data/cube#>
+PREFIX xkos: <http://rdf-vocabulary.ddialliance.org/xkos#>
+PREFIX pubmed: <http://rdf.ncbi.nlm.nih.gov/pubmed/>
+SELECT * FROM <http://pan-test.genenetwork.org> WHERE { ?traitid a gnt:mappedTrait ; gnt:traitId ?trait ; gnt:kurtosis ?k . }
+```
+
+
+```
+time curl -G http:///sparql -H "Accept: application/json; charset=utf-8" --data-urlencode query="
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX gn: <http://genenetwork.org/id/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX gnc: <http://genenetwork.org/category/>
+PREFIX gnt: <http://genenetwork.org/term/>
+PREFIX sdmx-measure: <http://purl.org/linked-data/sdmx/2009/measure#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX qb: <http://purl.org/linked-data/cube#>
+PREFIX xkos: <http://rdf-vocabulary.ddialliance.org/xkos#>
+PREFIX pubmed: <http://rdf.ncbi.nlm.nih.gov/pubmed/>
+SELECT * FROM <http://pan-test.genenetwork.org> WHERE { ?traitid a gnt:mappedTrait ; gnt:traitId \"10001\" ; gnt:kurtosis ?k . ?snp gnt:mappedSnp ?traitid ; gnt:locus ?locus . }
+"  > test.out
+real    0m1.612s
+user    0m0.020s
+sys     0m0.000s
+```
+
+To get the trait info for 400 traits takes a second. So, that is no big deal. To get the 6K SNPs for one trait also takes a second. Hmmm. That takes hours, compared to the minutes for direct RDF parsing. Before lmdb comes to the rescue we should try running in on the virtuoso server itself. For curl we get 0.5s. Which makes it two hours for 13K traits. But when we run the query using isql it runs in 70ms which totals 15 minutes. That is perfectly fine for running the whole set!
+
+One way is to simply script isql from the command line. It also turns out the ODBC interface can be used from python or ruby. Here an example in R:
+
+=> https://cran.stat.auckland.ac.nz/web/packages/virtuoso/index.html
+
+Not sure if that is fast enough, but perhaps worth trying.
+
+So, now we have a way to query the data around a trait in seconds. This means I can rewrite the QTL generator to go by trait. This also allows for a quick turnaround during development (good!). Also I want two scripts: one for computing the QTL and one for annotating the differences.
