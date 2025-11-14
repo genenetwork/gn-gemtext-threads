@@ -1,0 +1,18 @@
+# Planned Guix Updates
+
+## Tags
+
+* status: open
+* priority: medium
+* type: enhancement
+* assigned: fredm, bonfacem
+* keywords: guix-bioinformatics, guix
+* interested: pjotrp, aruni
+
+## Description
+
+The following outlines issues around the next upgrade:
+
+* Update pinned guix commit to the latest and see whether inferior profiles for the laminar user are properly created.
+* Rust packages (new package build system) we need to think about.
+
