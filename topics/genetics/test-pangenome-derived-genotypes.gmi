@@ -460,7 +460,7 @@ Lists:
 | http://genenetwork.org/id/A8828461_0_BXDPublish_10383_gemma_GWA_e6478639 | "A8828461-0" | "1" | 3304440 |
 ```
 
-## Annotating QTLs
+## Scoring/annotating QTL
 
 Next step is annotating the QTL in RDF. Earlier I wrote a script rdf-analyse-gemma-hits. It uses rapper to read two RDF files (two runs) and annotates the QTL and differences between the files. The code is not pretty:
 
@@ -526,10 +526,329 @@ sys     0m0.000s
 
 To get the trait info for 400 traits takes a second. So, that is no big deal. To get the 6K SNPs for one trait also takes a second. Hmmm. That takes hours, compared to the minutes for direct RDF parsing. Before lmdb comes to the rescue we should try running in on the virtuoso server itself. For curl we get 0.5s. Which makes it two hours for 13K traits. But when we run the query using isql it runs in 70ms which totals 15 minutes. That is perfectly fine for running the whole set!
 
-One way is to simply script isql from the command line. It also turns out the ODBC interface can be used from python or ruby. Here an example in R:
+One way is to simply script isql from the command line. Meanwhile, it also turns out the ODBC interface can be used from python or ruby. Here an example in R:
 
 => https://cran.stat.auckland.ac.nz/web/packages/virtuoso/index.html
 
 Not sure if that is fast enough, but perhaps worth trying.
 
 So, now we have a way to query the data around a trait in seconds. This means I can rewrite the QTL generator to go by trait. This also allows for a quick turnaround during development (good!). Also I want two scripts: one for computing the QTL and one for annotating the differences.
+
+Alright. The first script should simply to fetch a trait with its markers from SPARQL and score the QTL (as RDF output). The new script is at
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/sparql-qtl-detect.rb
+
+First, the query for one trait looks like:
+
+```
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX gn: <http://genenetwork.org/id/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX gnc: <http://genenetwork.org/category/>
+PREFIX gnt: <http://genenetwork.org/term/>
+PREFIX sdmx-measure: <http://purl.org/linked-data/sdmx/2009/measure#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX qb: <http://purl.org/linked-data/cube#>
+PREFIX xkos: <http://rdf-vocabulary.ddialliance.org/xkos#>
+PREFIX pubmed: <http://rdf.ncbi.nlm.nih.gov/pubmed/>
+
+SELECT ?lod ?af ?nodeid ?chr ?pos FROM <http://pan-test.genenetwork.org> WHERE {
+?traitid a gnt:mappedTrait;
+         gnt:run gn:test ;
+         gnt:traitId "10002" .
+?snp gnt:mappedSnp ?traitid ;
+        gnt:locus ?locus ;
+        gnt:lodScore ?lod ;
+        gnt:af ?af .
+?locus rdfs:label ?nodeid ;
+         gnt:chr ?chr ;
+         gnt:pos ?pos .
+} ORDER BY DESC(?lod)
+```
+
+rendering some 22K markers for trait 10002 as a TSV:
+
+```
+"lod"   "af"    "nodeid"        "chr"   "pos"
+7.5     0.547   "A13459298-0"   "8"     98658490
+7.1     0.154   "A13402313-0"   "8"     96798487
+7       0.432   "A13446492-0"   "8"     97355019
+7       0.263   "A13387873-0"   "8"     94934820
+7       0.585   "A4794343-0"    "1"     172265488
+...
+```
+
+Earlier with precompute for trait 10002 we got:
+
+```
+[10002,HK] =>{"1"=>[#<QRange Chr1 𝚺14 179.862..181.546 LOD=3.07..3.07>], "8"=>[#<QRange Chr8 𝚺102 94.3743..112.929 LOD=3.1..5.57>]}
+[10002,LOCO] =>{"1"=>[#<QRange Chr1 𝚺15 72.2551..73.3771 AF=0.574 LOD=4.0..5.1>, #<QRange Chr1 𝚺91 171.172..183.154 AF=0.588 LOD=4.5..5.3>], "8"=>[#<QRange Chr8 𝚺32 94.4792..97.3382 AF=0.441 LOD=4.5..4.8>]}
+```
+
+so the hits are in range, but the LOD may be inflated because of the number of markers. Anyway, this point we are merely concerned with scoring QTL. The first script is simply:
+
+```
+qtls = QTL::QRanges.new("10002","test")
+CSV.foreach(fn,headers: true, col_sep: "\t") do |hit|
+    qlocus = QTL::QLocus.new(hit["nodeid"],hit["chr"],hit["pos"].to_i,hit["af"].to_f,hit["lod"].to_f)
+    qtls.add_locus(qlocus)
+end
+print qtls
+```
+
+and prints a long list of QTL containing a single hit.
+
+```
+[10002,test] =>{"1"=>[#<QRange Chr1 𝚺1 3099543..3099543 AF=0.583 LOD=5.8..5.8>, #<QRange Chr1 𝚺1 65908328..65908328 AF=0.627 LOD=5.7..5.7>, #<QRange Chr1 𝚺1 81604902..81604902 AF=0.451 LOD=5.5..5.5>, #<QRange Chr1 𝚺2 85087169..85087177 AF=0.781 LOD=5.5..5.6>, #<QRange Chr1 𝚺1 93740525..93740525 AF=0.762 LOD=6.5..6.5>, #<QRange Chr1 𝚺1 114086053..114086053 AF=0.568 LOD=5.7..5.7>,...
+```
+
+For trait 10002 tweaking thresholds and rebinning we get
+
+```
+#<QRange Chr8 𝚺2 34.303454..35.675301 AF=0.571 LOD=5.7..5.8>
+#<QRange Chr8 𝚺621 91.752748..102.722635 AF=0.663 LOD=5.6..7.5>
+#<QRange Chr1 𝚺16 65.908328..175.232335 AF=0.781 LOD=5.6..7.0>
+#<QRange Chr4 𝚺5 56.498971..126.135422 AF=0.657 LOD=5.6..6.4>
+#<QRange Chr12 𝚺3 23.037869..58.306731 AF=0.643 LOD=5.8..6.2>
+#<QRange Chr10 𝚺2 13.442071..13.442088 AF=0.641 LOD=5.8..6.0>
+#<QRange Chr10 𝚺3 94.246536..103.438796 AF=0.608 LOD=5.9..6.2>
+#<QRange Chr3 𝚺2 47.644513..82.451061 AF=0.548 LOD=5.7..6.2>
+#<QRange Chr9 𝚺2 97.445077..120.263403 AF=0.717 LOD=5.8..5.8>
+#<QRange Chr11 𝚺2 27.4058..56.30011 AF=0.559 LOD=5.7..5.7>
+```
+
+with a LOD>5.5 cut-off. That seems justified because LOD scores are inflated. Compare this with the earlier mapping using 'traditional' genotypes:
+
+```
+[10002,LOCO] =>{
+"1"=>[#<QRange Chr1 𝚺15 72.2551..73.3771 AF=0.574 LOD=4.0..5.1>,
+      #<QRange Chr1 𝚺91 171.172..183.154 AF=0.588 LOD=4.5..5.3>],
+"8"=>[#<QRange Chr8 𝚺32 94.4792..97.3382 AF=0.441 LOD=4.5..4.8>]}
+```
+
+we can see the significance of chr8 has gone up with pangenome mapping (relative to chr1) and we find 2 QTL now on chr8, a new one to the left.  Chr1 looks similar. We have some other candidates that may or may not be relevant (all narrow!).
+
+Note this *is* a random trait(!) and suggests the landscape of QTLs will change pretty dramatically. Note also that Andrea will give new genotypes and smoothing to follow. But it is encouraging.
+
+I played a bit with the QTL output, and for now settled on tracking nodes that have a LOD>5.0. We drop QTL based on the following:
+
+```
+qtl.lod.max < 6.0 or (qtl.lod.max < 7.5 - qtl.snps.size/2)
+```
+
+I.e. a single SNP QTL has to have a LOD of 7.0. A 2-SNP QTL has to have a LOD of 6.5. This begets
+
+```
+[10002,test] =>{
+"1"=>[#<QRange Chr1 𝚺69 3.099543..192.718161 AF=0.781 LOD=5.1..7.0>],
+"4"=>[#<QRange Chr4 𝚺12 56.498971..147.86044 AF=0.676 LOD=5.1..6.4>],
+"8"=>[#<QRange Chr8 𝚺2774 34.303454..116.023702 AF=0.899 LOD=5.1..7.5>],
+"10"=>[#<QRange Chr10 𝚺7 82.334108..105.062097 AF=0.623 LOD=5.1..6.2>],
+"12"=>[#<QRange Chr12 𝚺9 21.707644..72.57041 AF=0.77 LOD=5.1..6.2>]}
+```
+
+which are all worth considering (I think). Obviously we could annotate all QTL in RDF triples and filter on that using SPARQL. But this makes processing a bit faster without having to deal with too much noise. We can fine tune later.
+
+Now two more steps to go:
+
+* [ ] Fetch all mapped traits using SPARQL and write RDF
+* [ ] Compare QTL between datasets and annotate new hits
+
+## Fetch all mapped traits
+
+```
+SELECT * FROM <http://pan-test.genenetwork.org> WHERE {
+?traitid a gnt:mappedTrait;
+         gnt:run gn:test ;
+         gnt:traitId "10002" .
+?snp gnt:mappedSnp ?traitid ;
+        gnt:locus ?locus ;
+        gnt:lodScore ?lod ;
+        gnt:af ?af .
+?locus rdfs:label ?nodeid ;
+         gnt:chr ?chr ;
+         gnt:pos ?pos .
+} ORDER BY DESC(?lod)
+```
+
+The first step is to fetch this data. Let's try SPARQL over the web first.
+
+## Compare QTL sets
+
+The previous code I wrote to compare QTLs essentially walks the QTLs and annotates a new QTL if there is no overlap between the two sets. Again, this code is too convoluted:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/18e7a3ac8a11becba84325499116621ad095f28e/lib/qtlrange.rb#L190
+
+The principle is straightforward, however. The code for reading the SPARQL output for a trait is
+
+```
+  CSV.foreach(fn,headers: true, col_sep: "\t") do |hit|
+    trait_id = hit["traitid"] if not trait_id
+    lod = hit["lod"].to_f
+    if lod > 5.0 # set for pangenome input
+      qlocus = QTL::QLocus.new(hit["snp"],hit["chr"],hit["pos"].to_f/10**6,hit["af"].to_f,lod)
+      qtls.add_locus(qlocus)
+    end
+  end
+```
+
+So we can use SPARQL to build two sets on the fly and then run the diff.
+
+Actually, when thinking about this I realised it should not be too hard to do in SPARQL to find the 'new' QTL.
+
+```
+
+SELECT * WHERE {
+?traitid a gnt:mappedTrait ;
+            gnt:traitId "10002" .
+}
+http://genenetwork.org/id/GEMMAMapped_LOCO_BXDPublish_10002_gemma_GWA_7c00f36d
+http://genenetwork.org/id/HK_trait_BXDPublish_10002_gemma_GWA_hk_assoc_txt
+http://genenetwork.org/id/GEMMAMapped_test_LOCO_BXDPublish_10002_gemma_GWA_82087f23
+```
+
+lists the three versions of compute for traits. To fetch all QTL for first mapping:
+
+```
+SELECT ?qtl ?lod ?chr ?start ?stop (count(?snp) as ?snps) WHERE {
+?traitid a gnt:mappedTrait ;
+  gnt:traitId "10002" .
+?qtl gnt:mappedQTL ?traitid ;
+  gnt:qtlChr ?chr ;
+  gnt:qtlStart ?start ;
+  gnt:qtlStop ?stop ;
+  gnt:qtlLOD ?lod .
+?qtl gnt:mappedSnp ?snp .
+}
+```
+
+gets 3 QTL. Now I did not store HK in RDF, but to show the filtering principle we can fetch two traits and compare QTL.
+The following gets two QTL from trait "10002" on CHR1 and holds that against that of trait "10079":
+
+```
+SELECT ?t ?s1 ?e1 ?t2 ?s2 ?e2 WHERE {
+  ?traitid a gnt:mappedTrait ;
+  gnt:traitId ?t .
+  ?qtl gnt:mappedQTL ?traitid ;
+  gnt:qtlChr ?chr ;
+  gnt:qtlStart ?s1 ;
+  gnt:qtlStop ?e1 .
+  {
+    SELECT * WHERE {
+      ?tid a gnt:mappedTrait ;
+      gnt:traitId "10079" ;
+      gnt:traitId ?t2 .
+      ?qtl2 gnt:mappedQTL ?tid ;
+      gnt:qtlChr ?chr ;
+      gnt:qtlStart ?s2 ;
+      gnt:qtlStop ?e2 .
+    }
+  }
+  FILTER (?t = "10002") .
+} LIMIT 10
+
+"10002",171.172,183.154,"10079",172.235,172.235
+"10002",72.2551,73.3771,"10079",172.235,172.235
+```
+
+Note we pivot on two traits and one chromosome, so we find all pairs.
+To say if a QTL is *new* or different we can add another FILTER
+
+```
+FILTER ((?s2 > ?s1 && ?e2 > ?e1) || (?s2 < ?s1 && ?e2 < ?e1)) .
+"t","s1","e1","t2","s2","e2"
+"10002",72.2551,73.3771,"10079",172.235,172.235
+```
+
+that says that this ?qtl2 does not overlap with ?qtl. I.e. here it is a new QTL!
+
+This new insight means we should should store *all* QTL in RDF, including the single SNP ones, because it is easy to filter on them. Note that there may be a more elegant way to query traits pairwise. This is just the first thing that worked. It may need more tuning if there are more than two QTL on a chromosome. E.g. the comparison between 10002 and 10413 finds:
+
+```
+"t","s1","e1","t2","s2","e2"
+"10002",72.2551,73.3771,"10413",32.3113,42.4624
+"10002",171.172,183.154,"10413",171.04,171.041
+"10002",171.172,183.154,"10413",32.3113,42.4624
+"10002",72.2551,73.3771,"10413",171.04,171.041
+```
+
+I.e. it does find new QTL here and you still need to do a little set analysis. In words you should be able to "remove all overlapping QTL from a chromosome". Maybe we can filter the other way - select overlapping QTL and remove those from the result set.
+
+```
+BIND ((?s2 >= ?s1 && ?e2 <= ?e1) || (?s1 >= ?s2 && ?e1 <= ?e2) as ?overlap) .
+"10002",171.172,183.154,"10079",172.235,172.235,1
+"10002",72.2551,73.3771,"10079",172.235,172.235,0
+```
+
+now drop all ?t's that are overlapping. It appears to work with:
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/doc/examples/show-qtls-two-traits.sparql
+
+I'll need to test it on the pangenome set.
+
+# Listing QTL
+
+To get all QTL from a run you can use something like
+
+```
+SELECT DISTINCT ?t ?lod (count(?snp) as ?snps) ?chr ?s ?e WHERE {
+  ?traitid a gnt:mappedTrait ;
+  gnt:traitId ?t .
+  MINUS { ?traitid gnt:run gn:test } # use if you want the original GEMMA QTL
+  # ?traitid gnt:run gn:test . # use if you want the new QTL
+  ?qtl gnt:mappedQTL ?traitid ;
+  gnt:qtlChr ?chr ;
+  gnt:qtlLOD ?lod ;
+  gnt:qtlStart ?s ;
+  gnt:qtlStop ?e .
+  ?qtl gnt:mappedSnp ?snp .
+  FILTER (?t = "10002" && ?lod >= 5.0 ) .
+} LIMIT 100
+```
+
+Note we filter on a trait name and LOD score.
+
+For panQTL (gnt:run == gn:test) this results in
+
+```
+"t"	"lod"	"snps"	"chr"	"start"	"end"
+"10002"	6.4	3	"15"	87.671663	98.028911
+"10002"	6.4	12	"4"	56.498971	147.86044
+"10002"	7	69	"1"	3.099543	192.718161
+"10002"	7.5	2774	"8"	34.303454	116.023702
+"10002"	6.2	7	"10"	82.334108	105.062097
+"10002"	6.2	2	"3"	47.644513	82.451061
+"10002"	6.2	1	"3"	130.145235	130.145235
+"10002"	6	2	"10"	13.442071	13.442088
+"10002"	6.2	9	"12"	21.707644	72.57041
+```
+
+For the traditional genotypes (gnt:run != gn:test)
+
+```
+"t"	"lod"	"snps"	"chr"	"start"	"end"
+"10002"	5.3	91	"1"	171.172	183.154
+"10002"	5.1	15	"1"	72.2551	73.3771
+```
+
+
+# Listing SNPs
+
+Now we have all QTLs in the DB, as well as underlying SNPs, one interesting question to ask is what SNPs are repeated across our traits. This, if you remember, is the key idea of reversed genetics.
+Of course, with our pangenome-derived genotypes, we now have thousands of SNPs per trait. Let's see if we can rank them by number of traits.
+
+For our 1000 traits we map about 7.7M snps with a LOD>5.
+
+
+# Using sparql from emacs
+
+Note: if you are doing SPARQL quite a bit, I recommend using sparql-mode in emacs! It is easy, faster and you can use git :)
+
+=> https://github.com/ljos/sparql-mode
+
+```
+M-x sparql-query-region [ENTER] http://sparql-test.genenetwork.org/sparql/ [ENTER]
+```

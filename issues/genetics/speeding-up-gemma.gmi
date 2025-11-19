@@ -20,9 +20,9 @@ Anyway, there is no such thing as a free lunch. So, let's dive in.
 
 * [X] Try gzipped version
 * [X] Run without debug
+* [ ] Use lmdb for genotypes
 * [ ] Optimize openblas for target architecture
 * [ ] Try a faster malloc library for GEMMA
-* [ ] Use lmdb for genotypes
 * [ ] Other improvements...
 
 # Analysis
@@ -110,4 +110,10 @@ which is currently not built with arch optimizations (even though Cooperlake sug
 
 ## Use lmdb for genotypes
 
-Rather than focussing on gzip, another potential improvement is to use lmdb with mmap.
+Rather than focussing on gzip, another potential improvement is to use lmdb with mmap. We am not going to upgrade the original gemma code (which is in maintenance mode). We are going to upgrade the new pangemma project instead:
+
+=> https://git.genenetwork.org/pangemma/
+
+Reason being that this is our experimental project.
+
+So I just managed to build pangemma/gemma in Guix. Next step is to introduce lmdb genotypes.
