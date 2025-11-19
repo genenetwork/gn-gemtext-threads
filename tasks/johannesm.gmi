@@ -10,19 +10,16 @@
 
 ### Ongoing
 
-* [X] Look into system finetuning
-
-* [] Test performance gain
-
 * [] Think about how to show responses of agent system and GNQA in one UI
 
 * [] Get system into use in GN
 
+* [] Draft outline paper
+
 * [] Talk with Hao about publication on agent system and gain over GNQA
 
-* [~] Read literature for paper
+* [] Read literature for paper
 
-* [] Draft outline paper
 
 
 ### Later
@@ -85,3 +82,7 @@
 * [X] Test AI system with descriptions, qtl and real biology questions
 
 * [X] Compare performance of Claude and open model on GN data before finetuning
+
+* [X] Look into system finetuning
+
+* [X] Test performance gain
