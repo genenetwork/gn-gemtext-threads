@@ -4,9 +4,9 @@ GEMMA is slow, but usually fast enough. Earlier I wrote gemma-wrapper to speed t
 
 One thing to look at is Sen's bulklmm. It can do phenotypes in parallel, provided there is no missing data. This is perfect for permutations which we'll also do. For multiple phenotypes it is a bit tricky however, because you'll have to mix and match experiments to show the same individuals (read samples).
 
-So the approach is to first analyze steps in GEMMA and see where it is particularly inefficient. Maybe we can do something about that. I note I started the pangemma effort (and mgamma effort before). The idea is to use a propagator network for incremental improvements and also to introduce a new build system and testing framework. In parallel we'll try to scale out on HPC.
+So the approach is to first analyze steps in GEMMA and see where it is particularly inefficient. Maybe we can do something about that. I note I started the pangemma effort (and mgamma effort before). The idea is to use a propagator network for incremental improvements and also to introduce a new build system and testing framework. In parallel we'll try to scale out on HPC using Arun's ravanan software.
 
-Anyway, there is no such thing as a free lunch. So, let's dive in.
+There is no such thing as a free lunch. So, let's dive in.
 
 # Description
 
@@ -21,6 +21,10 @@ Anyway, there is no such thing as a free lunch. So, let's dive in.
 * [X] Try gzipped version
 * [X] Run without debug
 * [ ] Use lmdb for genotypes
+* -   [ ] convert genotypes to lmdb
+* -   [ ] replace GEMMA ReadGenotypes
+* -   [ ] replace reading genotypes in AnalyzeBimbam
+* [ ] Use lmdb for SNPs?
 * [ ] Optimize openblas for target architecture
 * [ ] Try a faster malloc library for GEMMA
 * [ ] Other improvements...
@@ -81,7 +85,7 @@ Percent of CPU this job got: 118%
 Elapsed (wall clock) time (h:mm:ss or m:ss): 7:43.56
 ```
 
-The problem is that unzip runs on a single thread in GEMMA.
+The problem is that unzip runs on a single thread in GEMMA, so it is actually slower that the gigantic raw text file.
 
 ## Running without debug
 
@@ -108,7 +112,7 @@ this uses the gemma-gn2 package in
 
 which is currently not built with arch optimizations (even though Cooperlake suggests differently). Another potential optimization is to use a fast malloc library. We do, however, already compile with a recent gcc, thanks to Guix. No need to improve on that.
 
-## Use lmdb for genotypes
+## Introduce lmdb for genotypes
 
 Rather than focussing on gzip, another potential improvement is to use lmdb with mmap. We am not going to upgrade the original gemma code (which is in maintenance mode). We are going to upgrade the new pangemma project instead:
 
@@ -116,4 +120,95 @@ Rather than focussing on gzip, another potential improvement is to use lmdb with
 
 Reason being that this is our experimental project.
 
-So I just managed to build pangemma/gemma in Guix. Next step is to introduce lmdb genotypes.
+So I just managed to build pangemma/gemma in Guix. Next step is to introduce lmdb genotypes. Genotypes come essentially as a matrix of markers x individuals. In the case of GN geno files and BIMBAM files they are simply stored as tab delimited values and/or probabilities. This happens in
+
+```
+src/param.cpp
+1261:void PARAM::ReadGenotypes(gsl_matrix *UtX, gsl_matrix *K, const bool calc_K) {
+1280:void PARAM::ReadGenotypes(vector<vector<unsigned char>> &Xt, gsl_matrix *K,
+```
+
+calling into
+
+```
+gemma_io.cpp
+644:bool ReadFile_geno(const string &file_geno, const set<string> &setSnps,
+1752:bool ReadFile_geno(const string file_geno, vector<int> &indicator_idv,
+1857:bool ReadFile_geno(const string &file_geno, vector<int> &indicator_idv,
+```
+
+which are called from gemma.cpp. Also lmm.cpp reads the geno file in the AnalyzeBimbam function (see file_geno):
+
+```
+src/lmm.cpp
+61:  file_geno = cPar.file_geno;
+1664:  debug_msg(file_geno);
+1665:  auto infilen = file_geno.c_str();
+2291:    cout << "error reading genotype file:" << file_geno << endl;
+```
+
+Note that also SNPs are read from a file (see file_snps). We already have an lmdb version for that!
+
+So, reading genotypes happens in multiple places. In fact, it is read 1x for computing K and 2x for GWA. And it is worth than this because LOCO runs GWA 20x rereading the same files. Reading it once using lmdb should speed things up.
+
+We'll start with the 30G 143samples.percentile.bimbam.bimbam-reduced2 file. To convert this file into lmdb we only do this once. We want to track both column and row names in the same lmdb and we will use a meta JSON record for that. On the command line we'll state wether the genotypes are stored as char or int. Floats will be packed into either of those. We'll expirement a bit to see what the default should be. A genotype is usually a number/character or a probability. In the latter case we don't have to have high precison and can choose to store an index into a range of values. We can also opt for Float16 or something more ad hoc because we don't have to store the exponent.
+
+But let's start with a standard float here, to keep things simple. To write the first version of code I'll use a byte conversion:
+
+```
+./bin/geno2mdb.rb BXD.geno.bimbam --eval '{"0"=>0,"1"=>1,"2"=>2,"NA"=>-1}' --pack 'C*' --geno-json BXD.geno.json
+```
+
+The lmdb file contains a metadata record that looks like:
+
+```
+{
+  "type": "gemma-geno",
+  "version": 1,
+  "eval": "G0-2",
+  "key-format": "string",
+  "rec-format": "C*",
+  "geno": {
+    "type": "gn-geno-to-gemma",
+    "genofile": "BXD.geno",
+    "samples": [
+      "BXD1",
+      "BXD2",
+      "BXD5",
+etc.
+```
+
+i.e. it is a self-contained, efficient, genotype format. There is also another trick, we can use Plink-style compression with
+
+```
+./bin/geno2mdb.rb BXD.geno.bimbam --eval '{"0"=>0,"1"=>1,"2"=>2,"NA"=>4}' --geno-json BXD.geno.json --gpack 'l.each_slice(4).map { |slice| slice.map.with_index.sum {|val,i| val << (i*2) } }.pack("C*")'
+```
+
+reducing the original uncompressed BIMBAM from 9.9Mb to 2.7Mb. This is still a lot larger than the gzip compressed BIMBAM, but as I pointed out earlier the uncompressed version is faster by a wide margin. Compressing the lmdb file gets it in range of the compressed BIMBAM btw. So that is always an option.
+
+Next we create a floating point version. That reduces the file to 30% with
+
+```
+geno2mdb.rb fp.bimbam --geval 'g.to_f' --pack 'F*' --geno-json bxd_inds.list.json
+```
+
+and if we compress the probabilities into a byte reduces the file to 10%:
+
+```
+geno2mdb.rb fp.bimbam --geval '(g.to_f*255.0).to_i' --pack 'C*' --geno-json bxd_inds.list.json
+```
+
+And now the compressed version is also 4x smaller. We'll have to run gemma at scale to see what the impact is, but an uncompressed 10x reduction schould have an impact on the IO bottle neck. Note how easy it is to try these things with my little Ruby script.
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/geno2mdb.rb
+
+## Use lmdb genotypes from pangemma
+
+Rather than writing new code in C++ I proceeded embedding guile in pangemma. If it turns out to be a performance problem we can always fall back to C. Here we show a simple test witten in guile that gets called from main.cpp:
+
+=> https://git.genenetwork.org/pangemma/commit/?id=5b6b5e2ad97b4733125c0845cfae007e8094a687
+
+Now I need to check:
+
+* [ ] guile state retained between calls
+* [ ] use lmdb from guile
