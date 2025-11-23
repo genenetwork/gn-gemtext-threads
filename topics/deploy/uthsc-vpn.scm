@@ -77,6 +77,7 @@
 (define openconnect-sso-uthsc
   (package
     (inherit openconnect-sso)
+    (name "openconnect-sso-uthsc")
     (inputs
      (modify-inputs (package-inputs openconnect-sso)
        (replace "python-requests" python-requests-2.28)))))
