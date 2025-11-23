@@ -21,7 +21,7 @@ There is no such thing as a free lunch. So, let's dive in.
 * [X] Try gzipped version
 * [X] Run without debug
 * [ ] Use lmdb for genotypes
-* -   [ ] convert genotypes to lmdb
+* -   [X] convert genotypes to lmdb
 * -   [ ] replace GEMMA ReadGenotypes
 * -   [ ] replace reading genotypes in AnalyzeBimbam
 * [ ] Use lmdb for SNPs?
@@ -208,7 +208,196 @@ Rather than writing new code in C++ I proceeded embedding guile in pangemma. If 
 
 => https://git.genenetwork.org/pangemma/commit/?id=5b6b5e2ad97b4733125c0845cfae007e8094a687
 
-Now I need to check:
+## Some analysis of GEMMA
 
-* [ ] guile state retained between calls
-* [ ] use lmdb from guile
+GEMMA::BatchRun reads files and executes (b gemma.cpp:1657)
+cPar.ReadFiles()
+  ReadFile_anno
+  ReadFile_pheno
+  ReadFile_geno (gemma_io.cpp:652) - first read to fetch SNPs info, num (ns_tset) and total SNPs (ns_total).
+                                   - it also does some checks
+    Note: These can all be handled by the lmdb files. So it saves one run.
+
+Summary of Mutated Outputs:
+* indicator_snp: Binary indicators for which SNPs passed filtering
+* snpInfo: Complete metadata for all SNPs in the file
+* ns_test: Count of SNPs passing filters
+checkpoint("read-geno-file",file_geno);
+
+Next start LMM9 gemma.cpp:2571
+  ReadFile_kin
+  EigenDecomp_Zeroed
+  2713          CalcUtX(U, W, UtW);
+  2714          CalcUtX(U, Y, UtY);
+  CalcLambda
+  CalcLmmVgVeBeta
+  CalcPve
+  cPar.PrintSummary()
+  debug_msg("fit LMM (one phenotype)");
+  cLmm.AnalyzeBimbam lmm.cpp:1665 and
+    LMM::Analyze lmm.cpp:1704
+
+
+Based on LLM code analysis, here's what gets mutated in the 'LMM' and Param class:
+
+### By 'ReadFile_geno':
+This is a **standalone function** (not a member of LMM), but it mutates LMM members when passed as parameters:
+
+1. **'indicator_snp'** - cleared and populated with 0/1 filter flags
+2. **'snpInfo'** - cleared and populated with SNP metadata
+3. **'ns_test'** - set to count of SNPs that passed all filters
+
+### By 'LMM::AnalyzeBimbam':
+(which calls 'LMM::Analyze')
+
+**Directly mutated in 'LMM::Analyze':**
+
+1. **'sumStat'** - PRIMARY OUTPUT
+   - Cleared at start (implied)
+   - Populated with one SUMSTAT entry per analyzed SNP
+   - Contains: beta, se, lambda_remle, lambda_mle, p_wald, p_lrt, p_score, logl_H1
+
+2. **'time_UtX'** - timing accumulator
+   - '+= time_spent_on_matrix_multiplication'
+
+3. **'time_opt'** - timing accumulator
+   - '+= time_spent_on_optimization'
+
+**Read but NOT mutated:**
+- 'indicator_snp' - read to determine which SNPs to process
+- 'indicator_idv' - read to determine which individuals to include
+- 'ni_total', 'ni_test' - used for loop bounds and assertions
+- 'n_cvt' - number of covariates, used in calculations
+- 'l_mle_null', 'l_min', 'l_max', 'n_region', 'logl_mle_H0' - analysis parameters
+- 'a_mode' - determines which statistical tests to run
+- 'd_pace' - controls progress bar display
+
+### Summary Table:
+
+| Member Variable | Mutated By | Purpose |
+|----------------|------------|---------|
+| 'indicator_snp' | 'ReadFile_geno' | Which SNPs passed filters |
+| 'snpInfo' | 'ReadFile_geno' | SNP metadata (chr, pos, alleles, etc.) |
+| 'ns_test' | 'ReadFile_geno' | Count of SNPs to analyze |
+| 'sumStat' | 'Analyze' | **Main output**: Statistical results per SNP |
+| 'time_UtX' | 'Analyze' | Performance profiling |
+| 'time_opt' | 'Analyze' | Performance profiling |
+
+The key output is **'sumStat'** which contains all the association test results.
+
+PARAM variables directly mutated by these functions:
+
+    indicator_snp (by ReadFile_geno)
+    snpInfo (by ReadFile_geno)
+    ns_test (by ReadFile_geno)
+
+LMM variables mutated:
+
+    indicator_snp (by ReadFile_geno if passed LMM's copy)
+    snpInfo (by ReadFile_geno if passed LMM's copy)
+    ns_test (by ReadFile_geno if passed LMM's copy)
+    sumStat (by Analyze - this is LMM-only, not in PARAM)
+    time_UtX, time_opt (by Analyze)
+
+The actual analysis results (sumStat) exist only in LMM, not in PARAM.
+
+## Coding for lmdb support
+
+From above it should be clear that, if we have the genotypes and snp annotations in lmdb, we can skip reading the genotype file the first time. We can also rewrite the 'analyze' functions to fetch this information on the fly.
+
+Note that OpenBLAS will have to run single threaded when introducing SNP-based threads.
+
+## Fine grained multithreading
+
+From above it can be concluded that we can batch process SNPs in parallel. The only output is sumStat and that is written at once at the end. So, if we can collect the sumStat data without collision it should just work.
+
+Interestingly both Guile and C++ have recently introduced fibers. Boost.Fiber looks pretty clean:
+
+```
+#include <boost/fiber/all.hpp>
+#include <vector>
+#include <iostream>
+
+namespace fibers = boost::fibers;
+
+// Worker fiber
+void compute_worker(int start, int end,
+                   fibers::buffered_channel<int>& channel) {
+    for (int i = start; i < end; ++i) {
+        channel.push(i * i);
+    }
+}
+
+void parallel_compute_fibers() {
+    fibers::buffered_channel<int> channel(100);
+
+    // Spawn fibers
+    fibers::fiber f1([&]() {
+        compute_worker(0, 100, channel);
+        channel.close();  // Signal completion
+    });
+
+    fibers::fiber f2([&]() {
+        compute_worker(100, 200, channel);
+    });
+
+    // Collect results
+    std::vector<int> results;
+    int value;
+    while (fibers::channel_op_status::success == channel.pop(value)) {
+        results.push_back(value);
+    }
+
+    f1.join();
+    f2.join();
+
+    std::cout << "Total results: " << results.size() << std::endl;
+}
+```
+
+Compare that with guile:
+
+```
+(use-modules (fibers)
+             (fibers channels))
+
+;; Worker that streams individual results
+(define (compute-worker-streaming start end result-channel)
+  (let loop ((i start))
+    (when (< i end)
+      (put-message result-channel (* i i))
+      (loop (+ i 1))))
+  ;; Send completion signal
+  (put-message result-channel 'done))
+
+;; Collector fiber
+(define (result-collector result-channel num-workers)
+  (let loop ((results '())
+             (done-count 0))
+    (if (= done-count num-workers)
+        (reverse results)
+        (let ((msg (get-message result-channel)))
+          (if (eq? msg 'done)
+              (loop results (+ done-count 1))
+              (loop (cons msg results) done-count))))))
+
+(define (parallel-compute-streaming)
+  (run-fibers
+   (lambda ()
+     (let ((result-channel (make-channel)))
+
+       ;; Spawn workers
+       (spawn-fiber
+        (lambda () (compute-worker-streaming 0 100 result-channel)))
+       (spawn-fiber
+        (lambda () (compute-worker-streaming 100 200 result-channel)))
+
+       ;; Collect results
+       (result-collector result-channel 2)))))
+```
+
+Interestingly Boost.fibers has work stealing built in. We can look at that later:
+
+=> https://www.boost.org/doc/libs/1_66_0/libs/fiber/doc/html/fiber/worker.html
+
+What about LOCO? Actually we can use the same fiber strategy for each chromosome as a per CHR process. We can set the number of threads differently based on chromosome SNP num, so all chromosomes take (about) the same time. Later, we can bring LOCO into one process with the advantage that the genotype data is only read once. In both cases the kinship matrices are in RAM anyway.
