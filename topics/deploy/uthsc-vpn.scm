@@ -1,4 +1,5 @@
 (use-modules ((gnu packages python-web) #:select (python-requests python-urllib3))
+             ((gnu packages python-xyz) #:select (python-charset-normalizer))
              ((gnu packages guile-xyz) #:select (guile-ini guile-lib guile-smc))
              ((gnu packages vpn) #:select (openconnect-sso vpn-slice))
              (guix build-system python)
@@ -36,6 +37,22 @@
          "01dkqv0rsjqyw4wrp6yj8h3bcnl7c678qkj845596vs7p4bqff4a"))))
     (build-system python-build-system)))
 
+(define python-charset-normalizer-2.10
+  (package
+    (inherit python-charset-normalizer)
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "charset-normalizer" version))
+       (sha256
+        (base32 "04zlajr77f6c7ai59l46as1idi0jjgbvj72lh4v5wfpz2s070pjp"))))
+    (build-system python-build-system)
+    (arguments (list))
+    (native-inputs
+     (modify-inputs (package-native-inputs python-charset-normalizer)
+       (delete "python-setuptools")))))
+
 (define python-requests-2.28
   (package
     (inherit python-requests)
@@ -52,6 +69,7 @@
     (native-inputs (list))
     (propagated-inputs
      (modify-inputs (package-propagated-inputs python-requests)
+       (replace "python-charset-normalizer" python-charset-normalizer-2.10)
        (replace "python-urllib3" python-urllib3-1.26)))))
 
 ;; Login to the UTHSC VPN fails with an SSLV3_ALERT_HANDSHAKE_FAILURE
