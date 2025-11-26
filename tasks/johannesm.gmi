@@ -10,8 +10,6 @@
 
 ### Ongoing
 
-* [] Think about how to show responses of agent system and GNQA in one UI
-
 * [] Get system into use in GN
 
 * [] Draft outline paper
@@ -86,3 +84,7 @@
 * [X] Look into system finetuning
 
 * [X] Test performance gain
+
+* [X] Think about how to show responses of agent system and GNQA in one UI
+
+* [X] Get API working
