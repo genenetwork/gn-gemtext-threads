@@ -24,9 +24,10 @@ There is no such thing as a free lunch. So, let's dive in.
 * -   [X] convert genotypes to lmdb
 * -   [ ] replace GEMMA ReadGenotypes
 * -   [ ] replace reading genotypes in AnalyzeBimbam
-* [ ] Use lmdb for SNPs?
-* [ ] Optimize openblas for target architecture
-* [ ] Try a faster malloc library for GEMMA
+* [ ] Use lmdb for SNPs
+* [X] Optimize openblas for target architecture
+* [ ] Perhaps try a faster malloc library for GEMMA
+* [ ] Fix sqrt(NaN) when running big file example with -debug
 * [ ] Other improvements...
 
 # Analysis
@@ -396,6 +397,7 @@ Compare that with guile:
        (result-collector result-channel 2)))))
 ```
 
+The Boost fiber is a relatively mature library now, with about 8+ years of development and real-world usage.
 Interestingly Boost.fibers has work stealing built in. We can look at that later:
 
 => https://www.boost.org/doc/libs/1_66_0/libs/fiber/doc/html/fiber/worker.html
