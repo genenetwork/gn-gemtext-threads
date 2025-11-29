@@ -18,6 +18,107 @@ For the BXD we have 23M markers(!) whereof 8M *not* on the reference genome.
 * [ ] Reduce GEMMA GRM RAM requirements (not urgent)
 * [ ] Fix -lmm 4 ERROR: Enforce failed for Trying to take the sqrt of nan in src/mathfunc.cpp at line 127 in safe_sqrt
 
+# Summary
+
+To get the mapping and generate the assoc output in mdb format we run a variant of gemma-wrapper
+
+```
+gemma-batch-run.sh
+```
+
+Next we convert that output to RDF with
+
+```
+../bin/gemma-mdb-to-rdf.rb --header > output.ttl
+../bin/gemma-mdb-to-rdf.rb --anno snps-matched.txt.mdb tmp/panlmm/*-gemma-GWA.tar.xz >> test-run-3000.ttl
+serdi -i turtle -o ntriples test-run-3000.ttl > test-run-3000.n3
+```
+
+(serdi does better than rapper with huge files) and
+copy the file to the virtuoso instance and load it with isql:
+
+```
+cd /export/guix-containers/virtuoso/data/virtuoso/ttl/
+guix shell -C -N --expose=/export/guix-containers/virtuoso/data/virtuoso/ttl/=/export/data/virtuoso/ttl virtuoso-ose -- isql -S 8891
+SQL> ld_dir('/export/data/virtuoso/ttl','test-run-3000.n3','http://pan-test.genenetwork.org');
+Done. -- 3 msec.
+# for testing the validity and optional delete problematic ones:
+SQL> SELECT * FROM DB.DBA.load_list;
+SQL> DELETE from DB.DBA.LOAD_LIST where ll_error IS NOT NULL ;
+SQL> DELETE from DB.DBA.LOAD_LIST where LL_STATE = 1;
+# commit changes
+SQL> rdf_loader_run ();
+SQL> checkpoint;
+Done. -- 16 msec.
+SQL> SPARQL SELECT count(*) FROM <http://pan-test.genenetwork.org> WHERE { ?s ?p ?o } LIMIT 10;
+34200686
+```
+
+As a test, fetch a table of the traits with their SNPs
+
+```
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX gn: <http://genenetwork.org/id/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX gnc: <http://genenetwork.org/category/>
+PREFIX gnt: <http://genenetwork.org/term/>
+PREFIX sdmx-measure: <http://purl.org/linked-data/sdmx/2009/measure#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX qb: <http://purl.org/linked-data/cube#>
+PREFIX xkos: <http://rdf-vocabulary.ddialliance.org/xkos#>
+PREFIX pubmed: <http://rdf.ncbi.nlm.nih.gov/pubmed/>
+
+SELECT * FROM <http://pan-test.genenetwork.org> WHERE {
+?traitid a gnt:mappedTrait;
+         gnt:run gn:test .
+?snp gnt:mappedSnp ?traitid ;
+        gnt:locus ?locus ;
+        gnt:lodScore ?lod ;
+        gnt:af ?af .
+?locus rdfs:label ?nodeid ;
+         gnt:chr ?chr ;
+         gnt:pos ?pos .
+FILTER (contains(?nodeid,"Marker") && ?pos < 1000)
+} LIMIT 100
+```
+
+OK, we are ready to run a little workflow. First create a sorted list of IDs.
+
+```
+SELECT DISTINCT ?trait FROM <http://pan-test.genenetwork.org> WHERE {
+?traitid a gnt:mappedTrait;
+         gnt:run gn:test ;
+         gnt:traitId ?trait.
+}
+```
+
+Sort that list and save as 'pan-ids-sorted.txt'. Next run
+
+```
+../../bin/workflow/qtl-detect-batch-run.sh
+```
+
+and load those in virtuoso. List new QTL
+
+```
+SELECT DISTINCT ?t ?lod (count(?snp) as ?snps) ?chr ?s ?e WHERE {
+  ?traitid a gnt:mappedTrait ;
+  gnt:traitId ?t .
+  MINUS { ?traitid gnt:run gn:test } # use if you want the original GEMMA QTL
+  # ?traitid gnt:run gn:test . # use if you want the new QTL
+  ?qtl gnt:mappedQTL ?traitid ;
+  gnt:qtlChr ?chr ;
+  gnt:qtlLOD ?lod ;
+  gnt:qtlStart ?s ;
+  gnt:qtlStop ?e .
+  ?qtl gnt:mappedSnp ?snp .
+  FILTER (?t = "10002" && ?lod >= 5.0 ) .
+} LIMIT 100
+```
+
 # Prior work
 
 For the first traits (presented at CTC'25) gemma was run as
@@ -654,8 +755,8 @@ which are all worth considering (I think). Obviously we could annotate all QTL i
 
 Now two more steps to go:
 
-* [ ] Fetch all mapped traits using SPARQL and write RDF
-* [ ] Compare QTL between datasets and annotate new hits
+* [X] Fetch all mapped traits using SPARQL and write RDF
+* [X] Compare QTL between datasets and annotate new hits
 
 ## Fetch all mapped traits
 
@@ -840,7 +941,7 @@ For the traditional genotypes (gnt:run != gn:test)
 Now we have all QTLs in the DB, as well as underlying SNPs, one interesting question to ask is what SNPs are repeated across our traits. This, if you remember, is the key idea of reversed genetics.
 Of course, with our pangenome-derived genotypes, we now have thousands of SNPs per trait. Let's see if we can rank them by number of traits.
 
-For our 1000 traits we map about 7.7M snps with a LOD>5.
+For our 1000 traits we map about 7.7M snps with a LOD>5
 
 
 # Using sparql from emacs

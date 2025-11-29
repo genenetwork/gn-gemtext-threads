@@ -30,6 +30,14 @@ There is no such thing as a free lunch. So, let's dive in.
 * [ ] Fix sqrt(NaN) when running big file example with -debug
 * [ ] Other improvements...
 
+# Summary
+
+Convert a geno file to mdb with
+
+```
+./bin/geno2mdb.rb mouse_hs1940.geno.txt --eval Gf # convert to floating point
+```
+
 # Analysis
 
 As a test case we'll take on of the runs:
