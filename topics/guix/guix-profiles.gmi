@@ -15,9 +15,9 @@ Note that a recently tested channel can be fetched from cd.genenetwork.org. That
 Alternatively put the following into a channels.scm file.
 ```
 (list (channel
-       (name 'gn-bioinformatics)
-       (url "https://git.genenetwork.org/guix-bioinformatics")
-       (branch "master")))
+       (name 'gn-machines)
+       (url "https://git.genenetwork.org/gn-machines")
+       (branch "main")))
 ```
 Build a profile using
 ```
