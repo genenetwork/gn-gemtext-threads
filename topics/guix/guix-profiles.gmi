@@ -58,9 +58,3 @@ From time to time, updates to upstream Guix break our guix-bioinformatics channe
 To this end, we hard-code the guix-bioinformatics channel to depend on a specific commit of upstream Guix that is tied to guix-bioinformatics. This is why the recommended channels.scm file above does not include a %default-guix-channel. However, this comes with the drawback that your entire system will be stuck at that specific commit of upstream Guix (but not if you use another profile as described above). We highly recommend using a separate `guix pull` profile specifically for GeneNetwork work, as described above.
 
 This scheme also comes with the added bonus that all members on the team and the continuous integration system will be using exactly the same Guix.
-
-## Notes
-
-We recently had to switch to gitlab because our git server went down on Penguin2. We may move to a cgit solution soon, see
-
-=> ../issues/cant-use-guix-bioinformatics-with-guix-pull.gmi
