@@ -22,9 +22,13 @@ There is no such thing as a free lunch. So, let's dive in.
 * [X] Run without debug
 * [ ] Use lmdb for genotypes
 * -   [X] convert genotypes to lmdb
-* -   [ ] replace GEMMA ReadGenotypes
-* -   [ ] replace reading genotypes in AnalyzeBimbam
-* [ ] Use lmdb for SNPs
+* -   [X] replace GEMMA ReadGenotypes
+* -   [X] replace reading genotypes in AnalyzeBimbam
+* -   [ ] Apply similar SNP filtering as the original
+* -   [X] Add SNP info tho Geno file
+* -   [ ] Try different geno encodings
+* [X] Use lmdb for SNPs (probably part of Geno file)
+* [ ] Write lmdb for output
 * [X] Optimize openblas for target architecture
 * [ ] Perhaps try a faster malloc library for GEMMA
 * [ ] Fix sqrt(NaN) when running big file example with -debug
@@ -35,8 +39,44 @@ There is no such thing as a free lunch. So, let's dive in.
 Convert a geno file to mdb with
 
 ```
-./bin/geno2mdb.rb mouse_hs1940.geno.txt --eval Gf # convert to floating point
+./bin/anno2mdb.rb mouse_hs1940.anno.txt
+./bin/geno2mdb.rb mouse_hs1940.geno.txt --anno mouse_hs1940.anno.txt.mdb --eval Gf # convert to floating point
 ```
+
+```
+./bin/geno2mdb.rb pangenome-13M-genotypes.txt --geno-json bxd_inds.list.json --eval Gf
+```
+
+even with floats a 30G pangenome genotype file got reduced to 12G. A quick full run of the mdb version takes 6 minutes. That is a massive 3x speedup. It also used less RAM (because it is one process instead of 20) and had a 40x core usage, much of it in the Linux kernel:
+
+```
+/bin/time -v ./build/bin/Release/gemma -k tmp/93f6b39ec06c09fb9ba9ca628b5fb990921b6c60.11.cXX.txt.cXX.txt -p tmp/pheno.json.txt -g pangenome-13M-genotypes.txt.mdb -lmm 9 -maf 0.1 -n 2 -debug
+LD_LIBRARY_PATH=$GUIX_ENVIRONMENT/lib /bin/time -v ./build/bin/Release/gemma -k tmp/93f6b39ec06c09fb9ba9ca628b5fb990921b6c60.3.cXX.txt.cXX.txt -p tmp/pheno.json.txt -g tmp/pangenome-13M-genotypes.txt.mdb -lmm 9 -maf 0.1 -n 2 -no-check
+real    5m47.587s
+user    39m33.796s
+sys     211m1.143s
+
+Command being timed: "./build/bin/Release/gemma -k tmp/93f6b39ec06c09fb9ba9ca628b5fb990921b6c60.3.cXX.txt.cXX.txt -p tmp/pheno.json.txt -g tmp/pangenome-13M-genotypes.txt.mdb -lmm 9 -maf 0.1 -n 2 -no-check"
+        User time (seconds): 2169.77
+        System time (seconds): 11919.04
+        Percent of CPU this job got: 3919%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 5:59.48
+        Maximum resident set size (kbytes): 13377040
+```
+
+as we only read the genotype file once it shows how much is IO bound! Moving to lmdb was the right choice to speed up pangemma. It also suggests that that, right now, we should concentrate on reducing IO further, rather than working on the computation speed.
+
+Old gemma does:
+
+```
+        Command being timed: "/bin/gemma -k 93f6b39ec06c09fb9ba9ca628b5fb990921b6c60.11.cXX.txt.cXX.txt -p pheno.json.txt -g pangenome-13M-genotypes.txt.gz -a snps-matched.txt -lmm 9 -maf 0.1 -n 2 -no-check"
+        User time (seconds): 2017.25
+        System time (seconds): 62.21
+        Percent of CPU this job got: 240%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 14:24.17
+        Maximum resident set size (kbytes): 9736884
+```
+
 
 # Analysis
 
@@ -75,7 +115,7 @@ Average resident set size (kbytes): 0
 Major (requiring I/O) page faults: 0
 Minor (reclaiming a frame) page faults: 5756557
 Voluntary context switches: 1365
-Involuntary context switches: 478
+nInvoluntary context switches: 478
 Swaps: 0
 File system inputs: 0
 File system outputs: 143704
@@ -411,3 +451,7 @@ Interestingly Boost.fibers has work stealing built in. We can look at that later
 => https://www.boost.org/doc/libs/1_66_0/libs/fiber/doc/html/fiber/worker.html
 
 What about LOCO? Actually we can use the same fiber strategy for each chromosome as a per CHR process. We can set the number of threads differently based on chromosome SNP num, so all chromosomes take (about) the same time. Later, we can bring LOCO into one process with the advantage that the genotype data is only read once. In both cases the kinship matrices are in RAM anyway.
+
+# Optimizing SNP handling
+
+GEMMA originally used a separate SNP annotation file which proves inefficient. Now we transform the geno information to lmdb, we might as well include chr+pos. We'll make the key out of that and add a table with marker annotation.
