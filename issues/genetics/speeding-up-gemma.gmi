@@ -24,14 +24,21 @@ There is no such thing as a free lunch. So, let's dive in.
 * -   [X] convert genotypes to lmdb
 * -   [X] replace GEMMA ReadGenotypes
 * -   [X] replace reading genotypes in AnalyzeBimbam
-* -   [ ] Apply similar SNP filtering as the original
+* -   [+] Apply similar SNP filtering as the original
 * -   [X] Add SNP info tho Geno file
-* -   [ ] Try different geno encodings
+* -   [X] Try different geno encodings
+* -   [+] Fix support for NAs - also in compute
 * [X] Use lmdb for SNPs (probably part of Geno file)
-* [ ] Write lmdb for output
+* [X] Match output
+* [ ] Write lmdb for output with filter
 * [X] Optimize openblas for target architecture
+* [ ] Use profiler
+* [ ] Hash genotypes? Try buf.hash or xxhash
+* [ ] Skip highly correlated markers with backtracking
 * [ ] Perhaps try a faster malloc library for GEMMA
 * [ ] Fix sqrt(NaN) when running big file example with -debug
+* [ ] Fix/check assumption that geno is between 0 and 2
+* [ ] Try 64-bit integer index for lmdb
 * [ ] Other improvements...
 
 # Summary
@@ -41,10 +48,15 @@ Convert a geno file to mdb with
 ```
 ./bin/anno2mdb.rb mouse_hs1940.anno.txt
 ./bin/geno2mdb.rb mouse_hs1940.geno.txt --anno mouse_hs1940.anno.txt.mdb --eval Gf # convert to floating point
+real    0m14.042s
+user    0m12.639s
+sys     0m0.402s
 ```
 
 ```
-./bin/geno2mdb.rb pangenome-13M-genotypes.txt --geno-json bxd_inds.list.json --eval Gf
+../bin/anno2mdb.rb snps-matched.txt
+../bin/geno2mdb.rb pangenome-13M-genotypes.txt --geno-json bxd_inds.list.json --anno snps-matched.txt.mdb --eval Gf
+../bin/geno2mdb.rb pangenome-13M-genotypes.txt --geno-json bxd_inds.list.json --anno snps-matched.txt.mdb --eval Gb
 ```
 
 even with floats a 30G pangenome genotype file got reduced to 12G. A quick full run of the mdb version takes 6 minutes. That is a massive 3x speedup. It also used less RAM (because it is one process instead of 20) and had a 40x core usage, much of it in the Linux kernel:
@@ -64,7 +76,7 @@ Command being timed: "./build/bin/Release/gemma -k tmp/93f6b39ec06c09fb9ba9ca628
         Maximum resident set size (kbytes): 13377040
 ```
 
-as we only read the genotype file once it shows how much is IO bound! Moving to lmdb was the right choice to speed up pangemma. It also suggests that that, right now, we should concentrate on reducing IO further, rather than working on the computation speed.
+as we only read the genotype file once it shows how much is IO bound! Moving to lmdb was the right choice to speed up pangemma.
 
 Old gemma does:
 
@@ -77,6 +89,21 @@ Old gemma does:
         Maximum resident set size (kbytes): 9736884
 ```
 
+So we are at 3x speed.
+
+With Gb byte encoding the file got further reduced from 13Gb to 4Gb.
+
+What is more exciting is that LOCO now runs in 30s - compared to gemma's earlier 6 minutes, so that is at 10x speed, using about 1/3 of RAM. Note the CPU usage:
+
+```
+        Command being timed: "./build/bin/Release/gemma -k tmp/93f6b39ec06c09fb9ba9ca628b5fb990921b6c60.3.cXX.txt.cXX.txt -p tmp/pheno.json.txt -g tmp/pangenome-13M-genotypes.txt-Gb.mdb -loco 2 -lmm 9 -maf 0.1 -n 2 -no-check"                     User time (seconds): 177.81
+        System time (seconds): 934.92
+        Percent of CPU this job got: 3391%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 0:32.80
+        Maximum resident set size (kbytes): 4326308
+```
+
+it looks like disk IO is no longer the bottleneck. The Gb version is much smaller than Gf, but runtime is only slightly better. So it is time for the profiler to find how we can make use of the other cores! But, for now, I am going to focus on getting the pipeline set up with ravanan.
 
 # Analysis
 
@@ -452,6 +479,14 @@ Interestingly Boost.fibers has work stealing built in. We can look at that later
 
 What about LOCO? Actually we can use the same fiber strategy for each chromosome as a per CHR process. We can set the number of threads differently based on chromosome SNP num, so all chromosomes take (about) the same time. Later, we can bring LOCO into one process with the advantage that the genotype data is only read once. In both cases the kinship matrices are in RAM anyway.
 
+# Reducing the size of the genotype file
+
+The first version of lmdb genotypes used simple floats. That reduced the pangenome text version from 30Gb to 12Gb with about a 3x speedup of gemma. Next I tried byte representation of the genotypes.
+
 # Optimizing SNP handling
 
 GEMMA originally used a separate SNP annotation file which proves inefficient. Now we transform the geno information to lmdb, we might as well include chr+pos. We'll make the key out of that and add a table with marker annotation.
+
+# Optimizing the index
+
+I opted for using a CHR+POS index (byte+long value). There are a few things to consider. There may be duplicates and there may be missing values. Also LMDB likes and integer index. The built-in dubsort does not work, so we need to create a unique pos for every variant. I'll do that by adding the line number.
