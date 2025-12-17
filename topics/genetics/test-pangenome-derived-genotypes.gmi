@@ -9,6 +9,9 @@ For the BXD we have 23M markers(!) whereof 8M *not* on the reference genome.
 
 # Tasks
 
+* [ ] Document lmdb geno and marker information
+* [ ] Extract epoch information
+* [ ] Add BED file and link SNPS
 * [ ] Check MAF filter - it may be too stringent
 * [ ] Use ravanan/CWL to push to Octopus
 * [ ] Reintroduce nodes that were not annotated for position (Flavia)
@@ -20,7 +23,24 @@ For the BXD we have 23M markers(!) whereof 8M *not* on the reference genome.
 
 # Summary
 
-To get the mapping and generate the assoc output in mdb format we run a variant of gemma-wrapper
+To get the mapping and generate the assoc output in mdb format we run a variant of gemma-wrapper.
+
+The workflow essentially is:
+
+* capture the significant markers from GEMMA's mdb output (as created by gemma-wrapper)
+* These are transformed into RDF using the 'gemma-mdb-to-rdf.rb' script
+* Next we upload that RDF into virtuoso
+* from there download a table of start-stop data using SPARQL
+* We compute QTL locations using 'sparql-qtl-detect.rb'
+* Upload that RDF also into virtuoso
+
+For mapping virtuoso contains four important ttl files:
+
+* marker positions in pangenome-marker graph
+* mapped markers in pangenome-mapped graph
+* computed QTL positions in pangenome-qtl graph
+* trait values in traits graph (nyi)
+
 
 ```
 gemma-batch-run.sh
@@ -30,12 +50,11 @@ Next we convert that output to RDF with
 
 ```
 ../bin/gemma-mdb-to-rdf.rb --header > output.ttl
-../bin/gemma-mdb-to-rdf.rb --anno snps-matched.txt.mdb tmp/panlmm/*-gemma-GWA.tar.xz >> test-run-3000.ttl
-serdi -i turtle -o ntriples test-run-3000.ttl > test-run-3000.n3
+time ../bin/gemma-mdb-to-rdf.rb --anno snps-matched.txt.mdb tmp/panlmm/*-gemma-GWA.tar.xz >> output.ttl # two hours for 7000 traits
+time serdi -i turtle -o ntriples output.ttl > output.n3
 ```
 
-(serdi does better than rapper with huge files) and
-copy the file to the virtuoso instance and load it with isql:
+(note that n3 files are less error prone and serdi does better than rapper with huge files) and copy the file to the virtuoso instance and load it with isql (note it may be worth search-replacing the gnt:run tag to something descriptive).
 
 ```
 cd /export/guix-containers/virtuoso/data/virtuoso/ttl/
@@ -47,12 +66,25 @@ SQL> SELECT * FROM DB.DBA.load_list;
 SQL> DELETE from DB.DBA.LOAD_LIST where ll_error IS NOT NULL ;
 SQL> DELETE from DB.DBA.LOAD_LIST where LL_STATE = 1;
 # commit changes
-SQL> rdf_loader_run ();
+SQL> rdf_loader_run (); // about 1 min per GB n3
 SQL> checkpoint;
 Done. -- 16 msec.
 SQL> SPARQL SELECT count(*) FROM <http://pan-test.genenetwork.org> WHERE { ?s ?p ?o } LIMIT 10;
 34200686
 ```
+
+Note it may be a good idea to drop graphs first. That is why we have separate subgraph spaces for every large TTL file:
+
+```
+log_enable(3,1);
+SQL> SPARQL CLEAR GRAPH  <http://pan-test.genenetwork.org>;
+SQL> SPARQL CLEAR GRAPH  <http://pan-mapped.genenetwork.org>; // 10 min
+SQL> SPARQL CLEAR GRAPH  <http://pangenome-marker.genenetwork.org>;
+SQL> ld_dir('/export/data/virtuoso/ttl','pangenome-markers.n3','http://pangenome-marker.genenetwork.org');
+SQL> SPARQL SELECT count(*) FROM <http://pan-test.genenetwork.org> WHERE { ?s ?p ?o } LIMIT 10;
+```
+
+For pangenomes we have a marker file, a QTL file
 
 As a test, fetch a table of the traits with their SNPs
 
@@ -71,7 +103,7 @@ PREFIX qb: <http://purl.org/linked-data/cube#>
 PREFIX xkos: <http://rdf-vocabulary.ddialliance.org/xkos#>
 PREFIX pubmed: <http://rdf.ncbi.nlm.nih.gov/pubmed/>
 
-SELECT * FROM <http://pan-test.genenetwork.org> WHERE {
+SELECT * FROM <http://pangenome-mapped.genenetwork.org> WHERE {
 ?traitid a gnt:mappedTrait;
          gnt:run gn:test .
 ?snp gnt:mappedSnp ?traitid ;
@@ -88,12 +120,30 @@ FILTER (contains(?nodeid,"Marker") && ?pos < 1000)
 OK, we are ready to run a little workflow. First create a sorted list of IDs.
 
 ```
-SELECT DISTINCT ?trait FROM <http://pan-test.genenetwork.org> WHERE {
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX gn: <http://genenetwork.org/id/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX gnc: <http://genenetwork.org/category/>
+PREFIX gnt: <http://genenetwork.org/term/>
+PREFIX sdmx-measure: <http://purl.org/linked-data/sdmx/2009/measure#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX qb: <http://purl.org/linked-data/cube#>
+PREFIX xkos: <http://rdf-vocabulary.ddialliance.org/xkos#>
+PREFIX pubmed: <http://rdf.ncbi.nlm.nih.gov/pubmed/>
+
+SELECT DISTINCT ?trait FROM <http://pangenome-mapped.genenetwork.org> WHERE {
 ?traitid a gnt:mappedTrait;
          gnt:run gn:test ;
          gnt:traitId ?trait.
 }
 ```
+
+See also
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/doc/examples/list-traits.sparql
 
 Sort that list and save as 'pan-ids-sorted.txt'. Next run
 

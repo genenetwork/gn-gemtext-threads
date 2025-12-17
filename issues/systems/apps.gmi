@@ -196,7 +196,7 @@ Container is at
 
 => https://git.genenetwork.org/gn-machines/tree/gn/services/mouse-longevity.scm
 
-gaeta:~/iwrk/deploy/gn-machines$ guix system container -L . -L ~/guix-bioinformatics --verbosity=3 test-r-container.scm -L ~/iwrk/deploy/guix-forge/guix 
+gaeta:~/iwrk/deploy/gn-machines$ guix system container -L . -L ~/guix-bioinformatics --verbosity=3 test-r-container.scm -L ~/iwrk/deploy/guix-forge/guix
 forge/nginx.scm:145:40: error: acme-service-type: unbound variable
 hint: Did you forget `(use-modules (forge acme))'?
 
@@ -204,6 +204,8 @@ hint: Did you forget `(use-modules (forge acme))'?
 ## jumpshiny
 
 Jumpshiny is hosted on balg01. Scripts are in tux02 git.
+
+=> git.genenetwork.org:/home/git/shared/source/jumpshiny
 
 ```
 root@balg01:/home/j*/gn-machines# . /usr/local/guix-profiles/guix-pull/etc/profile
@@ -216,3 +218,8 @@ Currently:
 Jumpshiny: as aijun, cd services/jumpshiny and ./.guix-run
 
 
+## JUMPsem_web
+
+Another shiny app to run on balg01.
+
+Jumpshiny: as aijun, cd services/jumpsem and ./.guix-run
