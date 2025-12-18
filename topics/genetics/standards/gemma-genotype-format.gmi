@@ -56,7 +56,7 @@ where 'numsamples' and 'nummarkers' are counts. 'meta' reflects above json recor
 
 # Tracking changes
 
-Note: this is a proposal and has not yet implemented. But the idea is to store records by time stamp. Each record will describe the change so the last genotypes can be rolled back into an earlier version. In case of a replacement it could be:
+Note: this is a proposal and has not yet implemented. But the idea is to store records by time stamp. Each record will describe the change so the last genotypes can be rolled forward at the user's wish. In case of a replacement it could be:
 
 ```
 timestamp =>
@@ -67,10 +67,30 @@ timestamp =>
   "line" => line,
   "action" => "update",
   "author" => author,
-  genotypes => list
+  "genotypes" => list
 ```
 
-Where list contains the *previous* genotypes.
+Where list contains the *updated* genotypes.
 Likewise for a marker insertion or deletion.
 
-The 'geno' database will therefore always the *last* version. These records make it possible to roll-back on changes and present an older genotype matrix. Note that replaying an older genotype file may involve making a copy and rewriting the contents to be able to present it to gemma. This, naturally, can be handled in a cache. So any older rewritten genotype files will be available in cache for a period of time.
+The track changes can also specify that a change only applies to a trait, a list of traits, a specific set of samples, or a group. E.g.
+
+```
+timestamp =>
+{
+  "marker" => name,
+  "chr" => chr,
+  "pos" => pos,
+  "line" => line,
+  "action" => "update",
+  "author" => author,
+  "genotypes" => list,
+  "for-traits" => list,
+  "for-samples" => list,
+  "for-group" => name
+}
+```
+
+The 'geno' database will therefore always the *first* version. These records make it possible to roll forward on changes and present an updated genotype matrix. Used genotypes are retained. This, naturally, can be handled in a cache. So any rewritten genotype files will be available in cache for a period of time.
+
+This way users may be able to select changes (i.e. pick and choose), use all (latest) or use original (init).
