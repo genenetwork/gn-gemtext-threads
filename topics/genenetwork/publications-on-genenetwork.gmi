@@ -1,0 +1,14 @@
+# Publications on Genenetwork
+
+## Tags
+
+* type: documentation
+* keywords: documentation, docs, doc, publications
+
+## Important points
+
+A publication can relate to more than one Dataset (or family), i.e. you can have a publication with phenotypes from the BXD and CXB populations: from @robw:
+
+```
+Yes. A single publication can make use of several different families of strains. Our. hippocampus paper with Rupert included both BXD, CXB, and Mouse Diversity panel. We (awkwardly) put them all into BXDs with "Other" and also in CXB and also in Mouse Diversity. Definitely not optimal, but the code would have been way more work that just entering in three ways.
+```
