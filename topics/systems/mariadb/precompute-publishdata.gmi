@@ -3362,3 +3362,9 @@ We can also look for details like skewness by adding
 We continue testing new genotypes in this document:
 
 => ../genetics/test-pangenome-derived-genotypes
+
+# Introducing epochs
+
+see
+
+=> topics/data/epochs

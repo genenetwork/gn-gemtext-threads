@@ -92,5 +92,8 @@ timestamp =>
 ```
 
 The 'geno' database will therefore always the *first* version. These records make it possible to roll forward on changes and present an updated genotype matrix. Used genotypes are retained. This, naturally, can be handled in a cache. So any rewritten genotype files will be available in cache for a period of time.
+In the future a tool, such as GEMMA, could support dynamic application of these edits. That way we only have to cache the latest version.
 
 This way users may be able to select changes (i.e. pick and choose), use all (latest) or use original (init).
+
+For the editing we should provide an API.
