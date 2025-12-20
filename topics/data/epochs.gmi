@@ -3,3 +3,151 @@
 In the 2019 BXD paper epochs are brought up. Basically, even though the BXD are 'immortal' with identical children, mutations do creep in. An epoch is a period of mice and we track the years a mouse was used. So a BXD1 breeding started at 1971 and production in 2001. In GN we don't make a distinction (per se), but obviously these are (slightly) different mice today. Ashbrook et al. find some interesting results that differ in epochs.
 
 In GN epochs are currently handled as a trait. This can help with covariate mapping. For a different epoch, however, the genotypes should also be adapted. The effect on the kinship matrix will be minor, but genotypes can be used for fine mapping. With pangenome derived genotypes it should get even more interesting.
+
+# Fetching data
+
+Tracking the epochs is happening in spreadsheet. According to track changes only one item was changed in two years - BXD10 was marked as extinct.
+
+In the GN SQL database Epoch with its RRID is stored as a CaseAttribute:
+
+```
+MariaDB [db_webqtl]> select * from CaseAttribute LIMIT 3;
++-------------+-----------------+--------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| InbredSetId | CaseAttributeId | Name   | Description
+                                                                                |
++-------------+-----------------+--------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+
+|           1 |               1 | Status | Live= Available at JAX, Cryo=Cryopreserved only, Extinct
+                                                                                |
+|           1 |              36 | RRID   | Research resource identifier given by SciCrunch.org
+                                                                                |
+|           1 |              37 | Epoch  | BXD family subgroups. Each number with common parents. Epoch1(BXD1-32), Epoch2-6 (BXD33-220). See Ashbrook et al. https://pubmed.ncbi.nlm.nih.gov/33472028/ |
++-------------+-----------------+--------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+
+```
+
+And
+
+```
+MariaDB [db_webqtl]> select * from CaseAttributeXRefNew LIMIT 40;
++-------------+----------+-----------------+------------+
+| InbredSetId | StrainId | CaseAttributeId | Value      |
++-------------+----------+-----------------+------------+
+|           1 |        1 |               1 | Live       |
+|           1 |        1 |              36 | JAX:100006 |
+|           1 |        1 |              37 | 0          |
+|           1 |        1 |              40 |            |
+|           1 |        2 |               1 | Live       |
+|           1 |        2 |              36 | JAX:000664 |
+|           1 |        2 |              37 | 0          |
+|           1 |        2 |              40 | 69         |
+|           1 |        3 |               1 | Live       |
+|           1 |        3 |              36 | JAX:000671 |
+|           1 |        3 |              37 | 0          |
+|           1 |        3 |              40 | 108        |
+|           1 |        4 |               1 | Live
+```
+
+I am not going to comment on this table architecture, other than that RDF is a much better fit.
+
+For extracting this data, the SQL table is probably the best source of 'truth' as it is seen by users on a regular basis. But, at this point, we'll just use the spreadsheet. Generating something like:
+
+```
+gn:Bxd14
+                                dct:description "BXD014/TyJ" ;
+                                gnt:epoch 1 ;
+                                gnt:availability "Cryorecovery" ;
+                                gnt:method "B6 female to D2 male F2 intercross" ;
+                                gnt:M_origin "B6" ;
+                                gnt:Y_origin "D2" ;
+                                gnt:JAX "000329" ;
+                                gnt:start_year 1971 ;
+                                gnt:age_seq_ind 271 ;
+                                gnt:birth_seq_ind "2/18/2016" ;
+                                gnt:availability_2023 "Cryorecovery" ;
+                                gnt:has_genotypes true ;
+                                rdfs:label "BXD14" .
+gn:Bxd65
+                                dct:description "BXD065/RwwJ" ;
+                                gnt:epoch 3 ;
+                                gnt:availability "Available" ;
+                                gnt:method "Advanced intercross progeny of B6 female to D2 male" ;
+                                gnt:M_origin "B6" ;
+                                gnt:Y_origin "D2" ;
+                                gnt:JAX "007110" ;
+                                gnt:start_year 1999 ;
+                                gnt:age_seq_ind 46 ;
+                                gnt:birth_seq_ind "9/18/2016" ;
+                                gnt:availability_2023 "Available" ;
+                                gnt:has_genotypes true ;
+                                rdfs:label "BXD65" .
+etc.
+```
+
+# Approach
+
+## Fetching data
+
+To get at the epochs we'll need to fetch the sample/ind names (such as BXD73b) from GN.
+
+For every dataset we can fetch samples+values with
+
+```
+curl http://127.0.0.1:8092/dataset/bxd-publish/values/$id.json > pheno.json
+{"BXD40":-1.631969,"BXD68":-2.721761,"BXD43":-2.290135,"BXD44":-2.512057,"BXD48":-3.128819 ...
+```
+
+These are also stored in the pangemma output lmdb files. We don't want to store all values in RDF as these are only used for compute and can be easily fetched on demand from GN. We do want to access the sample names, but that is a list that is not necessarily unique to a single trait. In fact a trait should be referencing an experiment/dataset that has the samples/inds. Usually they will use the same animals. To not complicate things we'll just point to the samples with something like
+
+```
+traitid gn:sample gn:BXD40 .
+```
+
+Currently RDF contains
+
+```
+gn:Bxd12 rdfs:label "BXD12" .
+gn:Bxd12 rdf:type gnc:strain .
+gn:Bxd12 gnt:belongsToSpecies gn:Mus_musculus .
+```
+
+and traits have
+
+```
+gn:traitBxd_10002 rdf:type gnc:Phenotype .
+gn:traitBxd_10002 gnt:belongsToGroup gn:setBxd .
+gn:traitBxd_10002 gnt:traitId "10002" .
+gn:traitBxd_10002 skos:altLabel "BXD_10002" .
+gn:traitBxd_10002 dct:description "Central nervous system, morphology: Cerebellum weight after adjustment for covariance with brain size [mg]" .
+gn:traitBxd_10002 gnt:abbreviation "ADJCBLWT" .
+gn:traitBxd_10002 gnt:submitter "robwilliams" .
+gn:traitBxd_10002 gnt:mean "52.22058767430923"^^xsd:double .
+gn:traitBxd_10002 gnt:locus gn:Rsm10000005699 .
+gn:traitBxd_10002 gnt:lodScore "4.779380894726979"^^xsd:double .
+gn:traitBxd_10002 gnt:additive "2.0817857571428617"^^xsd:double .
+gn:traitBxd_10002 gnt:sequence "1"^^xsd:integer .
+gn:traitBxd_10002 dct:isReferencedBy pubmed:11438585 .
+```
+
+ignore the capitalization and some naming - gnc:strain should be gnc:sample - we'll fix that. But for now we can find some trait info and we can link the individuals up with a trait.
+
+The query we want to write is something like
+
+```
+SELECT * WHERE {
+  ?traitid a gnc:Phenotype;
+  gnt:traitId "10002" ;
+  gnt:belongsToGroup gn:setBxd ;
+  gnt:traitId ?trait ;
+  dct:isReferencedBy ?pubmed .
+  OPTIONAL {
+    ?traitid dct:description ?descr ;
+    gnt:sample_id ?sampleid .
+    ?sampleid rdfs:label ?sample .
+    }
+} LIMIT 10
+```
+
+So, for every trait/sample combination we need to add
+
+```
+gn:traitBxd_10002 gnt:sample_id gn:Bxd12 .
+```
