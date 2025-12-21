@@ -1,0 +1,34 @@
+# Fixating Guix for GN
+
+The GeneNetwork services depend on a rather complicated Guix deployment. The problem is not guix, but GN itself :)
+But we were getting bitten by updates on upstream, as well as updates on our different targets/services.
+
+# Using channels that affect GN production
+
+To avoid duplication of work and unknown rabbit holes we decided to fixate guix trunk and other dependencies by using Guix channels. This means all GN development happens on a single version of Guix! That version is defined here:
+
+=> https://git.genenetwork.org/gn-machines/tree/.guix-channel
+
+Note that guix-forge and guix-bioinformatics are *also* fixated. The idea is that we only upgrade GN packages in gn-machines itself by inheriting definitions. E.g.
+
+=> https://git.genenetwork.org/gn-machines/tree/guix/gn-machines/genenetwork.scm
+
+We will probably get rid of the guix-past and guix-rust-past-crates sub-channels soon by removing those packages that depend on those (genenetwork1 will get its own tree, and @alexm will upgrade the rust packages).
+
+If someone wants to update guix channel or guix-bioinformatics channel they should not update this file. The one in charge is @fredm. Fred has to be in control because we don't want to break production. It is forbidden to touch this channel file.
+
+People can patch the packages and gn-machines, but if it involves CI/CD and/or production in any way, Fred will have to know about it.
+
+# Service level channels
+
+For individual services, such as genenetwork2, genenetwork3, gn-auth, etc., we have local channel files. These should mirror above gn-machines channel file to make sure we can migrate your code easily. E.g.
+
+=> https://github.com/genenetwork/genenetwork3/blob/main/.guix-channel
+
+Should match
+
+=> https://git.genenetwork.org/gn-machines/tree/.guix-channel
+
+If that is not the case we have a major problem! So before sending patches to Fred make sure the channels match.
+
+To be honest, I think we should fetch these channels automagically from gn-machines as a first step.
