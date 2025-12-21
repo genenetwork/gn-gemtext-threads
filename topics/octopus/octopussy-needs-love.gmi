@@ -7,22 +7,24 @@ At UTHSC, Memphis, TN, around October 2020 Efraim and I installed Octopus on Deb
 Octopus made a lot of work possible we can't really do on larger HPCs and led to a bunch of high impact studies and publications, particularly on pangenomics.
 
 In the coming period we want te replace lizard with moosefs. Lizard is no longer maintained and as it was a fork of Moose, it is only logical to go forward on that one. We also looked at Ceph, but apparently Ceph is not great for systems that carry no redundancy. So far, lizard has been using redundancy, but we figure we can do without if the occassional (cheap) SSD goes bad.
-We'll run moose on Debian.
 
 We also need to look at upgrading some of the Dell BIOS - particularly tux05-09 - as they can be occassionally problematic with non-OEM SSDs.
 
 On the worker nodes it may be wise to upgrade Debian. Followed by an upgrade to the head nodes and other supporting machines. Even though we rely on Guix for latest and greatest, there may be good upgrades in the underlying Linux kernel and drivers.
 
-Our PBS we are up-to-date because we run that completely on Guix and Arun supports the latest and greatest.
+Our Slurm PBS we are up-to-date because we run that completely on Guix and Arun supports the latest and greatest.
 
 Another thing we ought to fix is introduce centralized user management. So far we have had few users and just got by. But sometimes it bites us that users have different UIDs on the nodes.
 
 
 # Tasks
 
-* [ ] Upgrade bios (tuxes)
+* [X] Create moosefs package
 * [ ] Install moosefs
+* [ ] Upgrade bios (tuxes)
 * [ ] Migrate lizardfs nodes to moosefs (one at a time)
+* [ ] Upgrade Debian
+* [ ] Introduce centralized user management
 
 # Progress
 
@@ -41,3 +43,23 @@ Looking at the Debian package
 => https://salsa.debian.org/debian/moosefs
 
 It carries no special patches, but a few nice hints in *.README.debian. I think it is worth trying to write a Guix package so we can easily upgrade (even on an aging Debian). Future proofing is key.
+
+The following built moosefs in a guix shell:
+
+```
+guix shell -C -D -F coreutils make autoconf automake fuse libpcap zlib pkg-config python libtool gcc-toolchain
+autoreconf -f -i
+make
+```
+
+Next I created a guix package that installs with:
+
+```
+guix build -L ~/guix-bioinformatics -L ~/guix-past/modules moosefs
+```
+
+See
+
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=236903baaab0f84f012a55700c1917265a2b701c
+
+Next stop testing and deploying!
