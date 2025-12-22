@@ -23,7 +23,9 @@ Another thing we ought to fix is introduce centralized user management. So far w
 * [ ] Install moosefs
 * [ ] Upgrade bios (tuxes)
 * [ ] Migrate lizardfs nodes to moosefs (one at a time)
+* [ ] Add server monitoring with sheepdog
 * [ ] Upgrade Debian
+* - [ ] Maybe, just maybe, boot the nodes from a central server
 * [ ] Introduce centralized user management
 
 # Progress
@@ -63,3 +65,32 @@ See
 => https://git.genenetwork.org/guix-bioinformatics/commit/?id=236903baaab0f84f012a55700c1917265a2b701c
 
 Next stop testing and deploying!
+
+## Choosing a head node
+
+Currently octopus01 is the head node. It probably is a good idea to change that, so we can safely upgrade the new server. The first choice would be octopus02 (o2). We can mirror the moose daemons on octopus01 (o1) later. Let's see what that looks like.
+
+A quick assessment of o1 shows that we have 14T storage on o1 that takes care of /home and /gnu. But only 1.2T is used.
+
+o2 has also quite a few disks (up 1417 days!), but a bunch of SSDs appears to error out. E.g.
+
+```
+Sep 04 07:44:56 octopus02 mfschunkserver[22766]: can't create lock file /mnt/sdd1/lizardfs_vol/.lock, marking hdd as damaged: Input/output error
+UUID=277c05de-64f5-48a8-8614-8027a53be212 /mnt/sdd1 xfs rw,exec,nodev,noatime,nodiratime,largeio,inode64 0 1
+```
+
+we'll need to reboot the server to see what storage still may work. The slurm connection appears to be misconfigured:
+
+```
+[2025-12-20T09:36:27.846] error: service_connection: slurm_receive_msg: Insane message length
+[2025-12-20T09:36:28.415] error: unpackstr_xmalloc: Buffer to be unpacked is too large (1700881509 > 1073741824)       [2025-12-20T09:36:28.415] error: unpacking header                                                                      [2025-12-20T09:36:28.415] error: destroy_forward: no init                                                              [2025-12-20T09:36:28.415] error: slurm_receive_msg_and_forward: [[nessus6.uthsc.edu]:35553] failed: Message receive failure
+```
+
+looks like Andrea is the only one using the machine right now though some others logged in. Before rebooting I'll block users, ask Andrea to move off, and deplete slurm and lizard. But o2 is a large RAM machine, so we should not use that as a head node.
+
+Let's take a look at o3. This one has less RAM. Flavia is running some tools, but I don't think the machine is really used right now. Slurm is running, but shows similar configuration issues as o2. Let's take a look at slurm
+
+=> ../systems/hpc/octopus-maintenance
+=> ../hpc/octopus/slurm-user-guide
+
+Alright, I depleted and removed slurm from o3. I think it would be wise to also deplete the lizard drives on that machine.
