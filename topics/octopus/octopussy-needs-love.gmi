@@ -79,7 +79,8 @@ Sep 04 07:44:56 octopus02 mfschunkserver[22766]: can't create lock file /mnt/sdd
 UUID=277c05de-64f5-48a8-8614-8027a53be212 /mnt/sdd1 xfs rw,exec,nodev,noatime,nodiratime,largeio,inode64 0 1
 ```
 
-we'll need to reboot the server to see what storage still may work. The slurm connection appears to be misconfigured:
+Lizard also complains 4 SSDs have been wiped out.
+We'll need to reboot the server to see what storage still may work. The slurm connection appears to be misconfigured:
 
 ```
 [2025-12-20T09:36:27.846] error: service_connection: slurm_receive_msg: Insane message length
@@ -94,3 +95,71 @@ Let's take a look at o3. This one has less RAM. Flavia is running some tools, bu
 => ../hpc/octopus/slurm-user-guide
 
 Alright, I depleted and removed slurm from o3. I think it would be wise to also deplete the lizard drives on that machine.
+
+The big users on lizard are:
+
+```
+1.6T    dashbrook
+1.8T    pangenomes
+2.1T    erikg
+3.4T    aruni
+3.4T    junh
+8.4T    hchen
+9.2T    salehi
+13T     guarracino
+16T     flaviav
+```
+
+it seems we can clean some of that up! We have some backup storage that we can use. Alternatively move to ISAAC.
+
+We'll slowly start depleting the lizard. See also
+
+=> lizardfs/README
+
+o3 has 4 lizard drives. We'll start by depleting one.
+
+# O2
+
+```
+172.23.22.159:9422:/mnt/sde1/lizardfs_vol/
+        to delete: no
+        damaged: yes
+        scanning: no
+        last error: no errors
+        total space: 0B
+        used space: 0B
+        chunks: 0
+172.23.22.159:9422:/mnt/sdd1/lizardfs_vol/
+        to delete: no
+        damaged: yes
+        scanning: no
+        last error: no errors
+        total space: 0B
+        used space: 0B
+        chunks: 0
+172.23.22.159:9422:/mnt/sdc1/lizardfs_vol/
+        to delete: no
+        damaged: yes
+        scanning: no
+        last error: no errors
+        total space: 0B
+        used space: 0B
+        chunks: 0
+```
+
+Stopped the chunk server.
+sde remounted after xfs_repair. The others were not visible, so rebooted. The folloing storage should add to the total again:
+
+```
+/dev/sdc1            4.6T  3.9T  725G  85% /mnt/sdc1
+/dev/sdd1            4.6T  4.2T  428G  91% /mnt/sdd1
+/dev/sdf1            4.6T  4.2T  358G  93% /mnt/sdf1
+/dev/sde             3.7T  3.7T  4.0G 100% /mnt/sde
+/dev/sdg1            3.7T  3.7T  3.9G 100% /mnt/sdg1
+```
+
+After adding this storage and people removing material it starts to look better:
+
+```
+mfs#octopus01:9421   171T   83T   89T  49% /lizardfs
+```

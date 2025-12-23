@@ -83,6 +83,41 @@ lizardfs-admin list-disks octopus01 9421 | less
 
 Other commands can be found with `man lizardfs-admin`.
 
+## Info
+
+```
+lizardfs-admin info octopus01 9421
+LizardFS v3.12.0
+Memory usage:   2.5GiB
+Total space:    250TiB                                                                                                 Available space:        10TiB
+Trash space:    510GiB
+Trash files:    188
+Reserved space: 21GiB                                                                                                  Reserved files: 18
+FS objects:     7369883
+Directories:    378782
+Files:  6858803
+Chunks: 9100088
+Chunk copies:   20017964
+Regular copies (deprecated):    20017964
+```
+
+```
+lizardfs-admin chunks-health  octopus01 9421
+Chunks availability state:
+        Goal    Safe    Unsafe  Lost
+        slow    1323220 1       -
+        fast    6398524 -       5
+
+Chunks replication state:
+        Goal    0       1       2       3       4       5       6       7       8       9       10+
+        slow    -       218663  1104558 -       -       -       -       -       -       -       -
+        fast    6398524 -       5       -       -       -       -       -       -       -       -
+
+Chunks deletion state:
+        Goal    0       1       2       3       4       5       6       7       8       9       10+
+        slow    -       104855  554911  203583  76228   39425   19348   8659    3276    20077   292859
+        fast    6380439 18060   30      -       -       -       -       -       -       -       -
+```
 
 ## Deleted files
 
@@ -188,3 +223,54 @@ KeyringMode=inherit
 [Install]
 WantedBy=multi-user.target
 ```
+
+# To deplete and remove a drive in LizardFS
+
+**1. Mark the chunkserver (or specific disk) for removal**
+
+Edit the chunkserver's disk configuration file (typically `/etc/lizardfs/mfshdd.cfg`) and prefix the drive path with an asterisk:
+
+```
+*/mnt/disk_to_remove
+```
+
+Restart the chunkserver process on the node
+
+```bash
+systemctl stop lizardfs-chunkserver
+systemctl start lizardfs-chunkserver
+```
+
+**3. Monitor the evacuation progress**
+
+The master will begin migrating chunks off the marked drive. You can monitor progress with:
+
+```bash
+lizardfs-admin list-disks octopus01 9421
+lizardfs-admin list-disks octopus01 9421|grep 172.23.19.59 -A 7
+172.23.19.59:9422:/mnt/sdc/lizardfs_vol/
+        to delete: yes
+        damaged: no
+        scanning: no
+        last error: no errors
+        total space: 3.6TiB
+        used space: 3.4TiB
+        chunks: 277k
+```
+
+Look for the disk showing evacuation status. The "to delete" chunks count should decrease over time as data is replicated elsewhere.
+
+You can also check the CGI web interface if you have it running—it shows disk status and chunk counts.
+
+**4. Remove the drive once empty**
+
+Once all chunks have been evacuated (the disk shows 0 chunks or is marked as empty), you can safely:
+
+1. Remove the line from `mfshdd.cfg` entirely
+2. Reload the configuration again
+3. Physically remove or repurpose the drive
+
+**Important notes:**
+- Ensure you have enough free space on other disks to absorb the migrating chunks
+- The evacuation time depends on the amount of data and network/disk speed
+- Don't forcibly remove a drive before evacuation completes, or you risk data loss if replication goals aren't met
