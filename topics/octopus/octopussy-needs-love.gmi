@@ -22,6 +22,11 @@ Another thing we ought to fix is introduce centralized user management. So far w
 * [X] Create moosefs package
 * [ ] Install moosefs
 * [ ] Upgrade bios (tuxes)
+* - [ ] tux05
+* - [ ] tux06
+* - [ ] tux07
+* - [ ] tux08
+* - [ ] tux09
 * [ ] Migrate lizardfs nodes to moosefs (one at a time)
 * [ ] Add server monitoring with sheepdog
 * [ ] Upgrade Debian
@@ -163,3 +168,49 @@ After adding this storage and people removing material it starts to look better:
 ```
 mfs#octopus01:9421   171T   83T   89T  49% /lizardfs
 ```
+
+# O3
+
+I have marked the disks (4x4T) on o3 for deletion - that will subtract 7T. This in preparation for upgrading Linux and migrating those disks to moosefs. Continue below.
+
+# T5
+
+T5 requires a new bios - it has the same one as the unreliable T4. I also need to see if there are any disks in the bios we don't see right now. T5 has two small fast SSDs and one larger one (3.5T).
+
+I managed to install the new bios, but I had trouble getting into linux because of some network/driver issues. ipmi was suspect. Finally managed rescue mode by adding 'systemd.unit=emergency.target' in the grub line. 'single' is no longer enough (grrr). One to keep in mind.
+
+Had to disable ipmi modules. See my idrac.org.
+
+# T6
+
+Tux06 (T6) contains two unused drives that appear to have contained XFS. xfs_repair did not really help...
+The BIOS on T6 is newer than on T4+T5. That probably explains why the higher T numbers have no disk issues, while T4+T5 had problems with non-OEM! Anyway, as I was at it, I updated the BIOS for all.
+
+T6 has 4 SSDs, 2x 3.5T. Both unused. The lizard chunk server is failing, so might as well disable it.
+
+# T7
+
+On T7 root was full(!?). Culprit was Andrea with /tmp/sweepga_genomes_111850/.
+T7 has 3x3.5T with one unused.
+
+# T8
+
+T8 has 3x3.5T, all used. After the BIOS upgrade the efi partition did not boot. After a few reboots it did get into grub and I made a copy of the efi partition on sdd (just in case).
+
+# T9
+
+T9 has 1x3.5T. Used. I had to reduce HDD_LEAVE_SPACE_DEFAULT to give the chunkserver some air.
+
+# O3
+
+Back to O3, our future head node. lizard has mostly been depleted. Though every drive has a few chunks left. I just pulled down the chunkserver and lizard appears to be fine (no errors). Good!
+
+Next install Linux. I have two routes, one is using debootstrap, the other is via PXE. I want to try the latter.
+
+So far, I managed to boot into ipxe on Octopus.
+The linux kernel loads over http, but it does not show output. Likely I need to:
+
+* [ ] Build ipxe with serial support
+* [ ] Test the installer with serial support
+
+This is best done using linux VMs locally.
