@@ -1,0 +1,17 @@
+# Pass on Unknown GET Parameters
+
+## Tags
+
+* status: open
+* priority: medium
+* type: feature-request, enhancement
+* assigned: fredm, zsloan
+* keywords: gn-auth, authorisation
+
+## Description
+
+A developer or user could be needing to access some feature hidden behind some flag (so called, "feature flags"). Some of these flags are set using known (to the application and developer/user) GET parameters.
+
+If the user provides these get parameters before login, then go through the login process, the unknown GET parameters are dropped silently, and the user has to them manually set them up again. This, while not a big deal, is annoying and wastes a few seconds each time.
+
+This feature request proposes to pass any unknown GET parameters untouched through the authentication/authorisation server and back to the authenticating client during the login process, to mitigate this small annoyance.
