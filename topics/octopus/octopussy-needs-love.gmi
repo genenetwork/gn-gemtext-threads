@@ -16,6 +16,14 @@ Our Slurm PBS we are up-to-date because we run that completely on Guix and Arun 
 
 Another thing we ought to fix is introduce centralized user management. So far we have had few users and just got by. But sometimes it bites us that users have different UIDs on the nodes.
 
+## Architecture overview
+
+* O1 is the old head node hosting lizardfs - will move to a compute
+* O2 is the old backup hosting the lizardfs shadow - will move to compute
+* O3 is the new head node hosting moosefs
+* O4 is the backup head node hosting moosefs shadow - will act as a compute node too
+
+All the other nodes are for compute. O1 and O4 will be the last nodes to remain on older Debian. They will handle the last bits of lizard.
 
 # Tasks
 
@@ -121,7 +129,8 @@ We'll slowly start depleting the lizard. See also
 
 => lizardfs/README
 
-o3 has 4 lizard drives. We'll start by depleting one.
+O3 has 4 lizard drives. We'll start by depleting one.
+
 
 # O2
 
@@ -188,6 +197,8 @@ The BIOS on T6 is newer than on T4+T5. That probably explains why the higher T n
 
 T6 has 4 SSDs, 2x 3.5T. Both unused. The lizard chunk server is failing, so might as well disable it.
 
+I am using T6 to test network boots because it is not serving lizard.
+
 # T7
 
 On T7 root was full(!?). Culprit was Andrea with /tmp/sweepga_genomes_111850/.
@@ -210,7 +221,31 @@ Next install Linux. I have two routes, one is using debootstrap, the other is vi
 So far, I managed to boot into ipxe on Octopus.
 The linux kernel loads over http, but it does not show output. Likely I need to:
 
-* [ ] Build ipxe with serial support
-* [ ] Test the installer with serial support
+* [X] Build ipxe with serial support
+* [X] Test the installer with serial support
+* [X] Add NFS support
+* [X] debootstrap install of new Debian on /export/nfs/nodes/debian14
+* [X] Make available through NFS and boot through IPXE
 
-This is best done using linux VMs locally.
+I managed to boot T6 over the network.
+Essentially we have a running Debian last stable on T6 that is completely run over NFS!
+In the next steps I need to figure out:
+
+* [ ] Mount NFS with root access
+* [ ] Every PXE node needs its own hard disk configuration
+* [ ] Mount NFS from octopus01
+* [ ] Start slurm
+
+We can have this as a test node pretty soon.
+But first we have to start moosefs and migrate data.
+
+I am doing some small tests and will put (old) T6 back on slurm again.
+
+# O4
+
+O4 is going to be the backup head node. It will act as a compute node too, until we need it as the head node. O4 is currently not on the slurm queue.
+
+* [X] Update guix on O1
+* [ ] Install guix moosefs
+* [ ] Start moosefs master on O3
+* [ ] Start moosefs shadow on O4

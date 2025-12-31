@@ -73,6 +73,15 @@ Chunks deletion state:
         2ssd    7984    -       -       -       -       -       -       -       -       -       -
 ```
 
+This table essentially says that slow and fast are replicating data (if they are in column 0 it is OK!). This looks good for fast:
+
+```
+Chunks replication state:
+        Goal    0       1       2       3       4       5       6       7       8       9       10+
+        slow    -       137461  448977  -       -       -       -       -       -       -       -
+        fast    6133152 -       5       -       -       -       -       -       -       -       -
+```
+
 To query how the individual disks are filling up and if there are any errors:
 
 List all disks
@@ -88,7 +97,8 @@ Other commands can be found with `man lizardfs-admin`.
 ```
 lizardfs-admin info octopus01 9421
 LizardFS v3.12.0
-Memory usage:   2.5GiB
+Memory usage:   2.5GiB23
+
 Total space:    250TiB                                                                                                 Available space:        10TiB
 Trash space:    510GiB
 Trash files:    188
