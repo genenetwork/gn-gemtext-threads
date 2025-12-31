@@ -2,7 +2,7 @@
 
 ## Tags
 
-* assigned: fredm, bonfacem
+* assigned: alexm, bonfacem
 * priority: normal
 * status: open
 * type: bug
