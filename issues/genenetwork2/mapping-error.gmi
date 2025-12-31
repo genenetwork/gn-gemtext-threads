@@ -3,7 +3,7 @@
 ## Tags
 
 * type: bug
-* status: stalled
+* status: closed
 * priority: medium
 * assigned: zachs, fredm, flisso
 * keywords: gn2, genenetwork2, genenetwork 2, mapping
@@ -53,3 +53,14 @@ This is likely just because the genotype file doesn't exist in the necessary for
 ## Stalled
 
 This is currently stalled, until we can upload genotypes via the uploader.
+
+
+## Notes
+
+### 2025-12-31
+
+I am closing this issue as WONTFIX because of the following reasons:
+
+- Better fix is to prevent mapping in the first place, if no genotypes exist for the given trait(s)
+- Issue relies on non-implemented feature (Genotypes upload) to fix it
+- Issue does not exist on production
