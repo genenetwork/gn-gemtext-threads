@@ -2,10 +2,10 @@
 
 ## Tags
 
-* status: open
+* status: closed
 * priority: medium
 * type: enhancement
-* assigned: fredm, bonfacem
+* assigned: fredm, bonfacem, aruni
 * keywords: guix-bioinformatics, guix
 * interested: pjotrp, aruni
 
@@ -31,3 +31,9 @@ We depend on the following channels in guix-bioinformatics:
 * [x] Pin guix-rust-past-crates channel
 * [x] Pin guix-forge channel
 * [ ] Move packages from (gn packages bioinformatics) to upstream (gnu packages bioinformatics)
+
+### Solution
+
+To allow guix-bioinformatics to continue improving, while preventing random breakages, we stopped depending on guix-bioinformatics directly, rather, we changed our main channel to gn-machines, and there, we pinned the version of guix-bioinformatics we depend on.
+
+This allows us to continue updating our packages while keeping the channel dependencies relatively stable.
