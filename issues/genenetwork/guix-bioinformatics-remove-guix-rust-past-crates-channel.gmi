@@ -3,6 +3,7 @@
 ## Tags
 
 * assigned: alexm, bonfacem
+* interested: fredm
 * priority: normal
 * status: open
 * type: bug
