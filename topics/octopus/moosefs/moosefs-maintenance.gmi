@@ -1,0 +1,10 @@
+# Moosefs
+
+We should use different ports than lizard. Lizard uses 9419-24 by default. So let's use
+9519- ports.
+
+* 9519 for moose meta logger
+* 9520 for chunk server connections
+* 9521 for mount connections
+* 9522 for slow chunks
+* 9523 for fast chunks

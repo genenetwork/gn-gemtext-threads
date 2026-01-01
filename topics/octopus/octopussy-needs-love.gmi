@@ -212,7 +212,7 @@ T8 has 3x3.5T, all used. After the BIOS upgrade the efi partition did not boot. 
 
 T9 has 1x3.5T. Used. I had to reduce HDD_LEAVE_SPACE_DEFAULT to give the chunkserver some air.
 
-# O3
+# O3 + O4
 
 Back to O3, our future head node. lizard has mostly been depleted. Though every drive has a few chunks left. I just pulled down the chunkserver and lizard appears to be fine (no errors). Good!
 
@@ -231,7 +231,7 @@ I managed to boot T6 over the network.
 Essentially we have a running Debian last stable on T6 that is completely run over NFS!
 In the next steps I need to figure out:
 
-* [ ] Mount NFS with root access
+* [X] Mount NFS with root access
 * [ ] Every PXE node needs its own hard disk configuration
 * [ ] Mount NFS from octopus01
 * [ ] Start slurm
@@ -241,11 +241,20 @@ But first we have to start moosefs and migrate data.
 
 I am doing some small tests and will put (old) T6 back on slurm again.
 
-# O4
+To get every node booted with its own version of fstab and state logging on a local disk we need to pull some trick with initrd.
+
+Basically NFS boot initrd needs to contain a script that invokes changes for every node. The node hostname and primary partition can be passed on from ipxe using the kernel myhost=client01 localdisk=/dev/sda1. So that is the differentiator. The script in /etc/nodes/initramfs-tools/update-node-etc will remount /tmp and /var onto $localdisk and copy /etc there too. Next it will symnlink a few files, such as /etc/hostname and /etc/fstab to adjust for local settings.
+
+This way we will deploy all nodes centrally. One aspect is that we don't need dynamic user management as it is centrally orchestrated! The user files can be copied from the head node when they change.
 
 O4 is going to be the backup head node. It will act as a compute node too, until we need it as the head node. O4 is currently not on the slurm queue.
 
 * [X] Update guix on O1
-* [ ] Install guix moosefs
+* [+] Install guix moosefs
 * [ ] Start moosefs master on O3
 * [ ] Start moosefs shadow on O4
+
+We can start moose master on O3. We should use different ports than lizard. Lizard uses 9419-24 by default. So let's use
+9519- ports. See
+
+=> moosefs/moosefs-maintenance.gmi
