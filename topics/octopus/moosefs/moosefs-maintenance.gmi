@@ -13,8 +13,12 @@ We should use different ports than lizard. Lizard uses 9419-24 by default. So le
 * 9520 for chunk server connections
 * 9521 for mount connections
 * 9522 for slow HDD chunks (HDD)
-* 9523 for matching SSD chunks (SSD)
+* 9523 for replicating SSD chunks (SSD)
 * 9524 for fast non-redundant SSD chunks (FAST)
+
+## Topology
+
+Moosefs uses topology to decide where to fetch data. We can host the slow spinning HDD drives in a 'distant' location, so that data is fetched last.
 
 ## Disks
 

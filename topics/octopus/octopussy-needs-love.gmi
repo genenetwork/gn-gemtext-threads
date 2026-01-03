@@ -28,13 +28,8 @@ All the other nodes are for compute. O1 and O4 will be the last nodes to remain 
 # Tasks
 
 * [X] Create moosefs package
-* [ ] Install moosefs
-* [ ] Upgrade bios (tuxes)
-* - [ ] tux05
-* - [ ] tux06
-* - [ ] tux07
-* - [ ] tux08
-* - [ ] tux09
+* [X] Install moosefs
+* [X] Upgrade bios (all tuxes)
 * [ ] Migrate lizardfs nodes to moosefs (one at a time)
 * [ ] Add server monitoring with sheepdog
 * [ ] Upgrade Debian
@@ -250,11 +245,22 @@ This way we will deploy all nodes centrally. One aspect is that we don't need dy
 O4 is going to be the backup head node. It will act as a compute node too, until we need it as the head node. O4 is currently not on the slurm queue.
 
 * [X] Update guix on O1
-* [+] Install guix moosefs
-* [ ] Start moosefs master on O3
-* [ ] Start moosefs shadow on O4
+* [X] Install guix moosefs
+* [X] Start moosefs master on O3
+* [X] Start moosefs metalogger on O4
+* [ ] Check moosefs logging facilities
+* [ ] See if we can mark drives so it is easier to track them
+* [ ] Test broken (?) /dev/sdf on octopus03
 
 We can start moose master on O3. We should use different ports than lizard. Lizard uses 9419-24 by default. So let's use
 9519- ports. See
 
 => moosefs/moosefs-maintenance.gmi
+
+# P2
+
+Penguin2 has 80T of spinning disk storage. We are going to use that for redundancy. Basically these disks get a moosefs goal of HDD 'slow' and we'll configure them on a remote rack - so chunks get fetched from local chunk servers (first). This will gain us 40T of immediate storage. Adding more spinning disks will free up SSDs further.
+
+* [X] P2 Update Guix
+* [X] Install moosefs
+* [ ] Create HDD chunk server
