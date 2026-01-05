@@ -73,6 +73,7 @@ Chunks deletion state:
         2ssd    7984    -       -       -       -       -       -       -       -       -       -
 ```
 
+<<<<<<< HEAD
 This table essentially says that slow and fast are replicating data (if they are in column 0 it is OK!). This looks good for fast:
 
 ```
@@ -81,6 +82,7 @@ Chunks replication state:
         slow    -       137461  448977  -       -       -       -       -       -       -       -
         fast    6133152 -       5       -       -       -       -       -       -       -       -
 ```
+This table essentially says that slow and fast are replicating data (if they are in column 0 it is OK!).
 
 To query how the individual disks are filling up and if there are any errors:
 
