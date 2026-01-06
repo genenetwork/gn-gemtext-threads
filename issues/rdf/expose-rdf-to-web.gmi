@@ -1,0 +1,33 @@
+# Expose Versioned "rdf.genenetwork.org" Namespaces
+
+* assigned: bonfacem
+* status: in-progress
+
+## Description
+
+We have switched all RDF namespaces from "genenetwork.org" to the versioned base "rdf.genenetwork.org/v1."   These endpoints don't resolve yet.
+
+## What changed
+
+Replaced
+
+* "http://genenetwork.org/id/" -> "http://rdf.genenetwork.org/v1/id/"
+* "http://genenetwork.org/category/" -> "http://rdf.genenetwork.org/v1/category/"
+* "http://genenetwork.org/term/" -> "http://rdf.genenetwork.org/v1/term/"
+
+## Current Problem
+
+New "rdf.genenetwork.org/v1/*" URIs return a 5XX/4XX which blocks validation, dereferencing and external re-use
+
+## Expected Behaviour
+
+All rdf.genenetwork.org/v1/* namespaces resolve over HTTP.  At minimum:
+
+* Human-readable HTML in a browser.
+* RDF (Turtle or RDF/XML) via content negotiation.
+
+## Tasks
+
+* [ ] Serve: "/v1/id/<id>"; "/v1/category/<category>"; and "/v1/term/<term>" under "rdf.genenetwork.org."
+* [ ] Add basic content negotiation for "text/html", "text/turtle"
+* [ ] Verify: <pre>curl -H "Accept: text/turtle" http://rdf.genenetwork.org/v1/term/...</pre>
