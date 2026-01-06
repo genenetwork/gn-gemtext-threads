@@ -1,0 +1,58 @@
+# Unable to View Dataset Metadata
+
+* assigned: bonfacem
+* priority: high
+* status: to-do
+* deadline: <2026-01-08 Thur>
+
+## Description
+
+Heading to:
+
+=> https://genenetwork.org/datasets/BXDPublish
+
+or
+
+=> https://cd.genenetwork.org/datasets/BXDPublish
+
+We get the following stack trace:
+
+```
+ GeneNetwork 3.12-rc1  https://genenetwork.org/datasets/BXDPublish 
+Traceback (most recent call last):
+  File "/gnu/store/9515mkxb3zq721b8mnh9xgjvvgmvbavq-profile/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/9515mkxb3zq721b8mnh9xgjvvgmvbavq-profile/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/9515mkxb3zq721b8mnh9xgjvvgmvbavq-profile/lib/python3.11/site-packages/gn2/wqflask/views.py", line 1565, in get_dataset
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "/gnu/store/9515mkxb3zq721b8mnh9xgjvvgmvbavq-profile/lib/python3.11/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/9515mkxb3zq721b8mnh9xgjvvgmvbavq-profile/lib/python3.11/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/9515mkxb3zq721b8mnh9xgjvvgmvbavq-profile/lib/python3.11/site-packages/jinja2/environment.py", line 1301, in render
+    self.environment.handle_exception()
+  File "/gnu/store/9515mkxb3zq721b8mnh9xgjvvgmvbavq-profile/lib/python3.11/site-packages/jinja2/environment.py", line 936, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/gnu/store/9515mkxb3zq721b8mnh9xgjvvgmvbavq-profile/lib/python3.11/site-packages/gn2/wqflask/templates/dataset.html", line 1, in top-level template code
+    {% extends "index_page.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/9515mkxb3zq721b8mnh9xgjvvgmvbavq-profile/lib/python3.11/site-packages/gn2/wqflask/templates/index_page.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/gnu/store/9515mkxb3zq721b8mnh9xgjvvgmvbavq-profile/lib/python3.11/site-packages/gn2/wqflask/templates/base.html", line 337, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/9515mkxb3zq721b8mnh9xgjvvgmvbavq-profile/lib/python3.11/site-packages/gn2/wqflask/templates/dataset.html", line 66, in block 'content'
+    <a href="https://git.genenetwork.org/gn-docs/log/general/datasets/{{ dataset.id.split('/')[-1] }}" target="_blank">History</a>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/9515mkxb3zq721b8mnh9xgjvvgmvbavq-profile/lib/python3.11/site-packages/jinja2/environment.py", line 485, in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'dict object' has no attribute 'id'
+```
+

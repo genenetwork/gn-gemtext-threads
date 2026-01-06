@@ -1,0 +1,36 @@
+# Update gn-libs in CD container
+
+* assigned: bonfacem
+* priority: high
+* status: to-do
+* deadline: <2026-01-07 Wed>
+
+## Description
+
+GN2 tests fail:
+
+```
+==================================== ERRORS ====================================
+____________ ERROR collecting gn2/tests/unit/base/test_data_set.py _____________
+ImportError while importing test module '/var/lib/laminar/run/genenetwork2/2358/genenetwork2/gn2/tests/unit/base/test_data_set.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+gn2/tests/unit/base/test_data_set.py:8: in <module>
+    from gn2.wqflask import app
+gn2/wqflask/__init__.py:45: in <module>
+    from gn_libs.logging import setup_logging, setup_modules_logging
+E   ModuleNotFoundError: No module named 'gn_libs.logging'
+______________ ERROR collecting gn2/tests/unit/base/test_trait.py ______________
+ImportError while importing test module '/var/lib/laminar/run/genenetwork2/2358/genenetwork2/gn2/tests/unit/base/test_trait.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+gn2/tests/unit/base/test_trait.py:6: in <module>
+    from gn2.base.trait import GeneralTrait
+gn2/base/trait.py:3: in <module>
+    from gn2.wqflask import app
+gn2/wqflask/__init__.py:45: in <module>
+    from gn_libs.logging import setup_logging, setup_modules_logging
+E   ModuleNotFoundError: No module named 'gn_libs.logging'
+```
+
+Note that a "gn-guile" definition in gn-machines has been added to gn-machines.
