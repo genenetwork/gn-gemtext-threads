@@ -34,3 +34,5 @@ E   ModuleNotFoundError: No module named 'gn_libs.logging'
 ```
 
 Note that a "gn-guile" definition in gn-machines has been added to gn-machines.
+
+* closed
