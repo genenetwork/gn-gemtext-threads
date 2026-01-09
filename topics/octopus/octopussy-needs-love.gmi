@@ -36,6 +36,24 @@ All the other nodes are for compute. O1 and O4 will be the last nodes to remain 
 * - [ ] Maybe, just maybe, boot the nodes from a central server
 * [ ] Introduce centralized user management
 
+# Current activity
+
+* [ ] Moving largish data from lizard to moosefs
+* - [+] Flavia
+* [ ] Mount nodes to moosefs
+* - [X] octopus01
+* - [X] octopus04
+* - [ ] tux05
+* - [X] tux06
+* - [ ] tux07
+* - [ ] tux08
+* - [ ] tux09
+* [ ] Adding moosefs chunkservers:
+* - [+] penguin2
+* - - [ ] Cleaning second RAID5 on P2
+* - [X] octopus04
+* - [X] tux06
+
 # Progress
 
 ## Lizardfs and Moosefs
@@ -190,7 +208,9 @@ Had to disable ipmi modules. See my idrac.org.
 Tux06 (T6) contains two unused drives that appear to have contained XFS. xfs_repair did not really help...
 The BIOS on T6 is newer than on T4+T5. That probably explains why the higher T numbers have no disk issues, while T4+T5 had problems with non-OEM! Anyway, as I was at it, I updated the BIOS for all.
 
-T6 has 4 SSDs, 2x 3.5T. Both unused. The lizard chunk server is failing, so might as well disable it.
+T6 has 4 SSDs, 2x 3.5T. Both unused. /dev/sdd appears to contain errors, so it is one drive only.
+
+T6 has been added to moosefs.
 
 I am using T6 to test network boots because it is not serving lizard.
 
@@ -248,7 +268,8 @@ O4 is going to be the backup head node. It will act as a compute node too, until
 * [X] Install guix moosefs
 * [X] Start moosefs master on O3
 * [X] Start moosefs metalogger on O4
-* [ ] Check moosefs logging facilities
+* [X] Check moosefs logging facilities
+* [ ] See if we can get a global moosefs state on balancing redundancy
 * [ ] See if we can mark drives so it is easier to track them
 * [ ] Test broken (?) /dev/sdf on octopus03
 
@@ -263,4 +284,16 @@ Penguin2 has 80T of spinning disk storage. We are going to use that for redundan
 
 * [X] P2 Update Guix
 * [X] Install moosefs
-* [ ] Create HDD chunk server
+* [X] Create HDD chunk server
+* [ ] Add second RAID5
+
+I created a /moosefs/raid5 directory. All files in this directory are stored on the HDD backend and do not load the SSDs.
+
+# Bacchus
+
+We have a RAID5 on a synology server we can use after we clear some data.
+
+* [ ] Add bacchus RAID5 server to moosefs
+* - [ ] Update guix store
+* - [ ] Install moosefs chunk server
+* - [ ] Add to pool

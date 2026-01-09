@@ -2,6 +2,18 @@
 
 We use moosefs as a network distributed storage system with redundancy. The setup is to use SSDs for fast access and spinning storage for redundancy/backups (in turn these are in RAID5 configuration). In addition we'll experiment with a non-redundant fast storage access using the fastest drives and network connections.
 
+We have three storage classes:
+
+* 2CP - one copy on SSD and one on RAID5 spinning HDD (default)
+* scratch - one copy on SSD
+* raid5 - one copy on RAID5 spinning HDDs
+
+For *labels* we have an R class for redundant (very slow) SSDs. So, S=SSD, H=HDD, F=fast SSD and R=slow SSD.
+
+# Numbers
+
+* 20250109 - Copying data from Lizard to current Moosefs (H,S) goes at about 0.3TB/h (300GB/h or 80MB/s).
+
 # Configuration
 
 ## Ports
@@ -12,9 +24,10 @@ We should use different ports than lizard. Lizard uses 9419-24 by default. So le
 * 9519 for moose meta logger
 * 9520 for chunk server connections
 * 9521 for mount connections
-* 9522 for slow HDD chunks (HDD)
-* 9523 for replicating SSD chunks (SSD)
-* 9524 for fast non-redundant SSD chunks (FAST)
+* 9522 for slow HDD chunks (H:HDD)
+* 9523 for replicating SSD chunks (S:SSD)
+* 9524 for fast non-redundant SSD chunks (F:FAST)
+* 9525 for redundant SSD chunks (R:SSD slow)
 
 ## Topology
 
@@ -37,7 +50,7 @@ root@octopus03:/export#  dd if=test1.img of=/dev/null bs=1G count=1
 rm test1.img
 ```
 
-Above is on a RAID5 setup. Typical values are:
+Above is on a RAID5 setup. Other typical values are:
 
 ```
                        Write         Read
@@ -45,6 +58,7 @@ Octopus Dell NVME      1.2 GB/s      2.0 GB/s
 Octopus03 RAID5        487 MB/s      1.7 GB/s
 Octopus01 RAID5        127 MB/s      163 MB/s
 Samsung SSD 870        408 MB/s      565 MB/s
+ST5000LM000-2AN1       103 MB/s      127 MB/s
 ```
 
 ```
@@ -58,6 +72,28 @@ mfs#octopus03:9521   3.7T  4.0G  3.7T   1% /moosefs-fast
 mfscli -H octopus03 -P 9521 -SCS
 ```
 
+## Scripting
+
+On the head node we can copy files across all nodes. After adding the IP to mfsexports.cfg run the moose mount script:
+
+```
+./run-node.sh tux06 'mkdir /etc/mfs'
+./run-node.sh tux06 'groupadd -g 52 mfs'
+./run-node.sh tux06 'useradd -u 52 -g 52 -M -s /usr/sbin/nologin mfs'
+./run-node.sh tux06 'mkdir /moosefs'
+./run-node.sh tux06 'chown mfs:mfs /moosefs'
+./copy-to-node.sh tux06
+./run-node.sh tux06 'systemctl start moosefs-mount'
+```
+
+Same for chunk server:
+
+```
+mkdir /var/lib/mfs
+chown mfs:mfs /var/lib/mfs
+./run-node.sh tux06 'systemctl start moosefs-chunkserver-ssd'
+```
+
 ## Config
 
 ```
@@ -69,6 +105,8 @@ root@octopus03:/etc/mfs# diff example/mfsexports.cfg.sample mfsexports.cfg
 > 172.23.22.0/24                       /       rw,alldirs,maproot=0,ignoregid
 > 172.23.17.0/24                       /       rw,alldirs,maproot=0,ignoregid
 ```
+
+Note above exports should be made IP speficic.
 
 ```
 root@octopus03:/etc/mfs# diff example/mfsmaster.cfg.sample mfsmaster.cfg
@@ -170,6 +208,8 @@ file will be re-read on each process reload, regardless if the path was changed
 +CSSERV_LISTEN_PORT = 9524
 ```
 
+Mount
+
 ```
 +++ b/mfs/mfsmount.cfg
 mfsmaster=octopus03,nosuid,nodev,noatime,nosuid,mfscachemode=AUTO,mfstimeout=30,mfswritecachesize=2048,mfsreadaheadsize=2048,mfsport=9521
@@ -178,6 +218,8 @@ mfsmaster=octopus03,nosuid,nodev,noatime,nosuid,mfscachemode=AUTO,mfstimeout=30,
 
 ## systemd
 
+
+### Master
 
 ```
 root@octopus03:/etc# cat systemd/system/moosefs-master.service
@@ -203,20 +245,10 @@ OOMScoreAdjust=-999
 WantedBy=multi-user.target
 ```
 
+
+### Chunk service
+
 ```
- cat systemd/system/moosefs-mount.service
-[Unit]
-Description=Moosefs mounts
-After=syslog.target network.target
-
-[Service]
-Type=forking
-TimeoutSec=600
-ExecStart=/usr/local/guix-profiles/moosefs/bin/mfsmount -c /etc/mfs/mfsmount.cfg
-ExecStop=/usr/bin/umount /moosefs-fast
-
-[Install]
-WantedBy=multi-user.target
 root@octopus04:/etc# cat systemd/system/moosefs-chunkserver-fast.service
 [Unit]
 Description=MooseFS Chunkserver (Fast)
@@ -235,6 +267,8 @@ LimitNOFILE=65535
 WantedBy=multi-user.target
 ```
 
+### Mount service
+
 ```
 cat systemd/system/moosefs-mount.service
 [Unit]
@@ -249,4 +283,70 @@ ExecStop=/usr/bin/umount /moosefs-fast
 
 [Install]
 WantedBy=multi-user.target
+```
+
+# Status
+
+Show missing, undergoal, and overgoal chunks:
+
+```
+mfscli -H octopus04 -P 9521 -p  -SMU
+mfscli -H octopus04 -P 9521 -SIC -2
+```
+
+Disk health
+
+```
+mfscli -H octopus04 -P 9521 -p  -SHD
+```
+
+```
+root@octopus04:/etc/mfs# mfsgetsclass /moosefs/
+/moosefs/: 2CP
+root@octopus04:/etc/mfs# mfsfileinfo /moosefs/README
+/moosefs/README:
+        chunk 0: 0000000000000022_00000001 / (id:34 ver:1) ; mtime:1767348586 (2026-01-02 10:09:46)
+                copy 1: 172.23.17.254:9524 ; status:VALID
+                copy 2: 172.23.23.246:9524 ; status:VALID
+```
+
+# Classes
+
+
+```
+root@octopus04:/moosefs# mfsscadmin list -M /moosefs/
+2CP
+3CP
+EC4+1
+EC8+1
+```
+
+```
+mfsscadmin create -K F scratch
+storage class make S: error: Operation not permitted (mfs admin only)
+```
+
+After adding admin to export on O4:
+
+```
+root@octopus04:/etc# mfsscadmin create -K F scratch -M /moosefs/
+storage class make scratch: ok
+root@octopus04:/moosefs# mfsfileinfo /moosefs/tmp/README
+/moosefs/tmp/README:
+        chunk 0: 0000000000022E0A_00000001 / (id:142858 ver:1) ; mtime:1767877068 (2026-01-08 12:57:48)
+                copy 1: 172.23.17.254:9524 ; status:VALID
+                copy 2: 172.23.23.246:9524 ; status:VALID
+root@octopus04:/moosefs# mfssetsclass scratch -r tmp
+tmp:
+ inodes with storage class changed:              2
+ inodes with storage class not changed:          0
+ inodes with permission denied:                  0
+root@octopus04:/moosefs# mfsfileinfo /moosefs/tmp/README
+/moosefs/tmp/README:
+        chunk 0: 0000000000022E0A_00000001 / (id:142858 ver:1) ; mtime:1767877068 (2026-01-08 12:57:48)
+                copy 1: 172.23.23.246:9524 ; status:VALID
+```
+
+```
+mfsscadmin create -K H raid5 -M /moosefs/
 ```
