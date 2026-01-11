@@ -2,23 +2,36 @@
 
 # Tags
 
-* assigned: pjotrp
+* assigned: pjotrp, fredm
 * priority: medium
 * type: system administration
-* keywords: system administration, octopus, gateway, tux02, tux01, tux03
+* keywords: system administration, octopus, gateway, tuxes
 
 # Tasks
 
+## Short term
+
+* [ ] add SSD to tux03 or nvme to tux05 (@fredm)
+* [ ] repurpose samsung drives with heatsink (@fredm)
+* [ ] map out physical network layout in MD (@fredm)
+* [ ] get disks from chenbro and rehost (@fredm)
+* [ ] work on speeding up moosefs (@pjotrp)
+* [ ] add storage server with spinning disks
+* - [+] put order in
+* - [ ] install machine
+* [ ] migrate GN production to tux04 (@fredm)
+* - [ ] first remove Samsung PCIe (@fredm)
+* - [ ] add RAID (@pjotrp)
+
 ## GN
 
-* [ ] penguin2 has 90TB of space we can use on NFS/backups
-* [ ] Script to replace reaper with GEMMA
-* [ ] Transfer nervenet.org to dnsimple
-* [+] Trait vectors for Johannes
+* [X] penguin2 has 90TB of space we can use on NFS/backups - they went on moosefs
+* [ ] Replace reaper with GEMMA
+* [X] Transfer nervenet.org to dnsimple
+* [X] Trait vectors for Johannes
 * [X] grub on tux04
-* [ ] nft on tux04
-* [ ] !!Organize pluto, update Julia and add apps to GN menu Jupyter notebooks
-* [+] !!Xusheng jumpshiny services
+* [X] nft on tux04
+* [X] !!Xusheng jumpshiny services
 * [ ] Fix apps and create system containers for herd services - see issues/systems/apps
 * [ ] Slurm+ravanan on production for GEMMA speedup
 * [ ] Embed R/qtl2 (Alex)
@@ -29,9 +42,11 @@
 
 * [X] Fix Tux05 badblocks on /dev/sdb2   1050624  47925247 46874624 22.4G Linux filesystem
   - see add-boot-partition
-* [+] Copy linux partition on tux04, tux05, tux02 and test reboot
-* [ ] !!Ceph on Tuxes
-* [ ] Centralized user management system
+* [X] Copy linux partition on tux04, tux05, tux02 and test reboot
+* [X] moosefs on Tuxes
+* [X] Boot and install over network
+* [ ] Add synology to moosefs
+* [ ] Centralized user management system (no longer needed with distributed nodes?)
 * [ ] Monitor nodes
 * [ ] Check machines so they talk with each other over fiber
 
@@ -58,12 +73,16 @@ Security:
 * [ ] Add 2nd boot partition on balg01
 * [ ] Add firewall test to sheepdog
 
+## Maybe
+
+* [-] !!Organize pluto, update Julia and add apps to GN menu Jupyter notebooks
+* [-] get data from summer211 (access machine room)
+
 ## Done
 
 * [X] describe machines with Rick Stripes
 * [X] get bacchus back on line
 * [X] fix www.genenetwork.org and gn2.genenetwork.org https
-* [-] get data from summer211 (access machine room)
 * [X] VPN access and FoUT
 * [X] lambda: get fiber working
 * [X] lambda: add to Octopus HPC
