@@ -77,13 +77,18 @@ mfscli -H octopus03 -P 9521 -SCS
 On the head node we can copy files across all nodes. After adding the IP to mfsexports.cfg run the moose mount script:
 
 ```
-./run-node.sh tux06 'mkdir /etc/mfs'
-./run-node.sh tux06 'groupadd -g 52 mfs'
-./run-node.sh tux06 'useradd -u 52 -g 52 -M -s /usr/sbin/nologin mfs'
-./run-node.sh tux06 'mkdir /moosefs'
-./run-node.sh tux06 'chown mfs:mfs /moosefs'
+export PATH=$PATH:/usr/sbin:/sbin
+apt-get install rsync passwd sudo
+mkdir /etc/mfs
+groupadd -g 52 mfs
+useradd -u 52 -g 52 -M -s /usr/sbin/nologin mfs
+mkdir /moosefs
+chown mfs:mfs /moosefs
+# Update exports on octopus04
 ./copy-to-node.sh tux06
-./run-node.sh tux06 'systemctl start moosefs-mount'
+systemctl enable moosefs-mount
+systemctl start moosefs-mount
+
 ```
 
 Same for chunk server:

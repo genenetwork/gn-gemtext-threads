@@ -40,19 +40,31 @@ All the other nodes are for compute. O1 and O4 will be the last nodes to remain 
 
 * [ ] Moving largish data from lizard to moosefs
 * - [+] Flavia
-* [ ] Mount nodes to moosefs
+* [X] Mount nodes to moosefs
 * - [X] octopus01
+* - [ ] octopus02
+* - [ ] octopus03
 * - [X] octopus04
-* - [ ] tux05
+* - [X] octopus05
+* - [X] octopus06
+* - [X] octopus07
+* - [X] octopus08
+* - [X] octopus09
+* - [X] octopus10
+* - [X] octopus11
+* - [X] tux05
 * - [X] tux06
-* - [ ] tux07
-* - [ ] tux08
-* - [ ] tux09
+* - [X] tux07
+* - [X] tux08
+* - [X] tux09
+* - [X] lambda01
 * [ ] Adding moosefs chunkservers:
-* - [+] penguin2
-* - - [ ] Cleaning second RAID5 on P2
+* - [X] penguin2
+* - - [X] Cleaning second RAID5 on P2
 * - [X] octopus04
+* - [ ] octopus05 deplete lizard
 * - [X] tux06
+* - [X] tux07
 
 # Progress
 
@@ -217,7 +229,9 @@ I am using T6 to test network boots because it is not serving lizard.
 # T7
 
 On T7 root was full(!?). Culprit was Andrea with /tmp/sweepga_genomes_111850/.
-T7 has 3x3.5T with one unused.
+T7 has 3x3.5T with one sdd1 unused.
+
+Adding sdd1 to moosefs.
 
 # T8
 
@@ -269,9 +283,9 @@ O4 is going to be the backup head node. It will act as a compute node too, until
 * [X] Start moosefs master on O3
 * [X] Start moosefs metalogger on O4
 * [X] Check moosefs logging facilities
-* [ ] See if we can get a global moosefs state on balancing redundancy
-* [ ] See if we can mark drives so it is easier to track them
-* [ ] Test broken (?) /dev/sdf on octopus03
+* [X] See if we can get a global moosefs state on balancing redundancy
+* [X] See if we can mark drives so it is easier to track them
+* [ ] Test broken (?) /dev/sdf on octopus03, /dev/sdd on tux06, /dev/sdd on tux07
 
 We can start moose master on O3. We should use different ports than lizard. Lizard uses 9419-24 by default. So let's use
 9519- ports. See
