@@ -56,4 +56,10 @@ Traceback (most recent call last):
 jinja2.exceptions.UndefinedError: 'dict object' has no attribute 'id'
 ```
 
+## Resolution
+
+=> https://github.com/genenetwork/genenetwork3/commit/7706990fbfd5e13617298999a5e30b6e8a4ed610
+
+=> https://github.com/genenetwork/genenetwork3/pull/239
+
 * closed
