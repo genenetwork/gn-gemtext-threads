@@ -28,7 +28,7 @@ All rdf.genenetwork.org/v1/* namespaces resolve over HTTP.  At minimum:
 
 ## Notes
 
-* (Example) Queries for all terms/categories/ids:
+(Example) Queries for all terms/categories/ids:
 
 ```
 PREFIX gn: <http://rdf.genenetwork.org/v1/id/>
@@ -61,13 +61,15 @@ WHERE {
 
 ```
 
-* When serving, all supported formats based off Virtuoso's content negotiation:
+Some terms/categories/ids descriptions will have to be manually updated since querying them as a subject return nothing.
+
+When serving, all supported formats based off Virtuoso's content negotiation:
 
 => https://docs.openlinksw.com/virtuoso/rdfsparqlprotocolendpoint/
 
-* Location of all files (tux02): /export/data/genenetwork-virtuoso/
+Location of all files (tux02): /export/data/genenetwork-virtuoso/
 
-* For current gn3, old data is maintained in this named graph: "http://genenetwork.org" while new data is being uploaded to this named graph: "http://rdf.genenetwork.org/v1"
+For current gn3, old data is maintained in this named graph: "http://genenetwork.org" while new data is being uploaded to this named graph: "http://rdf.genenetwork.org/v1"
 
 ## Tasks
 
