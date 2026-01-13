@@ -9,7 +9,7 @@
 
 Heading to:
 
-=> https://genenetwork.org/datasets/BXDPublish
+=> https://cd.genenetwork.org/datasets/BXDPublish
 
 or
 
@@ -56,3 +56,4 @@ Traceback (most recent call last):
 jinja2.exceptions.UndefinedError: 'dict object' has no attribute 'id'
 ```
 
+* closed
