@@ -26,8 +26,52 @@ All rdf.genenetwork.org/v1/* namespaces resolve over HTTP.  At minimum:
 * Human-readable HTML in a browser.
 * RDF (Turtle or RDF/XML) via content negotiation.
 
+## Notes
+
+* (Example) Queries for all terms/categories/ids:
+
+```
+PREFIX gn: <http://rdf.genenetwork.org/v1/id/>
+PREFIX gnc: <http://rdf.genenetwork.org/v1/category/>
+PREFIX gnt: <http://rdf.genenetwork.org/v1/term/>
+
+CONSTRUCT {
+  gn:Arabidopsis_thaliana ?p ?o .
+} FROM <http://rdf.genenetwork.org/v1>
+WHERE {
+  gn:Arabidopsis_thaliana ?p ?o .
+  ?s ?p ?o .
+}
+
+CONSTRUCT {
+  gnc:phenotype ?p ?o .
+} FROM <http://rdf.genenetwork.org/v1>
+WHERE {
+  gnc:phenotype ?p ?o .
+  ?s ?p ?o .
+}
+
+CONSTRUCT {
+  gnt:shortName ?p ?o .
+} FROM <http://rdf.genenetwork.org/v1>
+WHERE {
+  gnt:shortName ?p ?o .
+  ?s ?p ?o .
+}
+
+```
+
+* When serving, all supported formats based off Virtuoso's content negotiation:
+
+=> https://docs.openlinksw.com/virtuoso/rdfsparqlprotocolendpoint/
+
+* Location of all files (tux02): /export/data/genenetwork-virtuoso/
+
+* For current gn3, old data is maintained in this named graph: "http://genenetwork.org" while new data is being uploaded to this named graph: "http://rdf.genenetwork.org/v1"
+
 ## Tasks
 
-* [ ] Serve: "/v1/id/<id>"; "/v1/category/<category>"; and "/v1/term/<term>" under "rdf.genenetwork.org."
-* [ ] Add basic content negotiation for "text/html", "text/turtle"
-* [ ] Verify: <pre>curl -H "Accept: text/turtle" http://rdf.genenetwork.org/v1/term/...</pre>
+* [X] Set up new named graph for the rdf endpoint.   Maintain old named graph for gn3 stability.
+* [-] Serve: "/v1/id/<id>"; "/v1/category/<category>"; and "/v1/term/<term>" under "rdf.genenetwork.org."
+* [-] Add basic content negotiation for "text/microdata+html", "text/x-nice-turtle"
+* [ ] Verify: `curl -H "Accept: text/microdata+html" http://rdf.genenetwork.org/v1/term/...`
