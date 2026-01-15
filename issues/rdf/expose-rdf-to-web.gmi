@@ -76,8 +76,10 @@ For current gn3, old data is maintained in this named graph: "http://genenetwork
 * [X] Set up new named graph for the rdf endpoint.   Maintain old named graph for gn3 stability.
 * [X] Serve: "/v1/id/<id>"; "/v1/category/<category>"; and "/v1/term/<term>" under "rdf.genenetwork.org" as "text/microdata+html"
 * [X] Verify: `curl -H "Accept: text/html" http://rdf.genenetwork.org/v1/term/...`
-* [ ] Configure DNS (rdf.genenetwork.org) to point to gn-guile server.
+* [X] Configure DNS (rdf.genenetwork.org) to point to gn-guile server.
 
 ## Resolution
 
 => https://git.genenetwork.org/gn-guile/commit/?id=45662839565f6482e7f034a07ae373bbeaeb9713
+
+* closed
