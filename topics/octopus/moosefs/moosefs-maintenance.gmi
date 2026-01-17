@@ -295,7 +295,7 @@ WantedBy=multi-user.target
 Show missing, undergoal, and overgoal chunks:
 
 ```
-mfscli -H octopus04 -P 9521 -p  -SMU
+mfscli -H octopus04 -P 9521 -SMU
 mfscli -H octopus04 -P 9521 -SIC -2
 ```
 

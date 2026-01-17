@@ -41,20 +41,36 @@ For mapping virtuoso contains four important ttl files:
 * computed QTL positions in pangenome-qtl graph
 * trait values in traits graph (nyi)
 
+## Run gemma with new lmdb output
 
 ```
 gemma-batch-run.sh
 ```
 
+## Convert GEMMA output to RDF
+
 Next we convert that output to RDF with
 
 ```
 ../bin/gemma-mdb-to-rdf.rb --header > output.ttl
-time ../bin/gemma-mdb-to-rdf.rb --anno snps-matched.txt.mdb tmp/panlmm/*-gemma-GWA.tar.xz >> output.ttl # two hours for 7000 traits
+time ../bin/gemma-mdb-to-rdf.rb --anno snps-matched.txt.mdb tmp/panlmm/*-gemma-GWA.tar.xz >> output.ttl
+# 5.5 hours for 13K traits
 time serdi -i turtle -o ntriples output.ttl > output.n3
+real    2m22.336s
+user    1m49.381s
+sys     0m29.366s
+SQL> SPARQL CLEAR GRAPH  <http://pangenome-mapped.genenetwork.org>;
+10 min
+SQL> SPARQL SELECT count(*) FROM <http://pangenome-mapped.genenetwork.org> WHERE { ?s ?p ?o } LIMIT 10;
+126536658
+SQL> ld_dir('/export/data/virtuoso/ttl','pangenome-mapped-13K.n3','http://pangenome-mapped.genenetwork.org');
+SQL> rdf_loader_run (); // about 1 min per GB n3
+SQL> checkpoint;
+SQL> SPARQL SELECT count(*) FROM <http://pangenome-mapped.genenetwork.org> WHERE { ?s ?p ?o } LIMIT 10;
+179955246
 ```
 
-(note that n3 files are less error prone and serdi does better than rapper with huge files) and copy the file to the virtuoso instance and load it with isql (note it may be worth search-replacing the gnt:run tag to something descriptive).
+About 5.5 hours for 13K traits and (note that n3 files are less error prone and serdi does better than rapper with huge files) and copy the file to the virtuoso instance and load it with isql (note it may be worth search-replacing the gnt:run tag to something descriptive).
 
 ```
 cd /export/guix-containers/virtuoso/data/virtuoso/ttl/
@@ -148,7 +164,10 @@ See also
 Sort that list and save as 'pan-ids-sorted.txt'. Next run
 
 ```
-../../bin/workflow/qtl-detect-batch-run.sh
+time ../../bin/workflow/qtl-detect-batch-run.sh pan-ids-sorted.txt
+real    72m55.249s
+user    16m31.276s
+sys      3m54.365s
 ```
 
 and load those in virtuoso. List new QTL

@@ -28,10 +28,9 @@ we have draining nodes, but no jobs running on them
 Reviving draining node (as root)
 
 ```
-scontrol
-  update NodeName=octopus05 State=DOWN Reason="undraining"
-  update NodeName=octopus05 State=RESUME
-  show node octopus05
+scontrol update NodeName=octopus05 State=DOWN Reason="undraining"
+scontrol update NodeName=octopus05 State=RESUME
+scontrol show node octopus05
 ```
 
 Kill time can lead to drain state
