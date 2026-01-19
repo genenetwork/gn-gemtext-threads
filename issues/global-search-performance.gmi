@@ -1,0 +1,16 @@
+# Global Search Performance/Optimisation
+
+* assigned: bonfacem, pjotrp
+* status: in-progress
+
+## Description
+
+Global search is slow.  Search latency sits at ~30 seconds. Historically, identical queries completed within 1–4 seconds.  Root cause unclear, maybe hardware problems.
+
+Performance appears to have returned to normal without code changes.
+
+## Tasks
+
+* [ ] Compare CD with prod wrt latency.  See if hardware is really the problem.
+* [ ] Check out query plans and execution paths for global search (xapian delve, fall-back sql, weaved in gnqna)
+* [ ] Doc performance.
