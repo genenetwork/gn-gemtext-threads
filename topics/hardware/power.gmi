@@ -24,9 +24,9 @@ The power connections were considered from left-to-right while facing the back o
 
 tux 01 ...
 
-tux02 and tux03 have non-standard power terminals. tux02 has 2 power supplies, but only one had a cable, that was connected to BR222.
+tux02 and tux03 have IEC C20 connectors. tux02 has 2 power supplies, but only one had a cable, that was connected to BR222.
 
-tux03 has two power supplies, but both are connected to AR31. Neither can be moved in the meantime without some sort of adapter, because tux03 . **TODO** Actually update this with the connector identification...
+tux03 has two power supplies, but both are connected to AR31. Neither can be moved in the meantime without some sort of IEC adapter -- from what I can tell, we probably need a C14/C19 adapter (or failing that, a C13/C20 adapter).
 
 
 The power supplies on tux04 were both, initially connected to AR31. I moved the cable for the power supply on the right to BL331.
