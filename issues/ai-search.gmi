@@ -1,0 +1,12 @@
+# Prompt As UI
+
+* assigned: bonfacem
+* status: to-do
+
+## Description
+
+* New search page with ChatGPT-esque ux customised for GN that presents significant hits and metadata.  Goal: better ux search experience for GN users.  Feed metadata, and figure out
+* Build agent/model to improve GN AI experience (related to above).
+* Add pre-compute hits (already in RDF) when available.
+
+=> https://duckduckgo.com/?q=DuckDuckGo+AI+Chat&ia=chat&duckai=1
