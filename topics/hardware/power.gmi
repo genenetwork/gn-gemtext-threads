@@ -1,0 +1,46 @@
+# Power
+
+## Power Distribution Units
+
+The server room has 2 main power distribution units (PDU), named "A" and "B". Each PDU has a left and right side (I think) and the cables proceeding from each are labelled with "L" for left and "R" for right, leading to a naming scheme for the cables that approximates the following:
+
+```
+<PDU-name><PDU-side><extra-identification-info>
+```
+
+Our racks are powered from the following cables:
+
+* AR31
+* A-R-28-30
+* BL331
+* BR222**
+* others ... non-GN and non-Octopus connections were not verified
+
+**The BR222 connections were difficult to follow though I do have high confidence regarding them, since there were not many connections going in the same direction.**
+
+## Devices Connections
+
+The power connections were considered from left-to-right while facing the back of the racks/servers.
+
+tux 01 ...
+
+tux02 and tux03 have non-standard power terminals. tux02 has 2 power supplies, but only one had a cable, that was connected to BR222.
+
+tux03 has two power supplies, but both are connected to AR31. Neither can be moved in the meantime without some sort of adapter, because tux03 . **TODO** Actually update this with the connector identification...
+
+
+The power supplies on tux04 were both, initially connected to AR31. I moved the cable for the power supply on the right to BL331.
+
+The power supplies on tux05 were both, initially connected to BL331. I moved the cable on the right to AR31.
+
+
+tux06, tux07, tux08 and tux09 all had their left power supplies come from an extension that was ultimately connected to the A-R-28-30 cable from PDU "A". The right power supplies came from BL331.
+
+
+Octopus[01..11] are all single PSU (power-supply unit) devices. They have no redundancy. Same for Bacchus.
+
+Space is connected to AR31 (left) and BR222 (right).
+
+Penguin had both PSUs connected to BR222 initially. I switched the right PSU to A-R-28-30.
+
+Lambda is unique, being the only device with 4 power supply terminals. In order, from left to right, they were connected to A-R-28-30, A-R-28-30, BL331, and BL331.
