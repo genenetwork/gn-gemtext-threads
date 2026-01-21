@@ -22,37 +22,46 @@ We need to migrate back to tux04 which is now stable. tux03 has been intermitten
     * Last backup seems to be from 4th March 2025
     * [ ] Setup drops from tux03 to tux04
       * [x] No user <backup-user> on tux04: Create the user
-      * [ ] Cleanup: commit changes to /etc on tux04
-      * [ ] Test drops are working
+        * [x] User is able to ssh into tux04
+        * [x] Limit access that <backup-user> has to tux04
+        * [ ] Test manual drop of backups
+      * [x] Cleanup: commit changes to /etc on tux04
     * [ ] Extract MariaDB data
     * [ ] Install, configure and start MariaDB service
+      * [x] Check versions: tux03 has 10.11.11, tux04 has 11.8.3
+      * [x] What version on guix? I can get 10.11.14
+      * [ ] Look into requirements for running mariadb from guix. Compare to Debian
+* [x] Setup nginx
+  * [x] Build nginx with preread from guix
+  * [x] Setup systemd unit file to use newly built nginx
+  * [x] Start new nginx
 * [ ] Setup nginx streaming
   * [ ] Stream to public-sparql
   * [ ] Stream to gn2-fred
   * [ ] Stream to production
-* [ ] Create short-lived ssh key to copy files from tux03 to tux04
+* [x] Create short-lived ssh key to copy files from tux03 to tux04
 * [ ] Setup public-sparql
-  * [ ] Copy over container files from tux03
+  * [x] Copy over container files from tux03
   * [ ] Update gn-machines for new path(s)
-  * [ ] Do `guix pull ...' to get latest channels for public-sparql
+  * [x] Do `guix pull ...' to setup the channels for public-sparql
   * [ ] Build public-sparql container
   * [ ] Setup systemd unit files to run container
   * [ ] Start container
   * [ ] Setup SSL certificates
   * [ ] Verify we can access https://sparql.genenetwork.org/sparql and it works
-* Setup gn2-fred
-  * [ ] Copy over container files from tux03
+* [ ] Setup gn2-fred
+  * [x] Copy over container files from tux03
   * [ ] Update gn-machines for new path(s)
-  * [ ] Do `guix pull ...' to get latest channels for gn2-fred
+  * [x] Do `guix pull ...' to setup the channels for gn2-fred
   * [ ] Build gn2-fred container
   * [ ] Setup systemd unit files to run container
   * [ ] Start container
   * [ ] Setup SSL certificates
   * [ ] Verify we can access https://gn2-fred.genenetwork.org and it works
-* Setup production
+* [ ] Setup production
   * [ ] Copy over container files from tux03
   * [ ] Update gn-machines for new path(s)
-  * [ ] Do `guix pull ...' to get latest channels for production
+  * [x] Do `guix pull ...' to setup the channels for production
   * [ ] Build production container
   * [ ] Setup systemd unit files to run container
   * [ ] Start container
