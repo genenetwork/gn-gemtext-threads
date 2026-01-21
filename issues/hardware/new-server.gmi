@@ -1,0 +1,21 @@
+# New Server
+
+## Tags 
+* assigned: fredm 
+* status: open
+* priority: medium
+* type: feature-request, feature reques
+* keywords: hardware, servers, deploy
+
+## Description
+
+A new Dell server arrived recently that needs to be mounted, powered and deployed.
+
+### Tasks
+
+* [ ] Unpack server, verify connectors (power, etc) are available
+* [ ] Put the server into a rack
+* [ ] Set up networking
+* [ ] Set up secure, out-of-band management for server
+* [ ] Test settings for secure, out-of-band management over ssh
+* [ ] Hand over to PJ
