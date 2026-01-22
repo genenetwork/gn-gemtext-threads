@@ -60,6 +60,8 @@ As it happened, this was an incomplete backup! Check original size with
 borg info --last 3 /export5/backup/bacchus/drop/tux01/borg-tux01
 ```
 
+(You can also check the integrity of the archive with ```borg check ...```. See https://borgbackup.readthedocs.io/en/stable/usage/check.html)
+
 so I went with
 
 ```
