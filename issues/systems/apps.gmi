@@ -130,7 +130,7 @@ ExecStart = /usr/local/bin/bnw-app-container
 WantedBy = multi-user.target
 ```
 
-We need to make sure the garbace collector does not destroy the container, add the --root switch
+We need to make sure the garbage collector does not destroy the container, add the --root switch
 
 ```
 /home/shepherd/guix-profiles/bnw/bin/guix system container /home/shepherd/guix-bioinformatics/gn/services/bnw-container.scm --share=/home/shepherd/logs/bnw-server=/var/log --network --root=/usr/local/bin/bnw-app-container
@@ -142,6 +142,8 @@ Check with
 root@tux02:/home/shepherd# /home/shepherd/guix-profiles/bnw/bin/guix gc --list-roots |grep bnw
   /usr/local/bin/bnw-app-container
 ```
+
+If there is a running conflict, restart shepherd in systemd.
 
 ## R/shiny apps
 

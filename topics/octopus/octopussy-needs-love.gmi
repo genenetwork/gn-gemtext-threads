@@ -58,13 +58,17 @@ All the other nodes are for compute. O1 and O4 will be the last nodes to remain 
 * - [X] tux08
 * - [X] tux09
 * - [X] lambda01
-* [ ] Adding moosefs chunkservers:
+* [ ] Adding moosefs:
 * - [X] penguin2
 * - - [X] Cleaning second RAID5 on P2
 * - [X] octopus04
-* - [ ] octopus05 deplete lizard
+* - [X] octopus05 on moosefs
+* - [X] octopus07 on moosefs (see scripts)
 * - [X] tux06
 * - [X] tux07
+* - [+] octopus06 migrating
+* - [+] octopus11 depleting
+* [ ] Start network performance with iperf3
 
 # Progress
 
