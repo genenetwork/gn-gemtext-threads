@@ -31,7 +31,24 @@ We need to migrate back to tux04 which is now stable. tux03 has been intermitten
       * [x] Check versions: tux03 has 10.11.11, tux04 has 11.8.3
       * [x] What version on guix? I can get 10.11.14
       * [x] Look into requirements for running mariadb from guix. Compare to Debian
-      * [ ] Install
+      * [ ] Install MariaDB
+        * [x] Install Debian's version to get settings in place
+        * [x] Install guix version that's closer to what we were using before
+        * [ ] Extract backup data
+          * [x] Verify dropped archive integrity:
+            ```
+            borg check --verify-data .../genenetwork/::borg-tux03-sql-20260122-07:42-Thu
+            ```
+            Some errors were found -- not in chosen archive though (seemingly).
+          * [x] Extract data: "borg-tux03-sql-20260122-07:42-Thu    Thu, 2026-01-22 07:42:37"
+          * [x] Stop running MariaDB
+          * [x] Symlink MariaDB data directory to extracted data
+          * [x] Update systemd to use the guix version rather than Debian's version
+          * [x] Restart MariaDB
+            * Fails. Why?
+            * had to fix the tmpdir path and set appropriate permissions
+            * Timeout: read up on reasons. Increase timeout to 7200 seconds.
+            * [ ] check in later
       * [x] Configure: copy over configs from tux03
 * [x] Setup nginx
   * [x] Build nginx with preread from guix
