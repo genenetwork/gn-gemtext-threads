@@ -13,7 +13,7 @@ curl -H "Accept: application/ld+json" https://rdf.genenetwork.org/v1/id/Arabidop
 
 Moreover, we should get rid off (Note the "n6"):
 
-=> n6:shortName http://rdf.genenetwork.org/v1/term/shortName
+=> http://rdf.genenetwork.org/v1/term/shortName n6:shortName
 
 ## Resolution
 
