@@ -1,0 +1,34 @@
+# RDF Refinement
+
+* assigned: bonfacem, pjotrp
+* status: in-progress
+
+## Description
+
+We have:
+
+=> rdf.genenetwork.org
+
+We want to make that entire site easily navigable; and make all terms self-explanatory.   Beyond that get rid of all the blank nodes.  Think of navigation akin to menu navigation from a website.
+
+
+## Tasks
+
+### Species/InbredSet/MappingMethod/AvgMethod
+
+
+* [X] Use resolvable mapping method.
+* [X] Create ttl file for more metadata around mapping/avg methods used in GN.
+* [X] Made gnc:probeset/gnc:{g/ph}enotype skos:Concept
+* [X] Add description for mapping/averaging nodes.
+* [X] Replace skos:prefLabel/skos:label with skos:definition for all "gnc:"
+* [X] Species page - fan out to all inbredsets that belong to that species.
+* [X] Get rid of blanknodes in gnc:resource_classification_scheme
+* [X] Add schema:domainIncludes for dcat:Dataset and gnc:species
+
+Terms:
+* [X] xkos:specializes/generalizes -> xkos:previousLevel/nextLevel
+* [X] gnt:family -> gnt:has_family
+* [X] gnt:genetic-type -> gnt:genetic_type
+* [X] skos:notation -> gnt:has_uniprot_taxon_id
+* [X] <species> rdf:isDefinedBy -> <species> gnt:has_wikidata_link
