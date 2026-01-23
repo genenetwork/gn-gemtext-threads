@@ -1,7 +1,7 @@
 # RDF Content Negotiation
 
 * assigned: bonfacem
-* status: in-progress
+* status: closed
 
 ## Description
 
@@ -54,3 +54,4 @@ DB.DBA.XML_SET_NS_DECL ('xkos', 'http://rdf-vocabulary.ddialliance.org/xkos#', 2
 DB.DBA.XML_SET_NS_DECL ('wd', 'http://www.wikidata.org/entity/', 2);
 CHECKPOINT;
 ```
+* closed
