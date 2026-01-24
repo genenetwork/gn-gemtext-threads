@@ -1,4 +1,4 @@
-# Installation
+# Installation with Guix
 
 This document is WIP and still a mixture of old and new docs.
 

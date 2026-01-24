@@ -67,7 +67,8 @@ All the other nodes are for compute. O1 and O4 will be the last nodes to remain 
 * - [X] tux06
 * - [X] tux07
 * - [+] octopus06 migrating
-* - [+] octopus11 depleting
+* - [+] octopus11 migrating
+* [ ] Check scratch
 * [ ] Start network performance with iperf3
 
 # Progress

@@ -1,5 +1,9 @@
 # Updating Guix profiles (for production and development)
 
+For information on installing guix and profiles, see
+
+=> topics/deploy/installation
+
 This document describes updating Guix for GeneNetwork by using a channel. To develop guix packages see
 
 => guix/packages.gmi
