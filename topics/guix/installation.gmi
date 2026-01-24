@@ -1,0 +1,227 @@
+# Guix installation and versions
+
+## Updating Guix
+
+When you install guix using the binary installer on the guix website it will install a daemon that allows you to install packages.
+
+```
+guix -V
+guix (GNU Guix) 1.4.0
+Copyright (C) 2022 the Guix authors
+```
+
+to really see the exact version, use
+
+```
+ guix describe
+  guix a259069
+    repository URL: https://git.guix.gnu.org/guix.git
+    branch: master
+    commit: a2590694ae0350f9d7400f6f6f41fdbac2fa5340
+```
+
+Now that commit is critical information. It is a point in time. Any package you install with this program is the tree of packages that is tied against that commit.
+
+If you do
+
+```
+guix package -A rust
+```
+
+You see rust with its packages at that moment in time. If you check that commit in the guix git repo, you'll see it is
+
+```
+git log a2590694ae0350f9d7400f6f6f41fdbac2fa5340
+commit a2590694ae0350f9d7400f6f6f41fdbac2fa5340
+Author: Hartmut Goebel <h.goebel@crazy-compilers.com>
+Date:   Sun Oct 12 20:09:14 2025 +0200
+    gnu: python: Graft secure package.
+```
+
+So we know that exact time point and we can reinstall any software package *reproducibly* with its dependencies.
+
+Now if you want a more recent version - and you often do - you'll need to updat guix with
+
+```
+mkdir ~/opt
+guix pull -p ~/opt/guix-pull --url=https://codeberg.org/guix/guix
+```
+
+Codeberg we use these days because it is faster than the default gnu http server.
+guix pull is a bit slow, but normally we only do this every 3 months or so.
+
+Note you can do this as a *normal* user. The guix daemon in the background handles all software installation as it has permissions to do so. Guix only writes software into /gnu/store.
+
+To install software, first activate the new guix and make sure we actually use it:
+
+```
+unset GUIX_PROFILE
+source ~/opt/guix-pull/etc/profile
+guix describe
+```
+
+now the guix describe should be recent.
+Now, at least, the packages should be aligned with the latest and greatest guix.
+
+Note guix pull can install any hash in the history of guix, so to recreate the earlier guix we could have done with hash a259069
+
+```
+guix pull -p ~/opt/guix-a259069 --url=https://codeberg.org/guix/guix --commit=a259069
+```
+
+essentially rolling back in time. Being able to roll back in time at any point is very important for reproducibility. Not only can you exactly align (base) software installations between machines, developers and deployments, you can even reproduce scientific results using the exact same software stack. We use it for software development, testing, staging, end-user facing production and data analysis.
+
+Anyway, we role forward and use above above 'source' command.
+
+## Using channnels
+
+Channels are guix way of handling software packages outside the main guix tree.
+Channels are simply git repositories with a short metdata description. A channel does not have to reside on github(!) Any visible git repo will do.
+
+We have a channel for our git repository at
+
+=> https://git.genenetwork.org/guix-bioinformatics/tree/
+
+The channel file is in
+
+=> https://git.genenetwork.org/guix-bioinformatics/tree/.guix-channel
+
+and, at time of writing, looks like
+
+```
+(channel
+ (version 0)
+ (dependencies
+  (channel
+   (name guix)
+   (url "https://codeberg.org/guix/guix")
+   (branch "master")
+   (introduction
+    (channel-introduction
+     (version 0)
+     (commit "9edb3f66fd807b096b48283debdcddccfea34bad")
+     (signer
+      "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))
+  (channel
+   (name guix-past)
+   (url "https://codeberg.org/guix-science/guix-past")
+   (introduction
+    (channel-introduction
+     (version 0)
+     (commit "c3bc94ee752ec545e39c1b8a29f739405767b51c")
+     (signer
+      "3CE4 6455 8A84 FDC6 9DB4  0CFB 090B 1199 3D9A EBB5"))))
+  (channel
+   (name guix-rust-past-crates)
+   (url "https://codeberg.org/guix/guix-rust-past-crates.git")
+   (branch "trunk")
+   (introduction
+    (channel-introduction
+     (version 0)
+     (commit "1db24ca92c28255b28076792b93d533eabb3dc6a")
+     (signer
+      "F4C2 D1DF 3FDE EA63 D1D3 0776 ACC6 6D09 CA52 8292"))))))
+```
+
+You can see it defines a specific version of guix itself, as well as two other repos for guix-past and guix-rust-past-crates that hold older versions of packages that disappeared from guix itself. Yes, we run some old packages.
+
+In principle the guix channel should reflect a point in time that the guix-bioinformatics repo requires to run. To install the new guix with the channel you can download above file, but that won't give you guix-bioinformatics packages themselves. For that you need to (simply) define a channel that includes the repo.
+
+```channel.scm
+(list (channel
+       (name 'gn-bioinformatics)
+       (url "https://git.genenetwork.org/guix-bioinformatics")
+       (branch "master")))
+```
+
+Copy/paste that and try
+
+```
+guix pull -C channel.scm -p ~/opt/guix-bioinformatics
+unset GUIX_PROFILE
+source ~/opt/guix-bioinformatics/etc/profile
+guix describe
+ ~/opt/guix-bioinformatics/bin/guix describe
+hint: Consider installing the `glibc-locales' package and defining `GUIX_LOCPATH', along these lines:
+
+     guix install glibc-locales
+     export GUIX_LOCPATH="$HOME/.guix-profile/lib/locale"
+
+See the "Application Setup" section in the manual, for more info.
+
+Generation 1    Jan 24 2026 08:50:54    (current)
+  gn-bioinformatics 6534ac1
+    repository URL: https://git.genenetwork.org/guix-bioinformatics
+    branch: master
+    commit: 6534ac19a201cb4b2880b6bda110324adf08949b
+  guix 6c6e7ad
+    repository URL: https://codeberg.org/guix/guix
+    branch: master
+    commit: 6c6e7ada010b1f7195253967dfbd8419549f6997
+  guix-past be79976
+    repository URL: https://codeberg.org/guix-science/guix-past
+    branch: master
+    commit: be7997692e81a89817c7fa2d6e36aee71c8e6916
+  guix-rust-past-crates 20997cc
+    repository URL: https://codeberg.org/guix/guix-rust-past-crates.git
+    branch: trunk
+    commit: 20997ccc759799c19709fdde729d67e470fa5bcf
+```
+
+It did pull in 'guix-past' and other information from that .guix-channel file in the remote repo, but it pulled in the latest versions of the repos themselves. If we were to specify exact commits it would tie it down.
+
+Now you should be able to *also* see and install the packages in the channel. E.g.
+
+```
+guix package -A gemma
+```
+
+When installing packages you can use a profile again. I tend to use different profiles for everything as a profile essentially describes a dependency graph.
+
+```
+~/opt/guix-bioinformatics/bin/guix install gemma-gn2 -p ~/opt/gemma-gn2
+```
+
+Note I am using a profile here to create a profile(!) Now you can run
+
+```
+~/opt/gemma-gn2/bin/gemma
+GEMMA 0.98.6 (2022-08-05) by Xiang Zhou, Pjotr Prins and team (C) 2012-2022
+```
+
+Or pull that into your path with
+
+```
+source ~/opt/gemma-gn2/etc/profile
+gemma
+GEMMA 0.98.6 (2022-08-05) by Xiang Zhou, Pjotr Prins and team (C) 2012-2022
+```
+
+So, just a quick recap: the hash values are key. Always check the hashes:
+
+* Use 'guix pull' to upgrade to latest supported guix packages
+* Make sure to set the path to the new guix
+* Use channels to import exernal git repos
+* Make use of guix profiles (-p)
+* Check hashes, I repeat, check hashes
+
+You can use
+
+```
+~/opt/guix-bioinformatics/bin/guix describe -f channels
+```
+
+to show the current channels that are included in that guix.
+
+See also
+
+=> https://systemcrafters.net/craft-your-system-with-guix/using-package-channels/
+
+## Using load paths (GUIX_PACKAGE_PATH)
+
+Guix load paths are a way of importing packages from source, without using channels. This is a very useful feature when you writing new guix packages. It generally should not be a replacement for channels.
+
+## Using the latest rust and cargo
+
+=> ../rust/guix-rust-bootstrap
+=> ../rust/guix-rust-bootstrap
