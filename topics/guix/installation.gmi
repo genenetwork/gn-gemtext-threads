@@ -225,3 +225,47 @@ Guix load paths are a way of importing packages from source, without using chann
 
 => ../rust/guix-rust-bootstrap
 => ../rust/guix-rust-bootstrap
+
+# Links
+
+List of many channels:
+
+=> https://github.com/franzos/awesome-guix
+
+# Notes
+
+Q: Why does guix ignore the hashes .guix-channels in a repo?
+
+A: by Claude:
+
+This is a common source of confusion with Guix. The issue is that **Guix doesn't actually ignore the hashes** — the behavior you're seeing is likely due to how channel specifications work and when they're evaluated.
+
+Here's what's typically happening:
+
+**1. The `.guix-channel` file (singular) vs. `channels.scm`**
+
+The `.guix-channel` file in a repo defines metadata *about* that channel (its name, dependencies, etc.), not which commit to use. The commit/hash is specified in the *consumer's* `channels.scm` file (usually in `~/.config/guix/channels.scm`).
+
+**2. Channel dependencies and pinning**
+
+If your `.guix-channel` file specifies dependencies with commits like:
+
+```scheme
+(channel
+  (name 'my-channel)
+  (dependencies
+    (channel
+      (name 'guix)
+      (url "https://git.savannah.gnu.org/git/guix.git")
+      (commit "abc123..."))))
+```
+
+Guix may still pull a *newer* commit if your local `channels.scm` specifies a different (or no) commit for that dependency. The local channels file takes precedence.
+
+**3. To actually pin commits**, you need to:
+
+- Use `guix describe -f channels` to get the exact commits currently in use
+- Put that output in your `channels.scm`
+- Or use `guix time-machine --channels=channels.scm` for reproducible builds
+
+**4. Common gotcha**: If you're running `guix pull` without specifying channels, it uses your default `~/.config/guix/channels.scm`, which may not respect the hashes in the repo's files.
