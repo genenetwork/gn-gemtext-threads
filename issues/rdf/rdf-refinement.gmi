@@ -36,14 +36,19 @@ Terms:
 * [X] skos:notation -> gnt:has_uniprot_taxon_id
 * [X] <species> rdf:isDefinedBy -> <species> gnt:has_wikidata_link
 * [X] gnt:is_species_of -> gnt:has_strain
+* [X] gnt:belongs_to_group -> gnt:has_strain
 
-## Genotypes/Phenotypes
+## Datasets
 
 Ignored Probesets (these are too big to put into RDF.)
 
+* [ ] Link all nodes to type and family.
+* [ ] Group Datasets into types instead of genenic Phenotype/Genotype/Probeset.
 
 ## GN Ontology
+
 * [ ] Create endpoints that lists all "gnt:"  and "gnc:" terms
+* [ ] Create aliases for ontology.
 
 ## Sync MariadB
 
