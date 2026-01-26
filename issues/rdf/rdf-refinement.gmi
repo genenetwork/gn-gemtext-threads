@@ -35,11 +35,15 @@ Terms:
 * [X] gnt:genetic-type -> gnt:genetic_type
 * [X] skos:notation -> gnt:has_uniprot_taxon_id
 * [X] <species> rdf:isDefinedBy -> <species> gnt:has_wikidata_link
+* [X] gnt:is_species_of -> gnt:has_strain
 
 ## Genotypes/Phenotypes
 
 Ignored Probesets (these are too big to put into RDF.)
 
+
+## GN Ontology
+* [ ] Create endpoints that lists all "gnt:"  and "gnc:" terms
 
 ## Sync MariadB
 
