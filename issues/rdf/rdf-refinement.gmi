@@ -39,3 +39,8 @@ Terms:
 ## Genotypes/Phenotypes
 
 Ignored Probesets (these are too big to put into RDF.)
+
+
+## Sync MariadB
+
+* [ ] Sync mariadb tux01 with tux02; have rdf.genenetwork.org be the latest.
