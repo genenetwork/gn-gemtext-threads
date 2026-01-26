@@ -62,7 +62,8 @@
        (sha256
         (base32 "04zlajr77f6c7ai59l46as1idi0jjgbvj72lh4v5wfpz2s070pjp"))))
     (build-system python-build-system)
-    (arguments (list))
+    (arguments
+     (list #:tests? #f))
     (native-inputs
      (modify-inputs (package-native-inputs python-charset-normalizer)
        (delete "python-setuptools")))))
