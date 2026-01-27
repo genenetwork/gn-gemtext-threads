@@ -45,8 +45,76 @@ Terms:
 * [X] Update term metadata for "gnt:has_family."
 * [X] Create gnc:family
 * [X] Link family to species/inbredsets.
+* [X] Wrap inbredset metadata - HTML rich text format - in ^^rdf:HTML
+
+Note: In the main GN page, we don't list IndbredSet groups that don't have a family:
+
+```
+mysql> select count(*) FROM InbredSet where Family IS NULL;
++----------+
+| count(*) |
++----------+
+|       33 |
++----------+
+1 row in set (0.01 sec)
+```
 
 ## Types
+
+Building Types:
+
+Checking for trait and co-factors:
+
+```
+SELECT
+    s.Name AS species_name,
+    i.Id   AS inbredset_id,
+    i.Name AS inbredset_name,
+    'Traits and Cofactors' AS dataset_type
+FROM Species s
+JOIN InbredSet i
+  ON i.SpeciesId = s.Id
+JOIN PublishFreeze p
+  ON p.InbredSetId = i.Id
+WHERE p.Name = CONCAT(i.Name, 'Publish');
+```
+
+Checking for DNA Markers and SNPs:
+
+```
+SELECT
+    s.Name AS species_name,
+    i.Id   AS inbredset_id,
+    i.Name AS inbredset_name,
+    'DNA Markers and SNPs' AS dataset_type
+FROM Species s
+JOIN InbredSet i
+  ON i.SpeciesId = s.Id
+JOIN GenoFreeze g
+  ON g.InbredSetId = i.Id
+WHERE g.Name = CONCAT(i.Name, 'Geno');
+```
+
+Checking for Molecular Traits:
+
+```
+SELECT DISTINCT
+    s.Name AS species_name,
+    i.Id   AS inbredset_id,
+    i.Name AS inbredset_name,
+    t.Name AS dataset_type
+FROM Species s
+JOIN InbredSet i
+  ON i.SpeciesId = s.Id
+JOIN ProbeFreeze pf
+  ON pf.InbredSetId = i.Id
+JOIN ProbeSetFreeze psf
+  ON psf.ProbeFreezeId = pf.Id
+JOIN Tissue t
+  ON pf.TissueId = t.Id
+WHERE psf.public > 0
+ORDER BY s.Name, i.Name, t.Name;
+```
 
 * [ ] Types depending on the InbredSet.  Types are grouped by "Genotype", "Phenotype" or "Molecular Traits."
 
