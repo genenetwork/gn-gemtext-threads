@@ -28,10 +28,11 @@ From this root node, one should be able to navigate to species, inbred-set group
 * [X] Species page - fan out to all inbredsets that belong to that species.
 * [X] Get rid of blanknodes in gnc:resource_classification_scheme
 * [X] Add schema:domainIncludes for dcat:Dataset and gnc:species
-* [ ] Add special nodes for family.
-* [ ] Fan out from family page.
-* [ ] gnt:belongs_to_species gnt:has_species
-* [ ] Generate wikidata fan-out links for FamilyOrder.
+* [X] Add special nodes for family.
+* [X] Fan out from family page.
+* [X] gnt:belongs_to_species gnt:has_species
+* [X] Generate wikidata fan-out links for FamilyOrder.
+* [X] Remodel the gn hierachy: population category -> inbredset group -> species -> taxonomic family.
 
 Terms:
 * [X] xkos:specializes/generalizes -> xkos:previousLevel/nextLevel
