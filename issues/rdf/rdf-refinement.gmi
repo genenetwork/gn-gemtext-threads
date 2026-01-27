@@ -59,7 +59,7 @@ mysql> select count(*) FROM InbredSet where Family IS NULL;
 1 row in set (0.01 sec)
 ```
 
-## Types
+## Types/Tissues
 
 Building Types:
 
@@ -130,6 +130,10 @@ Ignored Probesets (these are too big to put into RDF.)
 * [ ] Create endpoints that lists all "gnt:"  and "gnc:" terms
 * [ ] Create aliases for ontology.
 
-## Sync MariadB
-
+## Post Mark-up
+* [ ] Re-visit how we store all HTML metadata
 * [ ] Sync mariadb tux01 with tux02; have rdf.genenetwork.org be the latest.
+
+
+
+
