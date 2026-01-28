@@ -32,7 +32,7 @@ From this root node, one should be able to navigate to species, inbred-set group
 * [X] Fan out from family page.
 * [X] gnt:belongs_to_species gnt:has_species
 * [X] Generate wikidata fan-out links for FamilyOrder.
-* [X] Remodel the gn hierachy: population category -> inbredset group -> species -> taxonomic family.
+* [X] Remodel the gn hierachy: inbredset group -> population category -> species -> taxonomic family.
 
 Terms:
 * [X] xkos:specializes/generalizes -> xkos:previousLevel/nextLevel
@@ -47,6 +47,7 @@ Terms:
 * [X] Create gnc:family
 * [X] Link family to species/inbredsets.
 * [X] Wrap inbredset metadata - HTML rich text format - in ^^rdf:HTML
+* [X] Mark monkey data as cruft with gn:cruft and add comments in rdfs:comment
 
 Note: In the main GN page, we don't list IndbredSet groups that don't have a family:
 
@@ -60,7 +61,7 @@ mysql> select count(*) FROM InbredSet where Family IS NULL;
 1 row in set (0.01 sec)
 ```
 
-## Types/Tissues
+## Types
 
 Building Types:
 
@@ -101,9 +102,10 @@ Checking for Molecular Traits:
 ```
 SELECT DISTINCT
     s.Name AS species_name,
-    i.Id   AS inbredset_id,
     i.Name AS inbredset_name,
-    t.Name AS dataset_type
+    t.Name AS dataset_type,
+    psf.FullName as dataset_full_name
+
 FROM Species s
 JOIN InbredSet i
   ON i.SpeciesId = s.Id
@@ -113,12 +115,17 @@ JOIN ProbeSetFreeze psf
   ON psf.ProbeFreezeId = pf.Id
 JOIN Tissue t
   ON pf.TissueId = t.Id
-WHERE psf.public > 0
-ORDER BY s.Name, i.Name, t.Name;
+WHERE s.Name = 'rat' AND i.Name = 'HXBBXH' AND
+psf.public > 0 AND t.Name = 'Adipose mRNA' GROUP BY s.Name, i.Name
+ORDER BY
+s.Name, i.Name, t.Name, psf.FullName;
 ```
 
 * [ ] Types depending on the InbredSet.  Types are grouped by "Genotype", "Phenotype" or "Molecular Traits."
 
+### Molecular Traits
+
+* [X] Ontology for describing tissue.
 ## Datasets
 
 Ignored Probesets (these are too big to put into RDF.)
