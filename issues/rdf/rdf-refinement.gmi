@@ -153,8 +153,9 @@ Data entry error in:
 
 => https://info.genenetwork.org/infofile/source.php?GN_AccesionId=626
 
-## Phenotypes / RIF / Case Attributes / Individual Strains
+## Phenotypes / RIF / Case Attributes / Individual Strains / Publications
 
+* [ ] Publications.
 * [ ] Phenotypes.
 * [ ] RIF.
 * [ ] Case Attributes.
