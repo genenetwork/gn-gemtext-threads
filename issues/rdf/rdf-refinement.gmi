@@ -48,6 +48,7 @@ Terms:
 * [X] Link family to species/inbredsets.
 * [X] Wrap inbredset metadata - HTML rich text format - in ^^rdf:HTML
 * [X] Mark monkey data as cruft with gn:cruft and add comments in rdfs:comment
+* [X] Transform renames.
 
 Note: In the main GN page, we don't list IndbredSet groups that don't have a family:
 
@@ -61,7 +62,7 @@ mysql> select count(*) FROM InbredSet where Family IS NULL;
 1 row in set (0.01 sec)
 ```
 
-## Types
+## Datasets
 
 Building Types:
 
@@ -126,12 +127,10 @@ s.Name, i.Name, t.Name, psf.FullName;
 ### Molecular Traits
 
 * [X] Ontology for describing tissue.
-## Datasets
-
-Ignored Probesets (these are too big to put into RDF.)
-
-* [ ] Link all nodes to type and family.
-* [ ] Group Datasets into types instead of genenic Phenotype/Genotype/Probeset.
+* [X] Move investigators to own file.
+* [X] Delete old probeset definitions.
+* [X] Link all datasets to type and family.
+* [X] Remodel gene-chip metadata.
 
 ## GN Ontology
 
