@@ -131,6 +131,15 @@ s.Name, i.Name, t.Name, psf.FullName;
 * [X] Delete old probeset definitions.
 * [X] Link all datasets to type and family.
 * [X] Remodel gene-chip metadata.
+* [X] Refactor molecular-traits.scm to fetch metadata from Datasets table.
+
+### Genotypes
+
+* [ ] gn:genotype->gn:dataset
+* [ ] gnc:genotypes->gn:genotype
+* [ ] gn:set->gn:dataset (predicate: gnt:has_genotype_data)
+* [ ] gn:dataset->set/species/genotype (define gnt:has_genotype)
+* [ ] gn:dataset->metadata (metadata about the genotype)
 
 ## GN Ontology
 
