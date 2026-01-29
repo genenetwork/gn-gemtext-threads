@@ -64,7 +64,7 @@ mysql> select count(*) FROM InbredSet where Family IS NULL;
 
 ## Datasets
 
-Building Types:
+* [X] gn:datasets->metadata
 
 Checking for trait and co-factors:
 
@@ -106,7 +106,6 @@ SELECT DISTINCT
     i.Name AS inbredset_name,
     t.Name AS dataset_type,
     psf.FullName as dataset_full_name
-
 FROM Species s
 JOIN InbredSet i
   ON i.SpeciesId = s.Id
@@ -122,9 +121,8 @@ ORDER BY
 s.Name, i.Name, t.Name, psf.FullName;
 ```
 
-* [ ] Types depending on the InbredSet.  Types are grouped by "Genotype", "Phenotype" or "Molecular Traits."
 
-### Molecular Traits
+### Molecular Traits Dataset
 
 * [X] Ontology for describing tissue.
 * [X] Move investigators to own file.
@@ -132,14 +130,41 @@ s.Name, i.Name, t.Name, psf.FullName;
 * [X] Link all datasets to type and family.
 * [X] Remodel gene-chip metadata.
 * [X] Refactor molecular-traits.scm to fetch metadata from Datasets table.
+* [X] Add missing definitions for gnc:has_probeset_data.
+* [X] Refactor gn:dataset->metadata.
+* [X] Remove duplicate queries.
+* [X] gn:dataset->metadata (only molecular traits have normalization, avg )
+* [X] gn:molecular-trait->gn:dataset
+* [X] gn:set->gn:dataset
+* [X] gnc:molecular_trait->gn:molecular_trait
 
-### Genotypes
+### Genotype Dataset
 
-* [ ] gn:genotype->gn:dataset
-* [ ] gnc:genotypes->gn:genotype
-* [ ] gn:set->gn:dataset (predicate: gnt:has_genotype_data)
-* [ ] gn:dataset->set/species/genotype (define gnt:has_genotype)
-* [ ] gn:dataset->metadata (metadata about the genotype)
+* [X] gn:set->gn:dataset (gnt:has_genotype_data)
+* [X] gn:dataset->set (gnt:has_strain)
+
+
+### Phenotype Dataset
+
+* [X] gn:set->gn:dataset (gnt:has_phenotype_data)
+* [X] gn:dataset->set (gnt:has_strain)
+
+Data entry error in:
+
+=> https://info.genenetwork.org/infofile/source.php?GN_AccesionId=626
+
+## Phenotypes / RIF / Case Attributes / Individual Strains
+
+* [ ] Phenotypes.
+* [ ] RIF.
+* [ ] Case Attributes.
+* [ ] Individual Strains.
+* [ ] RIF metadata.
+
+## Link experiment data from LMDB / Compute Data
+
+* [ ] LMDB Data.
+* [ ] (GEMMA/ Rqtl) Compute data.
 
 ## GN Ontology
 
@@ -147,6 +172,7 @@ s.Name, i.Name, t.Name, psf.FullName;
 * [ ] Create aliases for ontology.
 
 ## Post Mark-up
+
 * [ ] Re-visit how we store all HTML metadata
 * [ ] Sync mariadb tux01 with tux02; have rdf.genenetwork.org be the latest.
 
