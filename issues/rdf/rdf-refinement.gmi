@@ -155,8 +155,8 @@ Data entry error in:
 
 ## Phenotypes / RIF / Case Attributes / Individual Strains / Publications
 
-* [ ] Publications.
 * [ ] Phenotypes.
+* [ ] Publications.
 * [ ] RIF.
 * [ ] Case Attributes.
 * [ ] Individual Strains.
@@ -171,6 +171,12 @@ Data entry error in:
 
 * [ ] Create endpoints that lists all "gnt:"  and "gnc:" terms
 * [ ] Create aliases for ontology.
+
+## Private data / Extras
+
+* [ ] Add sparql queries as an example.
+* [ ] Add an end-point that lists all the gnc: and gnt: terms.
+* [ ] ! Generate a list and ask Rob.
 
 ## Post Mark-up
 
