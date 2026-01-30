@@ -154,6 +154,7 @@ Data entry error in:
 => https://info.genenetwork.org/infofile/source.php?GN_AccesionId=626
 
 ## Phenotypes / RIF / Case Attributes / Individual Strains / Publications
+Genotypes and markers are different but related.  Different Species can have different markers
 
 * [ ] Phenotypes.
 * [ ] Publications.
