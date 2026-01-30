@@ -44,6 +44,10 @@ Our typical channels file, used in all the Genenetwork-specific repositories, is
 
 => https://github.com/genenetwork/genenetwork3/blob/main/.guix-channel
 
+## Tasks
+
+* [ ] Move GN Rust packages to new build system - reduces build time.
+
 ## Footnotes
 
 => https://guix.gnu.org/ [1] GNU Guix
