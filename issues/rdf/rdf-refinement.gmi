@@ -175,7 +175,6 @@ Data entry error in:
 ## Private data / Extras
 
 * [ ] Add sparql queries as an example.
-* [ ] Add an end-point that lists all the gnc: and gnt: terms.
 * [ ] ! Generate a list and ask Rob.
 
 ## Post Mark-up
