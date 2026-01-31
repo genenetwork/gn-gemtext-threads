@@ -47,6 +47,7 @@ Our typical channels file, used in all the Genenetwork-specific repositories, is
 ## Tasks
 
 * [ ] Move GN Rust packages to new build system - reduces build time.
+* [ ] Add a g-exp for gn-libs.   This way, whenever it changes, we don't need to do a guix re-build.
 
 ## Footnotes
 
