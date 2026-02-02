@@ -13,7 +13,7 @@ Message: https://cd.genenetwork.org/run_mapping/static/new/css/show_trait.css Tr
 
 This only happens in CD, not production.  A possible cause for this error might be access to the mapping page with an expired mapping hash.  A recent change @zachs made fixes this.   See:
 
-   <https://github.com/genenetwork/genenetwork2/commit/d2db6da856948a708f408c8c2acafd1718a4e3a5>
+=> https://github.com/genenetwork/genenetwork2/commit/d2db6da856948a708f408c8c2acafd1718a4e3a5
 
 Maybe related to how temp files are generated from Genenetwork2, and how the TMPDIR is mapped inside the container.
 
