@@ -121,6 +121,8 @@ ORDER BY
 s.Name, i.Name, t.Name, psf.FullName;
 ```
 
+* [ ] (w/ Alex) Link dataset view from RDF -> LMDB
+* [ ] Figure out table fan-out with existing data.
 
 ### Molecular Traits Dataset
 
@@ -146,6 +148,7 @@ s.Name, i.Name, t.Name, psf.FullName;
 
 ### Phenotype Dataset
 
+* [ ] Figure out linking phenotypes LRS and other stats metadata without using a blank node (and dup)
 * [X] gn:set->gn:dataset (gnt:has_phenotype_data)
 * [X] gn:dataset->set (gnt:has_strain)
 
