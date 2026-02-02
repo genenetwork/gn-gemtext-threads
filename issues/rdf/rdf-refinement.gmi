@@ -49,6 +49,7 @@ Terms:
 * [X] Wrap inbredset metadata - HTML rich text format - in ^^rdf:HTML
 * [X] Mark monkey data as cruft with gn:cruft and add comments in rdfs:comment
 * [X] Transform renames.
+* [X] Move oll ontology to one file.
 
 Note: In the main GN page, we don't list IndbredSet groups that don't have a family:
 
@@ -145,9 +146,9 @@ s.Name, i.Name, t.Name, psf.FullName;
 * [X] gn:set->gn:dataset (gnt:has_genotype_data)
 * [X] gn:dataset->set (gnt:has_strain)
 
-
 ### Phenotype Dataset
 
+* [X] gn:phenotype->metadata
 * [ ] Figure out linking phenotypes LRS and other stats metadata without using a blank node (and dup)
 * [X] gn:set->gn:dataset (gnt:has_phenotype_data)
 * [X] gn:dataset->set (gnt:has_strain)
@@ -185,7 +186,3 @@ Genotypes and markers are different but related.  Different Species can have dif
 
 * [ ] Re-visit how we store all HTML metadata
 * [ ] Sync mariadb tux01 with tux02; have rdf.genenetwork.org be the latest.
-
-
-
-
