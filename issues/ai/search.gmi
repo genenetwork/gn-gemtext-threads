@@ -20,7 +20,7 @@ Related tasks:
 
 ## Tasks
 
-* [ ] (bonfacem) Share existing TTL files with JoM.  TTL files will be used by JoM to build English sentences that can be used when building out system level prompts.
+* [X] (bonfacem) Share existing TTL files with JoM.  TTL files will be used by JoM to build English sentences that can be used when building out system level prompts.
 * [ ] (johannesm) Work on system level prompts based off above prompts.   Focus on phenotype data for now.   Test (balg01) locally.
 * [ ] (johannesm, bonfacem) Extend above to molecular traits, genotypes, compute data and RIFs.
 * [ ] (johannesm, bonfacem) REST API for processing answers from AI processing.
