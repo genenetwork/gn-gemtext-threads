@@ -17,5 +17,9 @@ Performance appears to have returned to normal without code changes.
 
 We get DDOS'ed by AI bots.
 
+Related:
+
+=> https://issues.genenetwork.org/issues/CI-CD/profiling-flask
+
 * closed
 
