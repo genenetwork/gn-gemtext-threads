@@ -66,6 +66,7 @@ mysql> select count(*) FROM InbredSet where Family IS NULL;
 ## Datasets
 
 * [X] gn:datasets->metadata
+* [ ] Share datasets older than 2025 to Rob & Pjotr.
 
 Checking for trait and co-factors:
 
@@ -160,8 +161,8 @@ Data entry error in:
 ## Phenotypes / RIF / Case Attributes / Individual Strains / Publications
 Genotypes and markers are different but related.  Different Species can have different markers
 
-* [ ] Phenotypes.
-* [ ] Publications.
+* [X] Phenotypes.
+* [X] Publications.
 * [ ] RIF.
 * [ ] Case Attributes.
 * [ ] Individual Strains.
