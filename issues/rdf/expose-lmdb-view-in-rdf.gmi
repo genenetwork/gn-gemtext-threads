@@ -14,6 +14,8 @@ Related PR on older work:
 
 => https://github.com/genenetwork/genenetwork3/pull/235/changes#diff-78594d414ca0a54ae60255c1c869ce6cf52cfea18569b81f7d6fd3949135a860
 
+* [ ] (bonfacem, alexm) Copy over LMDB files in CD container for LMDB access to work.
+
 ## Phenotypes strains
 Example query to fetch BXD_10007:
 
