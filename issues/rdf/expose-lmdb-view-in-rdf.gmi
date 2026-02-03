@@ -1,4 +1,4 @@
-# Expose LMBD in RDF.
+# Expose LMBD in RDF
 
 * assigned: bonfacem, alexm
 * status: in-progress
