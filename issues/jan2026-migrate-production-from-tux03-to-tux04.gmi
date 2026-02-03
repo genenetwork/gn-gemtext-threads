@@ -15,9 +15,9 @@ We need to migrate back to tux04 which is now stable. tux03 has been intermitten
 
 * [x] Figure out disks
   The database can go on /export, maybe the containers too.
-* [ ] Extract MariaDB from backup
+* [x] Extract MariaDB from backup
   * [x] Look into replication - might be more work that is worth it at this point
-  * [ ] Look for backups
+  * [x] Look for backups
     * There are no recent backups from tux03 on tux04
     * Last backup seems to be from 4th March 2025
     * [x] Setup drops from tux03 to tux04
@@ -55,13 +55,13 @@ We need to migrate back to tux04 which is now stable. tux03 has been intermitten
   * [x] Build nginx with preread from guix
   * [x] Setup systemd unit file to use newly built nginx
   * [x] Start new nginx
-* [ ] Setup nginx streaming
+* [x] Setup nginx streaming
   * [x] Initialise streaming
   * [x] Stream to public-sparql
   * [x] Stream to gn2-fred
-  * [ ] Stream to production
+  * [x] Stream to production
 * [x] Create short-lived ssh key to copy files from tux03 to tux04
-* [ ] Setup public-sparql
+* [x] Setup public-sparql
   * [x] Copy over container files from tux03
   * [x] Do `guix pull ...' to setup the channels for public-sparql
   * [x] Build public-sparql container
@@ -80,12 +80,12 @@ We need to migrate back to tux04 which is now stable. tux03 has been intermitten
   * [x] Setup SSL certificates: Seems to work with existing certificates with no problems.
   * [x] Verify we can access https://gn2-fred.genenetwork.org and it works
     - Activation service doesn't seem to work as expected for some reason.
-* [ ] Setup production
-  * [ ] Copy over container files from tux03
+* [x] Setup production
+  * [x] Copy over container files from tux03
   * [x] Do `guix pull ...' to setup the channels for production
-  * [ ] Build production container
-  * [ ] Setup systemd unit files to run container
-  * [ ] Start container
-  * [ ] Switch DNS
-  * [ ] Setup SSL certificates
-  * [ ] Verify we can access https://genenetwork.org and it works
+  * [x] Build production container
+  * [x] Setup systemd unit files to run container
+  * [x] Start container
+  * [x] Switch DNS
+  * [x] Setup SSL certificates
+  * [x] Verify we can access https://genenetwork.org and it works
