@@ -1,5 +1,6 @@
 # Profiling GN
-
+* assigned: bonfacem
+* status: closed
 Use this simple structure:
 
 ```
@@ -31,3 +32,5 @@ Or snakeviz to visualize it:
 scp genenetwork:/home/bonfacem/profiling/1753202013-GET-show_trait-37931ms.prof /tmp/test
 snakeviz 1753202013-GET-show_trait-37931ms.prof
 ```
+
+* closed
