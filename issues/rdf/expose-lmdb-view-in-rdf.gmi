@@ -1,0 +1,76 @@
+# Expose LMBD in RDF.
+
+* assigned: bonfacem, alexm
+* status: in-progress
+
+
+# Description.
+
+Say for this trait, create an endpoint/URL for accessing LMDB as a link:
+
+=> http://rdf.genenetwork.org/v1/id/trait_BXDPublish_IOP_all_ages
+
+Related PR on older work:
+
+=> https://github.com/genenetwork/genenetwork3/pull/235/changes#diff-78594d414ca0a54ae60255c1c869ce6cf52cfea18569b81f7d6fd3949135a860
+
+## Phenotypes strains
+Example query to fetch BXD_10007:
+
+```
+SELECT
+    px.Id,
+    s.Name,
+    pd.Value,
+    pse.error
+FROM PublishData pd
+INNER JOIN Strain s
+    ON pd.StrainId = s.Id
+INNER JOIN PublishXRef px
+    ON pd.Id = px.DataId
+INNER JOIN PublishFreeze pf
+    ON px.InbredSetId = pf.InbredSetId
+LEFT JOIN PublishSE pse
+    ON pse.DataId = pd.Id
+   AND pse.StrainId = pd.StrainId
+LEFT JOIN NStrain ns
+    ON ns.DataId = pd.Id
+   AND ns.StrainId = pd.StrainId
+WHERE
+    pf.Name = 'BXDPublish'
+    AND px.Id = 10007
+    AND pf.Public > 0
+    AND pd.Value IS NOT NULL
+    AND pf.Confidentiality < 1
+ORDER BY
+    LENGTH(s.Name),
+    s.Name;
+```
+
+* [ ] (alexm) RESTful api URI: "/dataset/phenotype/<str:dataset>_<integer:trait_id>" e.g: "/dataset/phenotype/BXDPublish_12315".   Result set should have values, SE.
+* [ ] (bonfacem, pjotrp, alexm) How to work with case-attributes metadata.
+* [ ] (bonfacem) Add above link to RDF.
+
+## Probeset strains
+
+TODO
+
+## Genotype strains
+
+TODO
+
+## Post Mark-up
+
+* [ ] Replace naming scheme to use new GN RDF naming convention.   See:
+
+=> https://issues.genenetwork.org/issues/rdf/rdf-refinement
+
+
+Old scheme, combine trait_id (PublishXRef) + Dataset Name (PublishFreeze.Name). e.g.
+
+=> https://genenetwork.org/show_trait?trait_id=12315&dataset=BXDPublish
+
+
+New scheme should mimic:
+
+=> https://rdf.genenetwork.org/v1/id/trait_BXDPublish_IOP_all_ages
