@@ -1,12 +1,21 @@
 # Prompt As UI
 
-* assigned: bonfacem
-* status: to-do
+* assigned: bonfacem, johannesm
+* status: in-progress
 
 ## Description
 
-* New search page with ChatGPT-esque ux customised for GN that presents significant hits and metadata.  Goal: better ux search experience for GN users.  Feed metadata, and figure out
+* New search page with ChatGPT-esque ux customised for GN that presents significant hits and metadata.  Goal: better ux search experience for GN users.  Feed metadata.   Move away from xapian syntax search to natural language, and hits should return relevant gn-links based off metadata.
 * Build agent/model to improve GN AI experience (related to above).
 * Add pre-compute hits (already in RDF) when available.
 
+Example:
 => https://duckduckgo.com/?q=DuckDuckGo+AI+Chat&ia=chat&duckai=1
+
+## Tasks
+
+* [ ] (bonfacem) Share existing TTL files with JoM.  TTL files will be used by JoM to build English sentences that can be used when building out system level prompts.
+* [ ] (johannesm) Work on system level prompts based off above prompts.   Focus on phenotype data for now.   Test locally.
+* [ ] (johannesm, bonfacem) Extend above to phenotypes, molecular traits and genotypes.
+* [ ] (johannesm, bonfacem) REST API for processing answers from AI processing.
+* [ ] (johannes, bonfacem) UI work to integrate above search in GN mainline.   No auth (security: use secret keys, setting up auth - maybe - for later).
