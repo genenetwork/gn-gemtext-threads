@@ -163,6 +163,8 @@ Genotypes and markers are different but related.  Different Species can have dif
 
 * [X] Phenotypes.
 * [X] Publications.
+* [X] gn:set->gn:dataset.
+* [X] gn:dataset->gn:trait
 * [ ] RIF.
 * [ ] Case Attributes.
 * [ ] Individual Strains.
