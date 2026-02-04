@@ -148,7 +148,7 @@ s.Name, i.Name, t.Name, psf.FullName;
 * [X] gn:set->gn:dataset (gnt:has_genotype_data)
 * [X] gn:dataset->set (gnt:has_strain)
 * [ ] LMDB Data ∀ traits.
-
+* [-] gn:set->markes
 Markers that belong to more than one species:
 
 ```
@@ -169,6 +169,53 @@ SELECT Geno.* FROM Geno WHERE Marker_Name IN ("D11Mit2", "D11Mit2", "D12Mit1", "
 ```
 
 We see that the markers we have markers that can belong to more than one species.
+
+Counting markers per public GenoFreeze:
+
+```
+SELECT
+    gf.Name AS GenoFreezeName,
+    COUNT(DISTINCT g.Marker_Name) AS MarkerCount
+FROM GenoFreeze gf
+INNER JOIN InbredSet i
+    ON i.Id = gf.InbredSetId
+INNER JOIN Species s
+    ON s.Id = i.SpeciesId
+INNER JOIN Geno g
+    ON g.SpeciesId = s.Id
+WHERE
+    gf.public > 0
+    AND g.Marker_Name IS NOT NULL
+GROUP BY
+    gf.Name
+ORDER BY
+    MarkerCount DESC;
+```
+
+Results:
+
+```
++-----------------------------+-------------+
+| GenoFreezeName              | MarkerCount |
++-----------------------------+-------------+
+| AD-cases-controls-MyersGeno |       82707 |
+| B6BTBRF2Geno                |       16368 |
+| BHHBF2Geno                  |       16368 |
+| BXHGeno                     |       16368 |
+| HET3-ITPGeno                |       16368 |
+| AILGeno                     |       16368 |
+| BDF2-1999Geno               |       16368 |
+| BXD-MicturitionGeno         |       16368 |
+| CTB6F2Geno                  |       16368 |
+| B6D2F2Geno                  |       16368 |
+…
+| SXMGeno                     |         792 |
+| BayXShaGeno                 |         133 |
+| ColXCviGeno                 |         133 |
+| ColXBurGeno                 |         133 |
++-----------------------------+-------------+
+```
+Same markers.  Not feasible to have a fan out from genotypes -> markers; too much repetition.
 
 ### Phenotype Dataset
 
