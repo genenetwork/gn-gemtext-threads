@@ -149,6 +149,27 @@ s.Name, i.Name, t.Name, psf.FullName;
 * [X] gn:dataset->set (gnt:has_strain)
 * [ ] LMDB Data ∀ traits.
 
+Markers that belong to more than one species:
+
+```
+SELECT
+    Geno.*,
+    COUNT(*) AS cnt
+FROM Geno
+GROUP BY
+    Name,
+    Marker_Name
+HAVING COUNT(*) > 1;
+```
+
+From above results we can confirm:
+
+```
+SELECT Geno.* FROM Geno WHERE Marker_Name IN ("D11Mit2", "D11Mit2", "D12Mit1", "D3Mit17") ORDER BY Marker_Name\G
+```
+
+We see that the markers we have markers that can belong to more than one species.
+
 ### Phenotype Dataset
 
 * [X] gn:phenotype->metadata
