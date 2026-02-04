@@ -68,6 +68,7 @@ TODO
 
 ## Post Mark-up
 
+* [ ] Figure out how to add geno-files (or the lmdb view) to RDF.
 * [ ] Replace naming scheme to use new GN RDF naming convention.   See:
 
 => https://issues.genenetwork.org/issues/rdf/rdf-refinement
