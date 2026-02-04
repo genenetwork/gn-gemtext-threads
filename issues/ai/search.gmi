@@ -20,8 +20,11 @@ Related tasks:
 
 ## Tasks
 
-* [X] (bonfacem) Share existing TTL files with JoM.  TTL files will be used by JoM to build English sentences that can be used when building out system level prompts.
-* [ ] (johannesm) Work on system level prompts based off above prompts.   Focus on phenotype data for now.   Test (balg01) locally.
-* [ ] (johannesm, bonfacem) Extend above to molecular traits, genotypes, compute data and RIFs.
-* [ ] (johannesm, bonfacem) REST API for processing answers from AI processing.
-* [ ] (johannes, bonfacem) UI work to integrate above search in GN mainline.   No auth (security: use secret keys, setting up auth - maybe - for later).
+* [X] (bonfacem) Share existing TTL files with JoM.
+* [ ] (johannesm) Build search corpus focusing on phenotype metadata.
+* [ ] (johannesm) Design RAG.
+* [ ] (johannesm) Create system prompts.
+* [ ] (johannesm) Test locally RAG with phenotype-related queries
+* [ ] (johannesm, bonfacem) Extend corpus to molecular traits, genotypes, precompute data and RIFs.
+* [ ] (johannesm, bonfacem) Add REST API for processing answers from AI processing.
+* [ ] (johannes, bonfacem) Do UI work to integrate above search in GN mainline.   No auth (security: use secret keys, setting up auth - maybe - for later).
