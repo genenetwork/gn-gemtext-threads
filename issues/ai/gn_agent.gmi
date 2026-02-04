@@ -4,7 +4,7 @@
 * type: feature
 * assigned: johannesm
 * priority: medium
-* status: in progress
+* status: in-progress
 * keywords: llm, rag, ai, agent
 
 ## Description
@@ -16,7 +16,6 @@ I have made an attempt to using Deep-Learning for my Masters project. It could w
 This work is an extension of the GNQA system initiated by Shelby and Pjotr. 
 
 ## Tasks
-* [X] Look for transformer model ready for use and try
 * [X] Build a RAG system and test with small corpus of mapping results
 * [X] Experiment with actual mapping results and metadata
 * [X] Move from RAG to agent
@@ -25,23 +24,6 @@ This work is an extension of the GNQA system initiated by Shelby and Pjotr.
 * [] Compare performance of open LLMs with Claude in the system
 
 
-
-
-### Look for transformer model ready for use and try
-
-Given the success of transformers, I was first incited by Pjotr to look for a model that can support different types of data i.e numerical (mapping results) vs textual (metadata).
-
-I found TAPAS which:
-* takes data of different types in tabular format
-* takes a query or question in form of text
-* performs operations on rows of the data table
-* retrieves relevant information
-* returns an answer to the original query
-
-Experimentations were ongoing when Rob found with the help of Claude that this architecture would not go far. I know we used an AI to assist our work on AI (at least we did not ask an AI to do the job from the go :))
-But it was a good point. TAPAS is relatively old and a lot of progress have been made with LLM and agent since!
-
-To take advantage of all the progress made with LLM, need to find a way to have only text data. LLMs are trained to undertand and work with text. Metadata, being RDF, is already in text format. I only needed to convert the mapping results to text. It is a detour worth the shot if this can give more flexibility and save development time!
 
 ### Build a RAG system and test with a small corpus of mapping results
 
