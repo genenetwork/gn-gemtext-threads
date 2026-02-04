@@ -50,12 +50,17 @@ ORDER BY
 ```
 
 * [ ] (alexm) RESTful api URI: "/dataset/phenotype/<str:dataset>_<integer:trait_id>" e.g: "/dataset/phenotype/BXDPublish_12315".   Result set should have values, SE.
+
+Prototype:
+
+=> https://github.com/Alexanderlacuna/gn_lmdb_rdf_interface/tree/master
+
 * [ ] (bonfacem, pjotrp, alexm) How to work with case-attributes metadata.
 * [ ] (bonfacem) Add above link to RDF.
 
 ## Probeset strains
 
-TODO
+* [ ] Mount LMDB_DATA_PATH to another partition because of "size" constraints(?)
 
 ## Genotype strains
 
