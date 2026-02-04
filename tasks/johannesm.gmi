@@ -4,15 +4,15 @@
 
 * kanban: johannesm
 * assigned: johannesm
-* status: in progress
+
 
 ## Tasks
 
 ### Ongoing
 
-* [] Get system into use in GN
+* [~] Work on AI search with Bonz
 
-* [] Draft outline paper
+* [] Get GNAgent into use in GN
 
 * [] Talk with Hao about publication on agent system and gain over GNQA
 
@@ -88,3 +88,11 @@
 * [X] Think about how to show responses of agent system and GNQA in one UI
 
 * [X] Get API working
+
+* [X] Draft outline paper
+
+* [X] Add access to external database to GNAgent
+
+* [X] Draft proposal for study on Gulf War disease
+
+* [X] Develop project on Gulf War disease
