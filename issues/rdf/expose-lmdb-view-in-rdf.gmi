@@ -49,7 +49,7 @@ ORDER BY
     s.Name;
 ```
 
-* [ ] (alexm) RESTful api URI: "/dataset/phenotype/<str:dataset>_<integer:trait_id>" e.g: "/dataset/phenotype/BXDPublish_12315".   Result set should have values, SE.
+* [ ] (alexm) RESTful api URI: "/dataset/phenotype/<str:dataset>_<integer:trait_id>" e.g: "https://cd.genenetwork.org/lmdb/v1/data/traits/BXDPublish_10007".   Result set should have values, SE.
 
 Prototype:
 
