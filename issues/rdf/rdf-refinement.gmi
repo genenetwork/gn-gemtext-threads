@@ -141,16 +141,19 @@ s.Name, i.Name, t.Name, psf.FullName;
 * [X] gn:molecular-trait->gn:dataset
 * [X] gn:set->gn:dataset
 * [X] gnc:molecular_trait->gn:molecular_trait
+* [ ] LMDB Data ∀ traits.
 
 ### Genotype Dataset
 
 * [X] gn:set->gn:dataset (gnt:has_genotype_data)
 * [X] gn:dataset->set (gnt:has_strain)
+* [ ] LMDB Data ∀ traits.
 
 ### Phenotype Dataset
 
 * [X] gn:phenotype->metadata
-* [ ] Figure out linking phenotypes LRS and other stats metadata without using a blank node (and dup)
+* [X] Figure out linking phenotypes LRS and other stats metadata without using a blank node (and dup)
+* [X] LMDB Data ∀ traits.
 * [X] gn:set->gn:dataset (gnt:has_phenotype_data)
 * [X] gn:dataset->set (gnt:has_strain)
 
@@ -170,7 +173,6 @@ Genotypes and markers are different but related.  Different Species can have dif
 
 ## Link experiment data from LMDB / Compute Data / RIF / Case Attributes
 
-* [ ] LMDB Data.
 * [ ] (GEMMA/ Rqtl) Compute data.
 * [ ] RIF.
 * [ ] Case Attributes.
