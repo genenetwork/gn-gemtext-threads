@@ -58,6 +58,11 @@ Prototype:
 * [ ] (bonfacem, pjotrp, alexm) How to work with case-attributes metadata.
 * [ ] (bonfacem) Add above link to RDF.
 
+## Case Attributes / Compute Data
+* [ ] Case Attributes.
+* [ ] Individual Strains.
+* [ ] (GEMMA/ Rqtl) Compute data.
+
 ## Probeset strains
 
 * [ ] Mount LMDB_DATA_PATH to another partition because of "size" constraints(?)
