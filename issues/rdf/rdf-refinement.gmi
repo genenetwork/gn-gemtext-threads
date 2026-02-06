@@ -250,7 +250,7 @@ We only have 532,248 markers:
 ```
 
 Instead, present the number of markers.  Link the snps/dna-markers to species.   Show how to access them.
-* [ ] gn-dataset -> marker_count/example-query
+* [X] gn-dataset -> marker_count/example-query
 * [ ] markers -> metadata
 
 ### Phenotype Dataset
@@ -265,35 +265,28 @@ Data entry error in:
 
 => https://info.genenetwork.org/infofile/source.php?GN_AccesionId=626
 
-## Phenotypes / RIF / Case Attributes / Individual Strains / Publications
+## Phenotypes / Publications / DNA Markers / Probesets / RIF
 Genotypes and markers are different but related.  Different Species can have different markers
 
 * [X] Phenotypes.
 * [X] Publications.
 * [X] gn:set->gn:dataset.
 * [X] gn:dataset->gn:trait
-* [-] probesets
-* [ ] genotypes
-
-## Link experiment data from LMDB / Compute Data / RIF / Case Attributes
-
-* [ ] (GEMMA/ Rqtl) Compute data.
-* [ ] RIF.
-* [ ] Case Attributes.
-* [ ] Individual Strains.
+* [X] DNA markers and snps
+* [X] Link geno-files to the correct data (ref gn2 code on how this is done)
+=> https://files.genenetwork.org/current/ Genotype files.   The dir reps the InfoPages.AccesionId.
+* [X] Create global namespace for geno-files.
+* [ ] probesets
+* [ ] RIF
+* [ ] (?) Gene Symbols
 
 ## GN Ontology
 
-* [ ] Create endpoints that lists all "gnt:"  and "gnc:" terms
-* [ ] Create aliases for ontology.
-
-## Private data / Extras
-
+* [X] Create endpoints that lists all "gnt:"  and "gnc:" terms
 * [ ] Add sparql queries as an example.
-* [ ] ! Generate a list of data older than 2020 and ping Rob/Pjotr.
 
 ## Post Mark-up
-
-* [ ] Re-visit how we store all HTML metadata.   Clean this up.
+* [ ] ! Generate a list of data older than 2020 and ping Rob/Pjotr.
+* [-] (Cancelled) Re-visit how we store all HTML metadata.   Clean this up.
 * [ ] Sync mariadb tux01 with tux02; have rdf.genenetwork.org be the latest.
 * [ ] Make sure that the rdf.genenetwork.org named graph is available on public end-point (mention to Fred about the nuance of moving to a new graph without breaking CD/Prod from old code that used the old genenetwork.org graph).
