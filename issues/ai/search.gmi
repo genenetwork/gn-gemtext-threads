@@ -26,6 +26,9 @@ Related tasks:
 * [X] (johannesm) Create system prompts.
 * [ ] (johannesm) Test locally RAG with phenotype-related queries
 * [ ] (johannesm, bonfacem) Extend corpus to molecular traits, genotypes, precompute data and RIFs.
+* [ ] (johannesm, bonfacem) Design a proper output format for the system - JSON
+* [ ] (johannesm, bonfacem) Teach model how to build link to trait result page in CD
+* [ ] (johannesm, bonfacem) Have a sync on build of xapian search. We want to teach the LLM how to build a xapian search so that the user has a fallback
 * [ ] (johannesm, bonfacem) Add REST API for processing answers from AI processing.
 * [ ] (johannes, bonfacem) Do UI work to integrate above search in GN mainline.   No auth (security: use secret keys, setting up auth - maybe - for later).
 
