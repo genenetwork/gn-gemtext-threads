@@ -250,7 +250,7 @@ We only have 532,248 markers:
 ```
 
 Instead, present the number of markers.  Link the snps/dna-markers to species.   Show how to access them.
-* [ ] gn-dataset -> marker_count/example-query
+* [X] gn-dataset -> marker_count/example-query
 * [ ] markers -> metadata
 
 ### Phenotype Dataset
@@ -272,8 +272,9 @@ Genotypes and markers are different but related.  Different Species can have dif
 * [X] Publications.
 * [X] gn:set->gn:dataset.
 * [X] gn:dataset->gn:trait
-* [-] DNA markers and snps
-* [ ] Link geno-files to the correct data (ref gn2 code on how this is done)
+* [X] DNA markers and snps
+* [-] Link geno-files to the correct data (ref gn2 code on how this is done)
+=> https://files.genenetwork.org/current/ Genotype files.   The dir reps the InfoPages.AccesionId.
 * [ ] probesets
 
 ## Link experiment data from LMDB / Compute Data / RIF / Case Attributes
