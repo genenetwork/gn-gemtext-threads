@@ -24,12 +24,16 @@ Related tasks:
 * [X] (johannesm) Build search corpus with phenotype metadata.
 * [X] (johannesm) Design RAG.
 * [X] (johannesm) Create system prompts.
-* [ ] (johannesm) Test locally RAG with phenotype-related queries
-* [ ] (johannesm, bonfacem) Extend corpus to molecular traits, genotypes, precompute data and RIFs.
+* [X] (johannesm) Test locally RAG with phenotype-related queries
+
+We need fan-out to GN-specific pages.  Related to task listed below in ⁰
+
+* [ ] (johannesm, bonfacem) Extend / Modify (directly use sparql) corpus to molecular traits (later genotypes, precompute data and RIFs).
 * [ ] (johannesm, bonfacem) Design a proper output format for the system - JSON
-* [ ] (johannesm, bonfacem) Teach model how to build link to trait result page in CD
+* [ ] ⁰(johannesm, bonfacem) Teach model how to build link to trait result page in CD
 * [ ] (johannesm, bonfacem) Have a sync on build of xapian search. We want to teach the LLM how to build a xapian search so that the user has a fallback
-* [ ] (johannesm, bonfacem) Add REST API for processing answers from AI processing.
+* [ ] (johannesm, ! bonfacem) Add REST API for processing answers from AI processing.
+* [ ] (pjotr) Ask about DNS name to test out AI search in GN2/3
 * [ ] (johannes, bonfacem) Do UI work to integrate above search in GN mainline.   No auth (security: use secret keys, setting up auth - maybe - for later).
 
 ### Build search corpus wth phenotype metadata
