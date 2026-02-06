@@ -49,7 +49,15 @@ ORDER BY
     s.Name;
 ```
 
-* [ ] (alexm) RESTful api URI: "/dataset/phenotype/<str:dataset>_<integer:trait_id>" e.g: "https://cd.genenetwork.org/lmdb/v1/data/traits/BXDPublish_10007".   Result set should have values, SE.
+* [x] (alexm) Debug genenetwork3 localsetup
+* [x] (alexm) script to dump all phenotypes to lmdb see pr
+=> https://github.com/genenetwork/genenetwork3/pull/240
+
+* [x] (alexm) RESTful api URI: "/dataset/phenotype/<str:dataset>_<integer:trait_id>" e.g: "https://cd.genenetwork.org/lmdb/v1/data/traits/BXDPublish_10007".   Result set should have values, SE.
+> Comments: PR in genenetwork3
+=> https://github.com/genenetwork/genenetwork3/pull/240
+
+* [-] Deploy functionality to tux02
 
 Prototype:
 
