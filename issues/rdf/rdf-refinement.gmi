@@ -126,8 +126,7 @@ ORDER BY
 s.Name, i.Name, t.Name, psf.FullName;
 ```
 
-* [ ] (w/ Alex) Link dataset view from RDF -> LMDB
-* [ ] Figure out table fan-out with existing data.
+* [X] (w/ Alex) Link dataset view from RDF -> LMDB
 
 ### Molecular Traits Dataset
 
@@ -144,13 +143,13 @@ s.Name, i.Name, t.Name, psf.FullName;
 * [X] gn:molecular-trait->gn:dataset
 * [X] gn:set->gn:dataset
 * [X] gnc:molecular_trait->gn:molecular_trait
-* [ ] LMDB Data ∀ traits.
+* [ ] (w/ Alex)LMDB Data ∀ traits.
 
 ### Genotype Dataset
 
 * [X] gn:set->gn:dataset (gnt:has_genotype_data)
 * [X] gn:dataset->set (gnt:has_strain)
-* [ ] (?) LMDB Data ∀ traits.
+* [-] (cancelled) LMDB Data ∀ traits: already have the geno files set-up.
 * [-] (cancelled) gn:set->markers
 
 Markers that belong to more than one species:
@@ -251,7 +250,7 @@ We only have 532,248 markers:
 
 Instead, present the number of markers.  Link the snps/dna-markers to species.   Show how to access them.
 * [X] gn-dataset -> marker_count/example-query
-* [ ] markers -> metadata
+* [X] markers -> metadata
 
 ### Phenotype Dataset
 
@@ -277,8 +276,17 @@ Genotypes and markers are different but related.  Different Species can have dif
 => https://files.genenetwork.org/current/ Genotype files.   The dir reps the InfoPages.AccesionId.
 * [X] Create global namespace for geno-files.
 * [ ] probesets
-* [ ] RIF
-* [ ] (?) Gene Symbols
+
+All probesets should have a name:
+```
+SELECT *
+FROM ProbeSet
+WHERE ProbeSet.Name IS NULL
+   OR TRIM(ProbeSet.Name) = ''\G
+
+```
+* [X] RIF
+* [-] (cancelled) Gene Symbols
 
 ## GN Ontology
 
