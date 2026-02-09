@@ -57,12 +57,17 @@ ORDER BY
 > Comments: PR in genenetwork3
 => https://github.com/genenetwork/genenetwork3/pull/240
 
-* [-] Deploy functionality to tux02
+* [X] Deploy functionality to tux02
 
 Prototype:
 
 => https://github.com/Alexanderlacuna/gn_lmdb_rdf_interface/tree/master
 
+* [X] (bonfacem) Modify endpoint to use json extension:
+```
+curl http://127.0.0.1:8091/dataset/bxd-publish/values/10002.json
+```
+* [X] (alexm) Remove null values from data end-point.
 * [ ] (bonfacem, pjotrp, alexm) How to work with case-attributes metadata.
 * [ ] (bonfacem) Add above link to RDF.
 
