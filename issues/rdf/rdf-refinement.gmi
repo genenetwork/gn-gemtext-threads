@@ -306,6 +306,7 @@ MariaDB [db_webqtl]> select count(*) from ProbeSetXRef;
 ```
 
 We can get away with tx'ing ProbeSet in one go.   However, file size gets too big and rapper complains about it.   Instead, figure out a way to tx ProbeSetXRef in chunks.   Note: total transform times averages at about ~21 mins.   With probesets/probesetxref, that will balloon upto >1hr.   Not worried about optimising things now.    That can be worked out for later.
+* [ ] Have chunked transforms of huge data.
 * [ ] ProbeSetXRef
 * [ ] (w/ Johannesm/pjotrp/rob) What columns to put into RDF.   We have 72 rows ATM:
 
