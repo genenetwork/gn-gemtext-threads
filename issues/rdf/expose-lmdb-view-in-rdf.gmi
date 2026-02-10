@@ -86,7 +86,7 @@ curl http://127.0.0.1:8091/dataset/bxd-publish/values/10002.json
 TODO
 
 ## Post Mark-up
-
+* [ ] Add g-exp scripts for generating all the data.
 * [ ] Figure out how to add geno-files (or the lmdb view) to RDF.
 * [ ] Replace naming scheme to use new GN RDF naming convention.   See:
 
