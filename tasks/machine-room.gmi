@@ -11,7 +11,13 @@
 
 ## Short term
 
-* [X] add SSD to tux03 (@fredm)
+* [ ] Tux02 and tux03 need cables to wire up 2nd PSUs
+* [ ] Octopi have 1 PSU only
+* [ ] Order drives. We have some caddies.
+* - [ ] add drives on 'tux03', then we'll need an additional 5 DXD9H caddies and 4 M.2-to-SATA adapters
+* - [ ] ample room on tux01 - can take old SSDs
+* - [ ] room on tux05-9 - each can hold 8 nvme - we have 20 slots
+* - [ ] octopus slots are full. There are some 10+ spinning disks and 2x smaller 1TB nvmes we can replace.
 * [ ] repurpose samsung drives with heatsink (@fredm)
 * [X] map out physical network layout in MR (@fredm)
 * [+] get disks from chenbro and rehost (@fredm)
@@ -19,7 +25,7 @@
 * - [ ] test network interfaces and switches (@pjotrp)
 * [ ] add storage server with spinning disks
 * - [X] put order in
-* - [ ] install machine
+* - [+] install machine
 * [+] migrate GN production to tux04 (@fredm)
 * - [+] first remove Samsung PCIe (@fredm)
 * - [X] add RAID (@pjotrp)
@@ -83,6 +89,7 @@ Security:
 
 ## Done
 
+* [X] add SSD to tux03 (@fredm)
 * [X] describe machines with Rick Stripes
 * [X] get bacchus back on line
 * [X] fix www.genenetwork.org and gn2.genenetwork.org https

@@ -42,7 +42,7 @@ All the other nodes are for compute. O1 and O4 will be the last nodes to remain 
 * - [+] Flavia
 * [X] Mount nodes to moosefs
 * - [X] octopus01
-* - [ ] octopus02
+* - [X] octopus02
 * - [ ] octopus03
 * - [X] octopus04
 * - [X] octopus05
@@ -58,7 +58,7 @@ All the other nodes are for compute. O1 and O4 will be the last nodes to remain 
 * - [X] tux08
 * - [X] tux09
 * - [X] lambda01
-* [ ] Adding moosefs:
+* [+] Adding moosefs drives
 * - [X] penguin2
 * - - [X] Cleaning second RAID5 on P2
 * - [X] octopus04
@@ -66,10 +66,17 @@ All the other nodes are for compute. O1 and O4 will be the last nodes to remain 
 * - [X] octopus07 on moosefs (see scripts)
 * - [X] tux06
 * - [X] tux07
-* - [+] octopus06 migrating
-* - [+] octopus11 migrating
-* [ ] Check scratch
+* - [X] octopus06
+* - [X] octopus11
+* - [X] octopus02
+* [X] Check scratch spaces
 * [ ] Start network performance with iperf3
+* - [ ] Write to moose from non chunk servers tux08 octopus10 and octopus03
+* - [ ] Test connecting to tux
+* - [ ] Test connecting to octopus
+* - [ ] speedtest-cli
+* [ ] Add monitoring tools for tmp, scratch, RAID and moosefs
+* [ ] Bind /tmp and /scratch to 1TB
 
 # Progress
 
@@ -316,3 +323,105 @@ We have a RAID5 on a synology server we can use after we clear some data.
 * - [ ] Update guix store
 * - [ ] Install moosefs chunk server
 * - [ ] Add to pool
+
+# Network performance
+
+* - [ ] Write to moose from non chunk servers tux08 octopus10 and octopus03
+* - [ ] Test connecting to tux08
+* - [ ] Test connecting to octopus10
+
+## Run iperf3
+
+
+
+On server:
+
+```
+/gnu/store/vyx8wgjbacj0kxpga57hq6nph0bjf62q-iperf-3.19.1/bin/iperf3 -s
+```
+
+On client:
+
+```
+/gnu/store/vyx8wgjbacj0kxpga57hq6nph0bjf62q-iperf-3.19.1/bin/iperf3 -c octopus01
+Connecting to host octopus01, port 5201
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.00  sec   495 MBytes   415 Mbits/sec    0            sender
+[  5]   0.00-10.00  sec   494 MBytes   414 Mbits/sec                  receiver
+```
+
+```
+octopus04 <-> octopus10
+[  5]   0.00-10.00  sec  1.10 GBytes   943 Mbits/sec    0            sender
+[  5]   0.00-10.00  sec  1.10 GBytes   941 Mbits/sec                  receiver
+```
+
+## Second network interface
+
+o2 is configured
+
+```
+auto lo
+iface lo inet loopback
+
+# 1Gbs
+auto eno1
+allow-hotplug eno1
+iface eno1 inet dhcp
+
+# 10Gbs
+auto ens1f0np0
+iface ens1f0np0 inet dhcp
+```
+
+which routes through the slower eno1.
+
+```
+default via 172.23.16.1 dev eno1
+172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown
+172.23.16.0/21 dev eno1 proto kernel scope link src 172.23.17.63
+172.23.16.0/21 dev ens1f0np0 proto kernel scope link src 172.23.22.159
+
+2: ens1f0np0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    inet 172.23.22.159/21 brd 172.23.23.255 scope global dynamic ens1f0np0
+3: eno1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    inet 172.23.17.63/21 brd 172.23.23.255 scope global dynamic eno1
+```
+
+(get rid of the docker stuff, we don't need it!) Let's try to measure performance from octopus03 using the fast interfaces.
+
+ip route add 172.23.22.159 dev ens1f0np0
+
+## Speedtest-cli
+
+Our upstream UTHSC link appears to be 1Gbs:
+
+```
+/gnu/store/27srpbibq0vzz9vwfsvh7mifa8zdl94d-speedtest-cli-2.1.3/bin/speedtest-cli
+```
+
+From Octopus (on 1Gbs cards)
+
+```
+Testing from The University of Tennessee, Memphis (128.169.2.185)...
+Retrieving speedtest.net server list...
+Selecting best server based on ping...
+Hosted by Rogers Wireless (Gatineau, QC) [1668.65 km]: 75.95 ms
+Testing download speed................................................................................
+Download: 448.62 Mbit/s
+Testing upload speed......................................................................................................
+Upload: 164.59 Mbit/s
+```
+
+From Tuxes (on 10Gbs cards)
+
+```
+Testing from The University of Tennessee, Memphis (128.169.2.185)...
+Retrieving speedtest.net server list...
+Selecting best server based on ping...
+Hosted by Comcast (Little Rock, AR) [212.86 km]: 57.901 ms
+Testing download speed................................................................................
+Download: 933.34 Mbit/s
+Testing upload speed......................................................................................................
+Upload: 262.81 Mbit/s
+```
