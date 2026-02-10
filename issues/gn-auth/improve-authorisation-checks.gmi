@@ -45,8 +45,8 @@ There are different levels any particular user of the Genenetwork system can act
 
 ### Tasks
 
-* [ ] Implement new module/package for check functions
-* [ ] Use new check function(s) in place of raw checks (this can be done incrementally), i.e. changed as the developer(s) work on a module
+* [x] Implement new module/package for check functions: actually just implemented the new functions in an existing module for now.
+* [x] Use new check function(s) in place of raw checks (this can be done incrementally), i.e. changed as the developer(s) work on a module. Found out there isn't a lot of places in gn-auth that the checks are used. Good to have them around though.
 * [ ] Explore Python's introspection facility and what utility it can be for the authorisation
 * [ ] 
 * [ ] 
