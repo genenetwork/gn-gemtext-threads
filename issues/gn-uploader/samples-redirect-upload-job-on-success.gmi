@@ -7,8 +7,12 @@
 * interested: acenteno
 * keywords: gn-uploader, uploader, background jobs
 * priority: high
-* status: open
+* status: closed, completed
 
 ## Description
 
 Currently, when uploading new samples, when the upload job completes successfully, the job does not redirect back to the samples page, which is a tad confusing to users. Add a fix to ensure that the job redirects appropriately.
+
+## Fix
+
+=> https://git.genenetwork.org/gn-uploader/commit/?id=dab64dd96739a8cc397ab872f4e4a6ad6ea0fcd3
