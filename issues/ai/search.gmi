@@ -123,16 +123,20 @@ I provided mapping between prefix and namespace to teach the model how to genera
 ### Design a proper JSON output format for the system
 
 It is extremely useful to control the system by defining an output format. This should also help parse output to other tools when the time comes.
-Reviewing the options:
+
+Reviewing the options...
+
 - Asking the LLM to format its output as JSON is one way
+
 I could just let the LLM format the output as JSON. But the JSON generated might not be valid.
 
 - Passing JSON format as example in prompt
+
 Another option is to predefine the format of the JSON and pass it in the prompt to the system. Also, some models might deviate from the instructions.
 
 - Defining a schema
-Finally, I could define an output schema the LLM needs to comply to.
-DSPy offers an adapter (JSONAdapter) that facilitates its implementation. This is regardless of the model used with the system.
+
+Finally, I could define an output schema the LLM needs to comply to. DSPy offers an adapter (JSONAdapter) that facilitates its implementation. This is regardless of the model used with the system.
 
 I decided to go for the last option because of robustness. I created a schema using pydantic BaseModel and used with the DSPy predictor as below:
 
