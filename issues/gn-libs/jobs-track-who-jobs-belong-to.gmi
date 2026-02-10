@@ -2,7 +2,7 @@
 
 ## Tags
 
-* status: open
+* status: closed, completed
 * priority: medium
 * type: enhancement
 * assigned: fredm, zsloan
@@ -21,3 +21,13 @@ This issue will track the introduction of such tracking. This will enable the bu
 ## Related Issues
 
 => /issues/gn-libs/jobs-allow-job-cascades
+
+
+## Fixes
+
+=> https://git.genenetwork.org/gn-libs/commit/?id=63ad52c70bf32ca46ccd4ca6010e2aaa434c0344
+=> https://git.genenetwork.org/gn-libs/commit/?id=5eaafdabf0e22b04907d6639600d2270211c4da5
+=> https://git.genenetwork.org/gn-libs/commit/?id=0c1a27ec9d27cf2fefe47386ddf39d23a50f3628
+=> https://git.genenetwork.org/gn-libs/commit/?id=7b12d6f0180fb8e807f2854689abf5fa682e5a1e
+=> https://git.genenetwork.org/gn-libs/commit/?id=b1f8f05a451e161c769f33e973e629d6266cfc64
+=> https://git.genenetwork.org/gn-libs/commit/?id=5f977e69b46e0ee99845fb69d504f299dc7429a1
