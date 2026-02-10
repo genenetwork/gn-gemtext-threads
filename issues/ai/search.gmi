@@ -29,7 +29,7 @@ Related tasks:
 We need fan-out to GN-specific pages.  Related to task listed below in ⁰
 
 * [X] (johannesm, bonfacem) Design a proper JSON output format for the system
-* [ ] ⁰(johannesm, bonfacem) Teach model how to build link to trait result page in CD
+* [X] ⁰(johannesm, bonfacem) Teach model how to build link to trait result page in CD
 * [ ] (johannesm, bonfacem) Extend / Modify (directly use sparql) corpus to molecular traits (later genotypes, precompute data and RIFs).
 * [ ] (johannesm, bonfacem) Have a sync on build of xapian search. We want to teach the LLM how to build a xapian search so that the user has a fallback
 * [ ] (johannesm, ! bonfacem) Add REST API for processing answers from AI processing.
@@ -191,3 +191,53 @@ geoSeries => http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc
 ```
 
 
+### Teach model how to build link to trait result page in CD
+
+From conversations with Bonz, trait id and dataset are coded and link to the result page. We can leverage that to teach the system how to build CD link when it has access to the trait id and the dataset name for a specific trait in GN.
+
+RDF codes trait as "dataset name" + "trait id" under a specific namespace.
+
+Example: https://rdf.genenetwork.org/v1/id/trait_BXDPublish_16339
+
+This specific trait has an id of 16339 in the BXDPublish GN table (dataset name).
+
+The corresponding link in CD to the Trait result page is: https://cd.genenetwork.org/show_trait?trait_id=16339&dataset=BXDPublish
+
+It is just a matter of replacing the trait id and the dataset name in the URL parameters.
+
+The only ways (at least those I can think of) to get an LLM make that substitution in the URL is through prompt engineering and model finetuning. Model finetuning seems a bit too much given that we only want to modify a few links in the output. In addition, it is very expensive. On the other hand, prompt engineering is quick to implement. I am going to provide examples like the previous one in the system prompt to help LLM translate RDF links for traits to valid CD links to trait result page.
+
+New system prompt:
+```
+You excel at addressing search query using the context you have. You do not make mistakes.
+Extract answers to the query from the context and provide links associated with each RDF entity.
+To build links you must replace RDF prefixes by namespaces.
+Here is the mapping of prefixes and namespaces:
+gn => http://rdf.genenetwork.org/v1/id
+gnc => http://rdf.genenetwork.org/v1/category
+owl => http://www.w3.org/2002/07/owl
+gnt => http://rdf.genenetwork.org/v1/term
+skos = http://www.w3.org/2004/02/skos/core
+xkos => http://rdf-vocabulary.ddialliance.org/xkos
+rdf => http://www.w3.org/1999/02/22-rdf-syntax-ns
+rdfs => http://www.w3.org/2000/01/rdf-schema
+taxon => http://purl.uniprot.org/taxonomy
+dcat => http://www.w3.org/ns/dcat
+dct => http://purl.org/dc/terms
+xsd => http://www.w3.org/2001/XMLSchema
+sdmx-measure => http://purl.org/linked-data/sdmx/2009/measure
+qb => http://purl.org/linked-data/cube
+pubmed => http://rdf.ncbi.nlm.nih.gov/pubmed
+v => http://www.w3.org/2006/vcard/ns
+foaf => http://xmlns.com/foaf/0.1
+geoSeries => http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc
+
+Link pointing to specific trait should be translated to CD links using the trait id and the dataset name.
+Original trait link: https://rdf.genenetwork.org/v1/id/trait_BXDPublish_16339
+Trait id: 16339
+Dataset name: BXDPublish
+New trait link: https://cd.genenetwork.org/show_trait?trait_id=16339&dataset=BXDPublish
+\n
+```
+
+This was enough to get the system return valid CD links with Claude models :)
