@@ -1,0 +1,14 @@
+# Samples: ...
+
+## Tags
+
+* type: bug, improvement
+* assigned: fredm
+* interested: acenteno
+* keywords: gn-uploader, uploader, background jobs
+* priority: high
+* status: open
+
+## Description
+
+Currently, when uploading new samples, when the upload job completes successfully, the job does not redirect back to the samples page, which is a tad confusing to users. Add a fix to ensure that the job redirects appropriately.
