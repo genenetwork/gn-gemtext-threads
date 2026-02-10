@@ -28,9 +28,9 @@ Related tasks:
 
 We need fan-out to GN-specific pages.  Related to task listed below in ⁰
 
-* [ ] (johannesm, bonfacem) Extend / Modify (directly use sparql) corpus to molecular traits (later genotypes, precompute data and RIFs).
-* [ ] (johannesm, bonfacem) Design a proper output format for the system - JSON
+* [X] (johannesm, bonfacem) Design a proper JSON output format for the system
 * [ ] ⁰(johannesm, bonfacem) Teach model how to build link to trait result page in CD
+* [ ] (johannesm, bonfacem) Extend / Modify (directly use sparql) corpus to molecular traits (later genotypes, precompute data and RIFs).
 * [ ] (johannesm, bonfacem) Have a sync on build of xapian search. We want to teach the LLM how to build a xapian search so that the user has a fallback
 * [ ] (johannesm, ! bonfacem) Add REST API for processing answers from AI processing.
 * [ ] (pjotr) Ask about DNS name to test out AI search in GN2/3
@@ -79,7 +79,7 @@ gnt:family is/has rdfs:domain gnc:set . ", "gnt:short_name is/has a owl:ObjectPr
 
 ### Design RAG
 
-I built a simple RAG system that answers a question based on a corpus. Given the fragility of LLM system, I leveraged dspy framework. This should also make it easy to switch between proprietary and open models.
+I built a simple RAG system that answers a question based on a corpus. Given the fragility of LLM system, I leveraged DSPy. This should also make it easy to switch between proprietary and open models.
 
 You can inspect full implementation details at:
 => https://github.com/genenetwork/gn-ai/blob/main/ai_search/src/rag.py
@@ -118,3 +118,72 @@ Do not make any mistakes.
 ```
 
 I provided mapping between prefix and namespace to teach the model how to generate the URLs. I will probably have to do a number of experimentations :)
+
+
+### Design a proper JSON output format for the system
+
+It is extremely useful to control the system by defining an output format. This should also help parse output to other tools when the time comes.
+Reviewing the options:
+- Asking the LLM to format its output as JSON is one way
+I could just let the LLM format the output as JSON. But the JSON generated might not be valid.
+
+- Passing JSON format as example in prompt
+Another option is to predefine the format of the JSON and pass it in the prompt to the system. Also, some models might deviate from the instructions.
+
+- Defining a schema
+Finally, I could define an output schema the LLM needs to comply to.
+DSPy offers an adapter (JSONAdapter) that facilitates its implementation. This is regardless of the model used with the system.
+
+I decided to go for the last option because of robustness. I created a schema using pydantic BaseModel and used with the DSPy predictor as below:
+
+```
+class Information(BaseModel):
+    """Extract relevant information for query"""
+    answer: str = Field(description="Specific point addressing the query from the context")
+    links: List[str] = Field(description="All links associated to RDF entities related to the point")
+
+class ListInformation(BaseModel):
+    """Address recursively a query"""
+    detailed_answers: List[Information] = Field(description="List of answers to the query")
+    final_answer: str = Field(description="Synthesized and comprehensive answer using detailed answers")
+
+class Generate(dspy.Signature):
+    """Wrap generation interface"""
+    context: list = dspy.InputField(desc="Background information")
+    input_text: str = dspy.InputField(desc="Query and instructions")
+    feedback: ListInformation = dspy.OutputField(desc="System response to the query")
+
+```
+
+See the workings at:
+=> https://github.com/genenetwork/gn-ai/blob/main/ai_search/src/config.py
+
+I also iterated on the system prompt. Now it is:
+
+```
+You excel at addressing search query using the context you have. You do not mistakes.
+Extract answers to the query from the context and provide links associated with each RDF entity.
+To build links you must replace RDF prefixes by namespaces.
+Here is the mapping of prefixes and namespaces:
+gn => http://rdf.genenetwork.org/v1/id
+gnc => http://rdf.genenetwork.org/v1/category
+owl => http://www.w3.org/2002/07/owl
+gnt => http://rdf.genenetwork.org/v1/term
+skos = http://www.w3.org/2004/02/skos/core
+xkos => http://rdf-vocabulary.ddialliance.org/xkos
+rdf => http://www.w3.org/1999/02/22-rdf-syntax-ns
+rdfs => http://www.w3.org/2000/01/rdf-schema
+taxon => http://purl.uniprot.org/taxonomy
+dcat => http://www.w3.org/ns/dcat
+dct => http://purl.org/dc/terms
+xsd => http://www.w3.org/2001/XMLSchema
+sdmx-measure => http://purl.org/linked-data/sdmx/2009/measure
+qb => http://purl.org/linked-data/cube
+pubmed => http://rdf.ncbi.nlm.nih.gov/pubmed
+v => http://www.w3.org/2006/vcard/ns
+foaf => http://xmlns.com/foaf/0.1
+geoSeries => http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc
+\n
+```
+
+
