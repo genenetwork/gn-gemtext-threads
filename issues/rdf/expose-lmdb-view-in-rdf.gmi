@@ -76,7 +76,7 @@ curl http://127.0.0.1:8091/dataset/bxd-publish/values/10002.json
 * [ ] Individual Strains.
 * [ ] (GEMMA/ Rqtl) Compute data.
 
-## Probeset strains
+## Probeset / strains
 * [X] (bonfacem) Create a directory for Alex to work against.
 * [ ] (alexm) Create an lmdb view with a dataset that has the largest N-row x N-columns view.   See output.   Small experiment with correlations.
 * [ ] Mount LMDB_DATA_PATH to another partition because of "size" constraints(?)

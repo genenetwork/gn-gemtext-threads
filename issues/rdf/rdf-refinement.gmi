@@ -307,7 +307,7 @@ MariaDB [db_webqtl]> select count(*) from ProbeSetXRef;
 
 We can get away with tx'ing ProbeSet in one go.   However, file size gets too big and rapper complains about it.   Instead, figure out a way to tx ProbeSetXRef in chunks.   Note: total transform times averages at about ~21 mins.   With probesets/probesetxref, that will balloon upto >1hr.   Not worried about optimising things now.    That can be worked out for later.  Building the probeset table only takes 105m12.350s.  With the short form syntax, the size goes from 5G to 4G.
 
-* [ ] Have chunked transforms of huge data.
+* [X] Have chunked transforms of huge data.
 * [ ] ProbeSetXRef
 * [ ] (w/ Johannesm/pjotrp/rob) What columns to put into RDF.   We have 72 rows ATM:
 
@@ -334,6 +334,7 @@ MariaDB [db_webqtl]> SELECT COUNT(*) AS column_count
 
 ## Post Mark-up
 * [ ] ! Generate a list of data older than 2020 and ping Rob/Pjotr.
+* [ ] Improve tx times for very large data.
 * [ ] (w/Alex) Revisit data privacy in the LMDB view.
 * [-] (Cancelled) Re-visit how we store all HTML metadata.   Clean this up.
 * [ ] Sync mariadb tux01 with tux02; have rdf.genenetwork.org be the latest.
