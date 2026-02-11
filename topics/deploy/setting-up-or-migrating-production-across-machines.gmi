@@ -133,6 +133,8 @@ This binding must be READWRITE within the container.
 
 Holds temporary files for the various services that run within the container. Some of the generated files from various services are also stored here.
 
+These files should be safe to delete between container restarts.
+
 **PROPOSAL**: Move all generated files here, or have a dedicated directory for holding generated files?
 
 
