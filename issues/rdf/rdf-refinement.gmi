@@ -326,6 +326,7 @@ MariaDB [db_webqtl]> SELECT COUNT(*) AS column_count
 * [ ] (w/ Alex) ProbeSetData
 * [X] RIF
 * [-] (cancelled) Gene Symbols
+* [ ] Make, in gn-guile, probeset URLs resolvable E.g. https://rdf.genenetwork.org/v1/id/probeset100_9332324_MZ
 
 ## GN Ontology
 
