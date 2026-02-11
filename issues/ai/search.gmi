@@ -241,3 +241,47 @@ New trait link: https://cd.genenetwork.org/show_trait?trait_id=16339&dataset=BXD
 ```
 
 This was enough to get the system return valid CD links with Claude models :)
+
+Here is an example.
+
+```
+Query: What are the traits related to the BXD?
+
+System feedback:
+{
+    "detailed_answers": [
+        {
+            "answer": "BXD_16337 is a trait related to BXDPublish dataset. It measures Intraocular pressure (IOP) in 1 to 2 months old BXD mice of both sexes, with an average of left and right eyes. The trait has a mean value of 15.27684536576271 mmHg.",                                                                                                                   
+            "links": [
+                "https://cd.genenetwork.org/show_trait?trait_id=16337&dataset=BXDPublish"
+            ]
+        },
+        {
+            "answer": "BXD_16338 is a trait related to BXDPublish dataset. It measures Intraocular pressure (IOP) in 2.1 to 5 months old BXD mice of both sexes, with an average of left and right eyes. The trait has a mean value of 16.091910903133563 mmHg.",                                                                                                                
+            "links": [
+                "https://cd.genenetwork.org/show_trait?trait_id=16338&dataset=BXDPublish"
+            ]
+        },
+        {
+            "answer": "BXD_16339 is a trait related to BXDPublish dataset. It measures Intraocular pressure (IOP) in 5.1 to 9 months old BXD mice of both sexes, with an average of left and right eyes. The trait has a mean value of 16.563036555975255 mmHg.",                                                                                                                
+            "links": [
+                "https://cd.genenetwork.org/show_trait?trait_id=16339&dataset=BXDPublish"
+            ]
+        },
+        {
+            "answer": "BXD_16340 is a trait related to BXDPublish dataset. It measures Intraocular pressure (IOP) in 9.1 to 13 months old BXD mice of both sexes, with an average of left and right eyes. The trait has a mean value of 15.659858761411725 mmHg.",                                                                                                               
+            "links": [
+                "https://cd.genenetwork.org/show_trait?trait_id=16340&dataset=BXDPublish"
+            ]
+        },
+        {
+            "answer": "BXD_16342 is a trait related to BXDPublish dataset. It measures Intraocular pressure (IOP) across all ages (1 to 30 months old) in BXD mice of both sexes, with an average of left and right eyes. The trait has a mean value of 15.797181273159916 mmHg.",                                                                                               
+            "links": [
+                "https://cd.genenetwork.org/show_trait?trait_id=16342&dataset=BXDPublish"
+            ]
+        }
+    ],
+    "final_answer": "The BXDPublish dataset contains multiple traits related to Intraocular pressure (IOP) measurements in BXD mice. These include: BXD_16337 (IOP in 1-2 months old mice, mean 15.28 mmHg), BXD_16338 (IOP in 2.1-5 months old mice, mean 16.09 mmHg), BXD_16339 (IOP in 5.1-9 months old mice, mean 16.56 mmHg), BXD_16340 (IOP in 9.1-13 months old mice, mean 15.66 mmHg), and BXD_16342 (IOP across all ages 1-30 months, mean 15.80 mmHg). All measurements are from both sexes and represent averages of left and right eyes."                     
+}
+
+```
