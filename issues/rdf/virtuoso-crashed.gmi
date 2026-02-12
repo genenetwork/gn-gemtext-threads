@@ -1,0 +1,57 @@
+# Virtuoso Crash Inside Container
+
+* assigned: bonfacem
+* status: in-progress
+
+## Description
+
+* No access to any of the rdf end-points nor the exposed sparql end-point:
+
+```
+╭─munyoki@saitama ~
+╰─➤  curl -Ia https://rdf.genenetwork.org/sparql
+HTTP/1.1 502 Bad Gateway
+Server: nginx
+Date: Thu, 12 Feb 2026 02:46:36 GMT
+Content-Type: text/html
+Content-Length: 150
+Connection: keep-alive
+
+╭─munyoki@saitama ~
+╰─➤  curl -Ia https://rdf.genenetwork.org/v1/id/probeset100_9332324_MZ
+HTTP/1.1 404 Not Found
+Server: nginx
+Date: Thu, 12 Feb 2026 02:47:40 GMT
+Content-Type: text/plain;charset=utf-8
+Content-Length: 49
+Connection: keep-alive
+```
+
+* NGINX error log:
+
+```
+connect() failed (111: Connection refused) while connecting to upstream
+upstream: "http://127.0.0.1:9082/sparql"
+```
+Not an NGINX problem.
+
+## Resolution
+
+From virtuoso error logs:
+
+```
+root@genenetwork-development /# tail -f /var/lib/virtuoso/virtuoso-errors.log
+01:59:35 GPF: Dkernel.c:5799 Server is out of memory and should be killed to prevent data corruption.
+
+                Thu Feb 12 2026
+02:12:21 GPF: Dkernel.c:5799 Server is out of memory and should be killed to prevent data corruption.
+
+                Thu Feb 12 2026
+02:28:16 GPF: Dkernel.c:5799 Server is out of memory and should be killed to prevent data corruption.
+
+                Thu Feb 12 2026
+03:04:12 GPF: Dkernel.c:5799 Server is out of memory and should be killed to prevent data corruption.
+
+                Thu Feb 12 2026
+03:11:27 GPF: Dkernel.c:5799 Server is out of memory and should be killed to prevent data corruption.
+```
