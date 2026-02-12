@@ -92,5 +92,6 @@ we see that a roll forward (when replaying transactions) failed with memory erro
 03:29:46 /gnu/store/yj053cys0724p7vs9kir808x7fivz17m-glibc-2.41/lib/libc.so.6(__libc_start_main+0x85) [0x7f625e9a7c95]
 03:29:46 /gnu/store/9q2cf45fslxidvnp9r7b4l4cpij5fbfc-virtuoso-ose-7.2.15/bin/virtuoso-t() [0x40dea1]
 03:29:46 GPF: Dkernel.c:5799 Server is out of memory and should be killed to prevent data corruption.
-GPF: Dkernel.c:5799
+GPF: Dkernel.c:5799 Server is out of memory and should be killed to prevent data corruption.
+Segmentation fault
 ```
