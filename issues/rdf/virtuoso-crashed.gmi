@@ -1,7 +1,7 @@
 # Virtuoso Crash Inside Container
 
 * assigned: bonfacem
-* status: in-progress
+* status: closed
 
 ## Description
 
@@ -95,3 +95,15 @@ we see that a roll forward (when replaying transactions) failed with memory erro
 GPF: Dkernel.c:5799 Server is out of memory and should be killed to prevent data corruption.
 Segmentation fault
 ```
+=> https://vos.openlinksw.com/owiki/wiki/VOS/VirtRDFPerformanceTuning Virtuoso Performance Tuning
+
+
+Inside the container, to emulate the crash:
+
+```
+root@genenetwork-development /# /gnu/store/9q2cf45fslxidvnp9r7b4l4cpij5fbfc-virtuoso-ose-7.2.15/bin/virtuoso-t +debug +foreground +configfile /export/data/lmdb/virtuoso.ini
+```
+
+For now, re-built our triple stores from scratch; and backed up the old files to a back-up location.
+
+* closed
