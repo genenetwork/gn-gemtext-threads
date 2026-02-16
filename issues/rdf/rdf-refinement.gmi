@@ -326,7 +326,7 @@ MariaDB [db_webqtl]> SELECT COUNT(*) AS column_count
 * [ ] (w/ Alex) ProbeSetData
 * [X] RIF
 * [-] (cancelled) Gene Symbols
-* [ ] Make, in gn-guile, probeset URLs resolvable E.g. https://rdf.genenetwork.org/v1/id/probeset100_9332324_MZ
+* [X] Make, in gn-guile, probeset URLs resolvable E.g. https://rdf.genenetwork.org/v1/id/probeset100_9332324_MZ
 
 ## GN Ontology
 
@@ -339,4 +339,4 @@ MariaDB [db_webqtl]> SELECT COUNT(*) AS column_count
 * [ ] (w/Alex) Revisit data privacy in the LMDB view.
 * [-] (Cancelled) Re-visit how we store all HTML metadata.   Clean this up.
 * [ ] Sync mariadb tux01 with tux02; have rdf.genenetwork.org be the latest.
-* [ ] Make sure that the rdf.genenetwork.org named graph is available on public end-point (mention to Fred about the nuance of moving to a new graph without breaking CD/Prod from old code that used the old genenetwork.org graph).
+* [X] Make sure that the rdf.genenetwork.org named graph is available on public end-point (mention to Fred about the nuance of moving to a new graph without breaking CD/Prod from old code that used the old genenetwork.org graph).
