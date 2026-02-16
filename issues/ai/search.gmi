@@ -53,6 +53,7 @@ LIMIT 10;
 ```
 
 
+* [ ] (johannesm, bonface) Package AI search so that it can be called from any GN code
 * [ ] (johannesm, bonfacem) Extend / Modify (directly use sparql) corpus to molecular traits (later genotypes, precompute data and RIFs).
 * [ ] (johannesm, bonfacem) Have a sync on build of xapian search. We want to teach the LLM how to build a xapian search so that the user has a fallback
 * [ ] (johannesm, ! bonfacem) Add REST API for processing answers from AI processing.
@@ -312,3 +313,10 @@ System feedback:
 }
 
 ```
+
+### Package AI search
+
+Next thing we want to do is packaging. Previous setup had logic and execution codes mixed. I cleaned that by moving all execution codes to `main.py`. Check it out at:
+=> https://github.com/genenetwork/gn-ai/blob/main/ai_search/src/main.py
+
+Now that everything is well modularized I can attempt to packaging :)
