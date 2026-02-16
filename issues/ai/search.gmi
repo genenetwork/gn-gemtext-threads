@@ -30,6 +30,29 @@ We need fan-out to GN-specific pages.  Related to task listed below in ⁰
 
 * [X] (johannesm, bonfacem) Design a proper JSON output format for the system
 * [X] ⁰(johannesm, bonfacem) Teach model how to build link to trait result page in CD
+* [X] (bonfacem) Sparql query to fetch phenotypes and dataset metadata.
+Dataset metadata for a given phenotype.
+
+```
+SPARQL
+PREFIX gn:  <http://rdf.genenetwork.org/v1/id/>
+PREFIX gnc: <http://rdf.genenetwork.org/v1/category/>
+PREFIX gnt: <http://rdf.genenetwork.org/v1/term/>
+
+SELECT ?phenotype_dataset
+       (GROUP_CONCAT(DISTINCT CONCAT(STR(?p), " = ", STR(?o)); separator=" | ") AS ?metadata)
+FROM <http://rdf.genenetwork.org/v1>
+WHERE {
+  ?set gnt:has_phenotype_data ?phenotype_dataset .
+  ?phenotype_dataset gnt:has_strain ?set ;
+                     ?p ?o .
+}
+GROUP BY ?phenotype_dataset
+LIMIT 10;
+
+```
+
+
 * [ ] (johannesm, bonfacem) Extend / Modify (directly use sparql) corpus to molecular traits (later genotypes, precompute data and RIFs).
 * [ ] (johannesm, bonfacem) Have a sync on build of xapian search. We want to teach the LLM how to build a xapian search so that the user has a fallback
 * [ ] (johannesm, ! bonfacem) Add REST API for processing answers from AI processing.
