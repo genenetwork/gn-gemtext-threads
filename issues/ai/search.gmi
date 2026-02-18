@@ -69,7 +69,7 @@ LIMIT 10;
 Given the extensive training of LLM on text data, a naive approach would be converting the RDF graph related to phenotypes to text. We agreed on that with Bonz.
 
 I wrote something similar some time back for GNAgent:
-=> https://github.com/genenetwork/gn-ai/blob/main/agent_system/utils/rdf2partial_text.py
+=> https://github.com/genenetwork/gn-ai/blob/383f89441d7787023eaf1e2926c0dedca256fe1a/gnagent/utils/rdf2partial_text.py
 
 This script uses ttl files extracted from the SPARQL endpoint. As such, prefixes were replaced with full namespaces in the results.
 
