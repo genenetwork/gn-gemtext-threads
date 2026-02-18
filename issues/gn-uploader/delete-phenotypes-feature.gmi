@@ -2,7 +2,7 @@
 
 ## Tags 
 * assigned: fredm 
-* status: open
+* status: closed, completed
 * priority: high
 * type: feature-request, feature request
 * keywords: uploader, gn-uploader, delete phenotypes, phenotypes
@@ -36,3 +36,7 @@ Record
 ```
 
 These would be the PublishXRef values that link the phenotypes to their data.
+
+### Updates
+
+As of 2026-02-18, this feature is implemented and deployed to production.
