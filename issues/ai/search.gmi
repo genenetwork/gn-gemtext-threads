@@ -319,4 +319,16 @@ System feedback:
 Next thing we want to do is packaging. Previous setup had logic and execution codes mixed. I cleaned that by moving all execution codes to `main.py`. Check it out at:
 => https://github.com/genenetwork/gn-ai/blob/main/ai_search/src/main.py
 
-Now that everything is well modularized I can attempt to packaging :)
+I realized that `main.py` is not a good module name. Changing it to `search.py`. I also take the opportunity to do a few cleaning.
+New code is at:
+=> https://github.com/genenetwork/gn-ai/blob/main/aisearch/src/search.py
+
+Now that everything is well modularized I can attempt to packaging. I used poetry :)
+
+After a number of tests and fixes, I have managed to pull it off. Dependencies can be inspected at:
+=> https://github.com/genenetwork/gn-ai/blob/main/aisearch/pyproject.toml
+
+I also tried uploading to TestPyPI and finally PyPI. Package can now be installed with pip. See documentation:
+=> https://github.com/genenetwork/gn-ai/blob/main/aisearch/README.md
+
+I think AI search (GNAIS) can be loaded as a module in any GeneNetwork code and used, provided that parameters for the search are defined.
