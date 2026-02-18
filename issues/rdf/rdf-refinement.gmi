@@ -69,7 +69,6 @@ mysql> select count(*) FROM InbredSet where Family IS NULL;
 ## Datasets
 
 * [X] gn:datasets->metadata
-* [ ] Share datasets older than 2025 to Rob & Pjotr.
 
 Checking for trait and co-factors:
 
@@ -308,7 +307,7 @@ MariaDB [db_webqtl]> select count(*) from ProbeSetXRef;
 We can get away with tx'ing ProbeSet in one go.   However, file size gets too big and rapper complains about it.   Instead, figure out a way to tx ProbeSetXRef in chunks.   Note: total transform times averages at about ~21 mins.   With probesets/probesetxref, that will balloon upto >1hr.   Not worried about optimising things now.    That can be worked out for later.  Building the probeset table only takes 105m12.350s.  With the short form syntax, the size goes from 5G to 4G.
 
 * [X] Have chunked transforms of huge data.
-* [ ] ProbeSetXRef
+* [X] ProbeSetXRef
 * [ ] (w/ Johannesm/pjotrp/rob) What columns to put into RDF.   We have 72 rows ATM:
 
 ```
