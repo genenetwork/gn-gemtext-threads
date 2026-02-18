@@ -15,5 +15,19 @@ This only happens in CD, not production.  A possible cause for this error might 
 
 => https://github.com/genenetwork/genenetwork2/commit/d2db6da856948a708f408c8c2acafd1718a4e3a5
 
-Maybe related to how temp files are generated from Genenetwork2, and how the TMPDIR is mapped inside the container.
+Issue:
+
+The tables in tux02 are out of sync (from the logs):
+
+```
+2026-02-18 09:29:39   File "/gnu/store/wdfym53rwb6q51mc006c4xfnhqd4q5g5-profile/lib/python3.11/site-packages/MySQLdb/cursors.py", line 179, in execute
+2026-02-18 09:29:39     res = self._query(mogrified_query)
+2026-02-18 09:29:39           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-02-18 09:29:39   File "/gnu/store/wdfym53rwb6q51mc006c4xfnhqd4q5g5-profile/lib/python3.11/site-packages/MySQLdb/cursors.py", line 330, in _query
+2026-02-18 09:29:39     db.query(q)
+2026-02-18 09:29:39   File "/gnu/store/wdfym53rwb6q51mc006c4xfnhqd4q5g5-profile/lib/python3.11/site-packages/MySQLdb/connections.py", line 280, in query
+2026-02-18 09:29:39     _mysql.connection.query(self, query)
+2026-02-18 09:29:39 MySQLdb.OperationalError: (1054, "Unknown column 'PublishXRef.NSamples' in 'field list'")
+
+```
 
