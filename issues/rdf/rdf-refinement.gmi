@@ -343,6 +343,7 @@ SELECT * FROM GenoFreeze WHERE CreateTime < DATE_SUB(CURDATE(), INTERVAL 5 YEAR)
 -- Probesets:
 SELECT * FROM ProbeSetFreeze WHERE CreateTime < DATE_SUB(CURDATE(), INTERVAL 5 YEAR) AND (public < 1 OR confidentiality > 0)\G
 ```
+* [X] Make sparql query in gn-guile faster.
 * [ ] Improve tx times for very large data.
 * [ ] (w/Alex) Revisit data privacy in the LMDB view.
 * [~] (Cancelled) Re-visit how we store all HTML metadata.   Clean this up.
