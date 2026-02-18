@@ -148,8 +148,8 @@ s.Name, i.Name, t.Name, psf.FullName;
 
 * [X] gn:set->gn:dataset (gnt:has_genotype_data)
 * [X] gn:dataset->set (gnt:has_strain)
-* [-] (cancelled) LMDB Data ∀ traits: already have the geno files set-up.
-* [-] (cancelled) gn:set->markers
+* [~] (cancelled) LMDB Data ∀ traits: already have the geno files set-up.
+* [~] (cancelled) gn:set->markers
 
 Markers that belong to more than one species:
 
@@ -308,7 +308,7 @@ We can get away with tx'ing ProbeSet in one go.   However, file size gets too bi
 
 * [X] Have chunked transforms of huge data.
 * [X] ProbeSetXRef
-* [ ] (w/ Johannesm/pjotrp/rob) What columns to put into RDF.   We have 72 rows ATM:
+* [~] (w/ Johannesm/pjotrp/rob) What columns to put into RDF.   We have 72 rows ATM:
 
 ```
 MariaDB [db_webqtl]> SELECT COUNT(*) AS column_count
@@ -322,7 +322,7 @@ MariaDB [db_webqtl]> SELECT COUNT(*) AS column_count
 +--------------+
 1 row in set (0.00 sec)
 ```
-* [ ] (w/ Alex) ProbeSetData
+* [ ] (Alex) ProbeSetData
 * [X] RIF
 * [-] (cancelled) Gene Symbols
 * [X] Make, in gn-guile, probeset URLs resolvable E.g. https://rdf.genenetwork.org/v1/id/probeset100_9332324_MZ
@@ -345,6 +345,6 @@ SELECT * FROM ProbeSetFreeze WHERE CreateTime < DATE_SUB(CURDATE(), INTERVAL 5 Y
 ```
 * [ ] Improve tx times for very large data.
 * [ ] (w/Alex) Revisit data privacy in the LMDB view.
-* [-] (Cancelled) Re-visit how we store all HTML metadata.   Clean this up.
+* [~] (Cancelled) Re-visit how we store all HTML metadata.   Clean this up.
 * [ ] Sync mariadb tux01 with tux02; have rdf.genenetwork.org be the latest.
 * [X] Make sure that the rdf.genenetwork.org named graph is available on public end-point (mention to Fred about the nuance of moving to a new graph without breaking CD/Prod from old code that used the old genenetwork.org graph).
