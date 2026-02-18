@@ -333,7 +333,16 @@ MariaDB [db_webqtl]> SELECT COUNT(*) AS column_count
 * [ ] Add sparql queries as an example.
 
 ## Post Mark-up
-* [ ] ! Generate a list of data older than 2020 and ping Rob/Pjotr.
+* [X] ! Generate a list of data older than 2020 and ping Rob/Pjotr (Discuss adding licences)
+
+```
+-- Phenotypes:
+SELECT * FROM PublishFreeze WHERE CreateTime < DATE_SUB(CURDATE(), INTERVAL 5 YEAR) AND (public < 1 OR confidentiality > 0);
+-- Genotypes:
+SELECT * FROM GenoFreeze WHERE CreateTime < DATE_SUB(CURDATE(), INTERVAL 5 YEAR) AND (public < 1 OR confidentiality > 0);
+-- Probesets:
+SELECT * FROM ProbeSetFreeze WHERE CreateTime < DATE_SUB(CURDATE(), INTERVAL 5 YEAR) AND (public < 1 OR confidentiality > 0)\G
+```
 * [ ] Improve tx times for very large data.
 * [ ] (w/Alex) Revisit data privacy in the LMDB view.
 * [-] (Cancelled) Re-visit how we store all HTML metadata.   Clean this up.
