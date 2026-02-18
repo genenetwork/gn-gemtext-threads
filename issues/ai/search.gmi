@@ -216,7 +216,7 @@ Trait Id and dataset can be linked to a result page. See this URL:
 
 => https://cd.genenetwork.org/show_trait?trait_id=10027&dataset=BXDPublish
 
-Trait id: 10027; dataset name: BXDPublish.  In RDF this is is:
+Trait id: 10027; dataset name: BXDPublish.  In RDF this is:
 
 => https://rdf.genenetwork.org/v1/id/trait_BXDPublish_NOwdrwlHIC
 
