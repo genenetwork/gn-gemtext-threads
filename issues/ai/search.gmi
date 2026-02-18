@@ -90,7 +90,7 @@ for key in tqdm(collection):
 ```
 
 See function corpus_to_docs of:
-=> https://github.com/genenetwork/gn-ai/blob/main/ai_search/src/rag.py
+=> https://github.com/genenetwork/gn-ai/commit/6edd0a8cd997d4d384d880a771f9c2e817888909
 
 Documents look like:
 
@@ -110,7 +110,7 @@ gnt:family is/has rdfs:domain gnc:set . ", "gnt:short_name is/has a owl:ObjectPr
 I built a simple RAG system that answers a question based on a corpus. Given the fragility of LLM system, I leveraged DSPy. This should also make it easy to switch between proprietary and open models.
 
 You can inspect full implementation details at:
-=> https://github.com/genenetwork/gn-ai/blob/main/ai_search/src/rag.py
+=> https://github.com/genenetwork/gn-ai/commit/6edd0a8cd997d4d384d880a771f9c2e817888909
 
 
 ### Create system prompt
@@ -188,7 +188,7 @@ class Generate(dspy.Signature):
 ```
 
 See the workings at:
-=> https://github.com/genenetwork/gn-ai/blob/main/ai_search/src/config.py
+=> https://github.com/genenetwork/gn-ai/commit/be82b4d19e6a56f2fe04872bd65da84d7805d824
 
 I also iterated on the system prompt. Now it is:
 
@@ -317,11 +317,11 @@ System feedback:
 ### Package AI search
 
 Next thing we want to do is packaging. Previous setup had logic and execution codes mixed. I cleaned that by moving all execution codes to `main.py`. Check it out at:
-=> https://github.com/genenetwork/gn-ai/blob/main/ai_search/src/main.py
+=> https://github.com/genenetwork/gn-ai/commit/8193d6adcd210b94de88fbeadeaf4353d6df3923
 
 I realized that `main.py` is not a good module name. Changing it to `search.py`. I also take the opportunity to do a few cleaning.
 New code is at:
-=> https://github.com/genenetwork/gn-ai/blob/main/aisearch/src/search.py
+=> https://github.com/genenetwork/gn-ai/commit/9bbbca60c91a69db66e57688fd7879682ac7ce5b
 
 Now that everything is well modularized I can attempt to packaging. I used poetry :)
 
