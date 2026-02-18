@@ -14,7 +14,7 @@ Related PR on older work:
 
 => https://github.com/genenetwork/genenetwork3/pull/235/changes#diff-78594d414ca0a54ae60255c1c869ce6cf52cfea18569b81f7d6fd3949135a860
 
-* [ ] (bonfacem, alexm) Copy over LMDB files in CD container for LMDB access to work.
+* [X] (bonfacem, alexm) Copy over LMDB files in CD container for LMDB access to work.
 
 ## Phenotypes strains
 Example query to fetch BXD_10007:
@@ -86,9 +86,9 @@ curl http://127.0.0.1:8091/dataset/bxd-publish/values/10002.json
 TODO
 
 ## Post Mark-up
-* [ ] Add g-exp scripts for generating all the data.
-* [ ] Figure out how to add geno-files (or the lmdb view) to RDF.
-* [ ] Replace naming scheme to use new GN RDF naming convention.   See:
+* [ ] (bonfacem) Add g-exp scripts for generating all the data.
+* [ ] (alexm) Figure out how to add geno-files (or the lmdb view) to RDF.
+* [X] Replace naming scheme to use new GN RDF naming convention.   See:
 
 => https://issues.genenetwork.org/issues/rdf/rdf-refinement
 
@@ -101,3 +101,10 @@ Old scheme, combine trait_id (PublishXRef) + Dataset Name (PublishFreeze.Name). 
 New scheme should mimic:
 
 => https://rdf.genenetwork.org/v1/id/trait_BXDPublish_IOP_all_ages
+
+For probesets:
+
+```
+https://genenetwork.org/show_trait?trait_id=4304920&dataset=UMUTAffyExon_0209_RMA
+gnd:UMUTAffyExon_0209_RMA_4304920.json
+```
