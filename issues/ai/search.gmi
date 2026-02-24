@@ -306,6 +306,7 @@ System feedback:
 }
 
 ```
+Note: For local models e.g. meta-llama/Llama-3.1-8B-Instruct have a high probability of returning broken JSON.
 
 ### Package AI search
 
