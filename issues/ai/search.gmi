@@ -53,14 +53,15 @@ LIMIT 10;
 ```
 
 
-* [ ] (johannesm, bonface) Package AI search so that it can be called from any GN code
-* [ ] (johannesm, bonfacem) Extend / Modify (directly use sparql) corpus to molecular traits (later genotypes, precompute data and RIFs).
-* [ ] (johannesm, bonfacem) Have a sync on build of xapian search. We want to teach the LLM how to build a xapian search so that the user has a fallback
+* [X] (johannesm, bonfacem) Package AI search so that it can be called from any GN code.  Packaging done in PyPi.  Minor fixes: bumped down python deps to 3.11 instead of 3.12.
+* [ ] (bonfacem) Fix poetry build for (Munyoki's) local dev.
 * [ ] (johannesm, ! bonfacem) Add REST API for processing answers from AI processing.
-* [-] (pjotr) (WIP) Ask about DNS name to test out AI search in GN2/3; Note: Follow up later.
+* [X] (pjotr) (WIP) Ask about DNS name to test out AI search in GN2/3; Note: Follow up later.
 * [ ] (johannes, bonfacem) Do UI work to integrate above search in GN mainline.   No auth (security: use secret keys, setting up auth - maybe - for later).
 
 ## Later (Genotypes/ Molecular Traits)
+* [ ] (johannesm, bonfacem) Extend / Modify (directly use sparql) corpus to molecular traits (later genotypes, precompute data and RIFs).
+* [ ] (johannesm, bonfacem) Have a sync on build of xapian search. We want to teach the LLM how to build a xapian search so that the user has a fallback
 * [ ] (johannesm, bonface) Add genotype data
 * [ ] (johannesm, bonfacem, pjotrp) Add pre-compute data to RDF / AI-Agent
 
