@@ -76,7 +76,7 @@ curl "http://localhost:5000/api/v1/search?q=point%20me%20to%20useful%20phenotype
 * [ ] (johannesm, bonfacem) Extend / Modify (directly use sparql) corpus to molecular traits (later genotypes, precompute data and RIFs).
 * [ ] (johannesm, bonfacem) Have a sync on build of xapian search. We want to teach the LLM how to build a xapian search so that the user has a fallback
 * [ ] (johannesm, bonface) Add genotype data
-* [ ] (johannesm, bonfacem, pjotrp) Add pre-compute data to RDF / AI-Agent
+* [ ] (johannesm, bonfacem, pjotrp) Add pre-compute data to RDF / AI-Agent.   Note: keep pre-compute data at Pj's virtuoso node.  Enable federation so that Bonz' and Pj's nodes can talk to each other over federation.
 
 ### Build search corpus wth phenotype metadata
 
