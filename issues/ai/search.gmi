@@ -77,6 +77,7 @@ curl "http://localhost:5000/api/v1/search?q=point%20me%20to%20useful%20phenotype
 * [ ] (johannesm, bonfacem) Have a sync on build of xapian search. We want to teach the LLM how to build a xapian search so that the user has a fallback
 * [ ] (johannesm, bonface) Add genotype data
 * [ ] (johannesm, bonfacem, pjotrp) Add pre-compute data to RDF / AI-Agent.   Note: keep pre-compute data at Pj's virtuoso node.  Enable federation so that Bonz' and Pj's nodes can talk to each other over federation.
+* [ ] (bonfacem) Plug in sheepdog to monitor gnais.   What happens when we run out of tokens?
 
 ### Build search corpus wth phenotype metadata
 
