@@ -54,10 +54,23 @@ LIMIT 10;
 
 
 * [X] (johannesm, bonfacem) Package AI search so that it can be called from any GN code.  Packaging done in PyPi.  Minor fixes: bumped down python deps to 3.11 instead of 3.12.
-* [ ] (bonfacem) Fix poetry build for (Munyoki's) local dev.
-* [ ] (johannesm, ! bonfacem) Add REST API for processing answers from AI processing.
-* [X] (pjotr) (WIP) Ask about DNS name to test out AI search in GN2/3; Note: Follow up later.
-* [ ] (johannes, bonfacem) Do UI work to integrate above search in GN mainline.   No auth (security: use secret keys, setting up auth - maybe - for later).
+* [X] (bonfacem) Fix poetry build for (Munyoki's) local dev.  See:
+=> https://github.com/genenetwork/gn-ai/pull/1
+* [X] (johannesm, ! bonfacem) Add REST API for processing answers from AI processing.
+=> https://github.com/genenetwork/gn-ai/pull/2
+
+Example query over curl:
+```
+curl "http://localhost:5000/api/v1/search?q=Does%20diabetes%20occur%20naturally%20in%20rats%3F"
+curl "http://localhost:5000/api/v1/search?q=point%20me%20to%20useful%20phenotypes%20that%20cause%20ADHD%3F"
+```
+* [X] (pjotr) Ask about DNS name to test out AI search in GN2/3; Note: Follow up later.
+* [ ] (bonfacem, johannesm) Rewrite `rdf2partial_text.py` to query virtuoso.
+* [ ] (bonfacem) Add cache layer for faster resp times for same questions.
+* [ ] (bonfacem) Figure out bare-bones auth to make gn2 talk to gnais
+* [ ] (johannesm, bonfacem) Build UI over above REST endpoints.
+* [ ] Add Nginx blocks for AI search app.
+
 
 ## Later (Genotypes/ Molecular Traits)
 * [ ] (johannesm, bonfacem) Extend / Modify (directly use sparql) corpus to molecular traits (later genotypes, precompute data and RIFs).
@@ -326,4 +339,4 @@ AI search (GNAIS) can be loaded as a module in any GeneNetwork code and used, pr
 
 ## For Later (Nice To Haves)
 
-* [ ] (bonfacem) Add package to guix-bioinformatics.   Questions: langchain support?
+* [~] (bonfacem) Add package to guix-bioinformatics.   Questions: langchain support? Cancelled.   Poor guix support for AI libraries.   We work with pip+pyproject for now.
