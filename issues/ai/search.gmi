@@ -66,7 +66,8 @@ curl "http://localhost:5000/api/v1/search?q=point%20me%20to%20useful%20phenotype
 ```
 * [X] (pjotr) Ask about DNS name to test out AI search in GN2/3; Note: Follow up later.
 * [ ] (bonfacem, johannesm) Rewrite `rdf2partial_text.py` to query virtuoso.
-* [ ] (bonfacem) Add cache layer for faster resp times for same questions.
+* [X] (bonfacem) Add cache layer for faster resp times for same questions.  Note: TTL = 1 week.
+* [X] (bonfacem) Add rate-limiting.  Note: 300 reqs/day.
 * [ ] (bonfacem) Figure out bare-bones auth to make gn2 talk to gnais
 * [ ] (johannesm, bonfacem) Build UI over above REST endpoints.
 * [ ] Add Nginx blocks for AI search app.
