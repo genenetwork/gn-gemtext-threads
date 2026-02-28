@@ -1,0 +1,357 @@
+# Moosefs
+
+We use moosefs as a network distributed storage system with redundancy. The setup is to use SSDs for fast access and spinning storage for redundancy/backups (in turn these are in RAID5 configuration). In addition we'll experiment with a non-redundant fast storage access using the fastest drives and network connections.
+
+We have three storage classes:
+
+* 2CP - one copy on SSD and one on RAID5 spinning HDD (default)
+* scratch - one copy on SSD
+* raid5 - one copy on RAID5 spinning HDDs
+
+For *labels* we have an R class for redundant (very slow) SSDs. So, S=SSD, H=HDD, F=fast SSD and R=slow SSD.
+
+# Numbers
+
+* 20250109 - Copying data from Lizard to current Moosefs (H,S) goes at about 0.3TB/h (300GB/h or 80MB/s).
+
+# Configuration
+
+## Ports
+
+We should use different ports than lizard. Lizard uses 9419-24 by default. So let's use
+9519- ports.
+
+* 9519 for moose meta logger
+* 9520 for chunk server connections
+* 9521 for mount connections
+* 9522 for slow HDD chunks (H:HDD)
+* 9523 for replicating SSD chunks (S:SSD)
+* 9524 for fast non-redundant SSD chunks (F:FAST)
+* 9525 for redundant SSD chunks (R:SSD slow)
+
+## Topology
+
+Moosefs uses topology to decide where to fetch data. We can host the slow spinning HDD drives in a 'distant' location, so that data is fetched last.
+
+## Disks
+
+Some disks are slower than others. To test we can do:
+
+```
+root@octopus03:/export# dd if=/dev/zero of=test1.img bs=1G count=1
+1+0 records in
+1+0 records out
+1073741824 bytes (1.1 GB, 1.0 GiB) copied, 2.20529 s, 487 MB/s
+/sbin/sysctl -w vm.drop_caches=3
+root@octopus03:/export#  dd if=test1.img of=/dev/null bs=1G count=1
+1+0 records in
+1+0 records out
+1073741824 bytes (1.1 GB, 1.0 GiB) copied, 0.649035 s, 1.7 GB/s
+rm test1.img
+```
+
+Above is on a RAID5 setup. Other typical values are:
+
+```
+                       Write         Read
+Octopus Dell NVME      1.2 GB/s      2.0 GB/s
+Octopus03 RAID5        487 MB/s      1.7 GB/s
+Octopus01 RAID5        127 MB/s      163 MB/s
+Samsung SSD 870        408 MB/s      565 MB/s
+ST5000LM000-2AN1       103 MB/s      127 MB/s
+```
+
+```
+mfs#octopus03:9521   3.7T  4.0G  3.7T   1% /moosefs-fast
+```
+
+## Command line
+
+```
+. /usr/local/guix-profiles/moosefs/etc/profile
+mfscli -H octopus03 -P 9521 -SCS
+```
+
+## Scripting
+
+On the head node we can copy files across all nodes. After adding the IP to mfsexports.cfg run the moose mount script:
+
+```
+export PATH=$PATH:/usr/sbin:/sbin
+apt-get install rsync passwd sudo
+mkdir /etc/mfs
+groupadd -g 52 mfs
+useradd -u 52 -g 52 -M -s /usr/sbin/nologin mfs
+mkdir /moosefs
+chown mfs:mfs /moosefs
+# Update exports on octopus04
+./copy-to-node.sh tux06
+systemctl enable moosefs-mount
+systemctl start moosefs-mount
+
+```
+
+Same for chunk server:
+
+```
+mkdir /var/lib/mfs
+chown mfs:mfs /var/lib/mfs
+./run-node.sh tux06 'systemctl start moosefs-chunkserver-ssd'
+```
+
+## Config
+
+```
+root@octopus03:/etc/mfs# diff example/mfsexports.cfg.sample mfsexports.cfg
+2c2,4
+< *                     /       rw,alldirs,admin,maproot=0:0
+---
+> 172.23.21.0/24                       /       rw,alldirs,maproot=0,ignoregid
+> 172.23.22.0/24                       /       rw,alldirs,maproot=0,ignoregid
+> 172.23.17.0/24                       /       rw,alldirs,maproot=0,ignoregid
+```
+
+Note above exports should be made IP speficic.
+
+```
+root@octopus03:/etc/mfs# diff example/mfsmaster.cfg.sample mfsmaster.cfg
+4a5,10
+> ## Only one metadata server in LizardFS shall have 'master' personality.
+> PERSONALITY = master
+>
+> ## Password for administrative connections and commands.
+> ADMIN_PASSWORD = nolizard
+>
+6c12
+< # WORKING_USER = nobody
+---
+> WORKING_USER = mfs
+9c15
+< # WORKING_GROUP =
+---
+> WORKING_GROUP = mfs
+27c33
+< # DATA_PATH = /gnu/store/yg0xb1g9mls04h4085kmfbbg8z36a7c2-moosefs-4.58.3/var/mfs
+---
+> DATA_PATH = /export/var/lib/mfs
+34c40
+< # EXPORTS_FILENAME = /gnu/store/yg0xb1g9mls04h4085kmfbbg8z36a7c2-moosefs-4.58.3/etc/mfs/mfsexports.cfg
+---
+> EXPORTS_FILENAME = /etc/mfs/mfsexports.cfg
+87c93
+< # MATOML_LISTEN_PORT = 9419
+---
+> MATOML_LISTEN_PORT = 9519
+103c109
+< # MATOCS_LISTEN_PORT = 9420
+---
+> MATOCS_LISTEN_PORT = 9520
+219c225
+< # MATOCL_LISTEN_PORT = 9421
+---
+> MATOCL_LISTEN_PORT = 9521
+```
+
+```
+root@octopus03:/etc/mfs# cat mfsgoals.cfg
+# safe - 2 copies, 1 on slow disk, 1 on fast disk
+11 slow: HDD SSD
+
+# Fast storage - 1 copy on fast disks, no redundancy
+12 fast: FAST
+```
+
+```
++++ b/mfs/mfschunkserver-fast.cfg
+ # user to run daemon as (default is nobody)
+-# WORKING_USER = nobody
++WORKING_USER = mfs
+
+ # group to run daemon as (optional - if empty then default user group will be used)
+-# WORKING_GROUP =
++WORKING_GROUP = mfs
+
+ # name of process to place in syslog messages (default is mfschunkserver)
+ # SYSLOG_IDENT = mfschunkserver
+@@ -28,6 +28,7 @@
+
+ # where to store daemon lock file (default is /gnu/store/yg0xb1g9mls04h4085kmfbbg8z36a7c2-moosefs-4.58.3/var/mfs)
+ # DATA_PATH = /gnu/store/yg0xb1g9mls04h4085kmfbbg8z36a7c2-moosefs-4.58.3/var/mfs
++DATA_PATH=/var/lib/mfs
+
+ # when set to one chunkserver will not abort start even when incorrect entries are found in 'mfshdd.cfg' file
+ # ALLOW_STARTING_WITH_INVALID_DISKS = 0
+@@ -41,6 +42,7 @@
+
+ # alternate location/name of mfshdd.cfg file (default is /gnu/store/yg0xb1g9mls04h4085kmfbbg8z36a7c2-moosefs-4.58.3/etc/mfs/mfshdd.cfg); this
+file will be re-read on each process reload, regardless if the path was changed
+ # HDD_CONF_FILENAME = /gnu/store/yg0xb1g9mls04h4085kmfbbg8z36a7c2-moosefs-4.58.3/etc/mfs/mfshdd.cfg
++HDD_CONF_FILENAME = /etc/mfs/mfsdisk-fast.cfg
+
+ # speed of background chunk tests in MB/s per disk (formally entry defined in mfshdd.cfg). Value can be given as a decimal number (default is
+1.0)
+ # deprecates: HDD_TEST_FREQ (if HDD_TEST_SPEED is not defined, but there is redefined HDD_TEST_FREQ, then HDD_TEST_SPEED = 10 / HDD_TEST_FREQ)
+@@ -109,10 +111,10 @@
+ # BIND_HOST = *
+
+ # MooseFS master host, IP is allowed only in single-master installations (default is mfsmaster)
+-# MASTER_HOST = mfsmaster
++MASTER_HOST = octopus03
+
+ # MooseFS master command port (default is 9420)
+-# MASTER_PORT = 9420
++MASTER_PORT = 9520
+
+ # timeout in seconds for master connections. Value >0 forces given timeout, but when value is 0 then CS asks master for timeout (default is 0
+- ask master)
+ # MASTER_TIMEOUT = 0
+@@ -134,5 +136,5 @@
+ # CSSERV_LISTEN_HOST = *
+
+ # port to listen for client (mount) connections (default is 9422)
+-# CSSERV_LISTEN_PORT = 9422
++CSSERV_LISTEN_PORT = 9524
+```
+
+Mount
+
+```
++++ b/mfs/mfsmount.cfg
+mfsmaster=octopus03,nosuid,nodev,noatime,nosuid,mfscachemode=AUTO,mfstimeout=30,mfswritecachesize=2048,mfsreadaheadsize=2048,mfsport=9521
+/moosefs-fast
+```
+
+## systemd
+
+
+### Master
+
+```
+root@octopus03:/etc# cat systemd/system/moosefs-master.service
+Description=MooseFS master server daemon
+Documentation=man:mfsmaster
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=forking
+TimeoutSec=0
+ExecStart=/usr/local/guix-profiles/moosefs/sbin/mfsmaster -d start -c /etc/mfs/mfsmaster.cfg -x
+ExecStop=/usr/local/guix-profiles/moosefs/sbin/mfsmaster -c /etc/mfs/mfsmaster.cfg stop
+ExecStop=/usr/local/guix-profiles/moosefs/sbin/mfsmaster -c /etc/mfs/mfsmaster.cfg reload
+ExecReload=/bin/kill -HUP $MAINPID
+User=mfs
+Group=mfs
+Restart=on-failure
+RestartSec=60
+OOMScoreAdjust=-999
+
+[Install]
+WantedBy=multi-user.target
+```
+
+
+### Chunk service
+
+```
+root@octopus04:/etc# cat systemd/system/moosefs-chunkserver-fast.service
+[Unit]
+Description=MooseFS Chunkserver (Fast)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/guix-profiles/moosefs/sbin/mfschunkserver -f -c /etc/mfs/mfschunkserver-fast.cfg
+User=mfs
+Group=mfs
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### Mount service
+
+```
+cat systemd/system/moosefs-mount.service
+[Unit]
+Description=Moosefs mounts
+After=syslog.target network.target
+
+[Service]
+Type=forking
+TimeoutSec=600
+ExecStart=/usr/local/guix-profiles/moosefs/bin/mfsmount -c /etc/mfs/mfsmount.cfg
+ExecStop=/usr/bin/umount /moosefs-fast
+
+[Install]
+WantedBy=multi-user.target
+```
+
+# Status
+
+Show missing, undergoal, and overgoal chunks:
+
+```
+/gnu/store/yg0xb1g9mls04h4085kmfbbg8z36a7c2-moosefs-4.58.3/bin/mfscli -H octopus04 -P 9521 -SMU
+mfscli -H octopus04 -P 9521 -SIC -2
+```
+
+Disk health
+
+```
+mfscli -H octopus04 -P 9521 -p  -SHD
+```
+
+```
+root@octopus04:/etc/mfs# mfsgetsclass /moosefs/
+/moosefs/: 2CP
+root@octopus04:/etc/mfs# mfsfileinfo /moosefs/README
+/moosefs/README:
+        chunk 0: 0000000000000022_00000001 / (id:34 ver:1) ; mtime:1767348586 (2026-01-02 10:09:46)
+                copy 1: 172.23.17.254:9524 ; status:VALID
+                copy 2: 172.23.23.246:9524 ; status:VALID
+```
+
+# Classes
+
+
+```
+root@octopus04:/moosefs# mfsscadmin list -M /moosefs/
+2CP
+3CP
+EC4+1
+EC8+1
+```
+
+```
+mfsscadmin create -K F scratch
+storage class make S: error: Operation not permitted (mfs admin only)
+```
+
+After adding admin to export on O4:
+
+```
+root@octopus04:/etc# mfsscadmin create -K F scratch -M /moosefs/
+storage class make scratch: ok
+root@octopus04:/moosefs# mfsfileinfo /moosefs/tmp/README
+/moosefs/tmp/README:
+        chunk 0: 0000000000022E0A_00000001 / (id:142858 ver:1) ; mtime:1767877068 (2026-01-08 12:57:48)
+                copy 1: 172.23.17.254:9524 ; status:VALID
+                copy 2: 172.23.23.246:9524 ; status:VALID
+root@octopus04:/moosefs# mfssetsclass scratch -r tmp
+tmp:
+ inodes with storage class changed:              2
+ inodes with storage class not changed:          0
+ inodes with permission denied:                  0
+root@octopus04:/moosefs# mfsfileinfo /moosefs/tmp/README
+/moosefs/tmp/README:
+        chunk 0: 0000000000022E0A_00000001 / (id:142858 ver:1) ; mtime:1767877068 (2026-01-08 12:57:48)
+                copy 1: 172.23.23.246:9524 ; status:VALID
+```
+
+```
+mfsscadmin create -K H raid5 -M /moosefs/
+```

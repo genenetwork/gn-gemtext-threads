@@ -2,7 +2,8 @@
 
 At this stage precompute fetches a trait from the DB and runs GEMMA. Next it tar balls up the vector for later use. It also updates the database with the latest info.
 
-To actually kick off compute on machines that do not access the DB I realize now we need a step-wise approach. Basically you want to shift files around without connecting to a DB. And then update the DB whenever it is convenient. So we are going to make it a multi-step procedure. I don't have to write all code because we have a working runner. I just need to chunk the work.
+To actually kick off compute on machines that do not access the DB I realize now we need a step-wise approach. Basically you want to shift files around without connecting to a DB. And then update the DB whenever it is convenient. So we are going to make it a multi-step procedure.
+We need to chunk the work.
 
 We will track precompute steps here. We will have:
 

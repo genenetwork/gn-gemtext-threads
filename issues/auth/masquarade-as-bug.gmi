@@ -2,6 +2,7 @@
 
 * assigned: fredm
 * tags: critical
+* status: closed, completed
 
 Right now you can't masquared as another user.  Here's the trace:
 

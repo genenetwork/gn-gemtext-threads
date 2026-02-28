@@ -130,7 +130,7 @@ ExecStart = /usr/local/bin/bnw-app-container
 WantedBy = multi-user.target
 ```
 
-We need to make sure the garbace collector does not destroy the container, add the --root switch
+We need to make sure the garbage collector does not destroy the container, add the --root switch
 
 ```
 /home/shepherd/guix-profiles/bnw/bin/guix system container /home/shepherd/guix-bioinformatics/gn/services/bnw-container.scm --share=/home/shepherd/logs/bnw-server=/var/log --network --root=/usr/local/bin/bnw-app-container
@@ -142,6 +142,8 @@ Check with
 root@tux02:/home/shepherd# /home/shepherd/guix-profiles/bnw/bin/guix gc --list-roots |grep bnw
   /usr/local/bin/bnw-app-container
 ```
+
+If there is a running conflict, restart shepherd in systemd.
 
 ## R/shiny apps
 
@@ -194,14 +196,32 @@ Package definition is at
 
 Container is at
 
-=> https://git.genenetwork.org/guix-bioinformatics/tree/gn/services/bxd-power-container.scm
+=> https://git.genenetwork.org/gn-machines/tree/gn/services/mouse-longevity.scm
+
+gaeta:~/iwrk/deploy/gn-machines$ guix system container -L . -L ~/guix-bioinformatics --verbosity=3 test-r-container.scm -L ~/iwrk/deploy/guix-forge/guix
+forge/nginx.scm:145:40: error: acme-service-type: unbound variable
+hint: Did you forget `(use-modules (forge acme))'?
+
 
 ## jumpshiny
 
 Jumpshiny is hosted on balg01. Scripts are in tux02 git.
+
+=> git.genenetwork.org:/home/git/shared/source/jumpshiny
 
 ```
 root@balg01:/home/j*/gn-machines# . /usr/local/guix-profiles/guix-pull/etc/profile
 guix system container --network -L . -L ../guix-forge/guix/ -L ../guix-bioinformatics/ -L ../guix-past/modules/ --substitute-urls='https://ci.guix.gnu.org https://bordeaux.guix.gnu.org https://cuirass.genenetwork.org' test-r-container.scm -L ../guix-forge/guix/gnu/store/xyks73sf6pk78rvrwf45ik181v0zw8rx-run-container
 /gnu/store/6y65x5jk3lxy4yckssnl32yayjx9nwl5-run-container
 ```
+
+Currently:
+
+Jumpshiny: as aijun, cd services/jumpshiny and ./.guix-run
+
+
+## JUMPsem_web
+
+Another shiny app to run on balg01.
+
+Jumpshiny: as aijun, cd services/jumpsem and ./.guix-run

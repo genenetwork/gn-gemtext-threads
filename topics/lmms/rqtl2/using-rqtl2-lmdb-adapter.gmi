@@ -1,0 +1,84 @@
+# R/qtl2 LMDB Adapter
+## Tags
+
+* assigned: alexm
+* priority: medium
+* type: feature, documentation
+* status: WIP
+* keywords: rqtl2, lmdb, adapter, cross
+
+## Description
+We want to add support for reading crosses from LMDB.
+Currently, R/qtl2 (https://kbroman.org/qtl2/) only supports reading from CSV files.
+
+## Tasks
+
+* [x] Dump genotypes to LMDB
+* [x] Dump cross metadata to LMDB
+* [-] Create a `read_lmdb_cross` adapter
+* [] Dump phenotypes to LMDB
+
+## Using the Adapter
+
+### Dumping the Genotypes
+You can find the `lmdb_matrix.py` script here:
+
+=> https://github.com/genenetwork/genenetwork3/blob/main/scripts/lmdb_matrix.py
+
+```sh
+guix shell python-click python-lmdb python-wrapper python-numpy -- \
+     python lmdb_matrix.py import-genotype \
+     <path-to-genotype-file> <path-to-lmdb-store>
+```
+
+## Dumping the Cross Metadata
+
+The script can be found here:
+=> https://github.com/genenetwork/genenetwork3/pull/235/files   # lmdb_cross_metadata.py
+
+You need to provide a cross file path. The currently supported formats are JSON and YAML.
+
+Example:
+
+```sh
+guix shell python-click python-lmdb python-wrapper python-pyyaml -- \
+     python dump_metadata.py dump-cross [LMDB_PATH] [CROSS_FILE_PATH] --file-format yaml/json
+
+# Example
+
+python dump_metadata.py dump-cross "./test_lmdb_data" "./cross_file.json"
+```
+
+### Running the R/qtl2 LMDB Adapter Script
+
+The script `rqtl_lmdb_adapter.r` can be found here:
+=> https://github.com/genenetwork/genenetwork3/pull/235/files   # rqtl_lmdb_adapter.r
+
+```sh
+guix shell r r-thor r-rjson r-qtl2 -- \
+     Rscript [PATH_TO_ADAPTER_SCRIPT] [LMDB_PATH]
+
+# Example
+Rscript https://github.com/genenetwork/genenetwork3/pull/235/files ./lmdb_path
+
+
+```
+### using this with rqtl2 Example
+
+```r
+cross <- read_lmdb_cross(LMDB_DB_PATH)
+summary(cross)
+cat("Is this cross okay", check_cross2(cross), "\n")
+warnings() #  enable warnings for the debug purposes  only!
+pr <- calc_genoprob(cross)
+out <- scan1(pr, cross$pheno, cores=4)
+par(mar=c(5.1, 4.1, 1.1, 1.1))
+ymx <- maxlod(out)
+plot(out, cross$gmap, lodcolumn=1, col="slateblue") # test generating of qtl plots
+
+```
+
+
+### References
+=> https://kbroman.org/qtl2/assets/vignettes/developer_guide.html
+

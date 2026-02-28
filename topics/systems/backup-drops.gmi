@@ -117,7 +117,7 @@ So, as root
 ```
 cd /export
 mkdir -p backup/bacchus/drop
-chown bacchus.bacchus backup/bacchus/drop/
+chown bacchus:bacchus backup/bacchus/drop/
 chmod 0700 backup/bacchus/drop/
 ```
 
@@ -197,3 +197,54 @@ The recent scripts can be found at
 => https://github.com/genenetwork/gn-deploy-servers/blob/master/scripts/tux01/backup_drop.sh
 
 # borg-borg
+
+
+Backups work for production according to sheepdog. They run at 5am CST. Which (I guess) is OK. On the remote server we are going to forward the backup to a server on a different continent at 4pm GMT. I have been running that by hand lately, so time to sheepdog it!
+
+The manual command is
+
+```
+rsync -e "ssh -i ~/.ssh/id_ecdsa_borgborg" -vaP tux03 $HOST:/export/backup/bacchus/drop/
+```
+
+With sheepdog we can make it:
+
+```
+sheepdog_run.rb -v --tag "drop-mount-$name" -c "sshfs -o $SFTP_SETTING,IdentityFile=~/.ssh/id_ecdsa_backup bacchus@$host:/ ~/mnt/$name"
+sheepdog_run.rb --always -v --tag "drop-rsync-$name" -c "rsync -vrltDP borg/* ~/mnt/$name/drop/$HOST/ --delete"
+sheepdog_run.rb -v --tag "drop-unmount-$name" -c "fusermount -u ~/mnt/$name"
+```
+
+For some reason this took a while to figure out. Part of it is that the machine on the other end has a rather slow CPU! An
+Intel(R) Celeron(R) CPU  J1900  @ 1.99GHz launched over 10 years ago. We still use it because of its low energy consumption. Once it starts pumping a file it is up to speed
+
+```
+tux03/tux03-containers/data/0/239
+    154,501,120  29%   11.20MB/s    0:00:32
+```
+
+So one backup of a backup has started running and I made it a CRON job. Next stop is borgborg on the receiving HOST. The CRON job looks like
+
+```
+0 3 * * * env BORG_PASSPHRASE=none /home/wrk/iwrk/deploy/deploy/bin/sheepdog_borg.rb -t borgborg --always -v -b /export/backup/bacchus/borgborg/drop /export/backup/bacchus/drop --args '--stats' >> ~/cron.log 2>&1
+```
+
+note the backups are already password protected. No need to do that again. Now this backup is going to go onto optical media twice a year with the password printed on the backup. That should keep it for 100 years.
+
+You can track this backup progress daily on the sheepdog status
+
+=> http://sheepdog.genenetwork.org/sheepdog/status.html
+
+i.e. in reverse order the flow is:
+
+```
+2025-09-18 08:35:00 +0200	FAIL	host	borgborg-backup
+2025-09-18 16:19:45 -0500	SUCCESS	balg01	drop-rsync-zero
+2025-09-18 05:59:46 +0000	SUCCESS	tux03	mariadb-check
+2025-09-18 05:26:01 +0000	SUCCESS	tux03	drop-rsync-balg01
+2025-09-18 05:25:48 +0000	SUCCESS	tux03	borg-tux03-sql-backup
+2025-09-18 04:44:38 +0000	SUCCESS	tux03	mariabackup-make-consistent
+2025-09-18 04:44:25 +0000	SUCCESS	tux03	mariabackup-dump
+```
+
+The borgborg should be fixed now. I am missing the container backups. What is going on there? These were last backed up on 'Sun, 2025-09-14 00:00:52'. Ah, I set the CRON job to runs once a week. That should be fixed now and it should show up.

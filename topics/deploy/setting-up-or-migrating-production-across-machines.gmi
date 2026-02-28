@@ -15,24 +15,170 @@ Recent events (Late 2024 and early 2025) have led to us needing to move the prod
 
 In this respect, a number of tasks rise to the front as necessary to accomplish for a successful migration. Each of the following sections will detail a task that's necessary for a successful migration.
 
+## Copy Over Auth Database
+
+We need to synchronise the authorisation database. We can copy this over from the production system, or the backups
+
+* TODO: Indicate where the backups for the auth database are here!
+
+Steps (flesh out better):
+
+* Extract backup (or copy from existing production system)
+* Stop the (new) container (if it's running)
+* Backup the (new) container's auth-db file (
+* Place the auth db file in the correct place in the container's filesystem:
+* Backup existing secrets
+* Login to the `/auth/admin/dashboard` of the auth server (e.g. https://cd.genenetwork.org/auth/admin/dashboard)
+* If client with the CLIENT_ID in the secrets exists
+* 1. update the uris for that client, if it doesn't exist, create an entirely new client and replace both the CLIENT_ID and CLIENT_SECRET in the secrets file.
+* 2. Click on the "Change Secret" button and generate a new secret. Replace the secret in the secrets file with the newly generated secret
+* If client with the CLIENT_ID in the secrets DOES NOT exist, register a new client, setting up the appropriate URIs and endpoints, and then add/replace both the CLIENT_ID and CLIENT_SECRET in the secrets file.
+* Restart (new) container
+
 ## Set Up the Database
 
-* Extract: detail this — link to existing document in this repo. Also, probably note that we symlink the extraction back to `/var/lib/mysql`?
-* Configure: detail this — link to existing document in this repo
+=> /topics/systems/restore-backups Extract the latest database from the backups.
+=> /topics/deploy/installation Configure MariaDB according to this document.
 
 ## Set Up the File System
 
 * TODO: List the necessary directories and describe what purpose each serves. This will be from the perspective of the container — actual paths on the host system are left to the builders choice, and can vary wildly.
 * TODO: Prefer explicit binding rather than implicit — makes the shell scripts longer, but no assumptions have to be made, everything is explicitly spelled out.
 
+The container(s) need access to various files and directories from the host system in order to work correctly.
+
+Filesystem bindings could be linked to wildly different paths on different physical host machines, therefore, we shall examine the bindings from the point of view of the paths within the container, rather than forcing a particular file system layout on the host systems themselves.
+
+Each of the sections below details a specific binding:
+
+### /var/genenetwork
+
+This binding must be READWRITE within the container.
+
+The purpose is to hold varying files that are specific to the genenetwork system(s). Examples of the files are:
+
+* "gn-meta" and "synteny" files for GN3
+* genotype files
+* session files for various systems (GN2, gn-uploader, etc.)
+
+### /var/lib/acme
+
+This binding must be READWRITE within the container.
+
+This is used to store TLS certificates for the various services within the container by the ACME (Automatic Certificate Management Environment) script.
+
+### /var/lib/redis
+
+This binding must be READWRITE within the container.
+
+This is used by the redis daemon to persist its state(s).
+
+### /var/lib/virtuoso
+
+This binding must be READWRITE within the container.
+
+Used by the virtuoso daemon to save its state, and maybe some log files.
+
+### /export/data/virtuoso/
+
+This binding must be READONLY within the container. (Really?)
+
+This is used for importing data into virtuoso, say by sharing Turtle (TTL) files within the binding.
+
+---
+At this point the binding is READONLY because any TTL files to load are imported from outside the container. If the transformation of data from MariaDB to TTL form is built into the production containers down the line, then this might change to READWRITE to allow the tranformation tool to write to it.
+
+### /var/log
+
+This binding must be READWRITE within the container.
+
+Allows logs from various services running in the container be accessible in the host system. This is useful for debugging issues with the running systems.
+
+### /etc/genenetwork
+
+This binding must be READWRITE within the container.
+
+Useful for storing various configuration files/data for the service(s) running inside the running container.
+
+### /var/lib/xapian
+
+This binding must be READWRITE within the container.
+
+Stores the processed search indexes for the xapian search system.
+
+### /var/lib/genenetwork/sqlite/gn-auth
+
+This binding must be READWRITE within the container.
+
+The authorisation database is stored here. The directory needs to be writable to avoid permissions issues within the container when attempting to write data into the database.
+
+### /var/lib/genenetwork/sqlite/genenetwork3
+
+This binding must be READWRITE within the container.
+
+This stores various SQLite databases in use with GN3. These are:
+
+* Database for the GNQA system
+* ...
+
+### /run/mysqld
+
+This binding must be READWRITE within the container.
+
+This binding is the link to the host directory that holds the socket file for the running MariaDB instance.
+
+### /opt/gn/tmp
+
+This binding must be READWRITE within the container.
+
+Holds temporary files for the various services that run within the container. Some of the generated files from various services are also stored here.
+
+These files should be safe to delete between container restarts.
+
+**PROPOSAL**: Move all generated files here, or have a dedicated directory for holding generated files?
+
+
+### /var/genenetwork/sessions
+
+This binding must be READWRITE within the container.
+
+Holds session files for various services within the container. See also the /var/genenetwork binding.
+
+### /var/lib/genenetwork/uploader
+
+This binding must be READWRITE within the container.
+
+**gn-uploader** specific data files. Types of data files that could go here are:
+
+* File uploads
+* (Reusable) Cache files and generated files
+* ... others?
+
+### /var/lib/genenetwork/sqlite/gn-uploader
+
+This binding must be READWRITE within the container.
+
+Holds various SQLite databases used with the **gn-uploader** service, e.g.:
+
+* Background jobs database
+* ...
+
+### /var/lib/genenetwork/gn-guile
+
+This binding must be READWRITE within the container.
+
+Various data files for the **gn-guile** service, such as:
+
+* The bare **gn-docs** repository (Previously bound at `/export/data/gn-docs`: now deprecated).
+
 ## Redis
 
 We currently (2025-06-11) use Redis for:
 
-- Tracking user collection (this will be moved to SQLite database)
-- Tracking background jobs (this is being moved out to SQLite databases)
-- Tracking running-time (not sure what this is about)
-- Others?
+* Tracking user collection (this will be moved to SQLite database)
+* Tracking background jobs (this is being moved out to SQLite databases)
+* Tracking running-time (not sure what this is about)
+* Others?
 
 We do need to copy over the redis save file whenever we do a migration, at least until the user collections and background jobs features have been moved completely out of Redis.
 

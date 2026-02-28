@@ -1,0 +1,91 @@
+# Migrate Genenetwork Production from tux03 to tux04, Jan2026-Feb2026
+
+## Tags
+* assigned: fredm
+* status: open
+* priority: high
+* type: migration
+* keywords: migration, genenetwork, production
+
+## Description
+
+We need to migrate back to tux04 which is now stable. tux03 has been intermittently failing on us in the recent past.
+
+### Tasks
+
+* [x] Figure out disks
+  The database can go on /export, maybe the containers too.
+* [x] Extract MariaDB from backup
+  * [x] Look into replication - might be more work that is worth it at this point
+  * [x] Look for backups
+    * There are no recent backups from tux03 on tux04
+    * Last backup seems to be from 4th March 2025
+    * [x] Setup drops from tux03 to tux04
+      * [x] No user <backup-user> on tux04: Create the user
+        * [x] User is able to ssh into tux04
+        * [x] Limit access that <backup-user> has to tux04
+        * [x] Test manual drop of backups
+      * [x] Cleanup: commit changes to /etc on tux04
+    * [x] Extract MariaDB data
+    * [x] Install, configure and start MariaDB service
+      * [x] Check versions: tux03 has 10.11.11, tux04 has 11.8.3
+      * [x] What version on guix? I can get 10.11.14
+      * [x] Look into requirements for running mariadb from guix. Compare to Debian
+      * [x] Install MariaDB
+        * [x] Install Debian's version to get settings in place
+        * [x] Install guix version that's closer to what we were using before
+        * [x] Extract backup data
+          * [x] Verify dropped archive integrity:
+            ```
+            borg check --verify-data .../genenetwork/::borg-tux03-sql-20260122-07:42-Thu
+            ```
+            Some errors were found -- not in chosen archive though (seemingly).
+          * [x] Extract data: "borg-tux03-sql-20260122-07:42-Thu    Thu, 2026-01-22 07:42:37"
+          * [x] Stop running MariaDB
+          * [x] Symlink MariaDB data directory to extracted data
+          * [x] Update systemd to use the guix version rather than Debian's version
+          * [x] Restart MariaDB
+            * Fails. Why?
+            * had to fix the tmpdir path and set appropriate permissions
+            * Timeout: read up on reasons. Increase timeout to 7200 seconds.
+            * [x] check in later
+            * Just set timeout to `infinity`
+      * [x] Configure: copy over configs from tux03
+* [x] Setup nginx
+  * [x] Build nginx with preread from guix
+  * [x] Setup systemd unit file to use newly built nginx
+  * [x] Start new nginx
+* [x] Setup nginx streaming
+  * [x] Initialise streaming
+  * [x] Stream to public-sparql
+  * [x] Stream to gn2-fred
+  * [x] Stream to production
+* [x] Create short-lived ssh key to copy files from tux03 to tux04
+* [x] Setup public-sparql
+  * [x] Copy over container files from tux03
+  * [x] Do `guix pull ...' to setup the channels for public-sparql
+  * [x] Build public-sparql container
+  * [x] Setup systemd unit files to run container
+  * [x] Start container
+  * [x] Switch DNS
+  * [x] Setup SSL certificates: Seems to work with existing certificates with no problems.
+  * [x] Verify we can access https://sparql.genenetwork.org/sparql and it works
+* [x] Setup gn2-fred
+  * [x] Copy over container files from tux03
+  * [x] Do `guix pull ...' to setup the channels for gn2-fred
+  * [x] Build gn2-fred container
+  * [x] Setup systemd unit files to run container
+  * [x] Start container
+  * [x] Switch DNS
+  * [x] Setup SSL certificates: Seems to work with existing certificates with no problems.
+  * [x] Verify we can access https://gn2-fred.genenetwork.org and it works
+    - Activation service doesn't seem to work as expected for some reason.
+* [x] Setup production
+  * [x] Copy over container files from tux03
+  * [x] Do `guix pull ...' to setup the channels for production
+  * [x] Build production container
+  * [x] Setup systemd unit files to run container
+  * [x] Start container
+  * [x] Switch DNS
+  * [x] Setup SSL certificates
+  * [x] Verify we can access https://genenetwork.org and it works

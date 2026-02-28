@@ -1,0 +1,21 @@
+# Hoot Genome Browser
+
+Together with Andrew we have created a genome browser that runs in WASM. Safari recently (202509) added critical hoot support, so we should have it in all important browsers now!
+
+With this task tracker we want to embed the existing browser in GN and add tracks for mapped QTL.
+
+# Tags
+
+* assigned: andrewt, pjotrp
+* priority: high
+* status: open, in progress
+* keywords: mapping
+
+# Tasks
+
+* [ ] Embed hoot browser in GN2 as a pilot
+*   + [ ] Guix package for JS and minimal JBrowse2?
+*   + [ ] Embedding code in GN2
+* [ ] Create two tracks for QTL comparisons - vector data available
+* [ ] Create BED file for matched QTL - use SPARQL live?
+* [ ] Annotated SNPs

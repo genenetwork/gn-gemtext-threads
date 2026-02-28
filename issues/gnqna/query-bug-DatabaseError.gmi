@@ -1,0 +1,37 @@
+# Query Bug: DatabaseError
+
+## Tags
+
+* assigned: fredm, bonfacem
+* priority: high
+* status: open
+* type: bug
+* keywords: gnqna
+
+## Descriptions
+
+* Go to https://genenetwork.org/gnqna
+* Type in a query
+* Press "Enter"
+* Observe the error "DatabaseError" with a status code of 500.
+
+Expected: Query returns a result.
+
+
+## Troubleshooting: 2025-10-27
+
+* GNQNA's deployment is not part of the gn-machine's definitions!
+
+## Troubleshooting: 2025-12-31
+
+If a user **IS NOT** logged in, the system responds with:
+
+```
+Search_Query:
+Status_Code: 500
+Error/Reason: Login/Verification required to make this request
+```
+
+On the other hand, if a user is logged in, a query returns a result.
+
+We, therefore, probably need to notify the user that they need to be logged in to use this service.

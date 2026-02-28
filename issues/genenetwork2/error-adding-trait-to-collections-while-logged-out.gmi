@@ -1,0 +1,33 @@
+# Error Adding Trait(s) to Collection(s) While Logged Out
+
+## Tags
+
+* type: bug
+* status: open
+* priority: high
+* assigned: zachs, fredm
+* keywords: gn2, genenetwork2, genenetwork 2, collections
+
+## Description
+
+### Steps to Reproduce
+* Go to https://genenetwork.org/
+* Ensure you are logged out
+* Now, navigate to https://genenetwork.org/show_trait?trait_id=1435464_at&dataset=HC_M2_0606_P
+* Click green "Add" button
+* Note silent failure, then "MissingTokenError: missing_token: Please log in again to continue." notification
+
+### Expected
+
+On clicking "Add" we should have got a modal dialog with a selection of collections we can add the trait to.
+
+### Notes
+
+#### Cause of Failure
+
+=> https://github.com/genenetwork/genenetwork2/blob/c057054b69e673108410894ce87c5059aebb7b68/gn2/wqflask/collect.py#L81-L84
+The first fetch with ``oauth2_get`` fails in the case where the user is not logged in, raising a "MissingToken" exception. This then is handled by the default handlers and we get presented the prompt to login.
+
+#### Fix(es)
+
+=> https://github.com/genenetwork/genenetwork2/commit/9d403022cf9cfbcd43e9e2715193e148f6a47e46

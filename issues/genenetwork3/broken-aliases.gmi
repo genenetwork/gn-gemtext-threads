@@ -5,23 +5,184 @@
 * type: bug
 * status: open
 * priority: high
-* assigned: fredm
+* assigned: pjotrp
 * interested: pjotrp
 * keywords: aliases, aliases server
 
+## Tasks
+
+* [X] Rewrite server in gn-guile
+* [X] Fix menu search
+* [X] Fix global search aliases
+* [ ] Deploy and test aliases in GN2
 
 ## Repository
 
 => https://github.com/genenetwork/gn3
+
+moved to
+
+gn-guile repo.
 
 ## Bug Report
 
 ### Actual
 
 * Go to https://genenetwork.org/gn3/gene/aliases2/Shh,Brca2
-* Not that an exception is raised, with a "404 Not Found" message
+* Note that an exception is raised, with a "404 Not Found" message
 
 ### Expected
 
 * We expected a list of aliases to be returned for the given symbols as is done in https://fallback.genenetwork.org/gn3/gene/aliases2/Shh,Brca2
 
+## Resolution
+
+Actually the server is up, but it is not part of the main deployment because it is written in Racket - and we don't have much support in Guix. I wrote the code the days after my bike accident:
+
+=> https://github.com/genenetwork/gn3/blob/master/gn3/web/wikidata.rkt
+
+and it is probably easiest to move it to gn-guile. Guile is another Scheme after all ;). Only fitting I spent days in hospital only recently (for a different reason). gn-guile already has its own web server and provides a REST API for our markdown editor, for example. On tux04 it responds with
+
+```
+curl http://127.0.0.1:8091/version
+"4.0.0"
+```
+
+What we want is to add the aliases server that should respond to
+
+```
+curl http://localhost:8000/gene/aliases/Shh # direct on tux01
+["9530036O11Rik","Dsh","Hhg1","Hx","Hxl3","M100081","ShhNC","ShhNC"]
+curl https://genenetwork.org/gn3/gene/aliases2/Shh,Brca2
+[["Shh",["9530036O11Rik","Dsh","Hhg1","Hx","Hxl3","M100081","ShhNC","ShhNC"]],["Brca2",["Fancd1","RAB163"]]]
+```
+
+Note this is used by search functionality in GN, as well as the gene aliases list on the mapping page. In principle we cache it for the duration of the running server so as not to overload wikidata. No one uses aliases2, that I can tell, so we only implement the first 'aliases'.
+
+Note the wikidata interface has been stable all this time. That is good.
+
+Turns out we already use wikidata in the gn-guile implementation for fetching the wikidata id for a species (as part of metadata retrieval). I wrote that about two years ago as part of the REST API expansion.
+
+Unfortunately
+
+```
+(sparql-scm (wd-sparql-endpoint-url)  (wikidata-gene-alias "Q24420953"))
+```
+
+throws a 403 forbidden error.
+
+This however works:
+
+```
+scheme@(gn db sparql) [15]> (sparql-wd-species-info "Q83310")
+;;; ("https://query.wikidata.org/sparql?query=%0ASELECT%20DISTINCT%20%3Ftaxon%20%3Fncbi%20%3Fdescr%20where%20%7B%0A%20%20%20%20wd%3AQ83310%20wdt%3AP225%20%3Ftaxon%20%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20wdt%3AP685%20%3Fncbi%20%3B%0A%20%20%20%20%20%20schema%3Adescription%20%3Fdescr%20.%0A%20%20%20%20%3Fspecies%20wdt%3AP685%20%3Fncbi%20.%0A%20%20%20%20FILTER%20%28lang%28%3Fdescr%29%3D%27en%27%29%0A%7D%20limit%205%0A%0A")
+$11 = "?taxon\t?ncbi\t?descr\n\"Mus musculus\"\t\"10090\"\t\"species of mammal\"@en\n"
+```
+
+(if you can see the mouse ;).
+
+Ah, this works
+
+```
+scheme@(gn db sparql) [17]> (sparql-tsv (wd-sparql-endpoint-url) (wikidata-query-geneids "Shh" ))
+;;; ("https://query.wikidata.org/sparql?query=SELECT%20DISTINCT%20%3Fwikidata_id%0A%20%20%20%20%20%20%20%20%20%20%20%20WHERE%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Fwikidata_id%20wdt%3AP31%20wd%3AQ7187%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20wdt%3AP703%20%3Fspecies%20.%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20VALUES%20%28%3Fspecies%29%20%7B%20%28wd%3AQ15978631%20%29%20%28%20wd%3AQ83310%20%29%20%28%20wd%3AQ184224%20%29%20%7D%20.%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Fwikidata_id%20rdfs%3Alabel%20%22Shh%22%40en%20.%0A%20%20%20%20%20%20%20%20%7D%0A")
+$12 = "?wikidata_id\n<http://www.wikidata.org/entity/Q14860079>\n<http://www.wikidata.org/entity/Q24420953>\n"
+```
+
+But this does not
+
+```
+scheme@(gn db sparql) [17]> (sparql-scm (wd-sparql-endpoint-url) (wikidata-query-geneids "Shh" ))
+ice-9/boot-9.scm:1685:16: In procedure raise-exception:
+In procedure utf8->string: Wrong type argument in position 1 (expecting bytevector): "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>nginx/1.18.0</center>\r\n</body>\r\n</html>\r\n"
+```
+
+Going via tsv does work
+
+```
+scheme@(gn db sparql) [18]> (tsv->scm (sparql-tsv (wd-sparql-endpoint-url) (wikidata-query-geneids "Shh" )))
+
+;;; ("https://query.wikidata.org/sparql?query=SELECT%20DISTINCT%20%3Fwikidata_id%0A%20%20%20%20%20%20%20%20%20%20%20%20WHERE%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Fwikidata_id%20wdt%3AP31%20wd%3AQ7187%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20wdt%3AP703%20%3Fspecies%20.%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20VALUES%20%28%3Fspecies%29%20%7B%20%28wd%3AQ15978631%20%29%20%28%20wd%3AQ83310%20%29%20%28%20wd%3AQ184224%20%29%20%7D%20.%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Fwikidata_id%20rdfs%3Alabel%20%22Shh%22%40en%20.%0A%20%20%20%20%20%20%20%20%7D%0A")
+$13 = ("?wikidata_id")
+$14 = (("<http://www.wikidata.org/entity/Q14860079>") ("<http://www.wikidata.org/entity/Q24420953>"))
+```
+
+that is nice enough.
+
+We now got a working alias server that is part of gn-guile. E.g.
+
+```
+curl http://127.0.0.1:8091/gene/aliases/Brca2
+["breast cancer 2","breast cancer 2, early onset","Fancd1","RAB163","BRCA2, DNA repair associated"]
+```
+
+it is part of gn-guile. gn-guile also has the 'commit/' handler by Alex, documented as
+'curl -X POST http://127.0.0.1:8091/commit' in git-markdown-editor.md. Let's see how that is wired up. The web interface is at, for example,
+https://genenetwork.org/editor/edit?file-path=general/help/facilities.md. Part of gn2's
+
+```
+gn2/wqflask/views.py
+398:@app.route("/editor/edit", methods=["GET"])
+408:@app.route("/editor/settings", methods=["GET"])
+414:@app.route("/editor/commit", methods=["GET", "POST"])
+```
+
+which has the code
+
+```
+@app.route("/editor/edit", methods=["GET"])
+@require_oauth2
+def edit_gn_doc_file():
+    file_path = urllib.parse.urlencode(
+        {"file_path": request.args.get("file-path", "")})
+    response = requests.get(f"http://localhost:8091/edit?{file_path}")
+    response.raise_for_status()
+    return render_template("gn_editor.html", **response.json())
+```
+
+Running over localhost. This is unfortunately hard coded, and we should change that! In guix system
+configuration it is already a variable as 'genenetwork-configuration-gn-guile-port 8091'. gn-guile should also be visible from outside, so that is a separate configuration.
+
+Also I note that the mapping page does three requests to wikidata (for mouse, rat and human). That could really be one.
+
+# Search
+
+Aliases are also used in search. You can tell when GN search renders too few results that aliases are not used. When aliases work we expect to list '2310010I16Rik' with
+
+=> https://genenetwork.org/search?species=mouse&group=BXD&type=Hippocampus+mRNA&dataset=HC_M2_0606_P&search_terms_or=sh*&search_terms_and=&FormID=searchResult
+
+Sheepdog tests for that and it has been failing for a while.
+
+Global search finds way more results, but also lacks that alias! Meanwhile GN1 does find that alias for record  1431728_at. GN2 finds it with hippocampus mRNA
+
+=> https://genenetwork.org/search?species=mouse&group=BXD&type=Hippocampus+mRNA&dataset=HC_M2_0606_P&search_terms_or=1431728_at%0D%0A&search_terms_and=&accession_id=None&FormID=searchResult
+
+in standard search.
+But neither 1431728_at or '2310010I16Rik' has a hit in *global* search and the result for Ssh should include the record in both search systems.
+
+# Deploy
+
+We introduced a new environment variable that does not show up on CD, part of the mapping page:
+
+=>
+
+In the logs on /export2:
+
+```
+root@tux02:/export2/guix-containers/genenetwork-development/var/log/cd# tail -100 genenetwork2.log
+2025-07-20 04:19:43   File "/genenetwork2/gn2/base/trait.py", line 157, in wikidata_alias_fmt
+2025-07-20 04:19:43     GN_GUILE_SERVER_URL + "gene/aliases/" + self.symbol.upper())
+2025-07-20 04:19:43 NameError: name 'GN_GUILE_SERVER_URL' is not defined
+```
+
+One thing I ran into is http://genenetwork.org/gn3-proxy/ - what is that for?
+
+## Deploy Updates: 2025-08-15
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=269f99f1e1f0c253ecdd99f04bc7c6697012b0aa Update commit of gn-guile used on production
+
+This does not fix the issue on https://gn2-fred.genenetwork.org/show_trait?trait_id=1427571_at&dataset=HC_M2_0606_P, instead we get
+
+```
+fredm@tux04:~$ curl http://localhost:8091/gene/aliases/Brca2
+Resource not found: /gene/aliases/Brca2
+```

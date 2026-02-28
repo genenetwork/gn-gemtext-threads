@@ -1,0 +1,98 @@
+# Tasks for Johannes
+
+## Tags
+
+* kanban: johannesm
+* assigned: johannesm
+
+
+## Tasks
+
+### Ongoing
+
+* [~] Work on AI search with Bonz
+
+* [] Get GNAgent into use in GN
+
+* [] Talk with Hao about publication on agent system and gain over GNQA
+
+* [] Read literature for paper
+
+
+
+### Later
+
+* [~] Catch up on SPARQL
+
+* [~] Catch up on LMDB
+
+
+### Past
+
+* [X] Make RAG script available for reuse and clean it with Bonface
+
+* [X] Discuss with Bonface on how to get metadata for RAG
+
+* [X] Pickle RAG -> not successful :)
+
+* [X] Try out SPARQLWrapper
+
+* [X] Optimize RAG
+
+* [X] Integrate with RAG
+
+* [X] Get actual metadata with SPARQL endpoint
+
+* [X] Make RAG agentic -> AI system
+
+* [X] Visit precompute issue
+
+* [X] Find more affordable options for GNQA
+
+* [X] Replace GNQA backend with Bonz
+
+* [X] Test GPU
+
+* [X] Test new AI system
+
+* [X] Use GPU to make naturalization faster
+
+* [X] Fix bugs and optimize AI system
+
+* [X] Test and validate AI system working
+
+* [X] Read up on performance evaluation for AI systems
+
+* [X] Refetch all data from SPARQL
+
+* [X] Preproces RDF for improved naturalization
+
+* [X] Make asynchronous requests to server for naturalization
+
+* [X] Document work on issue tracker
+
+* [X] Package code AI system
+
+* [X] Draft API endpoint
+
+* [X] Test package and share with Bonz
+
+* [X] Test AI system with descriptions, qtl and real biology questions
+
+* [X] Compare performance of Claude and open model on GN data before finetuning
+
+* [X] Look into system finetuning
+
+* [X] Test performance gain
+
+* [X] Think about how to show responses of agent system and GNQA in one UI
+
+* [X] Get API working
+
+* [X] Draft outline paper
+
+* [X] Add access to external database to GNAgent
+
+* [X] Draft proposal for study on Gulf War disease
+
+* [X] Develop project on Gulf War disease

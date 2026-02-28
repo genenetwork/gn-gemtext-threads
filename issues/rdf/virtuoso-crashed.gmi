@@ -1,0 +1,109 @@
+# Virtuoso Crash Inside Container
+
+* assigned: bonfacem
+* status: closed
+
+## Description
+
+* No access to any of the rdf end-points nor the exposed sparql end-point:
+
+```
+╭─munyoki@saitama ~
+╰─➤  curl -Ia https://rdf.genenetwork.org/sparql
+HTTP/1.1 502 Bad Gateway
+Server: nginx
+Date: Thu, 12 Feb 2026 02:46:36 GMT
+Content-Type: text/html
+Content-Length: 150
+Connection: keep-alive
+
+╭─munyoki@saitama ~
+╰─➤  curl -Ia https://rdf.genenetwork.org/v1/id/probeset100_9332324_MZ
+HTTP/1.1 404 Not Found
+Server: nginx
+Date: Thu, 12 Feb 2026 02:47:40 GMT
+Content-Type: text/plain;charset=utf-8
+Content-Length: 49
+Connection: keep-alive
+```
+
+* NGINX error log:
+
+```
+connect() failed (111: Connection refused) while connecting to upstream
+upstream: "http://127.0.0.1:9082/sparql"
+```
+Not an NGINX problem.
+
+## Resolution
+
+From virtuoso error logs:
+
+```
+root@genenetwork-development /# tail -f /var/lib/virtuoso/virtuoso-errors.log
+01:59:35 GPF: Dkernel.c:5799 Server is out of memory and should be killed to prevent data corruption.
+
+                Thu Feb 12 2026
+02:12:21 GPF: Dkernel.c:5799 Server is out of memory and should be killed to prevent data corruption.
+
+                Thu Feb 12 2026
+02:28:16 GPF: Dkernel.c:5799 Server is out of memory and should be killed to prevent data corruption.
+
+                Thu Feb 12 2026
+03:04:12 GPF: Dkernel.c:5799 Server is out of memory and should be killed to prevent data corruption.
+
+                Thu Feb 12 2026
+03:11:27 GPF: Dkernel.c:5799 Server is out of memory and should be killed to prevent data corruption.
+```
+
+When virtuoso is manually started from within the container:
+
+```
+/gnu/store/9q2cf45fslxidvnp9r7b4l4cpij5fbfc-virtuoso-ose-7.2.15/bin/virtuoso-t +foreground +configfile /gnu/store/ssx5jaq2la8sclhwj4ahzgczhy33ifcg-virtuoso.ini
+```
+
+we see that a roll forward (when replaying transactions) failed with memory errors:
+
+```
+03:20:51 Roll forward started
+03:21:27     1000 transactions, 51588400 bytes replayed (1 %)
+03:22:13     2000 transactions, 103673985 bytes replayed (2 %)
+03:23:09     3000 transactions, 158240233 bytes replayed (4 %)
+03:24:07     4000 transactions, 212958938 bytes replayed (6 %)
+03:24:57     5000 transactions, 267643306 bytes replayed (7 %)
+03:25:40     6000 transactions, 321925441 bytes replayed (9 %)
+03:26:21     7000 transactions, 376180260 bytes replayed (10 %)
+03:27:00     8000 transactions, 430409959 bytes replayed (12 %)
+03:27:35     9000 transactions, 484747008 bytes replayed (13 %)
+03:28:08     10000 transactions, 545658364 bytes replayed (15 %)
+03:28:41     11000 transactions, 610043034 bytes replayed (17 %)
+03:29:12     12000 transactions, 664149582 bytes replayed (18 %)
+03:29:44     13000 transactions, 719533327 bytes replayed (20 %)
+03:29:46 /gnu/store/9q2cf45fslxidvnp9r7b4l4cpij5fbfc-virtuoso-ose-7.2.15/bin/virtuoso-t() [0x90e566]
+03:29:46 /gnu/store/9q2cf45fslxidvnp9r7b4l4cpij5fbfc-virtuoso-ose-7.2.15/bin/virtuoso-t() [0x90e5df]
+03:29:46 /gnu/store/9q2cf45fslxidvnp9r7b4l4cpij5fbfc-virtuoso-ose-7.2.15/bin/virtuoso-t() [0x915a19]
+03:29:46 /gnu/store/9q2cf45fslxidvnp9r7b4l4cpij5fbfc-virtuoso-ose-7.2.15/bin/virtuoso-t() [0x915c7b]
+03:29:46 /gnu/store/9q2cf45fslxidvnp9r7b4l4cpij5fbfc-virtuoso-ose-7.2.15/bin/virtuoso-t() [0x8fac36]
+03:29:46 /gnu/store/9q2cf45fslxidvnp9r7b4l4cpij5fbfc-virtuoso-ose-7.2.15/bin/virtuoso-t() [0x4cbf19]
+03:29:46 /gnu/store/9q2cf45fslxidvnp9r7b4l4cpij5fbfc-virtuoso-ose-7.2.15/bin/virtuoso-t() [0x4cc89b]
+03:29:46 /gnu/store/9q2cf45fslxidvnp9r7b4l4cpij5fbfc-virtuoso-ose-7.2.15/bin/virtuoso-t() [0x5e929a]
+03:29:46 /gnu/store/9q2cf45fslxidvnp9r7b4l4cpij5fbfc-virtuoso-ose-7.2.15/bin/virtuoso-t() [0x40d8e8]
+03:29:46 /gnu/store/yj053cys0724p7vs9kir808x7fivz17m-glibc-2.41/lib/libc.so.6(+0x2abd7) [0x7f625e9a7bd7]
+03:29:46 /gnu/store/yj053cys0724p7vs9kir808x7fivz17m-glibc-2.41/lib/libc.so.6(__libc_start_main+0x85) [0x7f625e9a7c95]
+03:29:46 /gnu/store/9q2cf45fslxidvnp9r7b4l4cpij5fbfc-virtuoso-ose-7.2.15/bin/virtuoso-t() [0x40dea1]
+03:29:46 GPF: Dkernel.c:5799 Server is out of memory and should be killed to prevent data corruption.
+GPF: Dkernel.c:5799 Server is out of memory and should be killed to prevent data corruption.
+Segmentation fault
+```
+=> https://vos.openlinksw.com/owiki/wiki/VOS/VirtRDFPerformanceTuning Virtuoso Performance Tuning
+
+
+Inside the container, to emulate the crash:
+
+```
+root@genenetwork-development /# /gnu/store/9q2cf45fslxidvnp9r7b4l4cpij5fbfc-virtuoso-ose-7.2.15/bin/virtuoso-t +debug +foreground +configfile /export/data/lmdb/virtuoso.ini
+```
+
+For now, re-built our triple stores from scratch; and backed up the old files to a back-up location.
+
+* closed

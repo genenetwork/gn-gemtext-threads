@@ -4,41 +4,46 @@
 
 * kanban: bonfacem
 * assigned: bonfacem
-* status: in progress
 
 ## Tasks
 
 ### Note
-- GN-auth dashboard fixes.  Follow up with Fred.
-- Case-attributes used in co-variates.
-- Encourage FahamuAI to be open.
+* Don't lose metadata.   Have an array of disabled snips.
+* Store by snip (rows).  Storage by marker.  2 different files.
+* gn-auth:
+  have wrappers around gn-auth (draw-back: folk may forget).
+  use Nginx as a MTM (re-routing calls).  How to add handler in Nginx and to work with tokens.
+* GN-auth dashboard fixes.  Follow up with Fred.
+* Case-attributes used in co-variates.
+
+### PhD Work
+
+* Concept note/ideas: Add all metadata in GN to an LLM that enriches GnQA.
+* Use mapping output as full vectors for gpt/transformers.  Integrate this work into GN.
+* Share PhD concept note with PJ for polishing
 
 ### This week
-* [+] Case Attributes (Do a diagnostic and delegate)
-*     - Git blame.  Add tests.
-*     - Error when checking the history.
-*     - Reach out to Zach.
-*     - Disable diff in the UI.
-* [ ] Distinct admin and dev user.
-* [ ] Adapter to LMDB into a cross object.
+* [] Look at deep-seek/anthropic (also really doc deployment in balg01).  Run in debian machine.
+* [~] Adapter to LMDB into a cross object.
 *     - Try computations with R/qtl2.
 *     - Look at R LMDB libraries.
 *     - Look at functions that read the files.
 *     - PJ: LMDB adapter in R and cross-type files.
-* [ ] Send Arun an e-mail on how to go about upgrading shepherd.
-* [ ] Dump all genotypes from production to LMDB.
+* [~] gn-guile webhook.
+* [~] Dump all genotypes from tux02 to LMDB.
 *     - PJ sync tux01 genotypes with tux02/04.
+*     - Yet to set-up 2FA on new device
+
+### Later
+* [ ] Generate RDF docs using AI.
+* [ ] Editing genotype metadata
+* [ ] Look at XAPIAN search for gene alias.
+* [ ] Add GeneNetwork abstracts to XAPIAN search.
 * [+] Correlations hash.
 *     - Add dataset count to RDF.
 * [ ] Spam + LLMs
 *     - RateLimiting for Rif Editing.
-*     - Honep Pot approach.
-* [+] Help Alex with SSL certification container error.
-*     - Put the changes in the actual scm files.
-* [X] Python Fahamu.
-* [X] Memvid - brief look.
-
-### Later
+*     - Honepot approach.
 * [ ] Dockerise GN container.   For Harm.
 * [ ] Send emails when job fail.
 * [ ] Look at updating gn-auth/gn-libs to PYTHONPATH for gn2/3.
@@ -92,7 +97,8 @@ Currently closed issues are:
 * [X] lmdb publishdata output and share with Pjotr and Johannes
 
 ## Done
-
+* [X] Updated Penguin2 with cuda drivers.  Cuda no longer supports K80s
+* [X] Provided Johannes anthropic tokens
 * [X] Add lmdb output hashes with index and export LMDB_DATA_DIRECTORY
 * [X] Share small database with @pjotrp and @felixl
 * [X] With Alex get rqtl2 demo going in CD (for BXD)
@@ -131,3 +137,31 @@ Currently closed issues are:
 *     - Simplify (focus on small files).  Don't over-rely on Numpy.
 * [X] Assess adding GeneRIF to LLM.
 * [X] Referrer headers -- a way of preventing bots beyond rate-limiting. 
+* [X] Python Fahamu.
+* [X] Memvid - brief look.
+* [X] Encourage FahamuAI to be open.
+*     Another paper with his group should be out this month
+* [X] Help Alex with SSL certification container error.
+*     - Fix SSL issues in local container.
+* [X] Send Arun an e-mail on how to go about upgrading shepherd.
+* [X] Case Attributes.
+*     - Git blame.  Add tests.  Fred.
+*     - NOTE: Fixed the diffs.  But there's an edge-case with BXD longevity (I haven't checked.  Shared scripts)
+*     - NOTE: Elpy broke.  Eglot/lspemacs doesn't work.
+*     - NOTE: Moved away from storing diffs in files to LMDB.
+*     - Error when checking the history.  Fixed by fixing the diffs.
+*     - Reach out to Zach.  NOTE: Timing differences.
+*     - Disable diff in the UI - unnecessary.
+* [X] Added LMDB_PATH to dev container.   Updated old commits.
+* [X] Merged no-login AI work that Alex did.
+* [X] Talk to Fred and hand over case-attributes.
+* [X] Distinct admin and dev user. [w/ Fred]
+*     - Extra fluff to grant dev user access to everything.
+* [X] Merged rate-limiter.
+* [X] Look at slow running CD (look at issue tracker and be systematic).
+* [X] Fix CD.  Build guix against a recent pinned profile.
+* [X] Fix CD tests.
+* [X] Look at different provider(s) for LLMs.
+* [X] Install OpenCL in Penguin2 and try LLM script.  Check differences between OpenCL and CUDA.  PJ installed CUDA in balg01.
+* [X] Look at container work.  Look at permissions issue.
+* [X] Set-up wolfshead: Resolving dependency conflicts in Python.  Using DSPY

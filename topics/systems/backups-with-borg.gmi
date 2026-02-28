@@ -20,15 +20,15 @@ which I run on one of my machines.
 Usually I use a version of borg from guix. This should really be done as the borg user (ibackup).
 
 ```
-mkdir ~/opt
-guix package -i borg ~/opt/borg
-tux04:~$ ~/opt/borg/bin/borg --version
+ibackup@tux03:~$ mkdir ~/opt
+ibackup@tux03:~$ guix package -i borg -p ~/opt/borg
+~/opt/borg/bin/borg --version
   1.2.2
 ```
 
 # Create a new backup dir and user
 
-The backup should live on a different disk from the things we backup, so when that disk fails we have another.
+The backup should live on a *different* disk from the things we backup, so when that disk fails we have another. In fact in 2025 we had a corruption of the backups(!) We could recover from the original data + older backups. Not great. But if it had been the same disk it would have been worse.
 
 The SQL database lives on /export and the containers live on /export2. /export3 is a largish slow drive, so perfect.
 
@@ -50,6 +50,8 @@ id
 cd /export/backup/borg
 ~/opt/borg/bin/borg init --encryption=repokey-blake2 genenetwork
 ```
+
+Note that we typically start from an existing backup. These go back a long time.
 
 Now we can run our first backup. Note that ibackup should be a member of the mysql and gn groups
 
@@ -218,3 +220,230 @@ it has a --repair switch which we needed to remove some faults in the backup its
 ```
 borg check --repair repo
 ```
+
+# Production backups
+
+Now backups were supposed to run, but they don't show up yet. Ah, it is not yet 3am CST. Meanwhile we drop the backups on another server. Just in case we lose *both* drives on the production server and/or the server itself. To achieve this we have set up a user 'bacchus' with limited permissions on the remote. All bacchus can do is copy the files across. So, we add an ssh key and invoke the commands:
+
+```
+sheepdog_run.rb -v --tag "drop-mount-$name" -c "sshfs -o $SFTP_SETTING,IdentityFile=~/.ssh/id_ecdsa_backup bacchus@$host:/ ~/mnt/$name"
+sheepdog_run.rb --always -v --tag "drop-rsync-$name" -c "rsync -vrltDP borg/* ~/mnt/$name/drop/$HOST/ --delete"
+sheepdog_run.rb -v --tag "drop-unmount-$name" -c "fusermount -u ~/mnt/$name"
+```
+
+essentially mounting the remote dir, rsync files across, and unmount. All monitored by sheepdog. Copying files over sshfs is not the fastest route, but it is very secure because of the limited permissions. On the remote we have space and for now we'll use the old backups as a starting point. When it works I'll disable and remove the old tux04 backups. Actually I'll disable the cron job now and make sure mariadb did not start (so no one can use that by mistake). All checked!
+
+Meanwhile the system log at point of failure shows no information. This means it is a hard crash the Linux kernel is not even aware of and it points out it is not a kernel/driver/software issue on our end. It really sucks. We'll work on it:
+
+=> tux04-disk-issues
+
+OK, so I prepared the old production backups on the remote and we run an update by hand. And after some fiddling with permissions it worked:
+
+```
+ibackup@tux03:/export/backup/scripts/tux03$ ./backup_drop_balg01.sh
+fusermount: entry for /home/ibackup/mnt/balg01 not found in /etc/mtab
+{:cmd=>"sshfs -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,IdentityFile=~/.ssh/id_ecdsa_backup bacchus@balg01.genenetwork.org:/ ~/mnt/balg01", :channel=>"run", :host=>"localhost", :port=>6377, :password=>"*", :verbose=>true, :tag=>"drop-mount-balg01", :config=>"/home/ibackup/.config/sheepdog/sheepdog.conf"}
+sshfs -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,IdentityFile=~/.ssh/id_ecdsa_backup bacchus@balg01.genenetwork.org:/ ~/mnt/balg01
+No event to report <sheepdog_run>                                                                                      {:cmd=>"rsync -vrltDP borg/* ~/mnt/balg01/drop/tux03/ --delete", :channel=>"run", :host=>"localhost", :port=>6377, :password=>"*", :always=>true, :verbose=>true, :tag=>"drop-rsync-balg01", :config=>"/home/ibackup/.config/sheepdog/sheepdog.conf"}
+rsync -vrltDP borg/* ~/mnt/balg01/drop/tux03/ --delete                                                                 sending incremental file list
+deleting genenetwork/integrity.1148
+(...)
+sent 22,153,007 bytes  received 352 bytes  3,408,209.08 bytes/sec
+total size is 413,991,028,933  speedup is 18,687.51
+{:time=>"2025-09-12 07:51:52 +0000", :elapsed=>5, :user=>"ibackup", :host=>"tux03", :command=>"rsync -vrltDP borg/* ~/mnt/balg01/drop/tux03/ --delete", :tag=>"drop-rsync-balg01", :stdout=>nil, :stderr=>nil, :status=>0, :err=>"SUCCESS"}
+Pushing out event <sheepdog_run> to <localhost:6377>
+{:cmd=>"fusermount -u ~/mnt/balg01", :channel=>"run", :host=>"localhost", :port=>6377, :password=>"*", :verbose=>true, :tag=>"drop-unmount-balg01", :config=>"/home/ibackup/.config/sheepdog/sheepdog.conf"}
+fusermount -u ~/mnt/balg01
+No event to report <sheepdog_run>
+```
+
+And on the remote I can see the added backup:
+
+```
+tux03-new Wed, 2025-09-10 04:33:21 [dd4bbdc30898327b62d8ccdc63c5285f916d5643bffe942b73561fe297540eae]
+```
+
+All good. Now we add this to CRON and track sheepdog to see if there are problems popping up. It now confirms: 'SUCCESS	tux03	drop-rsync-balg01'.
+
+The backup drop setup is documented here:
+
+=> https://issues.genenetwork.org/topics/systems/backup-drops
+
+I am looking into setting up the backups again. Tux04 crashed a few days ago, yet again, so we were saved from that debacle! I rebooted to get at the old backups (they are elsewhere, but that is the latest). Setting up backups is slightly laborious, described here:
+
+=> https://issues.genenetwork.org/topics/systems/backups-with-borg
+
+we use sheepdog for monitoring
+
+=> http://sheepdog.genenetwork.org/sheepdog/status.html
+
+Code:
+
+=> https://github.com/pjotrp/deploy
+
+a tool that does a lot of checks in the background every day! Compressed backup sizes:
+
+```
+283G    genenetwork
+103G    tux04-containers
+```
+
+the local network speed between tux04 and tux03 is 100 Mbs. Not bad, but it takes more an hour to move across.
+
+First manual backup worked:
+
+```
+ibackup@tux03:/export/backup/borg$ borg create genenetwork::tux03-new /export/mariadb/export/backup/mariadb/latest --stats --progress
+Archive name: tux03-new
+Archive fingerprint: dd4bbdc30898327b62d8ccdc63c5285f916d5643bffe942b73561fe297540eae
+Time (start): Wed, 2025-09-10 09:33:21
+Time (end):   Wed, 2025-09-10 10:02:52
+Duration: 29 minutes 31.00 seconds
+Number of files: 907
+Utilization of max. archive size: 0%
+------------------------------------------------------------------------------
+                       Original size      Compressed size    Deduplicated size
+This archive:              536.84 GB            238.56 GB              3.68 MB
+All archives:               65.60 TB             29.15 TB            303.71 GB
+
+                       Unique chunks         Total chunks
+Chunk index:                  253613             24717056
+------------------------------------------------------------------------------
+```
+
+Next we set up sheepdog for monitoring automated backups. Next to the
+code repos we have a script repo at
+'tux02.genenetwork.org:/home/git/pjotrp/gn-deploy-servers' which
+currently handles monitoring for our servers, including: bacchus epysode
+octopus01 penguin2 rabbit shared thebird tux01 tux02 tux04. Now tux03. The main backup script looks like
+
+```
+rm -rf $backupdir/latest
+tag="mariabackup-dump"
+sheepdog_run.rb --always -v --tag $tag -c "mariabackup --backup --innodb-io-capacity=200 --kill-long-query-type=SELEC
+--kill-long-queries-timeout=120 --target-dir=$backupdir/latest/ --user=webqtlout --password=webqtlout"
+tag="mariabackup-make-consistent"
+sheepdog_run.rb --always -v --tag $tag -c "mariabackup --prepare --target-dir=$backupdir/latest/"
+sheepdog_borg.rb -t borg-tux04-sql --always --group ibackup -v -b /export/backup/borg/genenetwork $backupdir --args '
+--stats'
+```
+
+What it does is make a full copy of mariadb databases and make sure it is consistent. Next we use borg to make a backup. The reason a DB have a consistent copy is that the running DB may change during the backup. And that is no good! We use sheepdog to monitor these command - i.e. on failure we get notified. First we run it by hand to make sure it works. First errors, for example
+
+```
+ibackup@tux03:/export/backup/scripts/tux03$ ./backup.sh
+{:cmd=>"mariabackup --backup --innodb-io-capacity=200 --kill-long-query-type=SELECT --kill-long-queries-timeout=120 --target-dir=/export/backup/mariadb/latest/ --user=webqtlout --password=webqtlout", :channel=>"run", :host=>"localhost", : port=>6379, :always=>true, :verbose=>true, :tag=>"mariabackup-dump", :config=>"/home/ibackup/.redis.conf"} mariabackup --backup --innodb-io-capacity=200 --kill-long-query-type=SELECT --kill-long-queries-timeout=120 --target-di r=/export/backup/mariadb/latest/ --user=webqtlout --password=webqtlout
+[00] 2025-09-10 10:31:19 Connecting to MariaDB server host: localhost, user: webqtlout, password: set, port: not set, s
+ocket: not set
+[00] 2025-09-10 10:31:19 Using server version 10.11.11-MariaDB-0+deb12u1-log
+(...)
+[00] 2025-09-10 10:31:19 InnoDB: Using liburing
+[00] 2025-09-10 10:31:19 mariabackup: The option "innodb_force_recovery" should only be used with "--prepare".
+[00] 2025-09-10 10:31:19 mariabackup: innodb_init_param(): Error occurred.
+```
+
+The good thing is that the actual command is listed, so we can fix things a step at a time.
+
+```
+mariabackup --backup --innodb-io-capacity=200 --kill-long-query-type=SELECT --kill-long-queries-timeout=120 --target-dir=/export/backup/mariadb/latest/ --user=webqtlout --password=*
+```
+
+I had to disable 'innodb_force_recovery=1' to make it work. Also permissions have to allow the backup user with 'chmod u+rX -R /var/lib/mysql/*'.
+
+Now that works I need to make sure sheepdog can send its updates to the remote machine (in NL). It is a bit complicated because we set up an ssh tunnel that can only run redis commands. It looks like
+
+```
+3 * * * * /usr/bin/ssh -i ~/.ssh/id_ecdsa_sheepdog -f -NT -o ServerAliveInterval=60 -L 6377:127.0.0.1:6379 redis-tun@sheepdog.genenetwork.org >> tunnel.log &2>1
+```
+
+Now when I run sheepdog_status it reports
+
+```
+2025-09-10 06:01:02 -0500 (@tux04) FAIL 1 <00m00s> mariadb-test02
+2025-09-10 06:01:02 -0500 (@tux04) FAIL 1 <00m00s> mariadb-test01
+```
+
+which is correct because I switched mariadb off on tux04!
+
+Now Mariadb on tux03 is showing errors. The problem is that it actually is in an inconsitent state (sigh). Basically I am getting endless errors like:
+
+```
+Retrying read of log at LSN=1537842295040
+Retrying read of log at LSN=1537842295040
+Retrying read of log at LSN=1537842295040
+```
+
+There is a way to fix the replay log - probably harmless in our case.
+
+But what we *should* do is move this database out of the way - I may need it for Arthur - and do a proper backup recovery. I bumped off an E-mail to Arthur and started recovery. That takes also an hour to extract a borg backup of this size. I keep GN running in parallel (meanwhile) using the old DB. Bit of extra work, but less work than trying to recover from a broken DB. The good thing is we get to test backups. Btw this is exactly why it is *not* easy to migrate/update/copy/sync databases by 'just copying files'. They are too easily in an inconsistent state. There was some E-mail thread about that this year. Maybe it is a flaw of mysql/mariabd because the replay log is inconsistent when it is left open.
+
+```
+ibackup@tux03:/export/mariadb/restore$ borg extract /export/backup/borg/genenetwork::borg-tux04-sql-20250906-04:16-Sat --progress
+ 71.1% Extracting: export/backup/mariadb/latest/db_webqtl/ProbeSetData.MYI
+```
+
+So we rolled back the DB until further complaints. And made a new backup... This is how we keep ourselves busy.
+
+Turns out the new backup is problematic too! It completes, but still has redo isssues. It ends with:
+
+```
+Redo log (from LSN 1537842295024 to 1537842295040) was copied.
+```
+
+The error was
+
+```
+Retrying read of log at LSN=1537842295040
+```
+
+so it is the last record (or all of them!). Kranky. I used
+
+```
+RESET MASTER
+```
+
+to clear out the redo log. It says 'Log flushed up to   1537842295040'. Good. Try another backup. Still not working. The mysql log says '[Warning] Could not read packet: fd: 24  state: 1  read_length: 4  errno: 11  vio_errno: 1158  length: 0'. But this does not appear to be related.
+
+```
+perror 11
+OS error code  11:  Resource temporarily unavailable
+```
+
+hmmm. Still not related. The error relates to the file:
+
+```
+ls -l /proc/574984/fd|grep '24 '
+lrwx------ 1 mysql mysql 64 Sep 11 07:46 124 -> /export/mariadb/export/backup/mariadb/latest/db_webqtl/IndelAll.ibd
+```
+
+Probably a good idea to check all tables! OK, let's test this table first.
+
+```
+mysqlcheck -c db_webqtl -u webqtlout -pwebqtlout IndelAll
+db_webqtl.IndelAll                                 OK
+```
+
+looks OK. Try all
+
+```
+time mysqlcheck -c -u webqtlout -pwebqtlout db_webqtl
+real    33m39.642s
+```
+
+all tables are good. Alright, I think we can make backups and the warning may go away with a future mariadb version. My assessment is that this Warning is harmless. Let's move forward by setting up sheepdog and borg backup. First backup run should show up soon as 'SUCCESS	tux03	borg-tux03-sql-backup' in
+
+=> http://sheepdog.genenetwork.org/sheepdog/status.html
+
+Now it works I add it as a CRON job to run daily. Sheepdog will tell me whether we are healthy or not.
+
+
+
+## Backups (part 3)
+
+As an aside. Last night, according to sheepdog, tux03 made a perfect backup run and dropped the data on a server in a different location.
+
+=> http://sheepdog.genenetwork.org/sheepdog/status.html
+
+There is more to do, however. First of all we don't backup everything. We should also backup the containers and the state of the machine. Finally we need to make sure the backups are backed up(!) The reason is that if a backup is corrupted it will just propagate - it has happened to us. A backup of a backup will have sane versions from before the corruption. These days, you also have to anticipate bad actors injecting stuff. That you won't find if they penetrated the backup system. We are quite keen on having offline backups for that reason alone.
+
+For backup of the containers we need to run as root (unfortunately). I see now we did not have a proper backup on tux04. The last one was from 2025-03-04. Now we generate these containers, but still a bad idea not to backup the small databases. Anyway, first add the containers to the backup and more state. I set it up and added the CRON job. See if it pops up on sheepdog.

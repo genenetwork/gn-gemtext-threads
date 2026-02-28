@@ -2,7 +2,7 @@
 
 ## Tags
 
-* status: open
+* status: closed, obsolete
 * priority: high
 * assigned: fredm
 * type: feature-request, bug
@@ -51,3 +51,8 @@ This actually kills 2 birds with the one stone:
 
 * Get the refresh token from the cookies rather than from the body
 * Maybe: make refreshing the access token unaware of threads/workers
+
+
+## Close as Obsolete
+
+We no longer do refresh tokens at all, they were a pain to look into, so I simply removed them from the system.

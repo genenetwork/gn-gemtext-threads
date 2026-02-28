@@ -1,0 +1,33 @@
+# Jobs: Track Who Jobs Belong To
+
+## Tags
+
+* status: closed, completed
+* priority: medium
+* type: enhancement
+* assigned: fredm, zsloan
+* keywords: gn-libs, genenetwork, async jobs, asynchronous jobs, background jobs
+
+## Description
+
+Some features in Genenetwork require long-running processes to be triggered and run in the background. We have a way to trigger such background processes, but there is no way of tracking who started what job, and therefore, no real way for a user to list only their jobs.
+
+This issue will track the introduction of such tracking. This will enable the building new job-related functionality such as a user being able to:
+* list their past, unexpired jobs
+* delete past jobs
+* possibly rerun jobs that failed but are recoverable
+* see currently running jobs, and their status
+
+## Related Issues
+
+=> /issues/gn-libs/jobs-allow-job-cascades
+
+
+## Fixes
+
+=> https://git.genenetwork.org/gn-libs/commit/?id=63ad52c70bf32ca46ccd4ca6010e2aaa434c0344
+=> https://git.genenetwork.org/gn-libs/commit/?id=5eaafdabf0e22b04907d6639600d2270211c4da5
+=> https://git.genenetwork.org/gn-libs/commit/?id=0c1a27ec9d27cf2fefe47386ddf39d23a50f3628
+=> https://git.genenetwork.org/gn-libs/commit/?id=7b12d6f0180fb8e807f2854689abf5fa682e5a1e
+=> https://git.genenetwork.org/gn-libs/commit/?id=b1f8f05a451e161c769f33e973e629d6266cfc64
+=> https://git.genenetwork.org/gn-libs/commit/?id=5f977e69b46e0ee99845fb69d504f299dc7429a1

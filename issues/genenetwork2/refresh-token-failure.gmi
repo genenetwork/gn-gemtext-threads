@@ -2,7 +2,7 @@
 
 ## Tags
 
-* status: open
+* status: closed, obsoleted
 * priority: high
 * type: bug
 * assigned: fredm, zsloan, zachs
@@ -106,3 +106,6 @@ The following commits were done as part of the troubleshooting:
 => https://git.genenetwork.org/guix-bioinformatics/commit/?id=955e4ce9370be9811262d7c73fa5398385cc04d8
 
 
+# Closed as Obsolete
+
+We no longer rely on refresh tokens. This issue is no longer present.

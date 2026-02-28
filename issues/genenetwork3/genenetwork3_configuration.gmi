@@ -1,10 +1,10 @@
-# Genenetwork2 Configurations
+# Genenetwork3 Configurations
 
 ## Tags
 
 * assigned: fredm
 * priority: normal
-* status: open
+* status: closed, completed
 * keywords: configuration, config, gn2, genenetwork, genenetwork2
 * type: bug
 
@@ -13,3 +13,7 @@
 The configuration file should only ever contain settings, and no code. Remove all code from the default settings file.
 
 Eschew executable formats (*.py) for configuration files and prefer non-executable formats e.g. *.cfg, *.json, *.conf etc
+
+## Closed as Completed
+
+See commit https://github.com/genenetwork/genenetwork3/commit/977efbb54da284fb3e8476f200206d00cb8e64cd

@@ -2,14 +2,26 @@
 
 To deploy GN we have packages in Guix itself (that comes with a distribution), in guix-bioinformatics and in guix-past (for older packages).
 
+When you develop a new package it is best to run against a recent version of guix. Note that with GeneNetwork this is different as we 'fixate' guix at an older version. See
+
+=> genenetwork-fixating-guix
+
 Typically run a guix pull to get the latest guix:
 
 ```
 mkdir -p ~/opt
-guix package -i guix -p ~/opt/guix
+guix pull -p ~/opt/guix-pull
+unset GUIX_PROFILE # for Debian
+source ~/opt/guix-pull
 ```
 
 and checkout guix-past and guix-bioinformatics using git.
+
+Note that a codeberg pull may be faster (Guix recently moved main development to Codeberg):
+
+```
+guix pull -p ~/opt/guix-pull --url=https://codeberg.org/guix/guix
+```
 
 Now Guix should be happy with
 
@@ -20,7 +32,7 @@ genenetwork2            3.11-2.1328932  out     /home/wrk/guix-bioinformatics/gn
 genenetwork3            0.1.0-2.e781996 out     /home/wrk/guix-bioinformatics/gn/packages/genenetwork.scm:107:4
 ```
 
-and we can try building
+note that using the -L switch is a bit of a hack. Normally we use channels. We can try building
 
 ```
 ~/opt/guix-pull/bin/guix build -L ~/guix-bioinformatics/ -L ~/guix-past/modules/ genenetwork2

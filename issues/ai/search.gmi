@@ -1,0 +1,344 @@
+# Prompt As UI
+
+* assigned: bonfacem, johannesm
+* status: in-progress
+
+## Description
+
+* New search page with ChatGPT-esque ux customised for GN that presents significant hits and metadata.  Goal: better ux search experience for GN users.  Feed metadata.   Move away from xapian syntax search to natural language, and hits should return relevant gn-links based off metadata.
+* Build agent/model to improve GN AI experience (related to above).
+* Add pre-compute hits (already in RDF) when available.
+
+Example:
+
+=> https://duckduckgo.com/?q=DuckDuckGo+AI+Chat&ia=chat&duckai=1
+
+Related tasks:
+
+=> https://issues.genenetwork.org/issues/rdf/expose-lmdb-view-in-rdf
+=> https://issues.genenetwork.org/issues/rdf/rdf-refinement
+
+## Tasks
+
+* [X] (bonfacem) Share existing TTL files with JoM.
+* [X] (johannesm) Build search corpus with phenotype metadata.
+* [X] (johannesm) Design RAG.
+* [X] (johannesm) Create system prompts.
+* [X] (johannesm) Test locally RAG with phenotype-related queries
+
+We need fan-out to GN-specific pages.  Related to task listed below in ⁰
+
+* [X] (johannesm, bonfacem) Design a proper JSON output format for the system
+* [X] ⁰(johannesm, bonfacem) Teach model how to build link to trait result page in CD
+* [X] (bonfacem) Sparql query to fetch phenotypes and dataset metadata.
+Dataset metadata for a given phenotype.
+
+```
+SPARQL
+PREFIX gn:  <http://rdf.genenetwork.org/v1/id/>
+PREFIX gnc: <http://rdf.genenetwork.org/v1/category/>
+PREFIX gnt: <http://rdf.genenetwork.org/v1/term/>
+
+SELECT ?phenotype_dataset
+       (GROUP_CONCAT(DISTINCT CONCAT(STR(?p), " = ", STR(?o)); separator=" | ") AS ?metadata)
+FROM <http://rdf.genenetwork.org/v1>
+WHERE {
+  ?set gnt:has_phenotype_data ?phenotype_dataset .
+  ?phenotype_dataset gnt:has_strain ?set ;
+                     ?p ?o .
+}
+GROUP BY ?phenotype_dataset
+LIMIT 10;
+
+```
+
+
+* [X] (johannesm, bonfacem) Package AI search so that it can be called from any GN code.  Packaging done in PyPi.  Minor fixes: bumped down python deps to 3.11 instead of 3.12.
+* [X] (bonfacem) Fix poetry build for (Munyoki's) local dev.  See:
+=> https://github.com/genenetwork/gn-ai/pull/1
+* [X] (johannesm, ! bonfacem) Add REST API for processing answers from AI processing.
+=> https://github.com/genenetwork/gn-ai/pull/2
+
+Example query over curl:
+```
+curl "http://localhost:5000/api/v1/search?q=Does%20diabetes%20occur%20naturally%20in%20rats%3F"
+curl "http://localhost:5000/api/v1/search?q=point%20me%20to%20useful%20phenotypes%20that%20cause%20ADHD%3F"
+```
+* [X] (pjotr) Ask about DNS name to test out AI search in GN2/3; Note: Follow up later.
+* [ ] (bonfacem, johannesm) Rewrite `rdf2partial_text.py` to query virtuoso.
+* [X] (bonfacem) Add cache layer for faster resp times for same questions.  Note: TTL = 1 week.
+* [X] (bonfacem) Add rate-limiting.  Note: 300 reqs/day.
+* [ ] (bonfacem) Figure out bare-bones auth to make gn2 talk to gnais
+* [ ] (johannesm, bonfacem) Build UI over above REST endpoints.
+* [ ] Add Nginx blocks for AI search app.
+
+
+## Later (Genotypes/ Molecular Traits)
+* [ ] (johannesm, bonfacem) Extend / Modify (directly use sparql) corpus to molecular traits (later genotypes, precompute data and RIFs).
+* [ ] (johannesm, bonfacem) Have a sync on build of xapian search. We want to teach the LLM how to build a xapian search so that the user has a fallback
+* [ ] (johannesm, bonface) Add genotype data
+* [ ] (johannesm, bonfacem, pjotrp) Add pre-compute data to RDF / AI-Agent.   Note: keep pre-compute data at Pj's virtuoso node.  Enable federation so that Bonz' and Pj's nodes can talk to each other over federation.
+* [ ] (bonfacem) Plug in sheepdog to monitor gnais.   What happens when we run out of tokens?
+
+### Build search corpus wth phenotype metadata
+
+* Naive approach (old way).  Convert RDF graph from ttl-files -> json output:
+=> https://github.com/genenetwork/gn-ai/blob/383f89441d7787023eaf1e2926c0dedca256fe1a/gnagent/utils/rdf2partial_text.py
+
+This script uses ttl files extracted from the SPARQL endpoint. As such, prefixes were replaced with full namespaces in the results.
+
+* [X] Adapted code (need to remove namespace from logic and only work prefixes):
+=> https://github.com/genenetwork/gn-ai/blob/383f89441d7787023eaf1e2926c0dedca256fe1a/aisearch/utils/new_rdf2partial_text.py
+
+Output: keys -> subjects; values -> list of predicates.   Removes redundant objects.  Subjects and objects are linked to form English-like sentences:
+```
+docs = []
+for key in tqdm(collection):
+    concat = ""
+    for value in collection[key]:
+    	text = f"{key} is/has {value}. "
+	concat += text
+    docs.append(concat)
+```
+
+=> https://github.com/genenetwork/gn-ai/blob/383f89441d7787023eaf1e2926c0dedca256fe1a/aisearch/src/rag.py#L82 See function corpus_to_docs
+
+Documents look like:
+
+```
+gnc:set is/has skos:member gn:set_B6MRLF2_D2MRLF2 .
+gnc:set is/has skos:member gn:set_MAGIC_Lines .
+gnt:family is/has a owl:ObjectProperty .
+gnt:family is/has rdfs:domain gnc:species .
+gnt:family is/has skos:definition This resource belongs to this family .
+gnt:family is/has rdfs:domain gnc:set . ", "gnt:short_name is/has a owl:ObjectProperty .
+
+```
+
+
+### Design RAG
+
+* [X] (johannesm) Simple RAG that answers questions based off a corpus.   Used DSPs to switch between different providers:
+
+You can inspect full implementation details at:
+
+=> https://github.com/genenetwork/gn-ai/blob/383f89441d7787023eaf1e2926c0dedca256fe1a/aisearch/src/rag.py rag.py
+
+### Create system prompt
+
+* [X] (johannesm) First system level prompt draft.   Aim: get the system to return concise answer with links for URLs.
+
+```
+You are an expert in biology and genomics. You excel at leveraging the data or context you have been given to address any user query.
+Give an accurate and elaborate response to the query below.
+In addition, provide links that the users can visit to verify information or dig deeper. To build link you must replace RDF prefixes by namespaces.
+
+Below is the mapping of prefixes and namespaces:
+gn => http://rdf.genenetwork.org/v1/id
+gnc => http://rdf.genenetwork.org/v1/category
+owl => http://www.w3.org/2002/07/owl
+gnt => http://rdf.genenetwork.org/v1/term
+skos = http://www.w3.org/2004/02/skos/core
+xkos => http://rdf-vocabulary.ddialliance.org/xkos
+rdf => http://www.w3.org/1999/02/22-rdf-syntax-ns
+rdfs => http://www.w3.org/2000/01/rdf-schema
+taxon => http://purl.uniprot.org/taxonomy
+dcat => http://www.w3.org/ns/dcat
+dct => http://purl.org/dc/terms
+xsd => http://www.w3.org/2001/XMLSchema
+sdmx-measure => http://purl.org/linked-data/sdmx/2009/measure
+qb => http://purl.org/linked-data/cube
+pubmed => http://rdf.ncbi.nlm.nih.gov/pubmed
+v => http://www.w3.org/2006/vcard/ns
+foaf => http://xmlns.com/foaf/0.1
+geoSeries => http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc
+
+Do not make any mistakes.
+
+```
+
+* [X] (johannesm) Provided mapping between prefix and namespace to teach the model how to generate the URLs.
+* [X] (johannesm) Do a number of experimentations to improve above.
+
+
+### Design a proper JSON output format for the system
+
+It is useful to control the system by defining an output format. This should also help parse output to other tools when the time comes.
+
+Reviewing the options:
+
+* (a) Asking the LLM to format its output as JSON.   Delegate the JSON formatting to LLM.  Risk: output JSON may be invalid.
+* (b) Passing JSON format as example in prompt.  Pre-define JSON format; pass it in the prompt.   Risk: Some models may deviate from the instructions.
+* (c) Defining an output schema the LLM needs to comply to.  DSPy offers an adapter (JSONAdapter).  Model independent.
+
+Went with Option (c).
+
+* [X] Create schema using pydantic ""BaseModel"" and used it with the DSPy predictor:
+
+```
+class Information(BaseModel):
+    """Extract relevant information for query"""
+    answer: str = Field(description="Specific point addressing the query from the context")
+    links: List[str] = Field(description="All links associated to RDF entities related to the point")
+
+class ListInformation(BaseModel):
+    """Address recursively a query"""
+    detailed_answers: List[Information] = Field(description="List of answers to the query")
+    final_answer: str = Field(description="Synthesized and comprehensive answer using detailed answers")
+
+class Generate(dspy.Signature):
+    """Wrap generation interface"""
+    context: list = dspy.InputField(desc="Background information")
+    input_text: str = dspy.InputField(desc="Query and instructions")
+    feedback: ListInformation = dspy.OutputField(desc="System response to the query")
+
+```
+
+See the workings at:
+=> https://github.com/genenetwork/gn-ai/blob/383f89441d7787023eaf1e2926c0dedca256fe1a/aisearch/src/config.py
+
+* [X] (johannesm) Iterate on the system prompt. Now it is:
+
+```
+You excel at addressing search query using the context you have. You do not mistakes.
+Extract answers to the query from the context and provide links associated with each RDF entity.
+To build links you must replace RDF prefixes by namespaces.
+Here is the mapping of prefixes and namespaces:
+gn => http://rdf.genenetwork.org/v1/id
+gnc => http://rdf.genenetwork.org/v1/category
+owl => http://www.w3.org/2002/07/owl
+gnt => http://rdf.genenetwork.org/v1/term
+skos = http://www.w3.org/2004/02/skos/core
+xkos => http://rdf-vocabulary.ddialliance.org/xkos
+rdf => http://www.w3.org/1999/02/22-rdf-syntax-ns
+rdfs => http://www.w3.org/2000/01/rdf-schema
+taxon => http://purl.uniprot.org/taxonomy
+dcat => http://www.w3.org/ns/dcat
+dct => http://purl.org/dc/terms
+xsd => http://www.w3.org/2001/XMLSchema
+sdmx-measure => http://purl.org/linked-data/sdmx/2009/measure
+qb => http://purl.org/linked-data/cube
+pubmed => http://rdf.ncbi.nlm.nih.gov/pubmed
+v => http://www.w3.org/2006/vcard/ns
+foaf => http://xmlns.com/foaf/0.1
+geoSeries => http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc
+\n
+```
+
+
+### Teach model how to build link to trait result page in CD
+
+Trait Id and dataset can be linked to a result page. See this URL:
+
+=> https://cd.genenetwork.org/show_trait?trait_id=10027&dataset=BXDPublish
+
+Trait id: 10027; dataset name: BXDPublish.  In RDF this is:
+
+=> https://rdf.genenetwork.org/v1/id/trait_BXDPublish_NOwdrwlHIC
+
+That trait has an alias encoded as "owl:equivalentClass BXDPublish_10027."
+
+To build a result page from RDF, we need a trait's unique identifer which can be queried from RDF.
+
+* [X] (johannesm) use prompt engineering to get LLM to make above substitution.  Model finetuning for this is too expensive.
+
+* [X] (johannes) Provide more system prompting examples (I.e. translate RDF links for traits to valid trait result page):
+
+```
+You excel at addressing search query using the context you have. You do not make mistakes.
+Extract answers to the query from the context and provide links associated with each RDF entity.
+To build links you must replace RDF prefixes by namespaces.
+Here is the mapping of prefixes and namespaces:
+gn => http://rdf.genenetwork.org/v1/id
+gnc => http://rdf.genenetwork.org/v1/category
+owl => http://www.w3.org/2002/07/owl
+gnt => http://rdf.genenetwork.org/v1/term
+skos = http://www.w3.org/2004/02/skos/core
+xkos => http://rdf-vocabulary.ddialliance.org/xkos
+rdf => http://www.w3.org/1999/02/22-rdf-syntax-ns
+rdfs => http://www.w3.org/2000/01/rdf-schema
+taxon => http://purl.uniprot.org/taxonomy
+dcat => http://www.w3.org/ns/dcat
+dct => http://purl.org/dc/terms
+xsd => http://www.w3.org/2001/XMLSchema
+sdmx-measure => http://purl.org/linked-data/sdmx/2009/measure
+qb => http://purl.org/linked-data/cube
+pubmed => http://rdf.ncbi.nlm.nih.gov/pubmed
+v => http://www.w3.org/2006/vcard/ns
+foaf => http://xmlns.com/foaf/0.1
+geoSeries => http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc
+
+Link pointing to specific trait should be translated to CD links using the trait id and the dataset name.
+Original trait link: https://rdf.genenetwork.org/v1/id/trait_BXDPublish_16339
+Trait id: 16339
+Dataset name: BXDPublish
+New trait link: https://cd.genenetwork.org/show_trait?trait_id=16339&dataset=BXDPublish
+\n
+```
+
+Above was enough to get the system to return valid CD links with Claude models :)
+
+Another example:
+
+```
+Query: What are the traits related to the BXD?
+
+System feedback:
+{
+    "detailed_answers": [
+        {
+            "answer": "BXD_16337 is a trait related to BXDPublish dataset. It measures Intraocular pressure (IOP) in 1 to 2 months old BXD mice of both sexes, with an average of left and right eyes. The trait has a mean value of 15.27684536576271 mmHg.",                                                                                                                   
+            "links": [
+                "https://cd.genenetwork.org/show_trait?trait_id=16337&dataset=BXDPublish"
+            ]
+        },
+        {
+            "answer": "BXD_16338 is a trait related to BXDPublish dataset. It measures Intraocular pressure (IOP) in 2.1 to 5 months old BXD mice of both sexes, with an average of left and right eyes. The trait has a mean value of 16.091910903133563 mmHg.",                                                                                                                
+            "links": [
+                "https://cd.genenetwork.org/show_trait?trait_id=16338&dataset=BXDPublish"
+            ]
+        },
+        {
+            "answer": "BXD_16339 is a trait related to BXDPublish dataset. It measures Intraocular pressure (IOP) in 5.1 to 9 months old BXD mice of both sexes, with an average of left and right eyes. The trait has a mean value of 16.563036555975255 mmHg.",                                                                                                                
+            "links": [
+                "https://cd.genenetwork.org/show_trait?trait_id=16339&dataset=BXDPublish"
+            ]
+        },
+        {
+            "answer": "BXD_16340 is a trait related to BXDPublish dataset. It measures Intraocular pressure (IOP) in 9.1 to 13 months old BXD mice of both sexes, with an average of left and right eyes. The trait has a mean value of 15.659858761411725 mmHg.",                                                                                                               
+            "links": [
+                "https://cd.genenetwork.org/show_trait?trait_id=16340&dataset=BXDPublish"
+            ]
+        },
+        {
+            "answer": "BXD_16342 is a trait related to BXDPublish dataset. It measures Intraocular pressure (IOP) across all ages (1 to 30 months old) in BXD mice of both sexes, with an average of left and right eyes. The trait has a mean value of 15.797181273159916 mmHg.",                                                                                               
+            "links": [
+                "https://cd.genenetwork.org/show_trait?trait_id=16342&dataset=BXDPublish"
+            ]
+        }
+    ],
+    "final_answer": "The BXDPublish dataset contains multiple traits related to Intraocular pressure (IOP) measurements in BXD mice. These include: BXD_16337 (IOP in 1-2 months old mice, mean 15.28 mmHg), BXD_16338 (IOP in 2.1-5 months old mice, mean 16.09 mmHg), BXD_16339 (IOP in 5.1-9 months old mice, mean 16.56 mmHg), BXD_16340 (IOP in 9.1-13 months old mice, mean 15.66 mmHg), and BXD_16342 (IOP across all ages 1-30 months, mean 15.80 mmHg). All measurements are from both sexes and represent averages of left and right eyes."                     
+}
+
+```
+Note: For local models e.g. meta-llama/Llama-3.1-8B-Instruct have a high probability of returning broken JSON.
+
+### Package AI search
+
+Next thing we want to do is packaging. Previous setup had logic and execution codes mixed. I cleaned that by moving all execution codes to `main.py`. Check it out at:
+=> https://github.com/genenetwork/gn-ai/commit/8193d6adcd210b94de88fbeadeaf4353d6df3923
+
+* [X] (johannesm) Name "main.py" -> "search.py".  Clean-up:
+=> https://github.com/genenetwork/gn-ai/commit/9bbbca60c91a69db66e57688fd7879682ac7ce5b
+
+* [X] (johannesm) Use poetry for packaging.
+=> https://github.com/genenetwork/gn-ai/blob/main/aisearch/pyproject.toml Poetry Dependencies
+
+* [X] (johannesm) Upload package to PyPI:
+=> https://github.com/genenetwork/gn-ai/blob/main/aisearch/README.md
+
+AI search (GNAIS) can be loaded as a module in any GeneNetwork code and used, provided that parameters for the search are defined.
+
+## For Later (Nice To Haves)
+
+* [~] (bonfacem) Add package to guix-bioinformatics.   Questions: langchain support? Cancelled.   Poor guix support for AI libraries.   We work with pip+pyproject for now.

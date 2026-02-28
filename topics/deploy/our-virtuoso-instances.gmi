@@ -9,6 +9,8 @@ We run three instances of virtuoso.
 The public SPARQL endpoint is accessible at
 => https://sparql.genenetwork.org/sparql
 
+These are now generally run as part of genenetwork2 containers(!)
+
 ## Configuration
 
 All our virtuoso instances are deployed in Guix system containers. The configuration for these containers is at

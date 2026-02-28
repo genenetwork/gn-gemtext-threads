@@ -2,7 +2,7 @@
 
 ## Tags
 
-* status: open
+* status: closed, completed
 * assigned: fredm
 * priority: critical
 * type: feature request, feature-request
@@ -13,3 +13,9 @@
 The last chain in the link to the uploads is the authentication/authorisation. Once the user uploads their data, they need access to it. The auth system, by default, will deny anyone/everyone access to any data that is not linked to a resource and which no user has any roles allowing them access to the data.
 
 We, currently, assign such data to the user manually, but that is not a sustainable way of working, especially as the uploader is exposed to more and more users.
+
+### Close as Completed
+
+The current iteration of the uploader does actually take into account the user that is uploading the data, granting them ownership of the uploaded data. By default, the data is not public, and is only accessible to the user who uploaded it.
+
+The user who uploads the data (and therefore own it) can later grant access to other users of the system.

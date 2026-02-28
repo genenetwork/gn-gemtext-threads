@@ -1,0 +1,47 @@
+# Guix CI failure: guix-past build breaks due to missing (libchop)
+
+# Tags
+
+* assigned: bonfacem
+* type: bug, infrastructure
+* priority: high
+
+# Notes
+
+After fixing a permissions issue in the Laminar CI environment (/var/guix/profiles/per-user/laminar):
+
+```
+[laminar] Executing cfg/jobs/gn-libs.run Backtrace: 9 (primitive-load "/var/lib/laminar/cfg/jobs/gn-libs.run") In ice-9/boot-9.scm: 152:2 8 (with-fluid* _ _ _) In ice-9/eval.scm: 202:51 7 (_ #(#(#<directory (guile-user) 7fce0bc71c80> #<pro?> ?))) 293:34 6 (_ #(#(#<directory (guile-user) 7fce0bc71c80> #<pro?> ?))) In guix/inferior.scm: 1006:4 5 (inferior-for-channels _ #:cache-directory _ #:ttl _) In ice-9/boot-9.scm: 1752:10 4 (with-exception-handler _ _ #:unwind? _ # _) In guix/store.scm: 690:37 3 (thunk) 1331:8 2 (call-with-build-handler #<procedure 7fce00e9f0c0 at g?> ?) In guix/inferior.scm: 951:2 1 (cached-channel-instance #<store-connection 256.100 7f?> ?) In ice-9/boot-9.scm: 1685:16 0 (raise-exception _ #:continuable? _) ice-9/boot-9.scm:1685:16: In procedure raise-exception: In procedure mkdir: Permission denied: "/var/guix/profiles/per-user/laminar"
+```
+
+...  by (inside the container) running:
+
+```
+mkdir -p /var/guix/profiles/per-user/laminar
+chown -R laminar:laminar /var/guix/profiles/per-user/laminar
+```
+
+...  the CI progressed further but now fails when attempting to build guix-past.  The failure is caused by an unbound variable error for the module (libchop), indicating a mismatch or missing dependency in the pinned Guix channels.
+
+Error Log:
+
+```
+(exception unbound-variable (value #f)
+ (value "Unbound variable: ~S")
+ (value (libchop)) (value #f))
+
+builder for /gnu/store/gx57wj08yv0x0g1r8rbnwcp2fc58lqvx-guix-past.drv
+failed to produce output path
+/gnu/store/n3q0sgqwm9mwvna5215npwmdfigfyr9f-guix-past
+
+cannot build derivation
+/gnu/store/3fwagz1p9vv3h020lwb2ab52f6wj6z1g-profile.drv:
+1 dependencies couldn't be built
+```
+
+# Resolution
+
+* Inside genenetwork-development.scm, manually create `/var/guix/profiles/per-user/laminar` if it doesn't exist.
+* Update the relevant .guix-channel file to match channels in guix-bioinformatics.
+
+* closed

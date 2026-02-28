@@ -1,0 +1,492 @@
+# Speeding up GEMMA
+
+GEMMA is slow, but usually fast enough. Earlier I wrote gemma-wrapper to speed things up. In genenetwork.org, by using gemma-wrapper with LOCO, most traits are mapped in a few seconds on a a large server (30 individuals x 200K markers). By expanding makers to over 1 million, however, runtimes degrade to 6 minutes. Increasing the number of individuals to 1000 may slow mapping down to hour(s). As we are running 'precompute' on 13K traits - and soon maybe millions - it would be beneficial to reduce runtimes again.
+
+One thing to look at is Sen's bulklmm. It can do phenotypes in parallel, provided there is no missing data. This is perfect for permutations which we'll also do. For multiple phenotypes it is a bit tricky however, because you'll have to mix and match experiments to show the same individuals (read samples).
+
+So the approach is to first analyze steps in GEMMA and see where it is particularly inefficient. Maybe we can do something about that. I note I started the pangemma effort (and mgamma effort before). The idea is to use a propagator network for incremental improvements and also to introduce a new build system and testing framework. In parallel we'll try to scale out on HPC using Arun's ravanan software.
+
+There is no such thing as a free lunch. So, let's dive in.
+
+# Description
+
+# Tags
+
+* assigned: pjotrp
+* type: feature
+* priority: high
+
+# Tasks
+
+* [X] Try gzipped version
+* [X] Run without debug
+* [ ] Use lmdb for genotypes
+* -   [X] convert genotypes to lmdb
+* -   [X] replace GEMMA ReadGenotypes
+* -   [X] replace reading genotypes in AnalyzeBimbam
+* -   [+] Apply similar SNP filtering as the original
+* -   [X] Add SNP info tho Geno file
+* -   [X] Try different geno encodings
+* -   [+] Fix support for NAs - also in compute
+* [X] Use lmdb for SNPs (probably part of Geno file)
+* [X] Match output
+* [ ] Write lmdb for output with filter
+* [X] Optimize openblas for target architecture
+* [ ] Use profiler
+* [ ] Hash genotypes? Try buf.hash or xxhash
+* [ ] Skip highly correlated markers with backtracking
+* [ ] Perhaps try a faster malloc library for GEMMA
+* [ ] Fix sqrt(NaN) when running big file example with -debug
+* [ ] Fix/check assumption that geno is between 0 and 2
+* [ ] Try 64-bit integer index for lmdb
+* [ ] Other improvements...
+
+# Summary
+
+Convert a geno file to mdb with
+
+```
+./bin/anno2mdb.rb mouse_hs1940.anno.txt
+./bin/geno2mdb.rb mouse_hs1940.geno.txt --anno mouse_hs1940.anno.txt.mdb --eval Gf # convert to floating point
+real    0m14.042s
+user    0m12.639s
+sys     0m0.402s
+```
+
+```
+../bin/anno2mdb.rb snps-matched.txt
+../bin/geno2mdb.rb pangenome-13M-genotypes.txt --geno-json bxd_inds.list.json --anno snps-matched.txt.mdb --eval Gf
+../bin/geno2mdb.rb pangenome-13M-genotypes.txt --geno-json bxd_inds.list.json --anno snps-matched.txt.mdb --eval Gb
+```
+
+even with floats a 30G pangenome genotype file got reduced to 12G. A quick full run of the mdb version takes 6 minutes. That is a massive 3x speedup. It also used less RAM (because it is one process instead of 20) and had a 40x core usage, much of it in the Linux kernel:
+
+```
+/bin/time -v ./build/bin/Release/gemma -k tmp/93f6b39ec06c09fb9ba9ca628b5fb990921b6c60.11.cXX.txt.cXX.txt -p tmp/pheno.json.txt -g pangenome-13M-genotypes.txt.mdb -lmm 9 -maf 0.1 -n 2 -debug
+LD_LIBRARY_PATH=$GUIX_ENVIRONMENT/lib /bin/time -v ./build/bin/Release/gemma -k tmp/93f6b39ec06c09fb9ba9ca628b5fb990921b6c60.3.cXX.txt.cXX.txt -p tmp/pheno.json.txt -g tmp/pangenome-13M-genotypes.txt.mdb -lmm 9 -maf 0.1 -n 2 -no-check
+real    5m47.587s
+user    39m33.796s
+sys     211m1.143s
+
+Command being timed: "./build/bin/Release/gemma -k tmp/93f6b39ec06c09fb9ba9ca628b5fb990921b6c60.3.cXX.txt.cXX.txt -p tmp/pheno.json.txt -g tmp/pangenome-13M-genotypes.txt.mdb -lmm 9 -maf 0.1 -n 2 -no-check"
+        User time (seconds): 2169.77
+        System time (seconds): 11919.04
+        Percent of CPU this job got: 3919%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 5:59.48
+        Maximum resident set size (kbytes): 13377040
+```
+
+as we only read the genotype file once it shows how much is IO bound! Moving to lmdb was the right choice to speed up pangemma.
+
+Old gemma does:
+
+```
+        Command being timed: "/bin/gemma -k 93f6b39ec06c09fb9ba9ca628b5fb990921b6c60.11.cXX.txt.cXX.txt -p pheno.json.txt -g pangenome-13M-genotypes.txt.gz -a snps-matched.txt -lmm 9 -maf 0.1 -n 2 -no-check"
+        User time (seconds): 2017.25
+        System time (seconds): 62.21
+        Percent of CPU this job got: 240%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 14:24.17
+        Maximum resident set size (kbytes): 9736884
+```
+
+So we are at 3x speed.
+
+With Gb byte encoding the file got further reduced from 13Gb to 4Gb.
+
+What is more exciting is that LOCO now runs in 30s - compared to gemma's earlier 6 minutes, so that is at 10x speed, using about 1/3 of RAM. Note the CPU usage:
+
+```
+        Command being timed: "./build/bin/Release/gemma -k tmp/93f6b39ec06c09fb9ba9ca628b5fb990921b6c60.3.cXX.txt.cXX.txt -p tmp/pheno.json.txt -g tmp/pangenome-13M-genotypes.txt-Gb.mdb -loco 2 -lmm 9 -maf 0.1 -n 2 -no-check"                     User time (seconds): 177.81
+        System time (seconds): 934.92
+        Percent of CPU this job got: 3391%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 0:32.80
+        Maximum resident set size (kbytes): 4326308
+```
+
+it looks like disk IO is no longer the bottleneck. The Gb version is much smaller than Gf, but runtime is only slightly better. So it is time for the profiler to find how we can make use of the other cores! But, for now, I am going to focus on getting the pipeline set up with ravanan.
+
+# Analysis
+
+As a test case we'll take on of the runs:
+
+```
+time -v /bin/gemma -loco 11 -k /export2/data/wrk/services/gemma-wrapper/tmp/tmp/panlmm/93f6b39ec06c09fb9ba9ca628b5fb990921b6c60.11.cXX.txt.cXX.txt -o 680029457111fdd460990f95853131c87ea20c57.11.assoc.txt -p pheno.json.txt -g pangenome-13M-genotypes.txt -a snps-matched.txt -lmm 9 -maf 0.1 -n 2 -outdir /export2/data/wrk/services/gemma-wrapper/tmp/tmp/panlmm/d20251111-588798-f81icw
+```
+
+which I simplify to
+
+```
+/bin/time -v /bin/gemma -loco 11 -k 93f6b39ec06c09fb9ba9ca628b5fb990921b6c60.11.cXX.txt.cXX.txt -p pheno.json.txt -g pangenome-13M-genotypes.txt -a snps-matched.txt -lmm 9 -maf 0.1 -n 2 -debug
+Reading Files ...
+number of total individuals = 143
+number of analyzed individuals = 20
+number of total SNPs/var        = 13209385
+number of SNPS for K            = 12376792
+number of SNPS for GWAS         =   832593
+number of analyzed SNPs         = 13111938
+```
+
+The timer says:
+
+```
+User time (seconds): 365.33
+System time (seconds): 16.59
+Percent of CPU this job got: 128%
+Elapsed (wall clock) time (h:mm:ss or m:ss): 4:57.01
+Average shared text size (kbytes): 0
+Average unshared data size (kbytes): 0
+Average stack size (kbytes): 0
+Average total size (kbytes): 0
+Maximum resident set size (kbytes): 11073412
+Average resident set size (kbytes): 0
+Major (requiring I/O) page faults: 0
+Minor (reclaiming a frame) page faults: 5756557
+Voluntary context switches: 1365
+nInvoluntary context switches: 478
+Swaps: 0
+File system inputs: 0
+File system outputs: 143704
+Socket messages sent: 0
+Socket messages received: 0
+Signals delivered: 0
+Page size (bytes): 4096
+Exit status: 0
+```
+
+The genotype file is unzipped at 30G. Let's try running the gzipped version (which will be beneficial on a compute cluster anyhow) which comes in at 9.2G. We know that Gemma is not the most efficient when it comes to IO. So testing is crucial.
+Critically the run gets slower:
+
+```
+Percent of CPU this job got: 118%
+Elapsed (wall clock) time (h:mm:ss or m:ss): 7:43.56
+```
+
+The problem is that unzip runs on a single thread in GEMMA, so it is actually slower that the gigantic raw text file.
+
+## Running without debug
+
+Without the debug swith gemma runs at the same speed with 128% CPU. That won't help much.
+
+## Optimizing GEMMA+OpenBLAS+GSL
+
+Compiling with optimization can be low hanging fruit - despite the fact that we seem to be IO bound at 128% CPU. Still, aggressive compiler optimizations may make a difference. The current build reads:
+
+```
+GEMMA Version    = 0.98.6 (2022-08-05)
+Build profile    = /gnu/store/8rvid272yb53bgascf5c468z0jhsyflj-profile
+GCC version      = 14.3.0
+GSL Version      = 2.8
+OpenBlas         = OpenBLAS 0.3.30  - OpenBLAS 0.3.30 DYNAMIC_ARCH NO_AFFINITY Cooperlake MAX_THREADS=128
+arch           = Cooperlake
+threads        = 96
+parallel type  = threaded
+```
+
+this uses the gemma-gn2 package in
+
+=> https://git.genenetwork.org/guix-bioinformatics/tree/gn/packages/gemma.scm#n27
+
+which is currently not built with arch optimizations (even though Cooperlake suggests differently). Another potential optimization is to use a fast malloc library. We do, however, already compile with a recent gcc, thanks to Guix. No need to improve on that.
+
+## Introduce lmdb for genotypes
+
+Rather than focussing on gzip, another potential improvement is to use lmdb with mmap. We am not going to upgrade the original gemma code (which is in maintenance mode). We are going to upgrade the new pangemma project instead:
+
+=> https://git.genenetwork.org/pangemma/
+
+Reason being that this is our experimental project.
+
+So I just managed to build pangemma/gemma in Guix. Next step is to introduce lmdb genotypes. Genotypes come essentially as a matrix of markers x individuals. In the case of GN geno files and BIMBAM files they are simply stored as tab delimited values and/or probabilities. This happens in
+
+```
+src/param.cpp
+1261:void PARAM::ReadGenotypes(gsl_matrix *UtX, gsl_matrix *K, const bool calc_K) {
+1280:void PARAM::ReadGenotypes(vector<vector<unsigned char>> &Xt, gsl_matrix *K,
+```
+
+calling into
+
+```
+gemma_io.cpp
+644:bool ReadFile_geno(const string &file_geno, const set<string> &setSnps,
+1752:bool ReadFile_geno(const string file_geno, vector<int> &indicator_idv,
+1857:bool ReadFile_geno(const string &file_geno, vector<int> &indicator_idv,
+```
+
+which are called from gemma.cpp. Also lmm.cpp reads the geno file in the AnalyzeBimbam function (see file_geno):
+
+```
+src/lmm.cpp
+61:  file_geno = cPar.file_geno;
+1664:  debug_msg(file_geno);
+1665:  auto infilen = file_geno.c_str();
+2291:    cout << "error reading genotype file:" << file_geno << endl;
+```
+
+Note that also SNPs are read from a file (see file_snps). We already have an lmdb version for that!
+
+So, reading genotypes happens in multiple places. In fact, it is read 1x for computing K and 2x for GWA. And it is worth than this because LOCO runs GWA 20x rereading the same files. Reading it once using lmdb should speed things up.
+
+We'll start with the 30G 143samples.percentile.bimbam.bimbam-reduced2 file. To convert this file into lmdb we only do this once. We want to track both column and row names in the same lmdb and we will use a meta JSON record for that. On the command line we'll state wether the genotypes are stored as char or int. Floats will be packed into either of those. We'll expirement a bit to see what the default should be. A genotype is usually a number/character or a probability. In the latter case we don't have to have high precison and can choose to store an index into a range of values. We can also opt for Float16 or something more ad hoc because we don't have to store the exponent.
+
+But let's start with a standard float here, to keep things simple. To write the first version of code I'll use a byte conversion:
+
+```
+./bin/geno2mdb.rb BXD.geno.bimbam --eval '{"0"=>0,"1"=>1,"2"=>2,"NA"=>-1}' --pack 'C*' --geno-json BXD.geno.json
+```
+
+The lmdb file contains a metadata record that looks like:
+
+```
+{
+  "type": "gemma-geno",
+  "version": 1,
+  "eval": "G0-2",
+  "key-format": "string",
+  "rec-format": "C*",
+  "geno": {
+    "type": "gn-geno-to-gemma",
+    "genofile": "BXD.geno",
+    "samples": [
+      "BXD1",
+      "BXD2",
+      "BXD5",
+etc.
+```
+
+i.e. it is a self-contained, efficient, genotype format. There is also another trick, we can use Plink-style compression with
+
+```
+./bin/geno2mdb.rb BXD.geno.bimbam --eval '{"0"=>0,"1"=>1,"2"=>2,"NA"=>4}' --geno-json BXD.geno.json --gpack 'l.each_slice(4).map { |slice| slice.map.with_index.sum {|val,i| val << (i*2) } }.pack("C*")'
+```
+
+reducing the original uncompressed BIMBAM from 9.9Mb to 2.7Mb. This is still a lot larger than the gzip compressed BIMBAM, but as I pointed out earlier the uncompressed version is faster by a wide margin. Compressing the lmdb file gets it in range of the compressed BIMBAM btw. So that is always an option.
+
+Next we create a floating point version. That reduces the file to 30% with
+
+```
+geno2mdb.rb fp.bimbam --geval 'g.to_f' --pack 'F*' --geno-json bxd_inds.list.json
+```
+
+and if we compress the probabilities into a byte reduces the file to 10%:
+
+```
+geno2mdb.rb fp.bimbam --geval '(g.to_f*255.0).to_i' --pack 'C*' --geno-json bxd_inds.list.json
+```
+
+And now the compressed version is also 4x smaller. We'll have to run gemma at scale to see what the impact is, but an uncompressed 10x reduction schould have an impact on the IO bottle neck. Note how easy it is to try these things with my little Ruby script.
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/geno2mdb.rb
+
+## Use lmdb genotypes from pangemma
+
+Rather than writing new code in C++ I proceeded embedding guile in pangemma. If it turns out to be a performance problem we can always fall back to C. Here we show a simple test witten in guile that gets called from main.cpp:
+
+=> https://git.genenetwork.org/pangemma/commit/?id=5b6b5e2ad97b4733125c0845cfae007e8094a687
+
+## Some analysis of GEMMA
+
+GEMMA::BatchRun reads files and executes (b gemma.cpp:1657)
+cPar.ReadFiles()
+  ReadFile_anno
+  ReadFile_pheno
+  ReadFile_geno (gemma_io.cpp:652) - first read to fetch SNPs info, num (ns_tset) and total SNPs (ns_total).
+                                   - it also does some checks
+    Note: These can all be handled by the lmdb files. So it saves one run.
+
+Summary of Mutated Outputs:
+* indicator_snp: Binary indicators for which SNPs passed filtering
+* snpInfo: Complete metadata for all SNPs in the file
+* ns_test: Count of SNPs passing filters
+checkpoint("read-geno-file",file_geno);
+
+Next start LMM9 gemma.cpp:2571
+  ReadFile_kin
+  EigenDecomp_Zeroed
+  2713          CalcUtX(U, W, UtW);
+  2714          CalcUtX(U, Y, UtY);
+  CalcLambda
+  CalcLmmVgVeBeta
+  CalcPve
+  cPar.PrintSummary()
+  debug_msg("fit LMM (one phenotype)");
+  cLmm.AnalyzeBimbam lmm.cpp:1665 and
+    LMM::Analyze lmm.cpp:1704
+
+
+Based on LLM code analysis, here's what gets mutated in the 'LMM' and Param class:
+
+### By 'ReadFile_geno':
+This is a **standalone function** (not a member of LMM), but it mutates LMM members when passed as parameters:
+
+1. **'indicator_snp'** - cleared and populated with 0/1 filter flags
+2. **'snpInfo'** - cleared and populated with SNP metadata
+3. **'ns_test'** - set to count of SNPs that passed all filters
+
+### By 'LMM::AnalyzeBimbam':
+(which calls 'LMM::Analyze')
+
+**Directly mutated in 'LMM::Analyze':**
+
+1. **'sumStat'** - PRIMARY OUTPUT
+   - Cleared at start (implied)
+   - Populated with one SUMSTAT entry per analyzed SNP
+   - Contains: beta, se, lambda_remle, lambda_mle, p_wald, p_lrt, p_score, logl_H1
+
+2. **'time_UtX'** - timing accumulator
+   - '+= time_spent_on_matrix_multiplication'
+
+3. **'time_opt'** - timing accumulator
+   - '+= time_spent_on_optimization'
+
+**Read but NOT mutated:**
+- 'indicator_snp' - read to determine which SNPs to process
+- 'indicator_idv' - read to determine which individuals to include
+- 'ni_total', 'ni_test' - used for loop bounds and assertions
+- 'n_cvt' - number of covariates, used in calculations
+- 'l_mle_null', 'l_min', 'l_max', 'n_region', 'logl_mle_H0' - analysis parameters
+- 'a_mode' - determines which statistical tests to run
+- 'd_pace' - controls progress bar display
+
+### Summary Table:
+
+| Member Variable | Mutated By | Purpose |
+|----------------|------------|---------|
+| 'indicator_snp' | 'ReadFile_geno' | Which SNPs passed filters |
+| 'snpInfo' | 'ReadFile_geno' | SNP metadata (chr, pos, alleles, etc.) |
+| 'ns_test' | 'ReadFile_geno' | Count of SNPs to analyze |
+| 'sumStat' | 'Analyze' | **Main output**: Statistical results per SNP |
+| 'time_UtX' | 'Analyze' | Performance profiling |
+| 'time_opt' | 'Analyze' | Performance profiling |
+
+The key output is **'sumStat'** which contains all the association test results.
+
+PARAM variables directly mutated by these functions:
+
+    indicator_snp (by ReadFile_geno)
+    snpInfo (by ReadFile_geno)
+    ns_test (by ReadFile_geno)
+
+LMM variables mutated:
+
+    indicator_snp (by ReadFile_geno if passed LMM's copy)
+    snpInfo (by ReadFile_geno if passed LMM's copy)
+    ns_test (by ReadFile_geno if passed LMM's copy)
+    sumStat (by Analyze - this is LMM-only, not in PARAM)
+    time_UtX, time_opt (by Analyze)
+
+The actual analysis results (sumStat) exist only in LMM, not in PARAM.
+
+## Coding for lmdb support
+
+From above it should be clear that, if we have the genotypes and snp annotations in lmdb, we can skip reading the genotype file the first time. We can also rewrite the 'analyze' functions to fetch this information on the fly.
+
+Note that OpenBLAS will have to run single threaded when introducing SNP-based threads.
+
+## Fine grained multithreading
+
+From above it can be concluded that we can batch process SNPs in parallel. The only output is sumStat and that is written at once at the end. So, if we can collect the sumStat data without collision it should just work.
+
+Interestingly both Guile and C++ have recently introduced fibers. Boost.Fiber looks pretty clean:
+
+```
+#include <boost/fiber/all.hpp>
+#include <vector>
+#include <iostream>
+
+namespace fibers = boost::fibers;
+
+// Worker fiber
+void compute_worker(int start, int end,
+                   fibers::buffered_channel<int>& channel) {
+    for (int i = start; i < end; ++i) {
+        channel.push(i * i);
+    }
+}
+
+void parallel_compute_fibers() {
+    fibers::buffered_channel<int> channel(100);
+
+    // Spawn fibers
+    fibers::fiber f1([&]() {
+        compute_worker(0, 100, channel);
+        channel.close();  // Signal completion
+    });
+
+    fibers::fiber f2([&]() {
+        compute_worker(100, 200, channel);
+    });
+
+    // Collect results
+    std::vector<int> results;
+    int value;
+    while (fibers::channel_op_status::success == channel.pop(value)) {
+        results.push_back(value);
+    }
+
+    f1.join();
+    f2.join();
+
+    std::cout << "Total results: " << results.size() << std::endl;
+}
+```
+
+Compare that with guile:
+
+```
+(use-modules (fibers)
+             (fibers channels))
+
+;; Worker that streams individual results
+(define (compute-worker-streaming start end result-channel)
+  (let loop ((i start))
+    (when (< i end)
+      (put-message result-channel (* i i))
+      (loop (+ i 1))))
+  ;; Send completion signal
+  (put-message result-channel 'done))
+
+;; Collector fiber
+(define (result-collector result-channel num-workers)
+  (let loop ((results '())
+             (done-count 0))
+    (if (= done-count num-workers)
+        (reverse results)
+        (let ((msg (get-message result-channel)))
+          (if (eq? msg 'done)
+              (loop results (+ done-count 1))
+              (loop (cons msg results) done-count))))))
+
+(define (parallel-compute-streaming)
+  (run-fibers
+   (lambda ()
+     (let ((result-channel (make-channel)))
+
+       ;; Spawn workers
+       (spawn-fiber
+        (lambda () (compute-worker-streaming 0 100 result-channel)))
+       (spawn-fiber
+        (lambda () (compute-worker-streaming 100 200 result-channel)))
+
+       ;; Collect results
+       (result-collector result-channel 2)))))
+```
+
+The Boost fiber is a relatively mature library now, with about 8+ years of development and real-world usage.
+Interestingly Boost.fibers has work stealing built in. We can look at that later:
+
+=> https://www.boost.org/doc/libs/1_66_0/libs/fiber/doc/html/fiber/worker.html
+
+What about LOCO? Actually we can use the same fiber strategy for each chromosome as a per CHR process. We can set the number of threads differently based on chromosome SNP num, so all chromosomes take (about) the same time. Later, we can bring LOCO into one process with the advantage that the genotype data is only read once. In both cases the kinship matrices are in RAM anyway.
+
+# Reducing the size of the genotype file
+
+The first version of lmdb genotypes used simple floats. That reduced the pangenome text version from 30Gb to 12Gb with about a 3x speedup of gemma. Next I tried byte representation of the genotypes.
+
+# Optimizing SNP handling
+
+GEMMA originally used a separate SNP annotation file which proves inefficient. Now we transform the geno information to lmdb, we might as well include chr+pos. We'll make the key out of that and add a table with marker annotation.
+
+# Optimizing the index
+
+I opted for using a CHR+POS index (byte+long value). There are a few things to consider. There may be duplicates and there may be missing values. Also LMDB likes and integer index. The built-in dubsort does not work, so we need to create a unique pos for every variant. I'll do that by adding the line number.

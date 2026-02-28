@@ -30,3 +30,5 @@ A fix for this would be to replace "add_boolean_prefix" with "add_prefix".
 ## CIS/TRANS Searches
 
 The challenge with this search is that we would have to compare valuse for each possible result against one another, necessitating the generation of position values separately for every possible result.  Also, for the devs (jnduli, bonfacem) we need to have a better understanding of how this work, which is currently vague.
+
+* closed

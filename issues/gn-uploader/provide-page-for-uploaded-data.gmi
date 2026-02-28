@@ -2,7 +2,7 @@
 
 ## Tags
 
-* status: open
+* status: closed, completed
 * assigned: fredm
 * priority: medium
 * type: feature, feature request, feature-request
@@ -20,3 +20,8 @@ Once a user has uploaded their data, provide them with a landing page/dashboard 
 Depends on
 
 => /issues/gn-uploader/link-authentication-authorisation
+
+
+## Close as complete
+
+Current uploader directs user to a view of the data they uploader on GN2. This is complete.

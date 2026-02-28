@@ -3,7 +3,7 @@
 ## Tags
 
 * type: bug
-* status: open
+* status: closed, completed
 * priority: high
 * assigned: alexm, zachs, fredm
 * keywords: R/qtl2, R/qtl2 Maps, gn3, genetwork3, genenetwork 3
@@ -40,3 +40,7 @@ This might imply a code issue: Perhaps
 * the wrong path value is passed
 
 The same error occurs on https://cd.genenetwork.org but does not seem to prevent CD from running the mapping to completion. Maybe something is missing on production — what, though?
+
+## Closed as Completed
+
+This seems fixed now.

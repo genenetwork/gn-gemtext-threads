@@ -1,0 +1,58 @@
+# RDF Content Negotiation
+
+* assigned: bonfacem
+* status: closed
+
+## Description
+
+We should be able to receive different formats from virtuoso:
+
+```
+curl -H "Accept: application/ld+json" https://rdf.genenetwork.org/v1/id/Arabidopsis_thaliana
+```
+
+Moreover, we should get rid off (Note the "n6"):
+
+=> http://rdf.genenetwork.org/v1/term/shortName n6:shortName
+
+## Resolution
+
+* https://git.genenetwork.org/gn-guile/commit/?id=a770f96a9e36f1272418870d1cddc2bd2f5c2b17
+
+See all global namespaces:
+
+```
+  SELECT  NS_PREFIX, 
+          NS_URL 
+    FROM  DB.DBA.SYS_XML_PERSISTENT_NS_DECL
+ORDER BY  LOWER(NS_PREFIX) ;
+```
+
+Set the global namespaces:
+
+```
+DB.DBA.XML_SET_NS_DECL ('dcat', 'http://www.w3.org/ns/dcat#', 2);
+DB.DBA.XML_SET_NS_DECL ('dct', 'http://purl.org/dc/terms/', 2);
+DB.DBA.XML_SET_NS_DECL ('fabio', 'http://purl.org/spar/fabio/', 2);
+DB.DBA.XML_SET_NS_DECL ('genbank', 'https://bioregistry.io/reference/genbank:', 2);
+DB.DBA.XML_SET_NS_DECL ('gene', 'http://www.ncbi.nlm.nih.gov/gene?cmd=Retrieve&dopt=Graphics&list_uids=', 2);
+DB.DBA.XML_SET_NS_DECL ('generif', 'http://www.ncbi.nlm.nih.gov/gene?cmd=Retrieve&dopt=Graphics&list_uids=', 2);
+DB.DBA.XML_SET_NS_DECL ('geoSeries', 'http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=', 2);
+DB.DBA.XML_SET_NS_DECL ('gn', 'http://rdf.genenetwork.org/v1/id/', 2);
+DB.DBA.XML_SET_NS_DECL ('gnc', 'http://rdf.genenetwork.org/v1/category/', 2);
+DB.DBA.XML_SET_NS_DECL ('gnt', 'http://rdf.genenetwork.org/v1/term/', 2);
+DB.DBA.XML_SET_NS_DECL ('ncbiTaxon', 'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=', 2);
+DB.DBA.XML_SET_NS_DECL ('prism', 'http://prismstandard.org/namespaces/basic/2.0/', 2);
+DB.DBA.XML_SET_NS_DECL ('probeset', 'http://rdf.genenetwork.org/v1/probeset/', 2);
+DB.DBA.XML_SET_NS_DECL ('pubmed', 'http://rdf.ncbi.nlm.nih.gov/pubmed/', 2);
+DB.DBA.XML_SET_NS_DECL ('qb', 'http://purl.org/linked-data/cube#', 2);
+DB.DBA.XML_SET_NS_DECL ('sdmx-measure', 'http://purl.org/linked-data/sdmx/2009/measure#', 2);
+DB.DBA.XML_SET_NS_DECL ('taxon', 'http://purl.uniprot.org/taxonomy/', 2);
+DB.DBA.XML_SET_NS_DECL ('transcript', 'https://portals.broadinstitute.org/gpp/public/trans/details?transName=', 2);
+DB.DBA.XML_SET_NS_DECL ('v', 'http://www.w3.org/2006/vcard/ns#', 2);
+DB.DBA.XML_SET_NS_DECL ('xkos', 'http://rdf-vocabulary.ddialliance.org/xkos#', 2);
+DB.DBA.XML_SET_NS_DECL ('wd', 'http://www.wikidata.org/entity/', 2);
+DB.DBA.XML_SET_NS_DECL ('wd', 'http://www.wikidata.org/entity/', 2);
+CHECKPOINT;
+```
+* closed

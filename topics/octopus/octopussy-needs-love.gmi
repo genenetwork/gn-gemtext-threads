@@ -1,0 +1,427 @@
+# Octopussy needs love
+
+At UTHSC, Memphis, TN, around October 2020 Efraim and I installed Octopus on Debian+Guix with lizard as a distributed network storage system and slurm for job control. Around October 2023 we added 5 genoa tux05-09 machines, doubling the cluster in size. See
+
+=> https://genenetwork.org/gn-docs/facilities
+
+Octopus made a lot of work possible we can't really do on larger HPCs and led to a bunch of high impact studies and publications, particularly on pangenomics.
+
+In the coming period we want te replace lizard with moosefs. Lizard is no longer maintained and as it was a fork of Moose, it is only logical to go forward on that one. We also looked at Ceph, but apparently Ceph is not great for systems that carry no redundancy. So far, lizard has been using redundancy, but we figure we can do without if the occassional (cheap) SSD goes bad.
+
+We also need to look at upgrading some of the Dell BIOS - particularly tux05-09 - as they can be occassionally problematic with non-OEM SSDs.
+
+On the worker nodes it may be wise to upgrade Debian. Followed by an upgrade to the head nodes and other supporting machines. Even though we rely on Guix for latest and greatest, there may be good upgrades in the underlying Linux kernel and drivers.
+
+Our Slurm PBS we are up-to-date because we run that completely on Guix and Arun supports the latest and greatest.
+
+Another thing we ought to fix is introduce centralized user management. So far we have had few users and just got by. But sometimes it bites us that users have different UIDs on the nodes.
+
+## Architecture overview
+
+* O1 is the old head node hosting lizardfs - will move to a compute
+* O2 is the old backup hosting the lizardfs shadow - will move to compute
+* O3 is the new head node hosting moosefs
+* O4 is the backup head node hosting moosefs shadow - will act as a compute node too
+
+All the other nodes are for compute. O1 and O4 will be the last nodes to remain on older Debian. They will handle the last bits of lizard.
+
+# Tasks
+
+* [X] Create moosefs package
+* [X] Install moosefs
+* [X] Upgrade bios (all tuxes)
+* [ ] Migrate lizardfs nodes to moosefs (one at a time)
+* [ ] Add server monitoring with sheepdog
+* [ ] Upgrade Debian
+* - [ ] Maybe, just maybe, boot the nodes from a central server
+* [ ] Introduce centralized user management
+
+# Current activity
+
+* [ ] Moving largish data from lizard to moosefs
+* - [+] Flavia
+* [X] Mount nodes to moosefs
+* - [X] octopus01
+* - [X] octopus02
+* - [ ] octopus03
+* - [X] octopus04
+* - [X] octopus05
+* - [X] octopus06
+* - [X] octopus07
+* - [X] octopus08
+* - [X] octopus09
+* - [X] octopus10
+* - [X] octopus11
+* - [X] tux05
+* - [X] tux06
+* - [X] tux07
+* - [X] tux08
+* - [X] tux09
+* - [X] lambda01
+* [+] Adding moosefs drives
+* - [X] penguin2
+* - - [X] Cleaning second RAID5 on P2
+* - [X] octopus04
+* - [X] octopus05 on moosefs
+* - [X] octopus07 on moosefs (see scripts)
+* - [X] tux06
+* - [X] tux07
+* - [X] octopus06
+* - [X] octopus11
+* - [X] octopus02
+* [X] Check scratch spaces
+* [ ] Start network performance with iperf3
+* - [ ] Write to moose from non chunk servers tux08 octopus10 and octopus03
+* - [ ] Test connecting to tux
+* - [ ] Test connecting to octopus
+* - [ ] speedtest-cli
+* [ ] Add monitoring tools for tmp, scratch, RAID and moosefs
+* [ ] Bind /tmp and /scratch to 1TB
+
+# Progress
+
+## Lizardfs and Moosefs
+
+Our Lizard documention lives at
+
+=> lizardfs/README
+
+Efraim wrote a lizardfs for Guix at the time in guix-bioinformatics, but we ended up deploying with Debian. Going back now, the package does not look too taxing (I think we dropped it because the Guix system configuration did not play well).
+
+=> https://git.genenetwork.org/guix-bioinformatics/tree/gn/packages/file-systems.scm
+
+Looking at the Debian package
+
+=> https://salsa.debian.org/debian/moosefs
+
+It carries no special patches, but a few nice hints in *.README.debian. I think it is worth trying to write a Guix package so we can easily upgrade (even on an aging Debian). Future proofing is key.
+
+The following built moosefs in a guix shell:
+
+```
+guix shell -C -D -F coreutils make autoconf automake fuse libpcap zlib pkg-config python libtool gcc-toolchain
+autoreconf -f -i
+make
+```
+
+Next I created a guix package that installs with:
+
+```
+guix build -L ~/guix-bioinformatics -L ~/guix-past/modules moosefs
+```
+
+See
+
+=> https://git.genenetwork.org/guix-bioinformatics/commit/?id=236903baaab0f84f012a55700c1917265a2b701c
+
+Next stop testing and deploying!
+
+## Choosing a head node
+
+Currently octopus01 is the head node. It probably is a good idea to change that, so we can safely upgrade the new server. The first choice would be octopus02 (o2). We can mirror the moose daemons on octopus01 (o1) later. Let's see what that looks like.
+
+A quick assessment of o1 shows that we have 14T storage on o1 that takes care of /home and /gnu. But only 1.2T is used.
+
+o2 has also quite a few disks (up 1417 days!), but a bunch of SSDs appears to error out. E.g.
+
+```
+Sep 04 07:44:56 octopus02 mfschunkserver[22766]: can't create lock file /mnt/sdd1/lizardfs_vol/.lock, marking hdd as damaged: Input/output error
+UUID=277c05de-64f5-48a8-8614-8027a53be212 /mnt/sdd1 xfs rw,exec,nodev,noatime,nodiratime,largeio,inode64 0 1
+```
+
+Lizard also complains 4 SSDs have been wiped out.
+We'll need to reboot the server to see what storage still may work. The slurm connection appears to be misconfigured:
+
+```
+[2025-12-20T09:36:27.846] error: service_connection: slurm_receive_msg: Insane message length
+[2025-12-20T09:36:28.415] error: unpackstr_xmalloc: Buffer to be unpacked is too large (1700881509 > 1073741824)       [2025-12-20T09:36:28.415] error: unpacking header                                                                      [2025-12-20T09:36:28.415] error: destroy_forward: no init                                                              [2025-12-20T09:36:28.415] error: slurm_receive_msg_and_forward: [[nessus6.uthsc.edu]:35553] failed: Message receive failure
+```
+
+looks like Andrea is the only one using the machine right now though some others logged in. Before rebooting I'll block users, ask Andrea to move off, and deplete slurm and lizard. But o2 is a large RAM machine, so we should not use that as a head node.
+
+Let's take a look at o3. This one has less RAM. Flavia is running some tools, but I don't think the machine is really used right now. Slurm is running, but shows similar configuration issues as o2. Let's take a look at slurm
+
+=> ../systems/hpc/octopus-maintenance
+=> ../hpc/octopus/slurm-user-guide
+
+Alright, I depleted and removed slurm from o3. I think it would be wise to also deplete the lizard drives on that machine.
+
+The big users on lizard are:
+
+```
+1.6T    dashbrook
+1.8T    pangenomes
+2.1T    erikg
+3.4T    aruni
+3.4T    junh
+8.4T    hchen
+9.2T    salehi
+13T     guarracino
+16T     flaviav
+```
+
+it seems we can clean some of that up! We have some backup storage that we can use. Alternatively move to ISAAC.
+
+We'll slowly start depleting the lizard. See also
+
+=> lizardfs/README
+
+O3 has 4 lizard drives. We'll start by depleting one.
+
+
+# O2
+
+```
+172.23.22.159:9422:/mnt/sde1/lizardfs_vol/
+        to delete: no
+        damaged: yes
+        scanning: no
+        last error: no errors
+        total space: 0B
+        used space: 0B
+        chunks: 0
+172.23.22.159:9422:/mnt/sdd1/lizardfs_vol/
+        to delete: no
+        damaged: yes
+        scanning: no
+        last error: no errors
+        total space: 0B
+        used space: 0B
+        chunks: 0
+172.23.22.159:9422:/mnt/sdc1/lizardfs_vol/
+        to delete: no
+        damaged: yes
+        scanning: no
+        last error: no errors
+        total space: 0B
+        used space: 0B
+        chunks: 0
+```
+
+Stopped the chunk server.
+sde remounted after xfs_repair. The others were not visible, so rebooted. The folloing storage should add to the total again:
+
+```
+/dev/sdc1            4.6T  3.9T  725G  85% /mnt/sdc1
+/dev/sdd1            4.6T  4.2T  428G  91% /mnt/sdd1
+/dev/sdf1            4.6T  4.2T  358G  93% /mnt/sdf1
+/dev/sde             3.7T  3.7T  4.0G 100% /mnt/sde
+/dev/sdg1            3.7T  3.7T  3.9G 100% /mnt/sdg1
+```
+
+After adding this storage and people removing material it starts to look better:
+
+```
+mfs#octopus01:9421   171T   83T   89T  49% /lizardfs
+```
+
+# O3
+
+I have marked the disks (4x4T) on o3 for deletion - that will subtract 7T. This in preparation for upgrading Linux and migrating those disks to moosefs. Continue below.
+
+# T5
+
+T5 requires a new bios - it has the same one as the unreliable T4. I also need to see if there are any disks in the bios we don't see right now. T5 has two small fast SSDs and one larger one (3.5T).
+
+I managed to install the new bios, but I had trouble getting into linux because of some network/driver issues. ipmi was suspect. Finally managed rescue mode by adding 'systemd.unit=emergency.target' in the grub line. 'single' is no longer enough (grrr). One to keep in mind.
+
+Had to disable ipmi modules. See my idrac.org.
+
+# T6
+
+Tux06 (T6) contains two unused drives that appear to have contained XFS. xfs_repair did not really help...
+The BIOS on T6 is newer than on T4+T5. That probably explains why the higher T numbers have no disk issues, while T4+T5 had problems with non-OEM! Anyway, as I was at it, I updated the BIOS for all.
+
+T6 has 4 SSDs, 2x 3.5T. Both unused. /dev/sdd appears to contain errors, so it is one drive only.
+
+T6 has been added to moosefs.
+
+I am using T6 to test network boots because it is not serving lizard.
+
+# T7
+
+On T7 root was full(!?). Culprit was Andrea with /tmp/sweepga_genomes_111850/.
+T7 has 3x3.5T with one sdd1 unused.
+
+Adding sdd1 to moosefs.
+
+# T8
+
+T8 has 3x3.5T, all used. After the BIOS upgrade the efi partition did not boot. After a few reboots it did get into grub and I made a copy of the efi partition on sdd (just in case).
+
+# T9
+
+T9 has 1x3.5T. Used. I had to reduce HDD_LEAVE_SPACE_DEFAULT to give the chunkserver some air.
+
+# O3 + O4
+
+Back to O3, our future head node. lizard has mostly been depleted. Though every drive has a few chunks left. I just pulled down the chunkserver and lizard appears to be fine (no errors). Good!
+
+Next install Linux. I have two routes, one is using debootstrap, the other is via PXE. I want to try the latter.
+
+So far, I managed to boot into ipxe on Octopus.
+The linux kernel loads over http, but it does not show output. Likely I need to:
+
+* [X] Build ipxe with serial support
+* [X] Test the installer with serial support
+* [X] Add NFS support
+* [X] debootstrap install of new Debian on /export/nfs/nodes/debian14
+* [X] Make available through NFS and boot through IPXE
+
+I managed to boot T6 over the network.
+Essentially we have a running Debian last stable on T6 that is completely run over NFS!
+In the next steps I need to figure out:
+
+* [X] Mount NFS with root access
+* [ ] Every PXE node needs its own hard disk configuration
+* [ ] Mount NFS from octopus01
+* [ ] Start slurm
+
+We can have this as a test node pretty soon.
+But first we have to start moosefs and migrate data.
+
+I am doing some small tests and will put (old) T6 back on slurm again.
+
+To get every node booted with its own version of fstab and state logging on a local disk we need to pull some trick with initrd.
+
+Basically NFS boot initrd needs to contain a script that invokes changes for every node. The node hostname and primary partition can be passed on from ipxe using the kernel myhost=client01 localdisk=/dev/sda1. So that is the differentiator. The script in /etc/nodes/initramfs-tools/update-node-etc will remount /tmp and /var onto $localdisk and copy /etc there too. Next it will symnlink a few files, such as /etc/hostname and /etc/fstab to adjust for local settings.
+
+This way we will deploy all nodes centrally. One aspect is that we don't need dynamic user management as it is centrally orchestrated! The user files can be copied from the head node when they change.
+
+O4 is going to be the backup head node. It will act as a compute node too, until we need it as the head node. O4 is currently not on the slurm queue.
+
+* [X] Update guix on O1
+* [X] Install guix moosefs
+* [X] Start moosefs master on O3
+* [X] Start moosefs metalogger on O4
+* [X] Check moosefs logging facilities
+* [X] See if we can get a global moosefs state on balancing redundancy
+* [X] See if we can mark drives so it is easier to track them
+* [ ] Test broken (?) /dev/sdf on octopus03, /dev/sdd on tux06, /dev/sdd on tux07
+
+We can start moose master on O3. We should use different ports than lizard. Lizard uses 9419-24 by default. So let's use
+9519- ports. See
+
+=> moosefs/moosefs-maintenance.gmi
+
+# P2
+
+Penguin2 has 80T of spinning disk storage. We are going to use that for redundancy. Basically these disks get a moosefs goal of HDD 'slow' and we'll configure them on a remote rack - so chunks get fetched from local chunk servers (first). This will gain us 40T of immediate storage. Adding more spinning disks will free up SSDs further.
+
+* [X] P2 Update Guix
+* [X] Install moosefs
+* [X] Create HDD chunk server
+* [ ] Add second RAID5
+
+I created a /moosefs/raid5 directory. All files in this directory are stored on the HDD backend and do not load the SSDs.
+
+# Bacchus
+
+We have a RAID5 on a synology server we can use after we clear some data.
+
+* [ ] Add bacchus RAID5 server to moosefs
+* - [ ] Update guix store
+* - [ ] Install moosefs chunk server
+* - [ ] Add to pool
+
+# Network performance
+
+* - [ ] Write to moose from non chunk servers tux08 octopus10 and octopus03
+* - [ ] Test connecting to tux08
+* - [ ] Test connecting to octopus10
+
+## Run iperf3
+
+
+
+On server:
+
+```
+/gnu/store/vyx8wgjbacj0kxpga57hq6nph0bjf62q-iperf-3.19.1/bin/iperf3 -s
+```
+
+On client:
+
+```
+/gnu/store/vyx8wgjbacj0kxpga57hq6nph0bjf62q-iperf-3.19.1/bin/iperf3 -c octopus01
+Connecting to host octopus01, port 5201
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.00  sec   495 MBytes   415 Mbits/sec    0            sender
+[  5]   0.00-10.00  sec   494 MBytes   414 Mbits/sec                  receiver
+```
+
+```
+octopus04 <-> octopus10
+[  5]   0.00-10.00  sec  1.10 GBytes   943 Mbits/sec    0            sender
+[  5]   0.00-10.00  sec  1.10 GBytes   941 Mbits/sec                  receiver
+```
+
+## Second network interface
+
+o2 is configured
+
+```
+auto lo
+iface lo inet loopback
+
+# 1Gbs
+auto eno1
+allow-hotplug eno1
+iface eno1 inet dhcp
+
+# 10Gbs
+auto ens1f0np0
+iface ens1f0np0 inet dhcp
+```
+
+which routes through the slower eno1.
+
+```
+default via 172.23.16.1 dev eno1
+172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown
+172.23.16.0/21 dev eno1 proto kernel scope link src 172.23.17.63
+172.23.16.0/21 dev ens1f0np0 proto kernel scope link src 172.23.22.159
+
+2: ens1f0np0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    inet 172.23.22.159/21 brd 172.23.23.255 scope global dynamic ens1f0np0
+3: eno1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    inet 172.23.17.63/21 brd 172.23.23.255 scope global dynamic eno1
+```
+
+(get rid of the docker stuff, we don't need it!) Let's try to measure performance from octopus03 using the fast interfaces.
+
+ip route add 172.23.22.159 dev ens1f0np0
+
+## Speedtest-cli
+
+Our upstream UTHSC link appears to be 1Gbs:
+
+```
+/gnu/store/27srpbibq0vzz9vwfsvh7mifa8zdl94d-speedtest-cli-2.1.3/bin/speedtest-cli
+```
+
+From Octopus (on 1Gbs cards)
+
+```
+Testing from The University of Tennessee, Memphis (128.169.2.185)...
+Retrieving speedtest.net server list...
+Selecting best server based on ping...
+Hosted by Rogers Wireless (Gatineau, QC) [1668.65 km]: 75.95 ms
+Testing download speed................................................................................
+Download: 448.62 Mbit/s
+Testing upload speed......................................................................................................
+Upload: 164.59 Mbit/s
+```
+
+From Tuxes (on 10Gbs cards)
+
+```
+Testing from The University of Tennessee, Memphis (128.169.2.185)...
+Retrieving speedtest.net server list...
+Selecting best server based on ping...
+Hosted by Comcast (Little Rock, AR) [212.86 km]: 57.901 ms
+Testing download speed................................................................................
+Download: 933.34 Mbit/s
+Testing upload speed......................................................................................................
+Upload: 262.81 Mbit/s
+```

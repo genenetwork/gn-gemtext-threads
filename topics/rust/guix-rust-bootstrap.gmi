@@ -1,0 +1,173 @@
+# Guix Rust Bootstrap
+
+To develop code against rust you often need a recent edition of rust. With Guix this is possible because you don't depend on the underlying linux distribution to provide recent versions of glibc and other libraries. Here we have a recipe that should work anywhere on Linux.
+
+I succeeded in running the latest Rust on Octopus and building packages with guix.
+
+To make it work the following steps are required:
+
+* Update guix with guix-pull if your guix is older than 3 months
+* Unset GUIX_PROFILE on some systems
+* Set your updated guix profile vars
+* Create a container that has all dependencies for rust itself
+* Run rustup
+* Run cargo with LD_LIBRARY_PATH set to $GUIX_ENVIRONMENT/lib
+
+# Get Guix updated
+
+Important is to have a recent version of Guix. This is achieved with 'guix pull' and making sure it works.
+
+
+```sh
+mkdir -p ~/opt
+guix pull -p ~/opt/guix-pull --url=https://codeberg.org/guix/guix
+```
+
+it takes a few minutes. Next set the environment
+
+```sh
+unset GUIX_PROFILE
+. ~/opt/guix-pull/etc/profile
+```
+
+This will point the path to a recent guix. You can make sure with
+
+```
+guix describe
+  guix 772c456
+    repository URL: https://codeberg.org/guix/guix
+    branch: master
+    commit: 772c456717e755829397a6ff6dba4c1e135426d8
+```
+
+which can be validated against the Guix tree. Running
+
+
+```sh
+guix package -A rust
+rust                    1.85.1                  rust-src,tools,out,cargo       gnu/packages/rust.scm:1454:4
+```
+
+shows the current *stable* version in Guix. Now, of course, we want something more to get rust latest.
+
+# Update Rust and Cargo to latest (stable)
+
+The trick is to set up a container with Rust in your git working directory:
+
+```
+mkdir -p ~/.cargo ~/.rustup # to prevent rebuilds
+guix shell --share=$HOME/.cargo  --share=$HOME/.rustup -C -N -D -F -v 3 guix gcc-toolchain make libdeflate pkg-config xz coreutils sed zstd zlib nss-certs openssl curl
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+. ~/.cargo/env
+rustup default stable
+```
+
+Now rustc shows it is recent:
+
+```
+rustc --version
+rustc 1.90.0 (1159e78c4 2025-09-14)
+```
+
+Next run 'cargo build' with:
+
+```
+env LD_LIBRARY_PATH=$GUIX_ENVIRONMENT/lib cargo build
+  Compiling libagc-sys v0.1.0 (/home/wrk/iwrk/opensource/code/pangenome/libagc-sys)
+    Finished 'dev' profile [unoptimized + debuginfo] target(s) in 0.06s
+$ ./target/debug/libagc-sys
+./target/debug/libagc-sys: error while loading shared libraries: libgcc_s.so.1: cannot open shared object file: No such file or directory
+$ env LD_LIBRARY_PATH=$GUIX_ENVIRONMENT/lib ./target/debug/libagc-sys
+Hello, world!
+```
+
+and your source should build and run. Note the libgcc_s.so.1 error.
+
+## What if you get a libgcc or librt error?
+
+The problem is that cargo picks up the wrong libgcc:
+
+```
+$ ls /gnu/store/*/lib/libgcc_s.so.1
+/gnu/store/m2vhzr0dy352cn59sgcklcaykprrr4j6-gcc-14.3.0-lib/lib/libgcc_s.so.1
+/gnu/store/rbs3nrx9z6sfawn3fa8r8z1kffdbnk8q-gcc-toolchain-15.2.0/lib/libgcc_s.so.1
+/gnu/store/v3bq3shn333kh7m6gj3r58l0v7mkn4in-profile/lib/libgcc_s.so.1
+/gnu/store/xm7i1gvi0i9pyndlkv627r08rsw1ny96-gcc-15.2.0-lib/lib/libgcc_s.so.1
+```
+
+This is because Guix itself builds on an older libgcc and librt. You need to tell it explicitly what library to load that built your cargo:
+
+```
+ldd ~/.cargo/bin/cargo
+        linux-vdso.so.1 (0x00007ffd409b2000)
+        libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x00007fd2cf433000)
+        librt.so.1 => /lib/librt.so.1 (0x00007fd2cf42e000)
+```
+
+in the container:
+
+```
+ls -l /lib/libgcc_s.so.1
+lrwxrwxrwx 1 65534 overflow 82 Jan  1  1970 /lib/libgcc_s.so.1 -> /gnu/store/rbs3nrx9z6sfawn3fa8r8z1kffdbnk8q-gcc-toolchain-15.2.0/lib/libgcc_s.so.1
+```
+
+which happens to be the one in $GUIX_ENVIRONMENT/lib! So setting the library path solves it.
+
+The reason that we don't get the automatically resolving libraries that you normally have in guix is that we have updated rust by *hand* using rustup. Guix has no control over this process.
+
+# spoa-rs on octopus01
+
+I just did above to build spoa-rs. Only had to add cmake to the shell packages.
+
+# sweepga on octopus01
+
+I just built sweepga. Only had the add clang to the shell:
+
+```sh
+guix shell --share=$HOME/.cargo  --share=$HOME/.rustup -C -N -D -F -v 3 guix gcc-toolchain make libdeflate pkg-config xz coreutils sed zstd zlib nss-certs openssl curl zlib cmake clang
+. ~/.cargo/env
+env LD_LIBRARY_PATH=$GUIX_ENVIRONMENT/lib cargo build
+env LD_LIBRARY_PATH=$GUIX_ENVIRONMENT/lib ./target/debug/sweepga
+[sweepga::start::0.000*1.00] 2025-10-11 15:27:28 | ./target/debug/sweepga
+[sweepga::detect::0.000*1.00] Using .1aln workflow (FastGA native format)
+[sweepga] ERROR: No valid input provided
+```
+
+To run on the cluster you likely don't want to use the container. Make a note of GUIX_ENVIRONMENT:
+
+```
+echo $GUIX_ENVIRONMENT/
+/gnu/store/6khi7iv7l75595hwlfc1nwmdcv72m24s-profile/
+```
+
+It has your libs! So, outsite the container you can run
+
+```
+export GUIX_ENVIRONMENT=/gnu/store/6khi7iv7l75595hwlfc1nwmdcv72m24s-profile
+env LD_LIBRARY_PATH=$GUIX_ENVIRONMENT/lib /home/wrk/tmp/sweepga/target/debug/sweepga
+```
+
+# Updating the container
+
+Now your build may fail because you miss a crucial library or tool. This is a feature of guix containers as it makes dependencies explicit.
+
+Just add them to the guix shell command. Let's say we add zlib
+
+```
+guix shell --share=$HOME/.cargo  --share=$HOME/.rustup -C -N -D -F -v 3 guix gcc-toolchain make libdeflate pkg-config xz coreutils sed zstd zlib nss-certs openssl curl zlib
+```
+
+# Troubleshooting
+
+## Collisions
+
+Guix may complain about collisions. These are mostly naming issues:
+
+```
+warning: collision encountered:
+  /gnu/store/nym6kiinrg2mb8z4lwnvfx5my8df9vrs-glibc-for-fhs-2.41/bin/ldd
+  /gnu/store/rbs3nrx9z6sfawn3fa8r8z1kffdbnk8q-gcc-toolchain-15.2.0/bin/ldd
+warning: choosing /gnu/store/nym6kiinrg2mb8z4lwnvfx5my8df9vrs-glibc-for-fhs-2.41/bin/ldd
+```
+
+it will like one into your environment. You can still use both tools by using the full path and normally ignore the warning.
