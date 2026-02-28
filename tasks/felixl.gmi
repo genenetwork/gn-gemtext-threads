@@ -34,66 +34,77 @@
 ### This week (07-04-2025 onwards) 
 
 * GN2 tasks 
-  * [ X ] Progress on Kilifish 
+  * [x] Progress on Kilifish 
         - meet with Dennis (send him an email with all the queries needed) 
-        - progress to format and upload data to gn2 (to be ready by latest Friday!) 
-  * [ X ] Make a milestone with genotype smoothing 
+       [-] - progress to format and upload data to gn2 (to be ready by latest Friday!) 
+  * [x] Make a milestone with genotype smoothing 
 
 * PhD tasks 
-  * [ X ] Complete and share concept note and timeline to supervisors, have a meeting for progress 
-  * [+] Make a milestone on chapter one manuscript (deep dive into the selected papers){THE BIG PICTURE; a complete draft by early May} 
+  * [ ] Complete and share concept note and timeline to supervisors, have a meeting for progress 
+  * [ ] Make a milestone on chapter one manuscript (deep dive into the selected papers){THE BIG PICTURE; a complete draft by early May} 
 
 * Programming 
-  * [ ] Make a milestone with the uploader (really push and learn!) 
+  * [x] Make a milestone with the uploader (really push and learn!) 
          - documentation (use ai); add to the code base of the uploader  
          - utilise the hurdles to learn programming priniciples in action 
 
+* AOBs 
+  * [  ] Weekly meetings 
+  * [  ] follow up with Paul on his progress 
+  * [  ] follow up on the MSc bioinformatics project 
+  * [  ] follow up on Alex's application with Pwani
+
 ### This week (14-04-2025 onwards)  
 
-* gn-uploader programming
+* gn-uploader programming 
   * [X] - Resolve the config file issue with your local uploader
-  * [ ] - Run the uploader locally, then break the system, see how components connect to each other
+  * [ ] - Run the uploader locally, then break the system, see how components connect to each other 
   * [ ] - document your findings
 
-* genotype smoothing
-  * [ ] - resolve errors with plotting, document your findings
+* genotype smoothing 
+  * [ ] - resolve errors with plotting, document your findings  
 
 ### This week (21-04-Onwards) 
 
-* genotype smoothing
- * [ ] - haplotyping tools for smoothing (plink,., etc)
+* genotype smoothing  
+ * [X] - haplotyping tools for smoothing (plink,., etc) :IN PROGRESS:  
          - see what it can offer with smoothing. See what others say about this.
+           - [X] check the original genotypes and compare with the ones in gn2 {done} 
+              - [x] inspect the Xsome column order in comparison with the snp positioning {done} 
+           - [x] adapt the plink algorithm to fit your dataset format {done}  
+           - consider inspeting the phenotype file too. {in progress} 
+           
 
-* gn-uploader programming
+* gn-uploader programming 
  * [ ] - Run the uploader locally, then break the system, see how components connect to each other (ask help from Bonz)
   * [ ] - document your findings
 
-### This week (28-04-Onwards) 
+### Previous week (28-04-Onwards) 
 * gn-uploader programming
  * [X] - Run the uploader locally, then break the system, see how components connect to each other (ask help from Bonz)
-  * [X] - document your findings
-  {Get help from your teammates/AI to jump start this!, swallow your pride! :(}
+  - start simple, read the script files (one at a time, take your time to understand how it flows) 
+  - In running the uploader, consider pair programming to save time with solving issues that your teamates can solve in hours, as they take you days to solve 
 
-* genotype smoothing
- * [X] Keep refining the following:
-   * [X] filtering power adapted from plink
+  * [ ] - document your findings
+  {Get help from your teammates/AI to jump start this!, swallow your pride! :(} 
+
+* genotype smoothing 
+ * [X] Keep refining the following: 
+   * [X] filtering power adapted from plink 
+       - the low the r2 value, the strictier the filtering.., 
    * [X] the xsomes mix up in the plot (probably the phenotype data?)
-   * [X] Update findings and push to github
+          - individual ids in phenotype data was not in sync with the genotype data 
+   * [X] Update findings and push to github 
 
 ### This week (05-05-Onwards) 
-* programming (gn-uploader)
+* programming (gn-uploader) 
   * [ ] - pick one file each day, review it, understand it
-  * [ ] - pair programming with Alex on test runs
+  * [ ] - pair programming with Alex on test runs 
 
-* HS rats scripts
-  * [ ] - prepare/refine scripts to quickly process HS rats file
-  * [ ] - assist alex with hs rats cross info
-
-* AOBs 
-  * [ X ] Weekly meetings 
-  * [ X ] follow up with Paul on his progress 
-  * [ X ] follow up on the MSc bioinformatics project 
-  * [ X ] follow up on Alex's application with Pwani 
+* HS rats scripts 
+  * [X] - prepare/refine scripts to quickly process HS rats file (in progress) 
+     [ ] - memory hurdles, goal to simplify running script 
+  * [X] - assist alex with hs rats cross info  
 
 ### (12-05-onwards) 
   * [X] - HS genotypes scripting 
@@ -110,23 +121,22 @@
                     - run the working commands 
              * [X] - the rest 10 other tissues (in progress) 
              * [X] - *.bed file vs the updated vcf files from the website?   
-
-### this week (02-06-onwards) 
-* [X] - process the genotypes for the rest of the 10 tissues for HS rats 
-* [X] - document the new findings about smoothing using bcftools and plink
-
+  
 * ## this week (09-06-onwards) 
-* [+] - identify start and end points for haplotypes in hs genotype files 
-* [+] - upload the final updates to gn2, test and see the results 
-* [-] - gn-uploader/uploader folder, explore 
+* [+] - identify start and end points for haplotypes in hs genotype files
+*       - checked the rembination densities first, still need more comprehension (arrange a meeting with Rob)  
+* [ ] - upload the final updates to gn2, test and see the results 
+* [+] - gn-uploader/uploader folder, explore 
 
-* ## this week (16-06-onwards)
+* ## this week (16-06-onwards) 
 * [X] - hs rats proximal and distal haplotype edges
 * [+] - uploading kilifish using the backend route
 
-* ## this week (23-06-onwards)
-* [ ] - hs rats recombination counts
-* [ ] - kilifish to gn2 via backend
+* ## this week (23-06-onwards) 
+*  [X] - hs rats recombination counts
+* [+] - mapping offsprings to founders 
+*    - examining founders  
+* [-] - kilifish to gn2 via backend
 
 * ## this week (30-06-onwards)  
 * [X] - mapping offsprings to founders (hs rats) 
@@ -151,15 +161,72 @@
      [+] - documentation for the paper write up
 
 * ## this week (21-07-onwards) 
-* [ ] - HS rats smoothing continues 
-*    [ ] - documenting the milestones 
-*    [ ] - see the possibility to write a tool from it 
-* [ ] - Pushing kilifish to genenetwork2/learn the source code build up 
-* [ ] - resmoothen celegans genotypes with the new knowledge  
+* [X] - HS rats smoothing continues 
+*    [+] - documenting the milestones 
+*    [+] - see the possibility to write a tool from it 
+* [-] - Pushing kilifish to genenetwork2/learn the source code build up 
+* [-] - resmoothen celegans genotypes with the new knowledge  
+
+* ## this week (28-07-onwards)
+* [-] - predict genotype probabilities with rqlt2 functions
+       - problems with control setup to load in the needed files for the functions
+* [+] - comparison models for @individual rat vs 8 founders (similarities and percentage composition)
+     [+] - ongoing discussion with alex, there's progress
+
+* ## this week (04-08-onwards)
+* [+] - Testing the logic to infer Hs outbred genotypes with the founders 
+           - Managed to identify parents of origin for each snp on each rat per position, corresponding to the 8 founders
+           - Still, need to filter in the disntictive snps, then generate haplo blocks., 
+
+* ## this week (11 - 08 - onwards) 
+* [X] - generate final haplo file and document 
+* [+] - testing on local gemma and in gn2 
+
+* ## this week (18-08-onwards) 
+* [+] - push for the file to be in gn2, and feedback from the team 
+* [X] - complete the local gemma run, interpret the results 
+* [+] - process the rest of the Xsomes for a ready file to go to gn2 
+*       - issues: over filtering snps, neglecting the one parent of origin, takes long to run.  
+* [+] - prepare an abstract for CTC conference in Barcelona  
+
+* ## this week (01-09-onWards) 
+* [+] - finetune abstract 
+*       - include more of what i achieved: main focus; genotype smoothing on models with complex traits 
+*       - thought map: generate plots, compare before and after smoothing, check for overlaps, and whether or not the peaks in traits are same before and after smoothing 
+* [X] - troubleshoot inferring scripts for all Xsomes 
+*       - request bonz/alex's help on this (to save time)
+
+* ## this week (08-09-onwards) 
+* [X] - generate hs haplotype final file
+*       - push it to gn2 (with Zach and Arthur's help)  
+* [X] - Mapping experiments with the original vs smoothed genotype file on all phenotypes selected 
+* [X] - Abstract write up on the results 
 
 
-### Later weeks (non-programming tasks)
+* ## this week (15-09-2025)
+* [+] - Arabidopsis is next after HS rats, then Kilifish: Bigger picture, publications.., 
+* [X] - Getting HS genotypes and phenotypes to gn2 
+* [+] - Mapping experimentation with gn2 tools, share results 
+* [+] - Prepare metadata corresponding to the hs data in gn2 
+* [X] - refine scripts used for analysis for reproducibility purposes 
 
+* ## this week (23-09-2025)
+* [X] - hs metadata 
+* [+] - Arabidopsis dataset 
+
+* ## this week (30-09-2025)
+* [+] - Arabidopsis phenotypes; gemma plots
+*   - testing the prepared data with gemma, see what the plots communicate  
+* [+] - hs to genenetwork2 testing 
+
+=> alternative methods to bonferroni: 
+   - compute against randomized data; 1000 permutation (Gary Churchill); LOD score of 4.0 (p- value 10^4) 
+   - precompute, by Pj, check on this.., 
+   - qtl results, more suggestive than absolute.., 
+
+
+
+### Later weeks
 * [ ] Kilifish into GN
 * [ ] Review paper on genotyping
 * [ ] HS Rat
