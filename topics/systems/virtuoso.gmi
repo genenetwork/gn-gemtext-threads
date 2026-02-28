@@ -8,6 +8,10 @@ We run instances of virtuoso for our graph databases. Virtuoso is remarkable sof
 ## Running virtuoso
 ### Running virtuoso in a guix system container
 
+See also
+
+=> ../deploy/our-virtuoso-instances
+
 We have a Guix virtuoso service in the guix-bioinformatics channel. The easiest way to run virtuoso is to use the virtuoso service to run it in a guix system container. The only downside of this method is that, since guix system containers require root privileges to start up, you will need root priviliges on the machine you are running this on.
 
 Here is a basic guix system configuration that runs virtuoso listening on port 8891, and with its HTTP server listening on port 8892. Among other things, the HTTP server provides a SPARQL endpoint to interact with.
@@ -109,6 +113,11 @@ SQL> UPDATE ws.ws.sys_dav_user SET u_account_disabled=1 WHERE u_name='dav';
 SQL> CHECKPOINT;
 ```
 
+We now store the passwords in secrets:
+
+*  CI/CD: /export2/guix-containers/genenetwork-development/etc/genenetwork/conf/gn3/secrets.py
+*  Production: /export/guix-containers/genenetwork/etc/genenetwork/genenetwork3/gn3-secrets.py
+
 ## Loading data into virtuoso
 
 Virtuoso supports at least three different ways to load RDF.
@@ -151,6 +160,19 @@ Start isql with something like
 guix shell --expose=verified-data=/var/lib/data virtuoso-ose -- isql -U dba -P password 8981
 ```
 
+Password is in container secrets file.
+Inside a container, you can do also do
+
+```
+root@tux04 ~# /gnu/store/9d81kdw2frn6b3fwqphsmkssc9zblir1-virtuoso-ose-7.2.11/bin/isql -u dba -P password -S 8981
+OpenLink Virtuoso Interactive SQL (Virtuoso)
+Version 07.20.3238 as of Jan  1 1970
+Type HELP; for help and EXIT; to exit.
+
+*** Error 28000: [Virtuoso Driver]CL034: Bad login
+
+```
+
 To delete a graph:
 
 ```
@@ -164,6 +186,18 @@ To add ttl files through isql:
 ld_dir('/dir', '*.ttl', 'http://genenetwork.org');
 rdf_loader_run();
 checkpoint;
+```
+
+You may not have permissions to dir. Check
+
+```
+select virtuoso_ini_path();
+```
+
+the file should contain the relevant dir
+
+```
+DirsAllowed=/dir
 ```
 
 => http://vos.openlinksw.com/owiki/wiki/VOS/VirtTipsAndTricksGuideDeleteLargeGraphs How can I delete graphs containing large numbers of triples from the Virtuoso Quad Store?
@@ -274,3 +308,7 @@ To dump data into a ttl file, first make sure that you are in the guix environme
 => https://github.com/genenetwork/dump-genenetwork-database/ Dump Genenetwork Database
 
 See the README for instructions.
+
+For the public GN endpoint visit
+
+=> https://sparql.genenetwork.org/sparql/

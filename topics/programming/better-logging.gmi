@@ -1,14 +1,17 @@
-# Improving Logging in GN2
+# Improving Alerting/Logging in GN2
 
-## What Are We Trying To Solve?
+## Problem Statement
 
-We prioritise maintaining user functionality over speed in GN [with time this speed will be improved].  As such we should be pay more attention at not breaking any currently working GN2 functionality.  And when/if we do, trouble-shooting should be easy.  On this front, one way is to stream-line logging in both GN2/GN3 and make it more script friendly - only report when something fails, not to instrument variables - and in so doing make the process of monitoring easier.
+Current logging in the genenetwork ecosystem is noisy and difficult to parse programatically which makes it hard to:
+
+* Integrate logs into some observability pipeline (E.g. sheepdog).
+* Troubleshoot issues as they occur.  We always learn of bugs from users.
 
 ## Goals
 
-* Have script-friendly error/info logs.
-* Remove noise from GN2.
-* Separate logging into different files: error logs, info logs.  Add this somewhere with Flask itself instead of re-directing STDOUT to a file.
+* Standardize logging format and config across GN2 flask apps and gn-guile.
+* Adopt structured logging.
+* Extend sheep-dog to be able to parse gn logs and send alerts on e-mail or matrix.
 
 ### Non-goals
 
@@ -27,3 +30,5 @@ We prioritise maintaining user functionality over speed in GN [with time this sp
 ## Resources
 
 => https://realpython.com/python-logging/ Logging in Python
+=> https://signoz.io/guides/python-logging-best-practices/ Python Logging Best Practices - Obvious and Not-So-Obvious
+=> https://signoz.io/blog/what-is-opentelemetry/ What is OpenTelemetry

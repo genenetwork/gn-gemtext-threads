@@ -1,0 +1,236 @@
+# Failing Services' Startup
+
+## Tags
+
+* type: bug
+* status: closed, completed
+* priority: high
+* assigned: fredm, bonfacem
+* interested: pjotrp, bonfacem, aruni
+* keywords: deployment, CI, CD
+
+## Description
+
+Upgrading guix to `34453b97005ff86355399df89c8827c57839d9c7` for CI/CD fails with:
+
+```
+2025-08-20 16:05:20 Backtrace:
+2025-08-20 16:05:20            6 (primitive-load "/gnu/store/xbxd2zihw9dssrhips925gri0yn?")
+2025-08-20 16:05:20 In ice-9/eval.scm:
+2025-08-20 16:05:20    191:35  5 (_ _)
+2025-08-20 16:05:20 In gnu/build/linux-container.scm:
+2025-08-20 16:05:20     368:8  4 (call-with-temporary-directory #<procedure 7f014aa3a3f0?>)
+2025-08-20 16:05:20    476:16  3 (_ "/tmp/guix-directory.VWRNbv")
+2025-08-20 16:05:20      62:6  2 (call-with-clean-exit #<procedure 7f014aa1de80 at gnu/b?>)
+2025-08-20 16:05:20    321:20  1 (_)
+2025-08-20 16:05:20 In guix/build/syscalls.scm:
+2025-08-20 16:05:20   1231:10  0 (_ 268566528)
+2025-08-20 16:05:20 
+2025-08-20 16:05:20 guix/build/syscalls.scm:1231:10: In procedure unshare: 268566528: Invalid argument
+2025-08-20 16:05:20 Backtrace:
+2025-08-20 16:05:20            4 (primitive-load "/gnu/store/xbxd2zihw9dssrhips925gri0yn?")
+2025-08-20 16:05:20 In ice-9/eval.scm:
+2025-08-20 16:05:20    191:35  3 (_ #f)
+2025-08-20 16:05:20 In gnu/build/linux-container.scm:
+2025-08-20 16:05:20     368:8  2 (call-with-temporary-directory #<procedure 7f014aa3a3f0?>)
+2025-08-20 16:05:20     485:7  1 (_ "/tmp/guix-directory.VWRNbv")
+2025-08-20 16:05:20 In unknown file:
+2025-08-20 16:05:20            0 (waitpid #f #<undefined>)
+2025-08-20 16:05:20 
+2025-08-20 16:05:20 ERROR: In procedure waitpid:
+2025-08-20 16:05:20 Wrong type (expecting exact integer): #f
+```
+
+Failing services:
+
+* genenetwork3: consistently
+* genenetwork2: consistently
+* gn-auth: intermittently
+
+## Troubleshooting Notes
+
+### Unable to run genenetwork2 in a shell container with the "-C" flag
+
+With the following channels:
+
+```
+$ guix describe
+Generation 3    Aug 28 2025 03:56:44    (current)
+  gn-bioinformatics cffafde
+    repository URL: file:///home/bonfacem/guix-bioinformatics/
+    branch: master
+    commit: cffafde125f3e711418d3ebb62eacd48a3efa8cf
+  guix-forge 3c8dc85
+    repository URL: https://git.genenetwork.org/guix-forge/
+    branch: main
+    commit: 3c8dc85a584c98bc90088ec1c85933d4d10e7383
+  guix-past b14d7f9
+    repository URL: https://codeberg.org/guix-science/guix-past
+    branch: master
+    commit: b14d7f997ae8eec788a7c16a7252460cba3aaef8
+  guix 34453b9
+    repository URL: https://codeberg.org/guix/guix
+    branch: master
+    commit: 34453b97005ff86355399df89c8827c57839d9c7
+```
+
+Running:
+
+```
+$ guix shell -C genenetwork2
+```
+
+Produces:
+
+```
+guix shell: error: unshare: 268566528: Invalid argument
+Backtrace:
+          16 (primitive-load "/export3/local/home/bonfacem/.guix-ext…")
+In guix/ui.scm:
+   2399:7 15 (run-guix . _)
+  2362:10 14 (run-guix-command _ . _)
+In ice-9/boot-9.scm:
+  1752:10 13 (with-exception-handler _ _ #:unwind? _ # _)
+In guix/status.scm:
+    842:4 12 (call-with-status-report _ _)
+In guix/store.scm:
+    703:3 11 (_)
+In ice-9/boot-9.scm:
+  1752:10 10 (with-exception-handler _ _ #:unwind? _ # _)
+In guix/store.scm:
+   690:37  9 (thunk)
+   1331:8  8 (call-with-build-handler _ _)
+   1331:8  7 (call-with-build-handler #<procedure 7fc86bb50de0 at g…> …)
+In guix/scripts/environment.scm:
+  1205:11  6 (proc _)
+In guix/store.scm:
+  2212:25  5 (run-with-store #<store-connection 256.100 7fc87a46d820> …)
+In guix/scripts/environment.scm:
+    911:8  4 (_ _)
+In gnu/build/linux-container.scm:
+    485:7  3 (call-with-container _ _ #:namespaces _ #:host-uids _ # …)
+In unknown file:
+           2 (waitpid #f #<undefined>)
+In ice-9/boot-9.scm:
+  1685:16  1 (raise-exception _ #:continuable? _)
+  1685:16  0 (raise-exception _ #:continuable? _)
+
+ice-9/boot-9.scm:1685:16: In procedure raise-exception:
+Wrong type (expecting exact integer): #f
+```
+
+This is fixed by increasing the value of respawn-delay (default is 0.5s) to 5s.
+
+
+### Unable to write to a temporary directory and issues with running git inside the g-exp
+
+Stack trace:
+```
+2025-09-03 12:23:32 In ice-9/eval.scm:
+2025-09-03 12:23:32    191:35  3 (_ #f)
+2025-09-03 12:23:32 In gnu/build/linux-container.scm:
+2025-09-03 12:23:32     368:8  2 (call-with-temporary-directory #<procedure 7f012241d3f0?>)
+2025-09-03 12:23:32     485:7  1 (_ "/tmp/guix-directory.Bl6jtx")
+2025-09-03 12:23:32 In unknown file:
+2025-09-03 12:23:32            0 (waitpid #f #<undefined>)
+2025-09-03 12:23:32
+
+```
+
+Cryptic message.   Running the g-exps as a program shows:
+
+```
+Receiving objects: 100% (698/698), 16.18 MiB | 30.29 MiB/s, done.
+Resolving deltas: 100% (49/49), done.
+==================================================
+error: cannot run less: No such file or directory
+fatal: unable to execute pager 'less'
+Backtrace:
+           5 (primitive-load "/gnu/store/c9bvy90s5mglp6xdfkc1s4qkzj8?")
+In ice-9/eval.scm:
+    619:8  4 (_ #f)
+In ice-9/boot-9.scm:
+    142:2  3 (dynamic-wind #<procedure 7fa954b25880 at ice-9/eval.s?> ?)
+    142:2  2 (dynamic-wind #<procedure 7fa94b7970c0 at ice-9/eval.s?> ?)
+In ice-9/eval.scm:
+    619:8  1 (_ #(#(#<directory (guile-user) 7fa954b03c80>)))
+In guix/build/utils.scm:
+    822:6  0 (invoke "git" "log" "--max-count" "1")
+
+guix/build/utils.scm:822:6: In procedure invoke:
+ERROR:
+  1. &invoke-error:
+      program: "git"
+      arguments: ("log" "--max-count" "1")
+      exit-status: 128
+      term-signal: #f
+      stop-signal: #f
+```
+
+Fixed by adding "less" to the with-packages form and setting:
+
+```
+(setenv "TERM" "xterm-256color")
+
+```
+
+### gn-auth: sqlite3.OperationalError: unable to open database file
+
+Despite having all file perms correctly set with 0644, we see:
+
+```
+Traceback (most recent call last):
+  File "/gnu/store/ag1m9bv22iwm3sq87xly35y138l6kzd7-profile/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/ag1m9bv22iwm3sq87xly35y138l6kzd7-profile/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/export/data/repositories/gn-auth/gn_auth/auth/authentication/oauth2/views.py", line 102, in authorise
+    return with_db_connection(__authorise__)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/export/data/repositories/gn-auth/gn_auth/auth/db/sqlite3.py", line 63, in with_db_connection
+    return func(conn)
+           ^^^^^^^^^^
+  File "/export/data/repositories/gn-auth/gn_auth/auth/authentication/oauth2/views.py", line 90, in __authorise__
+    return server.create_authorization_response(request=request, grant_user=user)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/ag1m9bv22iwm3sq87xly35y138l6kzd7-profile/lib/python3.11/site-packages/authlib/oauth2/rfc6749/authorization_server.py", line 297, in create_authorization_response
+    args = grant.create_authorization_response(redirect_uri, grant_user)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/export/data/repositories/gn-auth/gn_auth/auth/authentication/oauth2/grants/authorisation_code_grant.py", line 31, in create_authorization_response
+    response = super().create_authorization_response(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/ag1m9bv22iwm3sq87xly35y138l6kzd7-profile/lib/python3.11/site-packages/authlib/oauth2/rfc6749/grants/authorization_code.py", line 158, in create_authorization_response
+    self.save_authorization_code(code, self.request)
+  File "/export/data/repositories/gn-auth/gn_auth/auth/authentication/oauth2/grants/authorisation_code_grant.py", line 45, in save_authorization_code
+    return __save_authorization_code__(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/export/data/repositories/gn-auth/gn_auth/auth/authentication/oauth2/grants/authorisation_code_grant.py", line 106, in __save_authorization_code__
+    return with_db_connection(lambda conn: save_authorisation_code(conn, code))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/export/data/repositories/gn-auth/gn_auth/auth/db/sqlite3.py", line 63, in with_db_connection
+    return func(conn)
+           ^^^^^^^^^^
+  File "/export/data/repositories/gn-auth/gn_auth/auth/authentication/oauth2/grants/authorisation_code_grant.py", line 106, in <lambda>
+    return with_db_connection(lambda conn: save_authorisation_code(conn, code))
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/export/data/repositories/gn-auth/gn_auth/auth/authentication/oauth2/models/authorization_code.py", line 92, in save_authorisation_code
+    cursor.execute(
+sqlite3.OperationalError: unable to open database file
+```
+
+Fixed above by correctly mapping:
+
+```
+-                                                (source auth-db-path)
++                                                (source (dirname auth-db-path))
+```
+
+in the relevant g-exp, and making sure that the parent directory is set to #o775 (rwx for both user/group).
+
+## Also See
+
+=> https://issues.guix.gnu.org/78356 Broken system and home containers
+=> https://codeberg.org/guix/guix/src/commit/34453b97005ff86355399df89c8827c57839d9c7/guix/build/syscalls.scm#L1218-L1233 How "unshare" is defined
+=> https://codeberg.org/guix/guix/src/commit/34453b97005ff86355399df89c8827c57839d9c7/gnu/build/linux-container.scm#L321 Where `unshare` is called

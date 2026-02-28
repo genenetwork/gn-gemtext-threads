@@ -1,0 +1,22 @@
+# mechanical-rob: Add Partial Correlations Tests
+
+## Tags
+
+* assigned: fredm
+* priority: medium
+* status: closed, completed
+* keywords: genenetwork2, gn2, mechanical-rob, partial correlations, tests, regression
+* type: enhancement
+
+## Description
+
+Add regression tests to verify that the partial correlations feature still works
+as expected.
+
+### TODOS
+
+* [x] Tests for "entry-point" page
+* [x] Tests for partial correlation using Pearson's R against select traits
+* [x] Tests for partial correlation using Spearman's Rho against select traits
+* [x] Tests for partial correlation using Pearson's R against an entire dataset
+* [x] Tests for partial correlation using Spearman's Rho against an entire dataset

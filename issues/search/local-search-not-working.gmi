@@ -1,0 +1,33 @@
+# Local Search Not Working
+
+* assigned: bonfacem, zachs, fredm
+
+## Description
+
+Local search in CD currently doesn't work.  From gn-logs bot:
+
+```
+logger: gn2.wqflask
+Message: https://cd.genenetwork.org/run_mapping/static/new/css/show_trait.css Traceback (most recent call last): File "/gnu/store/wdfym53rwb6q51mc006c4xfnhqd4q5g5-profile/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request rv = self.dispatch_request() ^^^^^^^^^^^^^^^^^^^^^^^ File "/gnu/store/wdfym53rwb6q51mc006c4xfnhqd4q5g5-profile/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args) # type: ignore[no-any-return] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ File "/home/genenetwork/genenetwork2/gn2/wqflask/views.py", line 1156, in mapping_results_page temp_uuid = initial_start_vars['temp_uuid'] ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^ File "/gnu/store/wdfym53rwb6q51mc006c4xfnhqd4q5g5-profile/lib/python3.11/site-packages/werkzeug/datastructures/structures.py", line 238, in __getitem__ raise exceptions.BadRequestKeyError(key) werkzeug.exceptions.BadRequestKeyError: 400 Bad Request: The browser (or proxy) sent a request that this server could not understand. KeyError: 'temp_uuid'
+```
+
+This only happens in CD, not production.  A possible cause for this error might be access to the mapping page with an expired mapping hash.  A recent change @zachs made fixes this.   See:
+
+=> https://github.com/genenetwork/genenetwork2/commit/d2db6da856948a708f408c8c2acafd1718a4e3a5
+
+Issue:
+
+The tables in tux02 are out of sync (from the logs):
+
+```
+2026-02-18 09:29:39   File "/gnu/store/wdfym53rwb6q51mc006c4xfnhqd4q5g5-profile/lib/python3.11/site-packages/MySQLdb/cursors.py", line 179, in execute
+2026-02-18 09:29:39     res = self._query(mogrified_query)
+2026-02-18 09:29:39           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-02-18 09:29:39   File "/gnu/store/wdfym53rwb6q51mc006c4xfnhqd4q5g5-profile/lib/python3.11/site-packages/MySQLdb/cursors.py", line 330, in _query
+2026-02-18 09:29:39     db.query(q)
+2026-02-18 09:29:39   File "/gnu/store/wdfym53rwb6q51mc006c4xfnhqd4q5g5-profile/lib/python3.11/site-packages/MySQLdb/connections.py", line 280, in query
+2026-02-18 09:29:39     _mysql.connection.query(self, query)
+2026-02-18 09:29:39 MySQLdb.OperationalError: (1054, "Unknown column 'PublishXRef.NSamples' in 'field list'")
+
+```
+

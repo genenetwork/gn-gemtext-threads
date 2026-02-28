@@ -1,0 +1,22 @@
+# Running snakemake workflows on octopus
+
+Here's how you run snakemake workflows on our octopus cluster.
+
+First, drop into a guix shell with snakemake and the slurm plugin.
+```
+guix shell snakemake python python-snakemake-executor-plugin-slurm python-snakemake-executor-plugin-slurm-jobstep
+```
+
+Assuming you are in the directory with the Snakefile, run it on slurm like so:
+```
+snakemake --executor slurm --jobs 8
+```
+Feel free to play around with the --jobs parameter.
+
+## Running on a specific partition
+
+You can run some rules on a non-default partition using something like
+```
+snakemake --executor slurm --jobs 8 --set-resources myrule:slurm_partition=allnodes
+```
+Here, we run the rule named "myrule" on the allnodes partition. You can also specify this in a config file instead of on the command-line. Please refer to the snakemake manual.

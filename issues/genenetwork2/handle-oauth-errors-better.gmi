@@ -3,7 +3,7 @@
 ## Tags
 
 * type: bug
-* status: open
+* status: closed, completed
 * priority: high
 * assigned: fredm
 * interested: zachs, robw
@@ -15,3 +15,7 @@ When a session expires, for whatever reason, a notification is displayed to the 
 => ./session_expiry_oauth_error.png
 
 The message is a little jarring to the end user. Make it gentler, and probably more informative, so the user is not as surprised.
+
+## Close as complete
+
+This should be fixed at this point. Closing this as complete.

@@ -1,0 +1,99 @@
+# PanGEMMA Genotype Format
+
+Here we describe the genotype DB format that is used by GN and pangemma. Essentially it contains the genotypes as markers x samples (rows x cols). Unlike some earlier formats it also carries metadata and allows for track changes to the genotypes.
+
+The current reference implementation for creating the file lives at
+
+=> https://github.com/genetics-statistics/gemma-wrapper/blob/master/bin/geno2mdb.rb
+
+Note that we'll likely create new versions in python, guile and/or rust.
+
+# Storage
+
+We use the LMDB b-tree format to store and retrieve records based on an index. LMDB is very fast as it uses the memory map facilities of the underlying operating system.
+
+=> https://en.wikipedia.org/wiki/Lightning_Memory-Mapped_Database
+
+LMDB supports multiple 'tables' in one file. We also use a metadata table named3 'info'. Another table named 'track-changes' keep track of modifications to the genotypes. This allows the genotypes to change over time - still giving people access to the original information if they need it.
+
+# Genotypes in the 'geno' table
+
+Genotypes are stored as fixed size rows of genotypes. Genotypes can be represented as 4-byte floats 'f*' or a list of bytes 'C*' (note these format specifiers come from ruby pack - python has similar but slightly different specifiers). The idea being that storing floats gives enough precision for probabilities and single bytes can represent all other cases. In the future we may add 2-byte integers, but that is probably not necessary.
+
+For the float version we use NaN to disignate a missing value (NA).
+
+For the byte version we use the value 255 or 0xFF to designate a missing value (NA). The other 255 values (including 0) are used either as an index - so A,B,H could be 0,1,2 - or we use it to project a range of values. In many cases 255 values is enough to present genotype variation in a population. Otherwise opt for the float option.
+
+The index to the rows is currently built out of keys. These keys hold the chromosome number as a single byte 'C', the position as a 4-byte long integer 'L>' and the row number in the original file as a 4-byte long 'L>'. These numbers are stored native-endian so the index is always correctly sorted(!).
+
+# Metadata in the 'info' table
+
+The default metadata is stored in the info table as
+
+```
+meta = {
+  "type" => "gemma-geno",
+  "format" => options[:format],
+  "version" => 1.0,
+  "eval" => EVAL.to_s,
+  "key-format" => CHRPOS_PACK,
+  "rec-format" => PACK,
+  "geno" => json
+}
+```
+
+where CHRPOS_PACK gives the key layout 'CL>L>' and PACK the genotype list, e.g. 'f*'. The format line gives the 'standard' storage type, e.g. 'Gf' for the floats and eval is the command used to transform values. The only field we really have to use for unpacking the data is format or rec-format because key-format does not change. The info table has some extra records that may be used:
+
+```
+  info['numsamples'] = [numsamples].pack("Q") # uint64
+  info['nummarkers'] = [geno.size].pack("Q")
+  info['meta'] = meta.to_json.to_s
+  info['format'] = options[:format].to_s
+  info['options'] = options.to_s
+```
+
+where 'numsamples' and 'nummarkers' are counts. 'meta' reflects above json record. 'format' mirrors format in the meta record and 'options' shows the options as they where fed to the program that generated the file.
+
+# Tracking changes
+
+Note: this is a proposal and has not yet implemented. But the idea is to store records by time stamp. Each record will describe the change so the last genotypes can be rolled forward at the user's wish. In case of a replacement it could be:
+
+```
+timestamp =>
+{
+  "marker" => name,
+  "chr" => chr,
+  "pos" => pos,
+  "line" => line,
+  "action" => "update",
+  "author" => author,
+  "genotypes" => list
+```
+
+Where list contains the *updated* genotypes.
+Likewise for a marker insertion or deletion.
+
+The track changes can also specify that a change only applies to a trait, a list of traits, a specific set of samples, or a group. E.g.
+
+```
+timestamp =>
+{
+  "marker" => name,
+  "chr" => chr,
+  "pos" => pos,
+  "line" => line,
+  "action" => "update",
+  "author" => author,
+  "genotypes" => list,
+  "for-traits" => list,
+  "for-samples" => list,
+  "for-group" => name
+}
+```
+
+The 'geno' database will therefore always the *first* version. These records make it possible to roll forward on changes and present an updated genotype matrix. Used genotypes are retained. This, naturally, can be handled in a cache. So any rewritten genotype files will be available in cache for a period of time.
+In the future a tool, such as GEMMA, could support dynamic application of these edits. That way we only have to cache the latest version.
+
+This way users may be able to select changes (i.e. pick and choose), use all (latest) or use original (init).
+
+For the editing we should provide an API.

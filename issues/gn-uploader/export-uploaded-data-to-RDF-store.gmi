@@ -6,7 +6,7 @@
 * priority: medium
 * type: feature-request
 * status: open
-* keywords: API, data upload
+* keywords: API, data upload, gn-uploader
 
 ## Description
 
@@ -73,10 +73,16 @@ The metadata is useful for searching for the data. The "metadata->rdf" project[4
 * [ ] How do we handle this?
 
 
+## Related Issues and Topics
+
+=> https://issues.genenetwork.org/topics/next-gen-databases/design-doc
+=> https://issues.genenetwork.org/topics/lmms/rqtl2/using-rqtl2-lmdb-adapter
+=> https://issues.genenetwork.org/issues/dump-sample-data-to-lmdb
+=> https://issues.genenetwork.org/topics/database/genotype-database
 
 ## Footnotes
 
-=> https://gitlab.com/fredmanglis/gnqc_py 1: QC/Data upload project repository
+=> https://git.genenetwork.org/gn-uploader/ 1: QC/Data upload project (gn-uploader) repository
 => https://github.com/genenetwork/genenetwork3/pull/130 2: Munyoki's Pull request
 => https://github.com/BonfaceKilz/gn-dataset-dump 3: Dataset -> LMDB export repository
-=> https://github.com/genenetwork/dump-genenetwork-database 4: Metadata -> RDF export repository
+=> https://git.genenetwork.org/gn-transform-databases/ 4: Metadata -> RDF export repository

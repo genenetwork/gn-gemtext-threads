@@ -1,0 +1,36 @@
+# Profiling GN
+* assigned: bonfacem
+* status: closed
+Use this simple structure:
+
+```
+from werkzeug.middleware.profiler import ProfilerMiddleware
+
+
+app = Flask(__name__)
+app.config["PROFILE"] = True
+app.wsgi_app = ProfilerMiddleware(
+    app.wsgi_app,
+    restrictions=[40, "main"],
+    profile_dir="profiler_dump",
+    filename_format="{time:.0f}-{method}-{path}-{elapsed:.0f}ms.prof",
+)
+```
+
+
+You can use gprof2dot to visualise the profile
+
+```
+guix shell gprof2dot -- gprof2dot -f pstats 1753202013-GET-show_trait-37931ms.prof > 1753202013-GET-show_trait-37931ms.prof.dot
+guix shell xdot -- xdot 1753202013-GET-show_trait-37931ms.prof.dot
+```
+
+Or snakeviz to visualize it:
+
+
+```
+scp genenetwork:/home/bonfacem/profiling/1753202013-GET-show_trait-37931ms.prof /tmp/test
+snakeviz 1753202013-GET-show_trait-37931ms.prof
+```
+
+* closed

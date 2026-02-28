@@ -2,23 +2,45 @@
 
 # Tags
 
-* assigned: pjotrp
+* assigned: pjotrp, fredm
 * priority: medium
 * type: system administration
-* keywords: system administration, octopus, gateway, tux02, tux01, tux03
+* keywords: system administration, octopus, gateway, tuxes
 
 # Tasks
 
+## Short term
+
+* [ ] Tux02 and tux03 need cables to wire up 2nd PSUs
+* [ ] Octopi have 1 PSU only
+* [ ] Order drives. We have some caddies.
+* - [ ] add drives on 'tux03', then we'll need an additional 5 DXD9H caddies and 4 M.2-to-SATA adapters
+* - [ ] ample room on tux01 - can take old SSDs
+* - [ ] room on tux05-9 - each can hold 8 nvme - we have 20 slots
+* - [ ] octopus slots are full. There are some 10+ spinning disks and 2x smaller 1TB nvmes we can replace.
+* [ ] repurpose samsung drives with heatsink (@fredm)
+* [X] map out physical network layout in MR (@fredm)
+* [+] get disks from chenbro and rehost (@fredm)
+* [ ] work on speeding up moosefs (@pjotrp)
+* - [ ] test network interfaces and switches (@pjotrp)
+* [ ] add storage server with spinning disks
+* - [X] put order in
+* - [+] install machine
+* [+] migrate GN production to tux04 (@fredm)
+* - [+] first remove Samsung PCIe (@fredm)
+* - [X] add RAID (@pjotrp)
+* [ ] remove P2 data flavia, hao, davida to make space for moose
+
 ## GN
 
-* [ ] penguin2 has 90TB of space we can use on NFS/backups
-* [ ] Script to replace reaper with GEMMA
-* [ ] Transfer nervenet.org to dnsimple
-* [+] Trait vectors for Johannes
+* [ ] secure RDF guile server(s)
+* [X] penguin2 has 90TB of space we can use on NFS/backups - they went on moosefs
+* [ ] Replace reaper with GEMMA
+* [X] Transfer nervenet.org to dnsimple
+* [X] Trait vectors for Johannes
 * [X] grub on tux04
-* [ ] nft on tux04
-* [ ] !!Organize pluto, update Julia and add apps to GN menu Jupyter notebooks
-* [+] !!Xusheng jumpshiny services
+* [X] nft on tux04
+* [X] !!Xusheng jumpshiny services
 * [ ] Fix apps and create system containers for herd services - see issues/systems/apps
 * [ ] Slurm+ravanan on production for GEMMA speedup
 * [ ] Embed R/qtl2 (Alex)
@@ -29,9 +51,11 @@
 
 * [X] Fix Tux05 badblocks on /dev/sdb2   1050624  47925247 46874624 22.4G Linux filesystem
   - see add-boot-partition
-* [+] Copy linux partition on tux04, tux05, tux02 and test reboot
-* [ ] !!Ceph on Tuxes
-* [ ] Centralized user management system
+* [X] Copy linux partition on tux04, tux05, tux02 and test reboot
+* [X] moosefs on Tuxes
+* [X] Boot and install over network
+* [ ] Add synology to moosefs
+* [ ] Centralized user management system (no longer needed with distributed nodes?)
 * [ ] Monitor nodes
 * [ ] Check machines so they talk with each other over fiber
 
@@ -58,12 +82,17 @@ Security:
 * [ ] Add 2nd boot partition on balg01
 * [ ] Add firewall test to sheepdog
 
+## Maybe
+
+* [-] !!Organize pluto, update Julia and add apps to GN menu Jupyter notebooks
+* [-] get data from summer211 (access machine room)
+
 ## Done
 
+* [X] add SSD to tux03 (@fredm)
 * [X] describe machines with Rick Stripes
 * [X] get bacchus back on line
 * [X] fix www.genenetwork.org and gn2.genenetwork.org https
-* [-] get data from summer211 (access machine room)
 * [X] VPN access and FoUT
 * [X] lambda: get fiber working
 * [X] lambda: add to Octopus HPC

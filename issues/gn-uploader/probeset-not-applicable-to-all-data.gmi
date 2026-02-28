@@ -4,7 +4,7 @@
 
 * type: bug
 * assigned: fredm
-* status: open
+* status: closed
 * priority: high
 * keywords: gn-uploader, uploader, ProbeSet
 
@@ -20,3 +20,10 @@ applicable to our data, I don't think.
 ```
 
 It seems like some of the data does not require a ProbeSet, and in that case, it should be possible to add it without one.
+
+
+## Notes
+
+This "bug" is obsoleted by the fact that the implementation leading to it was entirely wrong.
+
+The feature that was leading to this bug no longer exists, and will have to be re-implemented from scratch with the involvement of @acenteno.

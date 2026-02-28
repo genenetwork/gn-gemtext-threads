@@ -1,0 +1,61 @@
+# Security
+
+We secure our system by running recent stable versions of Linux distributions. We also are minimalistic on what we install and run and web services typically run in guix system containers (a kind of light weight Docker setup).
+
+# ssh
+
+Secure shell is very important. First we disable password logins. We use keys only. We also limit AllowUsers because it is flexible to remove and add users.
+
+```
+--- a/ssh/sshd_config
++++ b/ssh/sshd_config
+@@ -54,7 +54,7 @@ Include /etc/ssh/sshd_config.d/*.conf
+ #IgnoreRhosts yes
+
+ # To disable tunneled clear text passwords, change to no here!
+-#PasswordAuthentication yes
++PasswordAuthentication no
+ #PermitEmptyPasswords no
+
++AllowUsers marco daniel ...
+```
+
+Note that keys should be password protected.
+
+# Firewalling
+
+We typically use the monitored CISCO firewalling UTHSC provides. In addition we use nftables, e.g. in /etc/nftables.conf
+
+```
+table inet filter {
+        set udp_accepted {
+                type inet_service
+                flags interval
+                elements = { 60000-61000 } # for mosh
+        }
+        chain input {
+                type filter hook input priority filter; policy drop;
+                ct state { established, related } accept
+                iifname "lo" accept
+                iifname "lo" ip saddr != 127.0.0.0/8 drop
+                tcp dport ssh limit rate 5/minute accept
+                tcp dport { http, https } accept
+                tcp dport mysql ip saddr { list of ips } accept
+                udp dport @udp_accepted accept
+                reject with icmp port-unreachable
+        }
+        chain forward {
+                type filter hook forward priority filter; policy accept;
+        }
+        chain output {
+                type filter hook output priority filter; policy accept;
+        }
+}
+```
+
+Enable this with
+
+```
+systemctl enable nftables
+nft list ruleset
+```

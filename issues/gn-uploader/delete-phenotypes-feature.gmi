@@ -1,0 +1,42 @@
+# Delete Phenotypes
+
+## Tags 
+* assigned: fredm 
+* status: closed, completed
+* priority: high
+* type: feature-request, feature request
+* keywords: uploader, gn-uploader, delete phenotypes, phenotypes
+
+## Description
+
+On 20th January 2026, @acenteno requested a "Delete Phenotypes" feature on the uploader that allows one to delete phenotypes they have previously uploaded.
+
+### Details for the task
+
+The script @acenteno was using to delete phenotypes can be found at "space:/mount/space2/lily-clone/gnshare/gn/web/webqtl/maintainance/dataset/delete_phenotypes.py"
+
+An example of a "config.ini" file that could be provided to the script to delete phenotypes is:
+
+```
+[config]
+inbredsetid = 1
+datafile = datasampledir/delete_phenotypes/sample_data1.txt
+```
+
+An example of the data in a datafile specified in the "config.ini" above would be:
+
+```
+Record
+15175
+15955
+15655
+15670
+13057
+13058
+```
+
+These would be the PublishXRef values that link the phenotypes to their data.
+
+### Updates
+
+As of 2026-02-18, this feature is implemented and deployed to production.

@@ -1,0 +1,201 @@
+# Installing GPU on Balg01 server
+
+lspci shows the card, an L4
+
+=> https://www.techpowerup.com/gpu-specs/l4.c4091
+
+```
+lspci|grep NVIDIA
+NVIDIA Corporation AD104GL
+```
+
+The machine had raspi and Tesla support installed (?!), so I removed that:
+
+```
+apt-get remove firmware-nvidia-tesla-gsp
+```
+
+Disabled nouveau drivers
+
+```/etc/modprobe.d/blacklist-nouveau.conf
+blacklist nouveau
+options nouveau modeset=0
+```
+
+```
+dpkg --purge raspi-firmware
+update-initramfs -u
+reboot (can skip for a bit)
+```
+
+## Create fallback boot partition
+
+Well, before rebooting I should have created another fallback boot partitition with a more recent debian.
+Unfortunately I had not prepared space on one of the disks (something I normally do). Turned out /dev/sdc on /export3 was not really used lately, so I could move that data and reuse that partition.
+
+```
+/dev/sdc1       1.8T  552G  1.2T  33% /export3
+```
+
+it is a very slow drive (btw), not sure why. I ran badblocks but it does not make a difference. The logs show:
+
+```
+Oct 04 09:34:37 balg01 kernel: I/O error, dev sdc, sector 23392285 op 0x9:(WRITE_ZEROES) flags 0x8000000 >
+O
+```
+
+but it looks more like a driver problem than an actual disk error. Well, maybe on the new debian install it will be fine.
+At this point it is just to install a fallback boot partition, so no real worries.
+
+On using debootstrap, grub etc. the old partition came back fine and I tested I can also boot into the new Debian install. Especially with remote servers this is a great comfort.
+
+## CUDA continued
+
+Now we have a fallback boot partition it is a bit easier to mess with CUDA drivers.
+
+To install the CUDA drivers you may need to disable 'secure boot' in the bios.
+
+```
+apt install build-essential gcc make cmake dkms
+apt install linux-headers-$(uname -r)
+```
+
+The debian selector, choose data center and L series: Driver Version:580.95.05 CUDA Toolkit:13.0 Release Date:Wed Oct 01, 2025 File Size:844.44 MB
+
+Note I installed the nvidia-open drivers. If things are not working we should look at the proprietary stuff. I used the 'local repository installation' instructions of
+
+=> https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/index.html#debian-installation
+
+
+```
+apt-get install nvidia-libopencl1 nvidia-open nvidia-driver-cuda
+```
+
+The first one is to prevent
+
+```
+libnppc11 : Conflicts: nvidia-libopencl1
+```
+
+now this should run
+
+```
+balg01:~# nvidia-smi
+Sat Oct  4 11:56:19 2025
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.95.05              Driver Version: 580.95.05      CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA L4                      Off |   00000000:81:00.0 Off |                    0 |
+| N/A   57C    P0             29W /   72W |       0MiB /  23034MiB |      2%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+```
+
+## Testing GPU
+
+
+Using Guix python I ran:
+
+```
+pip install "gpu-benchmark-tool[nvidia]"
+```
+
+of course it downloads a ridiculous amount of binaries... But then we can run
+
+```
+export PATH=/home/wrk/.local/bin:$PATH
+gpu-benchmark benchmark --duration=30
+```
+
+that did not work. CUDA samples are packaged in Debian and requires building the scripts:
+
+```
+apt-get install nvidia-cuda-samples nvidia-cuda-toolkit-gcc
+cd /usr/share/doc/nvidia-cuda-toolkit/examples/Samples/6_Performance/transpose
+export CUDA_PATH=/usr
+make
+./transpose
+> [NVIDIA L4] has 58 MP(s) x 128 (Cores/MP) = 7424 (Cores)
+> Compute performance scaling factor = 1.00
+...
+Test passed
+```
+
+Note that this removed nvidia-smi. Let's look at versions:
+
+```
+pool/non-free/n/nvidia-graphics-drivers/nvidia-libopencl1_535.247.01-1~deb12u1_amd64.deb
+pool/contrib/n/nvidia-cuda-samples/nvidia-cuda-samples_11.8~dfsg-2_all.deb
+pool/non-free/n/nvidia-cuda-toolkit/nvidia-cuda-toolkit-gcc_11.8.0-5~deb12u1_amd64.deb
+pool/non-free/n/nvidia-graphics-drivers/nvidia-libopencl1_535.247.01-1~deb12u1_amd64.deb
+```
+
+while
+
+```
+Filename: ./nvidia-open_580.95.05-1_amd64.deb
+Package: nvidia-driver-cuda
+Version: 580.95.05-1
+Section: NVIDIA
+Source: nvidia-graphics-drivers
+Provides: nvidia-cuda-mps, nvidia-smi
+```
+
+and it turns out to be a mixture. I have to take real care not to mix in Debian packages! For example this package is a Debian original:
+
+```
+ii  nvidia-cuda-gdb                             11.8.86~11.8.0-5~deb12u1                amd64        NVIDIA CUDA Debugger (GDB)
+```
+
+```
+apt remove --purge nvidia-* cuda-* libnvidia-*
+```
+
+says
+
+```
+Note, selecting 'libnvidia-gpucomp' instead of 'libnvidia-gpucomp-580.95.05'
+```
+
+To view installed packages belonging to Debian itself:
+
+```
+dpkg -l|grep nvid|grep deb12
+dpkg -l|grep cuda|grep deb12
+```
+
+Let's reinstall and make sure only NVIDIA packages are used:
+
+```
+wget https://developer.download.nvidia.com/compute/cuda/repos/debian12/x86_64/cuda-keyring_1.1-1_all.deb
+dpkg -i cuda-keyring_1.1-1_all.deb
+apt-get update
+apt-get install cuda-toolkit  cuda-compiler-12-2
+```
+
+Now we have:
+
+```
+/usr/local/cuda-12.3/bin/nvcc --version
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2023 NVIDIA Corporation
+Built on Wed_Nov_22_10:17:15_PST_2023
+```
+
+# Pytorch
+
+CUDA environment variable for pytorch is probably useful:
+
+=> https://docs.pytorch.org/docs/stable/cuda_environment_variables.html

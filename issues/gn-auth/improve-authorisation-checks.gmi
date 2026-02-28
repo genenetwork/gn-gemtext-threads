@@ -1,0 +1,58 @@
+# Improve Authorization Checks
+
+## Tags
+
+* type: improvement, refactor
+* assigned: fredm
+* interested: zachs, bonfacem
+* keywords: gn-auth, auth, authorisation, authorization
+* priority: high
+* status: open
+
+## Description
+
+A number of lessons learnt from implementing the authorisation are:
+
+Do the authorisation checks at the request-level rather than at the function level, otherwise, we are forced to pass a whole host of unnecessary arguments to the function being access-controlled, or maybe look into introspection to filter out the arguments to pass downstream. (writing this, it occurs to me, we could pass an authorisation bundle — a "bag" of objects used for authorisation that are not passed on down to lower-level functions).
+
+As we discover the use-cases for different user-levels, the checks can get long and complicated. We should probably refactor these into "check functions" with names of the form "can_<action>(connections, user_id, resource_id, system_resource)" where "<action>" can be any of the various actions a user can perform on a resource, e.g. create, view/read, edit/update, delete, make-public/make-private, etc.
+
+The complexity of checks can be demonstrated by:
+=> https://git.genenetwork.org/gn-auth/commit/?id=6f1907292cb2b54b8f18b139480b1837c6f355e0 this commit.
+
+### Notes
+
+These expand on some of the notions above:
+
+#### "Authorisation Bundle"
+
+This is just a collection of objects that will be needed to compute the authorisation level a user has for any particular resource. The bundle will include (among others):
+
+* A connection to the authorisation database: useful for fetching the user's privileges on the resource(s) in question
+* A user object: represents the user acting on (a) particular resource(s)
+* A resource object: represents the resource(s) being acted upon
+* The system object: represents the Genenetwork system/service
+
+#### User Levels
+
+There are different levels any particular user of the Genenetwork system can act on the system on; examples of ones we've discovered/developed thus far:
+
+* System Administrator Level: The user takes care of the system itself, intervening to keep it running smoothly
+* System-Wide Data Curator Level: The user is concerned with maintaining and enforcing the quality of the data in the system
+* Resource Owner: The user uploads and owns particular data. The data could be private or public.
+* Registered Genenetwork User: A general user of Genenetwork, that has registered an account with Genenetwork. Has read/view access to all public data, and possibly access to private data granted to them by a "Resource Owner" user.
+* Anonymous Genenetwork User: A general user of Genenetwork. Has read/view only access to public data on Genenetwork. This is the default access level for anyone who has not logged in.
+
+### Tasks
+
+* [x] Implement new module/package for check functions: actually just implemented the new functions in an existing module for now.
+* [x] Use new check function(s) in place of raw checks (this can be done incrementally), i.e. changed as the developer(s) work on a module. Found out there isn't a lot of places in gn-auth that the checks are used. Good to have them around though.
+* [ ] Explore Python's introspection facility and what utility it can be for the authorisation
+* [ ] 
+* [ ] 
+* [ ] 
+* [ ] 
+* [ ] 
+* [ ] 
+* [ ] 
+* [ ] 

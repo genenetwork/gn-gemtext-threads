@@ -1,0 +1,56 @@
+# Attaining Build Sanity 
+
+## Tags
+
+* type: doc, docs, documentation
+* status: in progress
+* assigned: BonfaceKilz, fredm
+* keywords: deploy, deployment, deploying, guix, guix container, guix system container
+
+## Description
+
+We have come to rely on GNU Guix [1] for deployment, mainly because of its reproducible builds, and also the configurability. This works beautifully, well, until it doesn't.
+
+Okay, let's go back a little. GNU Guix is a little over 13 years old (at the time of this writing), having began some time in June 2012[2]. At that age, the software has achieved stability. It is, however, still in active development, meaning things do change.
+
+One of the most common changes is cleanup and reorganisation of packages. This is a necessary part of GNU Guix's improvement and growth, and we'd have it no other way, however, it means we cannot rely on the latest guix to do builds for each new deployment.
+
+That is just one dimension of the changes that are possible — for practical development, we have to rely on channels outside of mainline GNU Guix for older software, or software that cannot be included on mainline Guix for a myriad of reasons. These channels are in active development, for most part. This then, also introduces another failure path.
+
+The complete list of channels we depend on are:
+
+=> https://git.genenetwork.org/gn-machines/ gn-machines: Defines the machines/containers we build and deploy, and the main packages we use.
+=> https://codeberg.org/guix/guix Mainline GNU Guix
+=> https://git.systemreboot.net/guix-forge/ guix-forge: Utilities for setup, management and interaction with software forges
+=> https://git.genenetwork.org/guix-bioinformatics guix-bioinformatics: A collection of software used in biology and bioinformatics research
+=> https://codeberg.org/guix-science/guix-past guix-past: Old software that is no longer available in mainline GNU Guix that we still depend on.
+=> https://codeberg.org/guix/guix-rust-past-crates.git guix-rust-past-crates: Old definitions of rust packages that we depend on.
+
+Ideally, we should be able to simply define the commit of `gn-machines` as the only channel we depend on and have the rest of the channels pulled in. We have found, however, that that does work. Due to a known bug[3], `gn-machines` dependency and their dependencies do not get pulled in under certain conditions leading to build failures.
+
+### History
+
+Initially, we declared `guix-bioinformatics` as our channel, and pinned the commit. We then ran into an issue — `guix-bioinformatics` need to evolve faster than we move forward, and changes in the mainline guix channel commit would sometimes lead to a cascade of failures due to changes in Guix. This would lead us to scramble to get our builds sane again.
+
+After doing that 2 or three times, we decided that that was not a pleasant way of living. We "moved" only the Genenetwork-specific packages over to `gn-machines` creating a new channel there, and pinned the commits for `guix-bioinformatics`, `guix-forge` and `guix mainline` channels. We now only depended on `gn-machines`.
+
+Having done that, we patted ourselves on our collective backs, and congratulated ourselves on a job well done. We had slain the beast!!!
+
+Well, not quite... it turns out, if you are going to pin one channel, just go ahead an pin all of them. My (our?) oversight, was that I left the `guix-past` and `guix-rust-past-crates` unpinned. The reasoning behind that was that these channels, being about past software, would not change much. That is true, though incomplete. There is not much change, but once is a really long time, you run into a breaking change, like we recently experienced. The name of a package is changed, and our builds failed.
+
+So, now, we have tethered **ALL** channels to known commits. Every single channel is now fixed at a known commit, and any changes in the future will be tracked.
+
+Our typical channels file, used in all the Genenetwork-specific repositories, is of the form shown in the link below:
+
+=> https://github.com/genenetwork/genenetwork3/blob/main/.guix-channel
+
+## Tasks
+
+* [ ] Move GN Rust packages to new build system - reduces build time.
+* [ ] Add a g-exp for gn-libs.   This way, whenever it changes, we don't need to do a guix re-build.
+
+## Footnotes
+
+=> https://guix.gnu.org/ [1] GNU Guix
+=> https://en.wikipedia.org/wiki/GNU_Guix#History [2] Guix, on Wikipedia
+=> https://issues.guix.gnu.org/68797 [3] Known Guix bug

@@ -1,0 +1,17 @@
+# Synchronise gn-docs Changes
+
+## Tags
+* assigned: fredm
+* interested: pjotrp, bonfacem
+* status: open
+* priority: high
+* type: feature-request, feature request
+* keywords: gn-guile, gn-docs
+
+## Description
+
+When users make changes using the "Markdown Editing" feature on Genenetwork, the changes are not automatically synchronised to the upstream repository.
+
+We need to at the very least, push changes upstream to, say, a separate branch, that (a) human(s) can use to synchronise the main upstream branch with the updates made on Genenetwork.
+
+This issue will be an exploration the problem space and proposals of solutions.

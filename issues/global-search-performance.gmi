@@ -1,0 +1,25 @@
+# Global Search Performance/Optimisation
+
+* assigned: bonfacem, pjotrp
+* status: closed
+
+## Description
+
+Global search is slow.  Search latency sits at ~30 seconds. Historically, identical queries completed within 1–4 seconds.  Root cause unclear, maybe hardware problems.
+
+Performance appears to have returned to normal without code changes.
+
+## Tasks
+
+* [X] Compare CD with prod wrt latency.  See if hardware is really the problem.
+* [X] Check out query plans and execution paths for global search (xapian delve, fall-back sql, weaved in gnqna)
+* [-] Doc performance.
+
+We get DDOS'ed by AI bots.
+
+Related:
+
+=> https://issues.genenetwork.org/issues/CI-CD/profiling-flask
+
+* closed
+

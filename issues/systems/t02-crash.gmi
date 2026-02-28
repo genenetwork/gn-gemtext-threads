@@ -1,0 +1,47 @@
+## Postmortem tux02 crash
+
+I'll take a look at tux02 - it rebooted last night and I need to start some services. It rebooted at CDT Aug 07 19:29:14 tux02 kernel: Linux version ... We have two out of memory messages before that:
+
+```
+Aug  7 18:45:27 tux02 kernel: [13521994.665636] Out of memory: Kill process 30165 (guix) score 759 or sacrifice child
+Aug  7 18:45:27 tux02 kernel: [13521994.758974] Killed process 30165 (guix) total-vm:498873224kB, anon-rss:223599272kB, file-rss:4kB, shmem-rss:0kB
+```
+
+My mosh clapped out before that
+
+```
+wrk      pts/96       mosh [128868]    Thu Aug  7 18:53 - down   (00:00)
+```
+
+Someone killed the development container before that
+
+```
+Aug  7 18:06:32 tux02 systemd[1]: genenetwork-development-container.service: Killing process 86832 (20qjyhd7n9n62fa) with signal SIGKILL.
+```
+
+and
+
+```
+Aug  7 13:28:26 tux02 kernel: [13502972.611421] oom_reaper: reaped process 25224 (guix), now anon-rss:0kB, file-rss:0kB, shmem-rss:0kB
+Aug  7 18:16:00 tux02 kernel: [13520227.160945] oom_reaper: reaped process 128091 (guix), now anon-rss:0kB, file-rss:0kB, shmem-rss:0kB
+```
+
+Guix builds running out of RAM... My conclusion is that someone has been doing some heavy lifting. Probably Fred. I'll ask him to use a different machine that is not shared by many people. First I need to bring up some processes. The shepherd had not started, so:
+
+```
+systemctl status user-shepherd.service
+```
+
+most services started now. I need to check in half an hour.
+
+BNW is the one that does not start up automatically.
+
+```
+su shepherd
+herd status
+herd stop bnw
+herd status bnw
+tail -f /home/shepherd/logs/bnw.log
+```
+
+Shows a process is blocking the port. Kill as root, after making sure herd status shows it as stopped.

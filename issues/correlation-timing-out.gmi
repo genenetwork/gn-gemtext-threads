@@ -5,7 +5,7 @@
 * assigned: fredm, zsloan, alexm
 * type: bug
 * priority: high
-* status: ongoing
+* status: closed, completed
 * keywords: correlations
 
 ## Description
@@ -17,3 +17,7 @@ Do correlations against the same dataset
 This might be the same issue as the one in
 => /issues/correlation-missing-file correlation-missing-file.gmi
 but I'm not sure.
+
+## Close as completed
+
+This is fixed.

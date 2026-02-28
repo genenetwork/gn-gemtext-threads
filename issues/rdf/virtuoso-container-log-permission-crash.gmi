@@ -1,0 +1,23 @@
+# Virtuoso Fails to Start Due to Incorrect Log File Ownership
+
+* assigned: bonfacem
+* status: closed
+
+## Description
+
+In CD, the virtuoso container keeps exiting and being re-spawned with the following error:
+
+```
+Thu Jan 15 2026 11:20:44 Can't open log : Permission denied
+```
+
+## Resolution
+
+Fixed it by running (from inside the container):
+
+```
+chown virtuoso:virtuoso /var/lib/virtuoso
+chmod 755 /var/lib/virtuoso
+```
+
+* closed

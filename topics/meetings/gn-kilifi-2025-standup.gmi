@@ -1,0 +1,177 @@
+# Stand-up Notes
+
+## 25-8-2025
+### Felix
+* Completed first draft of the abstract
+* HS genotyping; polishing founders vcf file:
+* - sorting xsome order
+* - remove duplicate markers
+
+### Johannnes
+* Extending the rag system, make it more of an agent:
+* - fixing bugs
+* - reduce runtime
+
+### Bonface
+* CD went down!
+* revert it to last commit
+* set it up locally (not very easy)
+* coordinate with Fred and Aarun for help
+
+## 27-8-2025
+### Felix
+* updating the abstract: meeting with Kauthar, for more tips and insight
+* HS rats genotyping
+* still no significant output
+
+### Bonface
+* fixed GN3, GN guile, and GN auth
+* reproduce GN2 error, not yet fixed though
+
+### Johannes
+* LLM transformer is taking too long to run
+* change input documentations to observe results
+
+## 29-8-2025
+### Felix
+* Still on the abstract
+* Errors with hs genotyping script
+
+### Johannes
+*  Still on the rag system: experimenting with documents as input
+
+### Bonface
+* CD down again, tux02 is the calprit
+* Running gn2 outside container in meantime
+
+## 1-9-2025
+### Felix
+* improving the smoothing scripts for hs: building a snakemake pipeline; redrafting the abstract introductory part
+
+### Bonface
+* looked on deployment to fix...,
+* install gpu drivers for penguine 2 with alex
+* it has gpu drivers tesla k8, but hardware installation is important for the meantime
+
+### Alex
+* rqlt2/lmdb runs and rebooted
+* dumping bxd phenotype dataset for testing
+
+### Johannes
+* no big updates
+* literature review on rag systems and how they work
+
+## 3-9-2025
+### Felix
+* Improved the inferring script
+* Abstract on hold first
+
+### Johannes
+* fix documents using agents: the issue is parallelization
+* reviewing fahamu AI (the python part)
+
+### Bonface
+* Gn2 finally runs
+* Documenting the progress and steps
+* Gn-auth is broken; Fred to solve it
+* Updated tesla k8 gpu drivers
+
+
+### Alex
+* Rqtl-wrapper for BXD is done
+* focusing on cross-information;lmdb
+
+## 5-9-2025
+### Felix
+* managed to generate haplotype blocks for hs rats
+
+### Johannes
+* RAG experimentation script: balg01, running slow; prepare for msc defense
+
+### Alex
+* dumping phenotypes to lmdb
+
+### Bonface
+* install drivers on tesla k8
+* review Johannes scripts
+* fixing gn2
+* review alex's patches, {pull requests via emails}
+
+* AOB;
+* API tokens for RAG and coding
+
+## 10-9-2025
+### Felix
+* Managed to run gemma and generate plots for the original hs genotype data and hs smoothed genotype data
+* Still working on fine-tuning the statistical metrices to suite the plots
+
+### Bonface
+* All the GN machines are up and running, expect GN Auth
+* Sent documentations to Pjotr on the progress with troubleshooting GN machines
+
+### Alex
+* writing queries to move phenotypes matrices from gn2 db to lmdb
+
+### Johannes
+* defense
+
+## 17-9-2025
+### Felix
+* Completed abstract writing
+* Working on generating genotype files for hs in gn2 format
+
+### Bonface
+* Gn machines are up and running
+* Still some issues with manually restarting the container
+* Worked with Alex to set up an external bootable ssd for Johannes
+
+### Alex
+* Succeeded dumping phenotypes to lmdb
+* Been reading literature around phenotypes in gn2
+* Assisted Bonz in setting up external bootable ssd for Johannes
+
+### Johannes
+* Managed to get access to bux01 server for the llms work
+
+## 19-09-2025
+### Felix
+* Finalized HS genotypes/haplotypes
+
+### Bonface
+* GN machines are running on CD
+* troubleshooting assisted by Aaron
+
+### Johannes
+* Experimenting with RAG systems
+
+### Alex
+* Writing LMDB scripts to dump phenotypes to LMDB from the common gn DB
+
+## [Review] MONTH OCTOBER, 2025
+*** Metric wise, plans and goals to achieve
+
+### Bonface
+Thoughts: Good start after relocation.
+
+* CD/CI: Make sure that tests/infra is super stable
+* Look at suggested forge/guix-bioinformatics upgrades that affect prod
+* Support work for GNQA: sane gn-qna(fahamu)/AI deploys; Review Johannes' work; Help with tuning models; play catch up (cover up knowledge gap); figure out how to compare the different models.
+* Follow up on my phd
+
+### Alex
+Thoughts: very productive
+
+* Rqtl2 lmdb adapter running on production; depends on traction with Rqtl2 upstream by karl Browman to gn-bioinformatics
+* Collaborate with Felix on his scripts
+
+### Johannes
+
+Thoughts: Not very productive, barely, looking forward for more improvement
+
+* Experimenting on the qtl data with the AI system being currently built; also in need of optimization
+* Comparing LLMs/GNQA agents; getting assistance from Shelby's work
+
+### Felix
+* HS genotypes to be fully supported in GN2
+* Poster presentation
+* PhD: ML objective (ML fundamentals); Complete 1st manuscript draft; Process my student pass

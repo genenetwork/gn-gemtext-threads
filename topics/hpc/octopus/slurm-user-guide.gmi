@@ -37,7 +37,6 @@ To get a shell prompt on one of the nodes (useful for testing your environment)
 srun -N 1 --mem=32G --pty /bin/bash
 ```
 
-
 # Differences
 
 ## Guix (look ma, no modules)

@@ -1,0 +1,46 @@
+# Troubleshooting inside the GN dev container
+* type: systems, debugging, container
+* keywords: container, troubleshooting, logs, webhooks
+
+You need to find the development container so that you can begin troubleshooting:
+
+```
+ps -u root -f --forest | grep -A4 '/usr/local/bin/genenetwork-development-container' | grep shepherd
+```
+
+Example output:
+
+```
+root      16182  16162  0 03:57 ?        00:00:04  \_ /gnu/store/n87px1cazqkav83npg80ccp1n777j08s-guile-3.0.9/bin/guile --no-auto-compile /gnu/store/b4n5ax7l1ccia7sr123fqcjqi4vy03pv-shepherd-1.0.2/bin/shepherd --config /gnu/store/5ahb3745wlpa5mjsbk8j6frn78khvzzw-shepherd.conf
+```
+
+Get into the container:
+
+```
+# Use the correct pid and guix/bash path.
+
+sudo /home/bonfacem/.config/guix/current/bin/guix container exec 16182 /gnu/store/m6c5hgqg569mbcjjbp8l8m7q82ascpdl-bash-5.1.16/bin/bash --init-file /home/bonfacem/.guix-profile/etc/profile --login
+```
+
+All the gn related logs can be found in "/var/log/cd":
+
+```
+genenetwork2.log
+genenetwork3.log
+gn-auth.log
+gn-guile.log
+```
+
+All the nginx log are in "/var/log/nginx"
+
+Sometimes, it's useful to trigger webhooks while troubleshooting.  Here are all the relevant webhooks:
+
+```
+/gn-guile
+/genenetwork2
+/genenetwork3
+/gn-libs
+/gn-auth
+```
+
+Inside the container, we have "coreutils-minimal", and "curl" that you can use to troubleshoot.

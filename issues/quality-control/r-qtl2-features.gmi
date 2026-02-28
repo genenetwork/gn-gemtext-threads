@@ -3,7 +3,7 @@
 ## Tags
 
 * type: listing
-* status: open
+* status: closed, completed
 * assigned: fredm
 * priority: high
 * keywords: listing, bug, feature
@@ -12,5 +12,9 @@
 
 This is a listing of non-critical features and bugs that do not currently have a dedicated issue, and need to be handled some time in the future.
 
-* [feature] "Undo Transpose": Files marked as '*_transposed: true' will have the transposition undone to ease processing down the line.
+* Closed, completed: [feature] "Undo Transpose": Files marked as '*_transposed: true' will have the transposition undone to ease processing down the line.
 * …
+
+### Close as completed
+
+Actually open dedicated issues for bugs and features rather than collecting them here.

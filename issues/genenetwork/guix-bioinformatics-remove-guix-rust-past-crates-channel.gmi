@@ -1,0 +1,23 @@
+# guix-bioinformatics: Remove `guix-rust-past-crates` channel
+
+## Tags
+
+* assigned: alexm, bonfacem
+* interested: fredm
+* priority: normal
+* status: open
+* type: bug
+* keywords: guix-bioinformatics, guix-rust-past-crates, guix, rust, crates
+
+## Description
+
+GNU Guix recently changed[1] the way it handles packaging of rust packages.
+
+The old rust packages got moved to the "guix-rust-past-crates" to help avoid huge breakages for systems depending on the older packaging system. "guix-bioinformatics" used a number of rust packages, defined in the old form, and we needed a quick fix, thus the introduction of the "guix-rust-past-crates" channel as a dependency.
+
+We need to move away from depending on this channel, by updating all the rust crates we use to the new packaging model.
+
+
+## Footnotes
+
+=> https://guix.gnu.org/en/blog/2025/a-new-rust-packaging-model/ [1]

@@ -11,7 +11,7 @@ octopus02
 - Devices: 2 3.7T SSDs + 2 894.3G SSDs + 2 4.6T HDDs
 - **Status: Slurm not OK, LizardFS not OK**
 - Notes:
-  - `octopus02 mfsmount[31909]: can't resolve master hostname and/or portname (octopus01:9421)`, 
+  - `octopus02 mfsmount[31909]: can't resolve master hostname and/or portname (octopus01:9421)`,
   - **I don't see 2 drives that are physically mounted**
 
 octopus03
@@ -21,7 +21,7 @@ octopus03
 
 octopus04
 - Devices: 4 7.3 T SSDs (Neil) + 1 4.6T HDD + 1 3.7T SSD + 2 894.3G SSDs
-- Status: Slurm NO, LizardFS OK (we don't share the HDD) 
+- Status: Slurm NO, LizardFS OK (we don't share the HDD)
 - Notes: no
 
 octopus05
@@ -31,7 +31,7 @@ octopus05
 
 octopus06
 - Devices: 1 7.3 T SSDs (Neil) + 1 4.6T HDD + 4 3.7T SSDs + 2 894.3G SSDs
-- Status: Slurm OK, LizardFS OK (we don't share the HDD) 
+- Status: Slurm OK, LizardFS OK (we don't share the HDD)
 - Notes: no
 
 octopus07
@@ -41,17 +41,17 @@ octopus07
 
 octopus08
 - Devices: 1 7.3 T SSDs (Neil) + 1 4.6T HDD + 4 3.7T SSDs + 2 894.3G SSDs
-- Status: Slurm OK, LizardFS OK (we don't share the HDD) 
+- Status: Slurm OK, LizardFS OK (we don't share the HDD)
 - Notes: no
 
 octopus09
 - Devices: 1 7.3 T SSDs (Neil) + 1 4.6T HDD + 4 3.7T SSDs + 2 894.3G SSDs
-- Status: Slurm OK, LizardFS OK (we don't share the HDD) 
+- Status: Slurm OK, LizardFS OK (we don't share the HDD)
 - Notes: no
 
 octopus10
 - Devices: 1 7.3 T SSDs (Neil) + 4 3.7T SSDs + 2 894.3G SSDs
-- Status: Slurm OK, LizardFS OK (we don't share the HDD) 
+- Status: Slurm OK, LizardFS OK (we don't share the HDD)
 - Notes: **I don't see 1 device that is physically mounted**
 
 octopus11

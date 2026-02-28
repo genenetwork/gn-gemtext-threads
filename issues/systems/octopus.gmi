@@ -1,6 +1,9 @@
 # Octopus sysmaintenance
 
-Reopened tasks because of new sheepdog layout and add new machines to Octopus and get fiber optic network going with @andreag. See also
+Reopened tasks because of new sheepdog layout and add new machines to Octopus and get fiber optic network going with @andreag.
+IT recently upgraded the network switch, so we should have great interconnect between all nodes. We also need to work on user management and network storage.
+
+See also
 
 => ../../topics/systemtopics/systems/hpcs/hpc/octopus-maintenance
 
@@ -14,7 +17,7 @@ Reopened tasks because of new sheepdog layout and add new machines to Octopus an
 
 # Tasks
 
-* [ ] add lizardfs to nodes
+* [X] add lizardfs to nodes
 * [ ] add PBS to nodes
 * [ ] use fiber optic network
 * [ ] install sheepdog
@@ -36,6 +39,17 @@ default via 172.23.16.1 dev ens1f0np0
 
 # Current topology
 
+vim /etc/ssh/sshd_config
+systemctl reload ssh
+
+The routing should be as on octopus01
+
+```
+default via 172.23.16.1 dev eno1
+172.23.16.0/21 dev ens1f0np0 proto kernel scope link src 172.23.18.221
+172.23.16.0/21 dev eno1 proto kernel scope link src 172.23.18.188
+```
+
 ```
 ip a
 ip route
@@ -44,3 +58,9 @@ ip route
 - Octopus01 uses eno1 172.23.18.188/21 gateway 172.23.16.1 (eno1: Link is up at 1000 Mbps)
 - Octopus02 uses eno1 172.23.17.63/21  gateway 172.23.16.1 (eno1: Link is up at 1000 Mbps)
                       172.23.x.x
+
+# Work
+
+* After the switch upgrade penguin2 NFS is not visible for octopus01. I disabled the mount in fstab
+* On octopus01 disabled unattended upgrade script - we don't want kernel updates on this machine(!)
+* Updated IP addresses in sshd_config

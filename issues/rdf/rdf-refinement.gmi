@@ -1,0 +1,352 @@
+# RDF Refinement
+
+* assigned: bonfacem, pjotrp
+* status: in-progress
+
+## Description
+
+We have:
+
+=> rdf.genenetwork.org
+
+We want to make that entire site is easily navigatable; and make all terms self-explanatory.   Beyond that get rid of all the blank nodes.  Think of navigation akin to menu navigation from a website.
+
+Useful reference for the right queries from GN1:
+
+=> https://github.com/genenetwork/genenetwork1/blob/0f170f0b748a4e10eaf8538f6bcbf88b573ce8e7/web/webqtl/base/webqtlTrait.py#L397 (GN1) retrieveInfo
+
+## Tasks
+
+## Species/InbredSet/MappingMethod/AvgMethod
+
+From this root node, one should be able to navigate to species, inbred-set groups, and datasets (TODO).
+
+=> https://rdf.genenetwork.org/v1/category/resource_classification_scheme GN Resource Classification Scheme
+
+* [X] Use resolvable mapping method.
+* [X] Create ttl file for more metadata around mapping/avg methods used in GN.
+* [X] Made gnc:probeset/gnc:{g/ph}enotype skos:Concept
+* [X] Add description for mapping/averaging nodes.
+* [X] Replace skos:prefLabel/skos:label with skos:definition for all "gnc:"
+* [X] Species page - fan out to all inbredsets that belong to that species.
+* [X] Get rid of blanknodes in gnc:resource_classification_scheme
+* [X] Add schema:domainIncludes for dcat:Dataset and gnc:species
+* [X] Add special nodes for family.
+* [X] Fan out from family page.
+* [X] gnt:belongs_to_species gnt:has_species
+* [X] Generate wikidata fan-out links for FamilyOrder.
+* [X] Remodel the gn hierachy: inbredset group -> population category -> species -> taxonomic family.
+
+Terms:
+* [X] xkos:specializes/generalizes -> xkos:previousLevel/nextLevel
+* [X] gnt:family -> gnt:has_family
+* [X] gnt:genetic-type -> gnt:genetic_type
+* [X] skos:notation -> gnt:has_uniprot_taxon_id
+* [X] <species> rdf:isDefinedBy -> <species> gnt:has_wikidata_link
+* [X] gnt:is_species_of -> gnt:has_strain
+* [X] gnt:belongs_to_group -> gnt:has_strain
+* [X] Use latest inbredset table from tux02 (local db had missing "public" and "description" tables)
+* [X] Update term metadata for "gnt:has_family."
+* [X] Create gnc:family
+* [X] Link family to species/inbredsets.
+* [X] Wrap inbredset metadata - HTML rich text format - in ^^rdf:HTML
+* [X] Mark monkey data as cruft with gn:cruft and add comments in rdfs:comment
+* [X] Transform renames.
+* [X] Move oll ontology to one file.
+
+Note: In the main GN page, we don't list IndbredSet groups that don't have a family:
+
+```
+mysql> select count(*) FROM InbredSet where Family IS NULL;
++----------+
+| count(*) |
++----------+
+|       33 |
++----------+
+1 row in set (0.01 sec)
+```
+
+## Datasets
+
+* [X] gn:datasets->metadata
+
+Checking for trait and co-factors:
+
+```
+SELECT
+    s.Name AS species_name,
+    i.Id   AS inbredset_id,
+    i.Name AS inbredset_name,
+    'Traits and Cofactors' AS dataset_type
+FROM Species s
+JOIN InbredSet i
+  ON i.SpeciesId = s.Id
+JOIN PublishFreeze p
+  ON p.InbredSetId = i.Id
+WHERE p.Name = CONCAT(i.Name, 'Publish');
+```
+
+Checking for DNA Markers and SNPs:
+
+```
+SELECT
+    s.Name AS species_name,
+    i.Id   AS inbredset_id,
+    i.Name AS inbredset_name,
+    'DNA Markers and SNPs' AS dataset_type
+FROM Species s
+JOIN InbredSet i
+  ON i.SpeciesId = s.Id
+JOIN GenoFreeze g
+  ON g.InbredSetId = i.Id
+WHERE g.Name = CONCAT(i.Name, 'Geno');
+```
+
+Checking for Molecular Traits:
+
+```
+SELECT DISTINCT
+    s.Name AS species_name,
+    i.Name AS inbredset_name,
+    t.Name AS dataset_type,
+    psf.FullName as dataset_full_name
+FROM Species s
+JOIN InbredSet i
+  ON i.SpeciesId = s.Id
+JOIN ProbeFreeze pf
+  ON pf.InbredSetId = i.Id
+JOIN ProbeSetFreeze psf
+  ON psf.ProbeFreezeId = pf.Id
+JOIN Tissue t
+  ON pf.TissueId = t.Id
+WHERE s.Name = 'rat' AND i.Name = 'HXBBXH' AND
+psf.public > 0 AND t.Name = 'Adipose mRNA' GROUP BY s.Name, i.Name
+ORDER BY
+s.Name, i.Name, t.Name, psf.FullName;
+```
+
+* [X] (w/ Alex) Link dataset view from RDF -> LMDB
+
+### Molecular Traits Dataset
+
+* [X] Ontology for describing tissue.
+* [X] Move investigators to own file.
+* [X] Delete old probeset definitions.
+* [X] Link all datasets to type and family.
+* [X] Remodel gene-chip metadata.
+* [X] Refactor molecular-traits.scm to fetch metadata from Datasets table.
+* [X] Add missing definitions for gnc:has_probeset_data.
+* [X] Refactor gn:dataset->metadata.
+* [X] Remove duplicate queries.
+* [X] gn:dataset->metadata (only molecular traits have normalization, avg )
+* [X] gn:molecular-trait->gn:dataset
+* [X] gn:set->gn:dataset
+* [X] gnc:molecular_trait->gn:molecular_trait
+* [ ] (w/ Alex)LMDB Data ∀ traits.
+
+### Genotype Dataset
+
+* [X] gn:set->gn:dataset (gnt:has_genotype_data)
+* [X] gn:dataset->set (gnt:has_strain)
+* [~] (cancelled) LMDB Data ∀ traits: already have the geno files set-up.
+* [~] (cancelled) gn:set->markers
+
+Markers that belong to more than one species:
+
+```
+SELECT
+    Geno.*,
+    COUNT(*) AS cnt
+FROM Geno
+GROUP BY
+    Name,
+    Marker_Name
+HAVING COUNT(*) > 1;
+```
+
+From above results we can confirm:
+
+```
+SELECT Geno.* FROM Geno WHERE Marker_Name IN ("D11Mit2", "D11Mit2", "D12Mit1", "D3Mit17") ORDER BY Marker_Name\G
+```
+
+We see that the markers we have markers that can belong to more than one species.
+
+Counting markers per public GenoFreeze:
+
+```
+SELECT
+    gf.Name AS GenoFreezeName,
+    COUNT(DISTINCT g.Marker_Name) AS MarkerCount
+FROM GenoFreeze gf
+INNER JOIN InbredSet i
+    ON i.Id = gf.InbredSetId
+INNER JOIN Species s
+    ON s.Id = i.SpeciesId
+INNER JOIN Geno g
+    ON g.SpeciesId = s.Id
+WHERE
+    gf.public > 0
+    AND g.Marker_Name IS NOT NULL
+GROUP BY
+    gf.Name
+ORDER BY
+    MarkerCount DESC;
+```
+
+Results:
+
+```
++-----------------------------+-------------+
+| GenoFreezeName              | MarkerCount |
++-----------------------------+-------------+
+| AD-cases-controls-MyersGeno |      367403 |
+| BDF2-2005Geno               |      120531 |
+| BXD-MicturitionGeno         |      120531 |
+| CTB6F2Geno                  |      120531 |
+| Linsenbardt-BoehmGeno       |      120531 |
+| AXBXAGeno                   |      120531 |
+| B6MRLF2-D2MRLF2Geno         |      120531 |
+| BXD-JAX-ADGeno              |      120531 |
+| CCGeno                      |      120531 |
+| SOTNOT-OHSUGeno             |      120531 |
+| B6D2F2-PSUGeno              |      120531 |
+| BHHBF2Geno                  |      120531 |
+| BXDGeno                     |      120531 |
+| DOD-BXD-GWIGeno             |      120531 |
+| BDF2-1999Geno               |      120531 |
+| BXD-MBD-UTHSCGeno           |      120531 |
+| UTHSC-CannabinoidGeno       |      120531 |
+
+…
+| HET3-ITPGeno                |      120531 |
+| MDPGeno                     |      120531 |
+| HSNIH-PalmerGeno            |       29518 |
+| HRDP_HXB-BXH-BPGeno         |       29518 |
+| NWU_WKYxF344_F2Geno         |       29518 |
+| HXBBXHGeno                  |       29518 |
+| MAGIC_LinesGeno             |        8933 |
+| J12XJ58F11Geno              |        4938 |
+| SXMGeno                     |         792 |
+| ColXCviGeno                 |         133 |
+| BayXShaGeno                 |         133 |
+| ColXBurGeno                 |         133 |
++-----------------------------+-------------+
+```
+Same markers.  Not feasible to have a fan out from genotypes -> markers; too much repetition.
+
+We only have 532,248 markers:
+
+```
+> SELECT COUNT(*) FROM Geno;
+
++----------+
+| count(*) |
++----------+
+|   532248 |
++----------+
+```
+
+Instead, present the number of markers.  Link the snps/dna-markers to species.   Show how to access them.
+* [X] gn-dataset -> marker_count/example-query
+* [X] markers -> metadata
+
+### Phenotype Dataset
+
+* [X] gn:phenotype->metadata
+* [X] Figure out linking phenotypes LRS and other stats metadata without using a blank node (and dup)
+* [X] LMDB Data ∀ traits.
+* [X] gn:set->gn:dataset (gnt:has_phenotype_data)
+* [X] gn:dataset->set (gnt:has_strain)
+
+Data entry error in:
+
+=> https://info.genenetwork.org/infofile/source.php?GN_AccesionId=626
+
+## Phenotypes / Publications / DNA Markers / Probesets / RIF
+Genotypes and markers are different but related.  Different Species can have different markers
+
+* [X] Phenotypes.
+* [X] Publications.
+* [X] gn:set->gn:dataset.
+* [X] gn:dataset->gn:trait
+* [X] DNA markers and snps
+* [X] Link geno-files to the correct data (ref gn2 code on how this is done)
+=> https://files.genenetwork.org/current/ Genotype files.   The dir reps the InfoPages.AccesionId.
+* [X] Create global namespace for geno-files.
+* [X] probesets
+
+All probesets should have a name:
+```
+SELECT *
+FROM ProbeSet
+WHERE ProbeSet.Name IS NULL
+   OR TRIM(ProbeSet.Name) = ''\G
+```
+Number of probesets we have:
+```
+MariaDB [db_webqtl]> select count(*) from ProbeSet;
++----------+
+| count(*) |
++----------+
+|  6436251 |
++----------+
+```
+
+Number of experiment that use probesets:
+
+```
+MariaDB [db_webqtl]> select count(*) from ProbeSetXRef;
++----------+
+| count(*) |
++----------+
+| 49131499 |
++----------+
+```
+
+We can get away with tx'ing ProbeSet in one go.   However, file size gets too big and rapper complains about it.   Instead, figure out a way to tx ProbeSetXRef in chunks.   Note: total transform times averages at about ~21 mins.   With probesets/probesetxref, that will balloon upto >1hr.   Not worried about optimising things now.    That can be worked out for later.  Building the probeset table only takes 105m12.350s.  With the short form syntax, the size goes from 5G to 4G.
+
+* [X] Have chunked transforms of huge data.
+* [X] ProbeSetXRef
+* [~] (w/ Johannesm/pjotrp/rob) What columns to put into RDF.   We have 72 rows ATM:
+
+```
+MariaDB [db_webqtl]> SELECT COUNT(*) AS column_count
+    -> FROM INFORMATION_SCHEMA.COLUMNS
+    -> WHERE TABLE_SCHEMA = DATABASE()
+    ->   AND TABLE_NAME = 'ProbeSet';
++--------------+
+| column_count |
++--------------+
+|           72 |
++--------------+
+1 row in set (0.00 sec)
+```
+* [ ] (Alex) ProbeSetData
+* [X] RIF
+* [-] (cancelled) Gene Symbols
+* [X] Make, in gn-guile, probeset URLs resolvable E.g. https://rdf.genenetwork.org/v1/id/probeset100_9332324_MZ
+
+## GN Ontology
+
+* [X] Create endpoints that lists all "gnt:"  and "gnc:" terms
+* [ ] Add sparql queries as an example.
+
+## Post Mark-up
+* [X] ! Generate a list of data older than 2020 and ping Rob/Pjotr (Discuss adding licences)
+
+```
+-- Phenotypes:
+SELECT * FROM PublishFreeze WHERE CreateTime > '2020-01-01' AND (public < 1 OR confidentiality > 0);
+-- Genotypes:
+SELECT * FROM GenoFreeze WHERE CreateTime > '2020-01-01' AND (public < 1 OR confidentiality > 0);
+-- Probesets:
+SELECT * FROM ProbeSetFreeze WHERE CreateTime > '2020-01-01' AND (public < 1 OR confidentiality > 0)\G
+```
+* [ ] Re-work scripts: data older that 2020 is public.
+* [X] Make sparql query in gn-guile faster.
+* [ ] Improve tx times for very large data.
+* [ ] (w/Alex) Revisit data privacy in the LMDB view.
+* [~] (Cancelled) Re-visit how we store all HTML metadata.   Clean this up.
+* [ ] Sync mariadb tux01 with tux02; have rdf.genenetwork.org be the latest.
+* [X] Make sure that the rdf.genenetwork.org named graph is available on public end-point (mention to Fred about the nuance of moving to a new graph without breaking CD/Prod from old code that used the old genenetwork.org graph).
