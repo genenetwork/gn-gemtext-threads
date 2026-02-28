@@ -8,18 +8,81 @@
   [X] tux03               128.169.5.101   (00:0a:f7:c1:00:8b) -  1 Gbs
 - [X] tux04i              172.23.17.170   (14:23:f2:4f:e6:10)
 - [X] tux04               128.169.5.119   (14:23:f2:4f:e6:11)
-- [X] tux05               172.23.18.129   (14:23:f2:4f:35:00)
-- [X] tux06               172.23.17.188   (14:23:f2:4e:29:10)
-- [X] tux07               172.23.17.191   (14:23:f2:4e:7d:60)
-- [X] tux08               172.23.17.186   (14:23:f2:4f:4e:b0)
-- [X] tux09               172.23.17.182   (14:23:f2:4e:49:10)
 - [X] space               128.169.5.175   (e4:3d:1a:80:6c:40)
 - [ ] space-i             172.23.18.153   (cc:48:3a:13:db:4c)
-- [ ] octopus01f          172.23.18.221   (2c:ea:7f:60:bf:61)
-- [ ] octopus02f          172.23.22.159   (2c:ea:7f:60:bd:61)
-- [ ] octopus03f          172.23.19.187   (2c:ea:7f:60:ac:2b)
-- [ ] octopus04f          172.23.17.254   (2c:ea:7f:60:af:14)
 ```
+
+```
+PING octopus01.uthsc.edu (172.23.18.188) 56(84) bytes of data.
+    link/ether 2c:ea:7f:60:bf:61 brd ff:ff:ff:ff:ff:ff
+    inet 172.23.18.221/21 brd 172.23.23.255 scope global dynamic
+    link/ether 2c:ea:7f:f2:9e:16 brd ff:ff:ff:ff:ff:ff
+    inet 172.23.18.188/21 brd 172.23.23.255 scope global dynamic eno1
+PING octopus02.uthsc.edu (172.23.17.63) 56(84) bytes of data.
+    link/ether 2c:ea:7f:60:bd:61 brd ff:ff:ff:ff:ff:ff
+    inet 172.23.22.159/21 brd 172.23.23.255 scope global dynamic ens1f0np0
+    link/ether 2c:ea:7f:f2:d8:7a brd ff:ff:ff:ff:ff:ff
+    inet 172.23.17.63/21 brd 172.23.23.255 scope global dynamic eno1
+PING octopus03 (172.23.19.59) 56(84) bytes of data.
+    inet 172.23.19.59/21 brd 172.23.23.255 scope global dynamic eno1
+    inet 172.23.19.187/21 brd 172.23.23.255 scope global dynamic ens1f0np0
+PING octopus04.uthsc.edu (172.23.17.141) 56(84) bytes of data.
+    link/ether 2c:ea:7f:f2:cf:fa brd ff:ff:ff:ff:ff:ff
+    inet 172.23.17.141/21 brd 172.23.23.255 scope global dynamic eno1
+    link/ether 2c:ea:7f:60:af:15 brd ff:ff:ff:ff:ff:ff
+    inet none
+PING octopus05.uthsc.edu (172.23.17.2) 56(84) bytes of data.
+    link/ether 2c:ea:7f:60:bb:b1 brd ff:ff:ff:ff:ff:ff
+    inet 172.23.20.67/21 brd 172.23.23.255 scope global dynamic ens1f0np0
+    link/ether 2c:ea:7f:f2:d2:82 brd ff:ff:ff:ff:ff:ff
+    inet 172.23.17.2/21 brd 172.23.23.255 scope global dynamic eno1
+PING octopus06.uthsc.edu (172.23.22.255) 56(84) bytes of data.
+    link/ether 2c:ea:7f:60:b9:39 brd ff:ff:ff:ff:ff:ff
+    inet 172.23.21.104/21 brd 172.23.23.255 scope global dynamic ens1f0np0
+    link/ether 2c:ea:7f:f2:cf:aa brd ff:ff:ff:ff:ff:ff
+    inet 172.23.22.255/21 brd 172.23.23.255 scope global dynamic eno1
+PING octopus07.uthsc.edu (172.23.17.178) 56(84) bytes of data.
+    link/ether 2c:ea:7f:f2:d8:1a brd ff:ff:ff:ff:ff:ff
+    inet 172.23.17.178/21 brd 172.23.23.255 scope global dynamic eno1
+    link/ether 2c:ea:7f:60:bd:31 brd ff:ff:ff:ff:ff:ff
+    inet 172.23.23.165/21 brd 172.23.23.255 scope global dynamic ens1f0np0
+PING octopus08.uthsc.edu (172.23.18.68) 56(84) bytes of data.
+    link/ether 2c:ea:7f:f2:ca:da brd ff:ff:ff:ff:ff:ff
+    inet 172.23.18.68/21 brd 172.23.23.255 scope global dynamic eno1
+    link/ether 2c:ea:7f:5e:dc:4c brd ff:ff:ff:ff:ff:ff
+    inet none
+PING octopus09.uthsc.edu (172.23.17.16) 56(84) bytes of data.
+    link/ether 2c:ea:7f:f2:d3:7a brd ff:ff:ff:ff:ff:ff
+    inet 172.23.17.16/21 brd 172.23.23.255 scope global dynamic eno1
+    link/ether 2c:ea:7f:4e:70:cf brd ff:ff:ff:ff:ff:ff
+    inet none
+PING octopus10.uthsc.edu (172.23.17.9) 56(84) bytes of data.
+    link/ether 2c:ea:7f:f2:d2:72 brd ff:ff:ff:ff:ff:ff
+    inet 172.23.17.9/21 brd 172.23.23.255 scope global dynamic eno1
+    link/ether 2c:ea:7f:60:ba:11 brd ff:ff:ff:ff:ff:ff
+    inet 172.23.22.85/21 brd 172.23.23.255 scope global dynamic ens1f0np0
+PING octopus11.uthsc.edu (172.23.17.172) 56(84) bytes of data.
+    link/ether 2c:ea:7f:f2:ce:8a brd ff:ff:ff:ff:ff:ff
+    inet 172.23.17.172/21 brd 172.23.23.255 scope global dynamic eno1
+    link/ether 2c:ea:7f:60:7b:c9 brd ff:ff:ff:ff:ff:ff
+    inet none
+PING tux05.uthsc.edu (172.23.21.120) 56(84) bytes of data.
+    link/ether 14:23:f2:4f:35:00 brd ff:ff:ff:ff:ff:ff
+    inet 172.23.21.120/21 brd 172.23.23.255 scope global dynamic eno12399np0
+PING tux06.uthsc.edu (172.23.22.141) 56(84) bytes of data.
+    link/ether 14:23:f2:4e:29:10 brd ff:ff:ff:ff:ff:ff
+    inet 172.23.22.141/21 brd 172.23.23.255 scope global dynamic eno12399np0
+PING tux07.uthsc.edu (172.23.17.191) 56(84) bytes of data.
+    link/ether 14:23:f2:4e:7d:60 brd ff:ff:ff:ff:ff:ff
+    inet 172.23.17.191/21 brd 172.23.23.255 scope global dynamic eno12399np0
+PING tux08.uthsc.edu (172.23.17.186) 56(84) bytes of data.
+    link/ether 14:23:f2:4f:4e:b0 brd ff:ff:ff:ff:ff:ff
+    inet 172.23.17.186/21 brd 172.23.23.255 scope global dynamic eno12399np0
+PING tux09.uthsc.edu (172.23.17.182) 56(84) bytes of data.
+    link/ether 14:23:f2:4e:49:10 brd ff:ff:ff:ff:ff:ff
+    inet 172.23.17.182/21 brd 172.23.23.255 scope global dynamic eno12399np0
+```
+
 
 ## Out-of-band access
 
