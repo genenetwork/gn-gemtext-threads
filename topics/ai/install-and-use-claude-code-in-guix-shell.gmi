@@ -1,0 +1,29 @@
+# Install and use Claude Code using Guix
+
+At this point Claude Code appears to be the best terminal client for AI-aided programming. This is likely a temporary state of affairs. We run Claude code inside a Linux container so it can't touch the rest of the system.
+
+=> https://github.com/anthropics/claude-code
+
+You can install and run Claude as a binary blob inside a Guix container.
+
+Note that while the source code is available, but neither Claude nor Claude code are free software. So don't make it a software deployment dependency.
+
+The shell prompt looks like:
+
+```
+mkdir workdir && cd workdir
+mkdir -p $HOME/.local $HOME/.cache/claude $HOME/.claude
+guix shell -C -N -F curl bash openssl nss-certs coreutils grep sed jq git --share=$HOME/.local --share=$HOME/.cache/claude --share=$HOME/.claude
+curl -fvSL https://claude.ai/install.sh | bash
+```
+
+Takes a few minutes.
+The installation is self contained. You probably want to make a guix manifest to run Claude inside some source directory.
+Set the path and run claude from ~/.local/bin/claude.
+
+```
+export PATH=$PATH:$HOME/.local/bin
+claude
+```
+
+The key gets written to ~/.claude.json. I simply copy that to capture state. Don't add it to git though.
