@@ -22,28 +22,27 @@
 *     - [ ] list of relevant papers with one-liners - the WHY
 => https://pmc.ncbi.nlm.nih.gov/articles/PMC3294237/
 * [+] Analyse and discuss BXD case attributes with Rob --- both group level and dataset level
-* [ ] Sane representation of case attributes in RDF with @bonfacem
+* [+] Sane representation of case attributes in RDF with @bonfacem
 * [X] Present C.elegans protocol and example mappings with GEMMA/Rqtl
-* [ ] Uploader - setting up code with @fredm
+* [X] Uploader - setting up code with @fredm
 *     - [ ] Concrete improvement to work on
 *     - [X] run small database mysql locally
 *     - [X] aider with Sonnet + code fixes
 *     - [ ] document - add to code base - merge with Fred's tree - share changes with Pjotr & team
-* [ ] Sort @alexm application with Pwani = this week
+* [X] Sort @alexm application with Pwani = this week
 
 ### This week (07-04-2025 onwards) 
 
 * GN2 tasks 
-  * [x] Progress on Kilifish 
-        - meet with Dennis (send him an email with all the queries needed) 
-       [-] - progress to format and upload data to gn2 (to be ready by latest Friday!) 
-  * [x] Make a milestone with genotype smoothing 
+*  [x] Progress on Kilifish 
+*      [X]  - meet with Dennis (send him an email with all the queries needed) 
+*      [-] - progress to format and upload data to gn2 (to be ready by latest Friday!) 
+*  [x] Make a milestone with genotype smoothing 
 
 * PhD tasks 
-  * [ ] Complete and share concept note and timeline to supervisors, have a meeting for progress 
-  * [ ] Make a milestone on chapter one manuscript (deep dive into the selected papers){THE BIG PICTURE; a complete draft by early May} 
-  * [ X ] Complete and share concept note and timeline to supervisors, have a meeting for progress 
-  * [+] Make a milestone on chapter one manuscript (deep dive into the selected papers){THE BIG PICTURE; a complete draft by early May} 
+  * [X] Complete and share concept note and timeline to supervisors, have a meeting for progress 
+  * [X] Make a milestone on chapter one manuscript (deep dive into the selected papers){THE BIG PICTURE; a complete draft by early May} 
+  * [X] Complete and share concept note and timeline to supervisors, have a meeting for progress 
 
 * Programming 
   * [x] Make a milestone with the uploader (really push and learn!) 
@@ -51,62 +50,62 @@
          - utilise the hurdles to learn programming priniciples in action 
 
 * AOBs 
-  * [  ] Weekly meetings 
-  * [  ] follow up with Paul on his progress 
-  * [  ] follow up on the MSc bioinformatics project 
-  * [  ] follow up on Alex's application with Pwani
+*  [X] Weekly meetings 
+*  [X] follow up with Paul on his progress 
+*  [X] follow up on the MSc bioinformatics project 
+*  [X] follow up on Alex's application with Pwani
 
 ### This week (14-04-2025 onwards)  
 
 * gn-uploader programming 
-  * [X] - Resolve the config file issue with your local uploader
-  * [ ] - Run the uploader locally, then break the system, see how components connect to each other 
-  * [ ] - document your findings
+*  [X] - Resolve the config file issue with your local uploader
+*  [X] - Run the uploader locally, then break the system, see how components connect to each other 
+*  [X] - document your findings
 
 * genotype smoothing 
-  * [ ] - resolve errors with plotting, document your findings  
+*  [X] - resolve errors with plotting, document your findings  
 
 ### This week (21-04-Onwards) 
 
 * genotype smoothing  
- * [X] - haplotyping tools for smoothing (plink,., etc) :IN PROGRESS:  
-         - see what it can offer with smoothing. See what others say about this.
-           - [X] check the original genotypes and compare with the ones in gn2 {done} 
-              - [x] inspect the Xsome column order in comparison with the snp positioning {done} 
-           - [x] adapt the plink algorithm to fit your dataset format {done}  
-           - consider inspeting the phenotype file too. {in progress} 
+*  [X] - haplotyping tools for smoothing (plink,., etc) :IN PROGRESS:  
+*      - see what it can offer with smoothing. See what others say about this.
+*          - [X] check the original genotypes and compare with the ones in gn2 {done} 
+*             - [x] inspect the Xsome column order in comparison with the snp positioning {done} 
+*           - [x] adapt the plink algorithm to fit your dataset format {done}  
+*           - consider inspeting the phenotype file too. {in progress} 
            
 
 * gn-uploader programming 
- * [ ] - Run the uploader locally, then break the system, see how components connect to each other (ask help from Bonz)
-  * [ ] - document your findings
+*  [X] - Run the uploader locally, then break the system, see how components connect to each other (ask help from Bonz)
+*  [X] - document your findings
 
 ### Previous week (28-04-Onwards) 
 * gn-uploader programming
- * [X] - Run the uploader locally, then break the system, see how components connect to each other (ask help from Bonz)
-  - start simple, read the script files (one at a time, take your time to understand how it flows) 
-  - In running the uploader, consider pair programming to save time with solving issues that your teamates can solve in hours, as they take you days to solve 
+*  [X] - Run the uploader locally, then break the system, see how components connect to each other (ask help from Bonz)
+       - start simple, read the script files (one at a time, take your time to understand how it flows) 
+       - In running the uploader, consider pair programming to save time with solving issues that your teamates can solve in hours, as they take you days to solve 
 
-  * [ ] - document your findings
-  {Get help from your teammates/AI to jump start this!, swallow your pride! :(} 
+*  [X] - document your findings
+   { Get help from your teammates/AI to jump start this!, swallow your pride! :(} 
 
 * genotype smoothing 
- * [X] Keep refining the following: 
-   * [X] filtering power adapted from plink 
-       - the low the r2 value, the strictier the filtering.., 
-   * [X] the xsomes mix up in the plot (probably the phenotype data?)
-          - individual ids in phenotype data was not in sync with the genotype data 
-   * [X] Update findings and push to github 
+*  [X] Keep refining the following: 
+*     [X] filtering power adapted from plink 
+*       - the low the r2 value, the strictier the filtering.., 
+*  [X] the xsomes mix up in the plot (probably the phenotype data?)
+*         - individual ids in phenotype data was not in sync with the genotype data 
+*  [X] Update findings and push to github 
 
 ### This week (05-05-Onwards) 
 * programming (gn-uploader) 
-  * [ ] - pick one file each day, review it, understand it
-  * [ ] - pair programming with Alex on test runs 
+* [X] - pick one file each day, review it, understand it
+* [X] - pair programming with Alex on test runs 
 
 * HS rats scripts 
-  * [X] - prepare/refine scripts to quickly process HS rats file (in progress) 
-     [ ] - memory hurdles, goal to simplify running script 
-  * [X] - assist alex with hs rats cross info  
+*  [X] - prepare/refine scripts to quickly process HS rats file (in progress) 
+*     [X] - memory hurdles, goal to simplify running script 
+*  [X] - assist alex with hs rats cross info  
 
 ### (12-05-onwards) 
   * [X] - HS genotypes scripting 
@@ -127,7 +126,7 @@
 * ## this week (09-06-onwards) 
 * [+] - identify start and end points for haplotypes in hs genotype files
 *       - checked the rembination densities first, still need more comprehension (arrange a meeting with Rob)  
-* [ ] - upload the final updates to gn2, test and see the results 
+* [X] - upload the final updates to gn2, test and see the results 
 * [+] - gn-uploader/uploader folder, explore 
 
 * ## this week (16-06-onwards) 
@@ -149,9 +148,9 @@
 * [+] - kilifish to gn2 via backend
 
 * ## this week (30-06-onwards)
-* [ ] - mapping offsprings to founders (hs rats)
-* [ ] - upload kilifish to genenetwork
-* [ ] - revise celegans smoothing (genotypes)
+* [X] - mapping offsprings to founders (hs rats)
+* [X] - upload kilifish to genenetwork
+* [X] - revise celegans smoothing (genotypes)
 
 * ## this week (07-07-onwards) 
 * [X] - generate haplotypes for offsprings and founders combined; intepretation next.., 
@@ -234,16 +233,36 @@
    - precompute, by Pj, check on this.., 
    - qtl results, more suggestive than absolute.., 
 
+```To new and prosperus beginnings``` 
 
 
-### Later weeks
+* ## this week (02-03-onwards)
+
+* [] - Get the qtl2_hs_pipeline working | test runs
+*   [] - clear definition of the root problems to the script 
+*   [] - test runs to get quick feedback 
+*   [] - involve the ai-lab team for more help 
+* [] - Kilifish data to be ready for upload 
+*    [] - classical phenotypes and/or expression traits 
+*    [] - metadata 
+*    [] - genotypes; smoothing? Kilifish Genetics? 
+*    [] - Strain, Xref, Case attributes 
+*    [] - local gemma testing 
+*    [] - Final checks with @Arthur et al, proceed to upload 
+* [] - refine the overview manuscript  
+*    [] - the innovatio touch to be clearly defined 
+
+
+### Later weeks (2026 plan) 
+* [ ] Reverse Genotyping => (ML + Pan-Genome) genotyping 
+*   [] - a paper from this experimentation 
 * [ ] Kilifish into GN
 * [ ] Review paper on genotyping
-* [ ] HS Rat
-* [ ] Prepare others for C.elegans
-* [ ] Upload Arabidopsis dataset
-* [ ] Upload Medaka dataset
-* [ ] Work on improved DO and Ce genotyping
+* [X] HS Rat
+* [-] Prepare others for C.elegans
+* [+] Upload Arabidopsis dataset
+* [+] Upload Medaka dataset
+* [-] Work on improved DO and Ce genotyping
 
 ### Done
 
