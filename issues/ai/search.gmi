@@ -65,7 +65,10 @@ curl "http://localhost:5000/api/v1/search?q=Does%20diabetes%20occur%20naturally%
 curl "http://localhost:5000/api/v1/search?q=point%20me%20to%20useful%20phenotypes%20that%20cause%20ADHD%3F"
 ```
 * [X] (pjotr) Ask about DNS name to test out AI search in GN2/3; Note: Follow up later.
-* [ ] (bonfacem, johannesm) Rewrite `rdf2partial_text.py` to query virtuoso.
+* [ ] (bonfacem) Rewrite `rdf2partial_text.py` to query virtuoso.  Draft PR:
+=> https://github.com/genenetwork/gn-ai/pull/4
+Missing data so far: RIF, phenotype traits, datasets, genotype metadata
+* [ ] (johannesm, bonfacem) Test out new corpus, before worrying about probesets.
 * [X] (bonfacem) Add cache layer for faster resp times for same questions.  Note: TTL = 1 week.
 * [X] (bonfacem) Add rate-limiting.  Note: 300 reqs/day.
 * [ ] (bonfacem) Figure out bare-bones auth to make gn2 talk to gnais
@@ -75,8 +78,7 @@ curl "http://localhost:5000/api/v1/search?q=point%20me%20to%20useful%20phenotype
 
 ## Later (Genotypes/ Molecular Traits)
 * [ ] (johannesm, bonfacem) Extend / Modify (directly use sparql) corpus to molecular traits (later genotypes, precompute data and RIFs).
-* [ ] (johannesm, bonfacem) Have a sync on build of xapian search. We want to teach the LLM how to build a xapian search so that the user has a fallback
-* [ ] (johannesm, bonface) Add genotype data
+* [ ] (johannesm, bonfacem) Have a sync on build of xapian search. We want to teach the LLM how to build a xapian search so that the user has a fallback.
 * [ ] (johannesm, bonfacem, pjotrp) Add pre-compute data to RDF / AI-Agent.   Note: keep pre-compute data at Pj's virtuoso node.  Enable federation so that Bonz' and Pj's nodes can talk to each other over federation.
 * [ ] (bonfacem) Plug in sheepdog to monitor gnais.   What happens when we run out of tokens?
 
