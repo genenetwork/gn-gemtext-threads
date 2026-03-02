@@ -4,7 +4,8 @@
 
 * Assigned: Flisso
 * type: bug 
-* status: in progress 
+* status: in progress
+* interested: alexm
 * key words: cross, qtl2, calc_genoprob, bugs 
 
 ## Description
@@ -15,7 +16,7 @@ The script is crushing as per the followin error message:
 calc_genoprob failing with negative length vectors are not allowed
 ```
 For reference, see "qtl2_hmm_pipeline.R" script: 
-=> "https://github.com/fetche-lab/HS-rats-2026/blob/main/genotypes/new_processing/tests/chr1/codes/qtl2_hmm_pipeline.R" 
+=> https://github.com/fetche-lab/HS-rats-2026/blob/main/genotypes/new_processing/tests/chr1/codes/qtl2_hmm_pipeline.R
 
 The following were key findings from the run, and the error: 
 
@@ -30,16 +31,11 @@ The following were key findings from the run, and the error:
 * The original workflow tried to allocate a genotype-probability object effectively sized around 1499 * 50000 * 36 = 2,698,200,000, which exceeds R’s 32-bit vector-length limit (2,147,483,647), causing negative length vectors are not allowed.
 * So the solution was to chunk the files to 5000 lines, but still the culprit is on the calc_genoprob() runtime. 
 
-## What is already solved 
-* [x] error: "calc_genoprob failing with negative length vectors are not
-    allowed)" 
-
-## TODO
-* [] Re-run the script per specified chunks 
-* [] Evaluate the smoothed output for its validity and intepretability 
-* [] use the proximal/distal founder aware markers to extract snps from the original geno file. 
-*  [] or, extend a function in the script to perform this 
-* [] Test the results with gemma and rqtl2 mapping 
-
- 
+## Tasks
+* [x] error: "calc_genoprob failing with negative length vectors are not allowed)" 
+* [ ] Re-run the script per specified chunks 
+* [ ] Evaluate the smoothed output for its validity and intepretability 
+* [ ] use the proximal/distal founder aware markers to extract snps from the original geno file. 
+* [ ] or, extend a function in the script to perform this 
+* [ ] Test the results with gemma and rqtl2 mapping 
 
