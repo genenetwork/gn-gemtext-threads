@@ -238,30 +238,48 @@ To New Beginnings
 
 * ## this week (02-03-onwards)
 
-* [] - Get the qtl2_hs_pipeline working | test runs
-*   [] - clear definition of the root problems to the script 
-*   [] - test runs to get quick feedback 
-*   [] - involve the ai-lab team for more help 
-* [] - Kilifish data to be ready for upload 
-*    [] - classical phenotypes and/or expression traits 
-*    [] - metadata 
-*    [] - genotypes; smoothing? Kilifish Genetics? 
+* ### Date: 02-03-2026
+ 
+* [+] - Get the qtl2_hs_pipeline working | test runs
+*   [+] - clear definition of the root problems to the script 
+*   [+] - test runs to get quick feedback 
+*   [+] - involve the ai-lab team for more help
+*   - pending for now, (waiting to sync in with Alex and/or Bonz for team effort trouble shooting) 
+
+* ### Date: 03-03-2026  
+
+* [+] - Kilifish data to be ready for upload 
+*    [+] - classical phenotypes and/or expression traits
+*     - already done with the expression data, next is the classical phenotypes. Processed files in my tux02 file path: 
+* => "/home/felixl/felixl/Kilifish_2026/data/expression/" 
+  
+*    [X] - genotypes; smoothing? Kilifish Genetics?
+*    - Kilifish genotypes were from the F2 generation. Most of the pre-processing was already done. One thing left was to check for recombination transitions, and filter markers that are close with less than 10kb distance apart. 
+*    - File path to the genotypes: 
+* => "/home/felixl/felixl/Kilifish_2026/data/genotypes/" 
+*    - File path to the scripts used: 
+* => "/home/felixl/felixl/Kilifish_2026/codes/kilifish_recombination_pipeline.py" 
+
+*    [] - metadata; annotation 
 *    [] - Strain, Xref, Case attributes 
 *    [] - local gemma testing 
-*    [] - Final checks with @Arthur et al, proceed to upload 
-* [] - refine the overview manuscript  
+*    [] - Final checks with @Arthur et al, proceed to upload
+
+* Reviewing/writing papers 
+
+* [+] - refine the overview manuscript  
 *    [] - the innovatio touch to be clearly defined 
 
 
 ### Later weeks (2026 plan) 
 * [ ] Reverse Genotyping => (ML + Pan-Genome) genotyping 
 *   [] - a paper from this experimentation 
-* [ ] Kilifish into GN
-* [ ] Review paper on genotyping
+* [+] Kilifish into GN
+* [+] Review paper on genotyping
 * [X] HS Rat
 * [-] Prepare others for C.elegans
-* [+] Upload Arabidopsis dataset
-* [+] Upload Medaka dataset
+* [] Upload Arabidopsis dataset
+* [] Upload Medaka dataset
 * [-] Work on improved DO and Ce genotyping
 
 ### Done
