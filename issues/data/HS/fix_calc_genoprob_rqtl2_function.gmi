@@ -3,9 +3,9 @@
 ## Tags 
 
 * Assigned: Flisso
-* Interested: Bonz, Alex, Fred, Johannes 
 * type: bug 
-* status: in progress 
+* status: in progress
+* interested: alexm
 * key words: cross, qtl2, calc_genoprob, bugs 
 
 ## Description
@@ -16,7 +16,8 @@ The script is crushing as per the followin error message:
 calc_genoprob failing with negative length vectors are not allowed
 ```
 For reference, see "qtl2_hmm_pipeline.R" script: 
-=> "https://github.com/fetche-lab/HS-rats-2026/blob/main/genotypes/new_processing/tests/chr1/codes/qtl2_hmm_pipeline.R" 
+=> https://github.com/fetche-lab/HS-rats-2026/blob/main/genotypes/new_processing/tests/chr1/codes/qtl2_hmm_pipeline.R
+
 
 The following were key findings from the run, and the error: 
 
@@ -131,8 +132,3 @@ chr | marker | position_type | indiv1 | indiv2 | …
 * - Smaller, biologically meaningful file
 
 The above provides context of the high level steps to be covered to get the smoothed genotypes. Challenges come on the best way to convert to a working pipeline. 
-
-
-
-
-
