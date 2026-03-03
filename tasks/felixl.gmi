@@ -268,7 +268,8 @@ To New Beginnings
 * Reviewing/writing papers 
 
 * [+] - refine the overview manuscript  
-*    [] - the innovatio touch to be clearly defined 
+*    [+] - the innovation touch to be clearly defined
+*     - re-reading the manuscript I wrote, state of the art overview, I am getting a different perspetive into linking the technical information written versus the missing gaps highlighting the future of genotyping with AI quick advancement.  
 
 
 ### Later weeks (2026 plan) 
