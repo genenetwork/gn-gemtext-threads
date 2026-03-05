@@ -249,7 +249,7 @@ To New Beginnings
 * ### Date: 03-03-2026  
 
 * [+] - Kilifish data to be ready for upload 
-*    [+] - classical phenotypes and/or expression traits
+*    [X] - classical phenotypes and/or expression traits
 *     - already done with the expression data, next is the classical phenotypes. Processed files in my tux02 file path: 
 * => "/home/felixl/felixl/Kilifish_2026/data/expression/" 
   
@@ -260,8 +260,18 @@ To New Beginnings
 *    - File path to the scripts used: 
 * => "/home/felixl/felixl/Kilifish_2026/codes/kilifish_recombination_pipeline.py" 
 
-*    [] - metadata; annotation 
-*    [] - Strain, Xref, Case attributes 
+* ### Date: 04-03-2026 
+*    [X] - classical phenotypes 
+*    [+] - metadata; annotation
+*       [X] - description information for the classical phenotypes--adapting to the new format 
+*       [+] - relevant annotation information for the expression and proteomics data
+*          - So, with the annotation file, one observation is made, the gene names are duplicated for the most part, although the marker positions are unique. Something worth looking into keenly.   
+
+* ### 05-03-2026 
+
+*    [+] - Still working on the annotation file. Requires careful processing as the information will be used for search in GN2; a continuation for the task started yesterday.  
+
+*    [] - Strain, Xref, Case attributes, and group menu information, since it is a new species added 
 *    [] - local gemma testing 
 *    [] - Final checks with @Arthur et al, proceed to upload
 
