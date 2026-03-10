@@ -140,7 +140,7 @@ Do not make any mistakes.
 * [X] Do a number of experimentations to improve above.
 
 
-### Design a proper JSON output format for the system
+## Design a proper JSON output format for the system
 
 It is useful to control the system by defining an output format. This should also help parse output to other tools when the time comes.
 
@@ -334,7 +334,7 @@ Clean-up:
 AI search (gnais) can be loaded as a module in any GeneNetwork code and used, provided that parameters for the search are defined.
 
 
-### Write sparql query to fetch phenotypes and dataset metadata.
+## Write sparql query to fetch phenotypes and dataset metadata.
 
 Dataset metadata for a given phenotype.
 
@@ -357,7 +357,7 @@ LIMIT 10;
 
 ```
 
-### Fix poetry build for (Munyoki's) local dev.
+## Fix poetry build for (Munyoki's) local dev.
 
 See:
 => https://github.com/genenetwork/gn-ai/pull/1
@@ -382,7 +382,7 @@ Draft PR:
 Missing data so far: RIF, phenotype traits, datasets, genotype metadata
 
 
-### Write agent for gnais.
+## Write agent for gnais.
 
 Draft and test completed!
 
@@ -397,5 +397,5 @@ See:
 => https://github.com/genenetwork/gn-ai/commit/83026eb61de0e06e2ec7ba95745c0ba3af66ad27
 
 
-### Combine RAG and Agent into hybrid system.
+## Combine RAG and Agent into hybrid system.
 
