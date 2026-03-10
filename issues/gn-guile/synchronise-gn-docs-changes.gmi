@@ -1,0 +1,36 @@
+# Synchronise gn-docs Changes
+
+## Tags
+* assigned: fredm
+* interested: pjotrp, bonfacem
+* status: open
+* priority: high
+* type: feature-request, feature request
+* keywords: gn-guile, gn-docs
+
+## Description
+
+When users make changes using the "Markdown Editing" feature on Genenetwork, the changes are not automatically synchronised to the upstream repository.
+
+We need to at the very least, push changes upstream to, say, a separate branch, that (a) human(s) can use to synchronise the main upstream branch with the updates made on Genenetwork.
+
+This issue will be an exploration the problem space and proposals of solutions.
+
+
+## Updates
+
+### 2026-02-18
+
+On the gn-guile repository, I did the following cosmetic changes in preparation for the more involved changes down the line:
+
+=> https://git.genenetwork.org/gn-guile/commit/?id=c2e56e09f62be517ad2963f08716ac6abdd9120f
+=> https://git.genenetwork.org/gn-guile/commit/?id=ff09518802c9af1605d877cf6230825391aae874
+=> https://git.genenetwork.org/gn-guile/commit/?id=c768b861f68094151a385130f9e7dd0090c7d619
+=> https://git.genenetwork.org/gn-guile/commit/?id=5501745b7fbf8f5fce46d1cafb8a2197de035c13
+
+These changes are mostly involved with cleanup and minor bugfixes.
+
+On gn-machines repository, I did the following changes (though I haven't fully tested them):
+
+=> https://git.genenetwork.org/gn-machines/commit/?h=production-container&id=2faf5e9d28bcba1898c5e1245e977ee80e719aad
+=> https://git.genenetwork.org/gn-machines/commit/?h=production-container&id=316264357d42cfe83f937b27ed218d9f057f2673

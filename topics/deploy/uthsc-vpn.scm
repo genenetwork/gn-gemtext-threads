@@ -178,7 +178,7 @@
         (setenv "REQUESTS_CA_BUNDLE"
                 #$(local-file "uthsc-certificate.pem"))
         (invoke #$(file-append openconnect-sso-uthsc "/bin/openconnect-sso")
-                "--server" "$vpn-server" ; ask us for end-point or see UT docs
+                "--server" "uthscvpn1.uthsc.edu" ; ask us for end-point or see UT docs
                 "--authgroup" "UTHSC"
                 "--"
                 "--script" (string-join (cons #$(file-append vpn-slice "/bin/vpn-slice")

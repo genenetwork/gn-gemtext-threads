@@ -1,0 +1,134 @@
+# Investigate and fix "qtl2::calc_genoprob()" run due to failing with negative length vectors 
+
+## Tags 
+
+* Assigned: Flisso
+* type: bug 
+* status: in progress
+* interested: alexm
+* key words: cross, qtl2, calc_genoprob, bugs 
+
+## Description
+Running subset of genotype and founders csv on qtl2 to generate founder aware smoothed genotypes. 
+The script is crushing as per the followin error message:  
+ 
+```sh
+calc_genoprob failing with negative length vectors are not allowed
+```
+For reference, see "qtl2_hmm_pipeline.R" script: 
+=> https://github.com/fetche-lab/HS-rats-2026/blob/main/genotypes/new_processing/tests/chr1/codes/qtl2_hmm_pipeline.R
+
+
+The following were key findings from the run, and the error: 
+
+* Map and IDs were consistent:
+* - 50,000 markers
+* - no duplicate marker IDs
+* - monotonic increasing cM
+* Genotype dimensions:
+*  - HS genotypes: 1499 x 50000
+*  - Founder genotypes: 8 x 50000
+* Error cause matched integer-length overflow conditions:
+* The original workflow tried to allocate a genotype-probability object effectively sized around 1499 * 50000 * 36 = 2,698,200,000, which exceeds R’s 32-bit vector-length limit (2,147,483,647), causing negative length vectors are not allowed.
+* So the solution was to chunk the files to 5000 lines, but still the culprit is on the calc_genoprob() runtime. 
+
+## What is already solved 
+* [x] error: "calc_genoprob failing with negative length vectors are not
+    allowed)" 
+
+## TODO
+* [X] Re-run the script per specified chunks
+* Observations: 
+    -  
+* [+] Evaluate the smoothed output for its validity and intepretability 
+* [+] use the proximal/distal founder aware markers to extract snps from the original geno file. 
+*  [+] or, extend a function in the script to perform this 
+* [+] Test the results with gemma and rqtl2 mapping 
+
+
+## An overview in steps of what I want to achieve with improved smoothing 
+* GOAL: Turn raw SNP genotypes into smooth founder haplotype blocks using qtl2,
+then create a reduced genotype file for QTL mapping. 
+
+### Step 1: Load Data
+
+* We need: 
+* - Genotype file (individuals x markers) 
+* - Founder genotype file (founders x markers) 
+* - Genetic map file (chr, marker, cM) 
+* - Cross info file 
+* - YAML config file
+
+* Load cross in R: read_cross2(“config.yaml”)
+
+* Check: 
+* - Marker names match 
+* - Number of individuals correct 
+* - 8 founders defined
+
+### Step 2: Run Founder Inference (HMM)
+
+* Run: 
+* - calc_genoprob(cross, error_prob=0.002)
+* This estimates the probability of each founder at every marker for every
+individual.
+
+### Step 3: Convert to Founder Probabilities
+
+* Run: 
+* - genoprob_to_alleleprob(pr)
+* Now we have: 
+* - markers x individuals x 8 founders
+* Each marker has 8 probabilities that sum to 1.
+
+### Step 4: Hard Call Founders
+
+* For each marker: 
+* - Pick the founder with highest probability 
+* - If max probability < 0.8 → set to NA
+* This removes uncertain calls.
+
+### Step 5: Smooth the Calls
+
+* If short NA gaps appear between the same founder: 
+* - Do not break the block
+* Goal: 
+* - Avoid artificial recombination breakpoints. (for context, breakpoints represent haplotype boundaries among the identified blocks of markers as per the founders) 
+
+### Step 6: Create Haplotype Blocks
+
+* For each individual: 
+* - Walk through markers in order 
+* - When founder changes → breakpoint;  
+* - Record block start and end
+
+* Each block contains: 
+* - Chromosome 
+* - Proximal marker (start) 
+* - Distal marker (end) 
+* - Founder ID
+* Then use the boundary markers to extract corresponding snps from the original genotype file 
+
+
+### Step 7: Create Reduced Genotype File
+
+* Output format:
+
+```sh
+chr | marker | position_type | indiv1 | indiv2 | …
+```
+* Each block contributes: 
+* - One proximal row 
+* - One distal row
+* This becomes the smoothed genotype file for GEMMA or QTL mapping.
+
+### Final Result
+
+* Original data: 
+* - Millions of SNPs
+
+* After smoothing: 
+* - Founder haplotype blocks Recombination breakpoints
+* - Smaller, biologically meaningful file
+
+The above provides context of the high level steps to be covered to get the smoothed genotypes. Challenges come on the best way to convert to a working pipeline. 
