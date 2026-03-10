@@ -58,7 +58,7 @@ We need fan-out to GN-specific pages.  Related to task listed below in ⁰
 
 
 
-### Build search corpus wth phenotype metadata
+## Build search corpus wth phenotype metadata
 
 * Naive approach (old way).  Convert RDF graph from ttl-files -> json output:
 => https://github.com/genenetwork/gn-ai/blob/383f89441d7787023eaf1e2926c0dedca256fe1a/gnagent/utils/rdf2partial_text.py
@@ -96,15 +96,15 @@ gnt:family is/has rdfs:domain gnc:set . ", "gnt:short_name is/has a owl:ObjectPr
 
 ### Design RAG
 
-* [X] Simple RAG that answers questions based off a corpus.   Used DSPs to switch between different providers:
+* [X] Write simple RAG that answers questions based off a corpus.   Use DSPs to switch between different providers:
 
 You can inspect full implementation details at:
 
 => https://github.com/genenetwork/gn-ai/blob/383f89441d7787023eaf1e2926c0dedca256fe1a/aisearch/src/rag.py rag.py
 
-### Create system prompt
+## Create system prompt
 
-* [X] First system level prompt draft.
+* [X] Draft first system level prompt.
 * [X] Provide mapping between prefix and namespace to teach the model how to generate the URLs.
 
 Aim: Get the system to return concise answer with links for URLs.
@@ -205,7 +205,7 @@ geoSeries => http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc\n
 ```
 
 
-### Teach model how to build link to trait result page in CD
+## Teach model how to build link to trait result page in CD
 
 Trait id and dataset name can link to a result page. See this URL:
 
@@ -312,7 +312,7 @@ Need to update instructions to build a link to result page from RDF
 
 
 
-### Package AI search
+## Package AI search
 
 Next thing we want to do is packaging.
 
@@ -363,7 +363,7 @@ See:
 => https://github.com/genenetwork/gn-ai/pull/1
 
 
-### Add REST API for processing answers from AI processing.
+## Add REST API for processing answers from AI processing.
 
 See:
 => https://github.com/genenetwork/gn-ai/pull/2
@@ -374,7 +374,7 @@ curl "http://localhost:5000/api/v1/search?q=Does%20diabetes%20occur%20naturally%
 curl "http://localhost:5000/api/v1/search?q=point%20me%20to%20useful%20phenotypes%20that%20cause%20ADHD%3F"
 ```
 
-### Rewrite `rdf2partial_text.py` to query virtuoso.
+## Rewrite `rdf2partial_text.py` to query virtuoso.
 
 Draft PR:
 => https://github.com/genenetwork/gn-ai/pull/4
@@ -390,7 +390,7 @@ See:
 => https://github.com/genenetwork/gn-ai/blob/d91c905d515e34c507fc02f59f36dcd672dd6f90/aisearch/src/gnais/agent/agent.py
 
 
-### Add memory to RAG and agent.
+## Add memory to RAG and agent.
 Draft and test completed!
 
 See:
