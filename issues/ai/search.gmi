@@ -20,9 +20,10 @@ Related tasks:
 
 ## Tasks
 
-* [X] (bonfacem) Share existing TTL files with JoM.
+### Priority
+* [X] (bonfacem) Share existing TTL files with johannesm.
 * [X] (johannesm) Build search corpus with phenotype metadata.
-* [X] (johannesm) Design RAG.
+* [X] (johannesm) Design RAG for gnais.
 * [X] (johannesm) Create system prompts.
 * [X] (johannesm) Test locally RAG with phenotype-related queries
 
@@ -30,64 +31,41 @@ We need fan-out to GN-specific pages.  Related to task listed below in ⁰
 
 * [X] (johannesm, bonfacem) Design a proper JSON output format for the system
 * [X] ⁰(johannesm, bonfacem) Teach model how to build link to trait result page in CD
-* [X] (bonfacem) Sparql query to fetch phenotypes and dataset metadata.
-Dataset metadata for a given phenotype.
-
-```
-SPARQL
-PREFIX gn:  <http://rdf.genenetwork.org/v1/id/>
-PREFIX gnc: <http://rdf.genenetwork.org/v1/category/>
-PREFIX gnt: <http://rdf.genenetwork.org/v1/term/>
-
-SELECT ?phenotype_dataset
-       (GROUP_CONCAT(DISTINCT CONCAT(STR(?p), " = ", STR(?o)); separator=" | ") AS ?metadata)
-FROM <http://rdf.genenetwork.org/v1>
-WHERE {
-  ?set gnt:has_phenotype_data ?phenotype_dataset .
-  ?phenotype_dataset gnt:has_strain ?set ;
-                     ?p ?o .
-}
-GROUP BY ?phenotype_dataset
-LIMIT 10;
-
-```
-
-
-* [X] (johannesm, bonfacem) Package AI search so that it can be called from any GN code.  Packaging done in PyPi.  Minor fixes: bumped down python deps to 3.11 instead of 3.12.
-* [X] (bonfacem) Fix poetry build for (Munyoki's) local dev.  See:
-=> https://github.com/genenetwork/gn-ai/pull/1
+* [X] (bonfacem) Write sparql query to fetch phenotypes and dataset metadata.
+* [X] (johannesm, bonfacem) Package AI search so that it can be called from any GN code.  Packaging done in PyPI.  Minor fixes: bumped down python deps to 3.11 instead of 3.12.
+* [X] (bonfacem) Fix poetry build for (Munyoki's) local dev.
 * [X] (johannesm, ! bonfacem) Add REST API for processing answers from AI processing.
-=> https://github.com/genenetwork/gn-ai/pull/2
-
-Example query over curl:
-```
-curl "http://localhost:5000/api/v1/search?q=Does%20diabetes%20occur%20naturally%20in%20rats%3F"
-curl "http://localhost:5000/api/v1/search?q=point%20me%20to%20useful%20phenotypes%20that%20cause%20ADHD%3F"
-```
 * [X] (pjotr) Ask about DNS name to test out AI search in GN2/3; Note: Follow up later.
-* [ ] (bonfacem, johannesm) Rewrite `rdf2partial_text.py` to query virtuoso.
 * [X] (bonfacem) Add cache layer for faster resp times for same questions.  Note: TTL = 1 week.
 * [X] (bonfacem) Add rate-limiting.  Note: 300 reqs/day.
+* [X] (johannesm) Write agent for gnais.
+* [X] (johannesm) Add memory to RAG and agent.
+* [ ] (bonfacem) Rewrite `rdf2partial_text.py` to query virtuoso.
+* [ ] (johannesm, bonfacem) Test out new corpus, before worrying about probesets.
+* [ ] (johannesm) Combine RAG and Agent into hybrid system.
 * [ ] (bonfacem) Figure out bare-bones auth to make gn2 talk to gnais
 * [ ] (johannesm, bonfacem) Build UI over above REST endpoints.
 * [ ] Add Nginx blocks for AI search app.
 
 
-## Later (Genotypes/ Molecular Traits)
+### Nice to have later (Genotypes/ Molecular Traits)
 * [ ] (johannesm, bonfacem) Extend / Modify (directly use sparql) corpus to molecular traits (later genotypes, precompute data and RIFs).
-* [ ] (johannesm, bonfacem) Have a sync on build of xapian search. We want to teach the LLM how to build a xapian search so that the user has a fallback
-* [ ] (johannesm, bonface) Add genotype data
+* [ ] (johannesm, bonfacem) Have a sync on build of xapian search. We want to teach the LLM how to build a xapian search so that the user has a fallback.
 * [ ] (johannesm, bonfacem, pjotrp) Add pre-compute data to RDF / AI-Agent.   Note: keep pre-compute data at Pj's virtuoso node.  Enable federation so that Bonz' and Pj's nodes can talk to each other over federation.
 * [ ] (bonfacem) Plug in sheepdog to monitor gnais.   What happens when we run out of tokens?
+* [~] (bonfacem) Add package to guix-bioinformatics.   Questions: langchain support? Cancelled.   Poor guix support for AI libraries.   We work with pip+pyproject for now.
 
-### Build search corpus wth phenotype metadata
+
+
+
+## Build search corpus wth phenotype metadata
 
 * Naive approach (old way).  Convert RDF graph from ttl-files -> json output:
 => https://github.com/genenetwork/gn-ai/blob/383f89441d7787023eaf1e2926c0dedca256fe1a/gnagent/utils/rdf2partial_text.py
 
-This script uses ttl files extracted from the SPARQL endpoint. As such, prefixes were replaced with full namespaces in the results.
+This script uses ttl files extracted from the SPARQL endpoint. Prefixes were replaced with full namespaces in the results.
 
-* [X] Adapted code (need to remove namespace from logic and only work prefixes):
+* [X] Adapte code (need to remove namespace from logic and only work prefixes):
 => https://github.com/genenetwork/gn-ai/blob/383f89441d7787023eaf1e2926c0dedca256fe1a/aisearch/utils/new_rdf2partial_text.py
 
 Output: keys -> subjects; values -> list of predicates.   Removes redundant objects.  Subjects and objects are linked to form English-like sentences:
@@ -116,17 +94,20 @@ gnt:family is/has rdfs:domain gnc:set . ", "gnt:short_name is/has a owl:ObjectPr
 ```
 
 
-### Design RAG
+## Design RAG
 
-* [X] (johannesm) Simple RAG that answers questions based off a corpus.   Used DSPs to switch between different providers:
+* [X] Write simple RAG that answers questions based off a corpus.   Use DSPs to switch between different providers:
 
 You can inspect full implementation details at:
 
 => https://github.com/genenetwork/gn-ai/blob/383f89441d7787023eaf1e2926c0dedca256fe1a/aisearch/src/rag.py rag.py
 
-### Create system prompt
+## Create system prompt
 
-* [X] (johannesm) First system level prompt draft.   Aim: get the system to return concise answer with links for URLs.
+* [X] Draft first system level prompt.
+* [X] Provide mapping between prefix and namespace to teach the model how to generate the URLs.
+
+Aim: Get the system to return concise answer with links for URLs.
 
 ```
 You are an expert in biology and genomics. You excel at leveraging the data or context you have been given to address any user query.
@@ -154,14 +135,12 @@ foaf => http://xmlns.com/foaf/0.1
 geoSeries => http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc
 
 Do not make any mistakes.
-
 ```
 
-* [X] (johannesm) Provided mapping between prefix and namespace to teach the model how to generate the URLs.
-* [X] (johannesm) Do a number of experimentations to improve above.
+* [X] Do a number of experimentations to improve above.
 
 
-### Design a proper JSON output format for the system
+## Design a proper JSON output format for the system
 
 It is useful to control the system by defining an output format. This should also help parse output to other tools when the time comes.
 
@@ -171,7 +150,7 @@ Reviewing the options:
 * (b) Passing JSON format as example in prompt.  Pre-define JSON format; pass it in the prompt.   Risk: Some models may deviate from the instructions.
 * (c) Defining an output schema the LLM needs to comply to.  DSPy offers an adapter (JSONAdapter).  Model independent.
 
-Went with Option (c).
+Went with option (c).
 
 * [X] Create schema using pydantic ""BaseModel"" and used it with the DSPy predictor:
 
@@ -191,13 +170,14 @@ class Generate(dspy.Signature):
     context: list = dspy.InputField(desc="Background information")
     input_text: str = dspy.InputField(desc="Query and instructions")
     feedback: ListInformation = dspy.OutputField(desc="System response to the query")
-
 ```
 
 See the workings at:
 => https://github.com/genenetwork/gn-ai/blob/383f89441d7787023eaf1e2926c0dedca256fe1a/aisearch/src/config.py
 
-* [X] (johannesm) Iterate on the system prompt. Now it is:
+* [X] Iterate on the system prompt.
+
+Now it is:
 
 ```
 You excel at addressing search query using the context you have. You do not mistakes.
@@ -221,28 +201,23 @@ qb => http://purl.org/linked-data/cube
 pubmed => http://rdf.ncbi.nlm.nih.gov/pubmed
 v => http://www.w3.org/2006/vcard/ns
 foaf => http://xmlns.com/foaf/0.1
-geoSeries => http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc
-\n
+geoSeries => http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc\n
 ```
 
 
-### Teach model how to build link to trait result page in CD
+## Teach model how to build link to trait result page in CD
 
-Trait Id and dataset can be linked to a result page. See this URL:
+Trait id and dataset name can link to a result page. See this URL:
 
 => https://cd.genenetwork.org/show_trait?trait_id=10027&dataset=BXDPublish
 
-Trait id: 10027; dataset name: BXDPublish.  In RDF this is:
+Trait id: 10027; dataset name: BXDPublish.  In RDF this was:
 
 => https://rdf.genenetwork.org/v1/id/trait_BXDPublish_NOwdrwlHIC
 
-That trait has an alias encoded as "owl:equivalentClass BXDPublish_10027."
+To build link to result page from RDF, we need a trait's unique identifer and dataset name which can be queried from RDF.
 
-To build a result page from RDF, we need a trait's unique identifer which can be queried from RDF.
-
-* [X] (johannesm) use prompt engineering to get LLM to make above substitution.  Model finetuning for this is too expensive.
-
-* [X] (johannes) Provide more system prompting examples (I.e. translate RDF links for traits to valid trait result page):
+* [X] Use prompt engineering to get LLM to make above substitution.  Model finetuning is too expensive for this.
 
 ```
 You excel at addressing search query using the context you have. You do not make mistakes.
@@ -276,9 +251,9 @@ New trait link: https://cd.genenetwork.org/show_trait?trait_id=16339&dataset=BXD
 \n
 ```
 
-Above was enough to get the system to return valid CD links with Claude models :)
+Above prompt was enough to get the system to return valid CD links with Claude models :)
 
-Another example:
+A few examples:
 
 ```
 Query: What are the traits related to the BXD?
@@ -323,22 +298,104 @@ System feedback:
 ```
 Note: For local models e.g. meta-llama/Llama-3.1-8B-Instruct have a high probability of returning broken JSON.
 
-### Package AI search
 
-Next thing we want to do is packaging. Previous setup had logic and execution codes mixed. I cleaned that by moving all execution codes to `main.py`. Check it out at:
+
+* [~] Provide more system prompting examples (I.e. translate RDF links for traits to valid trait result page):
+
+In RDF trait link is now:
+
+=> https://rdf.genenetwork.org/v1/id/trait_BXDPublish_NOwdrwlHIC
+
+That trait has an alias encoded as "owl:equivalentClass BXDPublish_10027."
+
+Need to update instructions to build a link to result page from RDF
+
+
+
+## Package AI search
+
+Next thing we want to do is packaging.
+
+* [X] Prepare for packaging
+
+Previous setup had logic and execution codes mixed. I cleaned that by moving all execution codes to separate module `main.py`. Check it out at:
 => https://github.com/genenetwork/gn-ai/commit/8193d6adcd210b94de88fbeadeaf4353d6df3923
 
-* [X] (johannesm) Name "main.py" -> "search.py".  Clean-up:
+* [X] Rename "main.py" -> "search.py".  
+Clean-up:
 => https://github.com/genenetwork/gn-ai/commit/9bbbca60c91a69db66e57688fd7879682ac7ce5b
 
-* [X] (johannesm) Use poetry for packaging.
-=> https://github.com/genenetwork/gn-ai/blob/main/aisearch/pyproject.toml Poetry Dependencies
+* [X] Use poetry for packaging.
+=> https://github.com/genenetwork/gn-ai/blob/main/aisearch/pyproject.toml
 
-* [X] (johannesm) Upload package to PyPI:
+* [X] Upload package to PyPI.
 => https://github.com/genenetwork/gn-ai/blob/main/aisearch/README.md
 
-AI search (GNAIS) can be loaded as a module in any GeneNetwork code and used, provided that parameters for the search are defined.
+AI search (gnais) can be loaded as a module in any GeneNetwork code and used, provided that parameters for the search are defined.
 
-## For Later (Nice To Haves)
 
-* [~] (bonfacem) Add package to guix-bioinformatics.   Questions: langchain support? Cancelled.   Poor guix support for AI libraries.   We work with pip+pyproject for now.
+## Write sparql query to fetch phenotypes and dataset metadata.
+
+Dataset metadata for a given phenotype.
+
+```
+SPARQL
+PREFIX gn:  <http://rdf.genenetwork.org/v1/id/>
+PREFIX gnc: <http://rdf.genenetwork.org/v1/category/>
+PREFIX gnt: <http://rdf.genenetwork.org/v1/term/>
+
+SELECT ?phenotype_dataset
+       (GROUP_CONCAT(DISTINCT CONCAT(STR(?p), " = ", STR(?o)); separator=" | ") AS ?metadata)
+FROM <http://rdf.genenetwork.org/v1>
+WHERE {
+  ?set gnt:has_phenotype_data ?phenotype_dataset .
+  ?phenotype_dataset gnt:has_strain ?set ;
+                     ?p ?o .
+}
+GROUP BY ?phenotype_dataset
+LIMIT 10;
+
+```
+
+## Fix poetry build for (Munyoki's) local dev.
+
+See:
+=> https://github.com/genenetwork/gn-ai/pull/1
+
+
+## Add REST API for processing answers from AI processing.
+
+See:
+=> https://github.com/genenetwork/gn-ai/pull/2
+
+Example query over curl:
+```
+curl "http://localhost:5000/api/v1/search?q=Does%20diabetes%20occur%20naturally%20in%20rats%3F"
+curl "http://localhost:5000/api/v1/search?q=point%20me%20to%20useful%20phenotypes%20that%20cause%20ADHD%3F"
+```
+
+## Rewrite `rdf2partial_text.py` to query virtuoso.
+
+Draft PR:
+=> https://github.com/genenetwork/gn-ai/pull/4
+
+Missing data so far: RIF, phenotype traits, datasets, genotype metadata
+
+
+## Write agent for gnais.
+
+Draft and test completed!
+
+See:
+=> https://github.com/genenetwork/gn-ai/blob/d91c905d515e34c507fc02f59f36dcd672dd6f90/aisearch/src/gnais/agent/agent.py agent.py
+
+
+## Add memory to RAG and agent.
+Draft and test completed!
+
+See:
+=> https://github.com/genenetwork/gn-ai/commit/83026eb61de0e06e2ec7ba95745c0ba3af66ad27
+
+
+## Combine RAG and Agent into hybrid system.
+
