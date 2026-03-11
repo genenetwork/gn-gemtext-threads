@@ -1,0 +1,19 @@
+# Add Privileges for gn-docs Editing
+
+## Tags
+
+* assigned: fredm
+* priority: medium
+* keywords: gn-auth, auth, gn2, genenetwork2, wiki
+* status: open
+* type: feature-request
+
+## Description
+
+We need a more robust way to restrict editing of the markdown files =gn-docs=
+that form part of the documentation in Genenetwork.
+
+To do this we need to:
+
+* [ ] Add a new privilege: name the privilege "system:wiki:edit" or "system:documentation:edit"
+* [ ] Use the new privilege to control access; this part will probably be done in =gn2= or =gn-guile=
