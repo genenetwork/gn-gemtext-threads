@@ -1,0 +1,20 @@
+# Restrict access to "Make Public" Feature of Resources
+
+## Tags
+
+* assigned: fredm
+* priority: medium
+* keywords: gn-auth, auth, gn2, genenetwork2, data, datasets
+* status: open
+* type: bug
+
+## Description
+
+We should make it such that, only users with the appropriate privileges are allowed to make resources public.
+
+This allows time for the data controlled by the resource to be curated for correctness before being exposed to the world.
+
+The relevant, high-level, tasks are:
+
+* [ ] Add a new privilege, say ~system:resource:make-public~
+* [ ] Check for privilege when user clicks "Make Public"
