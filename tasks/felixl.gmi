@@ -281,6 +281,28 @@ To New Beginnings
 *    [+] - the innovation touch to be clearly defined
 *     - re-reading the manuscript I wrote, state of the art overview, I am getting a different perspetive into linking the technical information written versus the missing gaps highlighting the future of genotyping with AI quick advancement.  
 
+* ### 09-03-2026 
+
+* [] - paper writing:
+*       - proceeded with literature search. Here's the criteria I use; 
+* => {provide link to your documentation} 
+*       - So, ideally, I focus on methods based literature, then model organism based literature, 2020 to present. 
+*       - Excluding anything that involves humans.
+*       - Key literature repos include: PubMed, Google scholar, Web of scope, BMC bioinfo, etc. 
+*       - I will need a week to complete literature search and curation, then move on review and extract relevant infor for my write up 
+*       - writing criteria focuses on methods first, and results of the ongoing hs and kilifish projects, as case studies. Then, other sections follow, something I missed on my previous write up. 
+
+* ### 11-03-2025 
+* [+] - Kilifish annotation file. 
+*      - retrieved ensembl ids for the kilifish gene names; ~6k out of 20k unique ensembl gene id matches (as the actual data has redundant), ~17k for transcript ids for 20k unique gene names, and 250k exon ids for the 20k gene names. The idea is to filter and combine these ids for all [unique gene names + exons/cds + (start, end position)], so as to end up with a complete column of record ids. (suggestive approach..,) 
+  
+*        - ensembl ids are crucial for the generation of record ids, useful in trait search in GeneNetwork. 
+*        - added associated information include gene aliases (alternative names of the gene names, entrez gene ids, and descriptions. All these fields are important in that they provide detailed descriptions of each trait under of interest in GeneNetwork. 
+*    - Next course of action, 
+*      - Sent an email to the Kilifish team to sync with them on what they in store with respect to the highlighted fields above; status:DONE 
+*      - Proceed with custom modifications for the gene names missing the ensembl ids. (probably use ensembl transcripts and/or exons ids) status:IN PROGRESS (already have the ids in place) 
+*    - Here's the link to the intermediate files for ensembl {gene, transcript, and exon ids} 
+* => /home/felixl/felixl/Kilifish_2026/data/expression/annotation/tmp 
 
 ### Later weeks (2026 plan) 
 * [ ] Reverse Genotyping => (ML + Pan-Genome) genotyping 
