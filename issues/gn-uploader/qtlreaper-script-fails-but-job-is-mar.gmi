@@ -1,0 +1,13 @@
+# QTLReaper script fails but job is marked as successfully completed.
+
+## Tags
+
+* assigned: fredm
+* priority: medium
+* keywords: gn-uploader, uploader, data, datasets
+* status: open
+* type: bug
+
+## Description
+
+This is likely caused by the script finding a ".geno" file, but the file is either missing some samples, or is corrupted in some way.
