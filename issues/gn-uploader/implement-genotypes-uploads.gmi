@@ -1,0 +1,43 @@
+# Implement Upload of Genotypes
+
+## Tags
+
+* assigned: fredm
+* priority: medium
+* keywords: gn-uploader, uploader, data, datasets, genotypes
+* status: open
+* type: feature request, feature-request
+
+## Description
+
+To add new genotypes to Genenetwork, a user needs to liaise with, and provide files to @acenteno to get the new genotypes online. This feature aims to remove the bottleneck that creates, as @acenteno has to do a lot of data curation and verification, then generate new files before finally running some scripts to enter the data into Genenetwork.
+
+After the genotypes are successfully uploaded, then a number of extra steps need to be taken, among them:
+
+* Run some data precomputation scripts, e.g. QTLReaper, …
+* Pass data to @zachs to generate Genenetwork-spefic genotype files (i.e. =genotype/*.geno=, =genotype/*.json=, =bimbam/*.txt=, etc)
+* Pass generated files to @fredm for upload to productio
+
+The following will be the main tasks under this feature:
+
+### TODO Error-Checking
+
+Catch obvious data errors, e.g. encoding errors, unspecified alleles, etc.
+
+### TODO Run Pre-Compute Scripts
+
+when data passes initial QC and is uploaded successfully, run various pre-compute scripts needed to generate data for Genenetwork, e.g. QTLReaper, etc
+
+### TODO Generate Genenetwork-Specific Genotype files
+
+Replace most of the manual effort @zachs is forced to do. This can have a curation step where @zachs can look over the results to verify results.
+
+### TODO Setup Generated, Genenetwork-Specific Genotype Files
+
+Put the files in (a) specified directorie(s) where various services in the Genenetwork system can find them.
+
+This will involve changing the deployment system in the following ways:
+
+* Have a (set of) director(y/ies) where the generated genotype files are stored in
+* This (set of) director(y/ies) will be writable **ONLY** by the =gn-uploader= service
+* This (set of) director(y/ies) will be shared with all the other services that make up the Genenetwork service that need the genotype files, but those services will only be able to read the genotype files, not write to them, or the (set of) director(y/ies) containing them.
