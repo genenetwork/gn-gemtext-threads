@@ -5,9 +5,18 @@
 * assigned: fredm
 * priority: medium
 * keywords: gn-uploader, uploader, data, datasets
-* status: open
+* status: closed, completed
 * type: bug
 
 ## Description
 
 This is likely caused by the script finding a ".geno" file, but the file is either missing some samples, or is corrupted in some way.
+
+=> https://git.genenetwork.org/gn-uploader/tree/scripts/run_qtlreaper.py?id=39aa801f4772bcc50e4f0a86ae08d2fdf9eb12e9#n119 Line 119
+handles missing samples in the '.geno' file, so that is not the cause of the failure.
+
+The following commits should fix the issue:
+
+=> https://git.genenetwork.org/gn-uploader/commit/?id=4dcf6eef6e0bc97ec1aac6aad2a1548e5f79c651a
+=> https://git.genenetwork.org/gn-uploader/commit/?id=90809ed28ac6d07f20f533f8a0108d3557cc1bc4
+=> https://git.genenetwork.org/gn-uploader/commit/?id=c4c2ed8ba205be09c6040a07444b0d892cae8a31
