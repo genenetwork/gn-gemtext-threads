@@ -10,8 +10,11 @@ Claude is kind of expensive for the team to keep running on it. It's worth looki
 This issue tracks experiments with Kimi as a potential replacement to Claude for GN work.
 
 ## Tasks
+
 [X] * Setup Kimi with DSPy
+
 [X] * Experiment with kimi models
+
 [X] * Compare AI search feedback between Kimi and Claude models
 
 
@@ -174,7 +177,7 @@ Feedback:
 
 ```
 
-I liked how clear, relevant and concise it was
+I liked how clear, relevant and concise it was.
 
 
 ### kimi-k2-0905-preview
@@ -225,20 +228,19 @@ Feedback:
 }
 ```
 
-This is quite similar to the previous one
-I prefer the previous one because maintains data integrity
+This is quite similar to the previous one. I prefer the previous one because maintains data integrity.
 
 
 ### kimi-k2.5
 
-This model was showing promise because the agent discovered much more documents than previously
+This model was showing promise because the agent discovered much more documents than previously.
 
 Agent output:
 ```
 "final_answer": "The BXDPublish dataset contains extensive cognition-related phenotypes including 6 traits for working memory deficit onset (AAO_ADBXD series), 9 social interaction measures (3C series for social approach/novelty), ethanol drinking behavior traits (DID method), and pharmacological response behaviors (nicotine, morphine, ethanol locomotor activity). These traits cover cognitive domains including learning and memory, social cognition, anxiety-like behavior, and drug-related behavioral responses. All traits are accessible via the GeneNetwork Classic Display (CD) interface using the provided links with format: https://cd.genenetwork.org/show_trait?trait_id={ID}&dataset=BXDPublish."
 ```
 
-Unfortunately, generation is unstable. The final feedback was not formatted as JSON despite instructions
+Unfortunately, generation is unstable. The final feedback was not formatted as JSON despite instructions.
 
 In fact, one cannot set `temperature=0` because it has been constrained by developer. In short output between different runs might not be the same.
 
@@ -810,16 +812,16 @@ I would rate feedback from Sonnet 4 higher than one from Sonnet 4.5.
 
 2. For reliability, prefer kimi-k2-0711-preview.
 
-3. Need to be careful with kimi-k2.5 in terms of instruction following (for time being)
+3. Need to be careful with kimi-k2.5 in terms of instruction following (for time being).
 
 
 * On Claude models
 
-1. Sonnet 4 might be better at handling search tasks than Sonnet 4.5
+1. Sonnet 4 might be better at handling search tasks than Sonnet 4.5.
 
-2. Claude haiku is still an option after Sonnet
+2. Claude haiku is still an option after Sonnet.
 
-3. Claude haiku is doing slightly better than kimi-k2
+3. Claude haiku is doing slightly better than kimi-k2.
 
 
 * On Claude vs Kimi
@@ -833,4 +835,4 @@ The following ranking place Kimi models in context with Claude's:
 3. Kimi-k2-0711-preview and Kimi-k2-0905-preview
 
 
-That being said, the comparison was only made on 1 query. We will keep experimenting more to get a better understanding of the performance difference between the models
+That being said, the comparison was only made on 1 query. We will keep experimenting more to get a better understanding of the performance difference between the models.
