@@ -1,19 +1,26 @@
 
 # LMDB-Based Correlation Computation Report
 
-* assigned: alexm
-* status: in-progress
+* Assigned: alexm
+* Status: in-progress
 
 ## Introduction
 
 This report summarizes the results obtained from running correlation
-computation on the exon dataset (UMUTAffyExon_0209_RMA) using the
+computations on the exon dataset (UMUTAffyExon_0209_RMA) using the
 `correlation_rust` program.
 
 The focus of this report is the workflow that successfully executed
 and the observed performance when computing correlations.
 
 The dataset is stored in LMDB and was converted to CSV for processing.
+
+## Tasks
+
+* [x] Report on running the exon dataset with LMDB
+* [x] Implement interface for reading LMDB directly
+* [-] Add this as a test feature to CI/CD
+* [ ] Explore optimizations such as parallel computation
 
 ## Dataset Description
 
@@ -24,7 +31,7 @@ Dataset structure:
 
 Each row represents a trait and each column represents a sample.
 
-### Output file information
+### Output File Information
 
 ```
 
@@ -38,8 +45,8 @@ wc -l output.csv
 
 ```
 
-The generated CSV file is approximately 867 MB and contains
-1,236,087 rows corresponding to traits.
+The generated CSV file is approximately **867 MB** and contains
+**1,236,087 rows**, each corresponding to a trait.
 
 Example row:
 
@@ -49,7 +56,7 @@ Example row:
 
 ```
 
-Each row contains 93 values corresponding to the samples.
+Each row contains **93 values**, corresponding to the samples.
 
 ## Data Workflow
 
@@ -74,11 +81,11 @@ Two correlation methods were executed:
 * Pearson correlation
 * Spearman correlation
 
-Both computations were run using Cargo in debug and release modes.
+Both computations were run using Cargo in **debug** and **release** modes.
 
 ## Performance Results
 
-### Pearson correlation
+### Pearson Correlation
 
 Debug execution:
 
@@ -98,7 +105,7 @@ Elapsed: 10.13s
 
 ```
 
-### Spearman correlation
+### Spearman Correlation
 
 Debug execution:
 
@@ -134,13 +141,13 @@ This corresponds to:
 ## Observations
 
 The correlation program successfully processed the exon dataset
-containing over 1.2 million traits.
+containing more than **1.2 million traits**.
 
 Key observations:
 
-* Pearson correlation completed in about 10 seconds in release mode
-* Spearman correlation completed in about 19 seconds in release mode
-* Debug mode execution is significantly slower due to lack of compiler optimization
+* Pearson correlation completed in about **10 seconds** in release mode
+* Spearman correlation completed in about **19 seconds** in release mode
+* Debug mode execution is significantly slower due to the lack of compiler optimization
 
 The workflow of converting LMDB data to CSV and running the Rust
 correlation program completed successfully and produced the expected results.
@@ -162,10 +169,43 @@ Observed execution times:
 The LMDB → CSV workflow successfully enabled correlation computation
 across the full dataset.
 
-## Tasks
+## After Adding the LMDB Correlation Interface
 
-* [x] report on running exon dataset with lmdb
-* [ ] interface for reading lmdb directly
-* [ ] add this as a test feature to CI/CD
-* [ ] explore optimization such as parallel computation
+The new approach reads directly from the LMDB database rather than
+converting the dataset to CSV.
+
+=> https://github.com/Alexanderlacuna/correlation_rust/pull/6/changes Rust implementation
+
+### Updated Performance Results
+
+#### Pearson Correlation
+Debug mode:
+
+```
+
+Elapsed: 23.55s
+
+```
+Release mode:
+
+```
+
+Elapsed: 4.33s
+
+```
+
+#### Spearman Correlation
+
+Debug mode:
+
+```
+
+Elapsed: 33.59s
+
+```
+
+Release mode:
+
+```
+Elapsed: 15s
 
