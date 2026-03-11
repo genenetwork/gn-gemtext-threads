@@ -1,0 +1,836 @@
+# Can Kimi replace Claude in our AI system?
+
+* assigned: johannesm
+* status: in-progress
+
+## Description
+
+Claude is kind of expensive for the team to keep running on it. It's worth looking into other options to deliver good service while being cost-efficient.
+
+This issue tracks experiments with Kimi as a potential replacement to Claude for GN work.
+
+## Tasks
+[X] * Setup Kimi with DSPy
+[X] * Experiment with kimi models
+[X] * Compare AI search feedback between Kimi and Claude models
+
+
+## Setup Kimi with DSPy
+
+Kimi is relatively recent compared to Claude and other large models.
+
+It can use an openai interface to DSPy but it's probably best to look for a direct support. I read that LiteLLM offers direct support.
+
+So I was able to write:
+```
+kimi_lm = dspy.LM(model="moonshot/kimi-k2-0711-preview, api_key="XXXX")
+
+dspy.configure(lm=kimi_lm)
+```
+
+Testing it with:
+```
+answer = dspy.ChainOfThought("question -> answer: str")
+```
+
+shows that everything is working fine.
+
+To use it in gnais:
+=> https://github.com/genenetwork/gn-ai/tree/467adea973376367d359471d889730426e64f7a0/aisearch
+
+I just need to change environment variables `MODEL_NAME` and `API_KEY`
+
+That worked too!
+
+## Experiment with kimi models
+
+As opposed to Claude, Kimi models are still under development and list of official model names for AI are not as well known.
+
+Looking into different options through search revealed that I can use:
+* (a) kimi-k2-0711-preview
+* (b) kimi-k2-0905-preview
+* (c) kimi-k2-thinking
+* (d) kimi-k2.5
+
+I have tried them one by one.
+
+Options (a), (b), (d) were successful. Option (c) was not clear becomes it took more than 20 min running while it usually takes longer. I skipped it.
+
+
+## Compare AI search feedback between Kimi and Claude models
+
+Having selected 03 kimi models to proceed with:
+* (a) kimi-k2-0711-preview
+* (b) kimi-k2-0905-preview
+* (c) kimi-k2.5
+
+I compare their performance against:
+* (a) Claude Haiku 4.5
+* (b) Claude Sonnet 4
+* (c) Claude Sonnet 4.5
+
+I used GNAIS's hybrid search:
+=> https://github.com/genenetwork/gn-ai/blob/467adea973376367d359471d889730426e64f7a0/aisearch/src/gnais/ragent/search.py
+
+and the following query for comparison:
+
+QUERY: Digest BXD datasets related to cognition
+
+
+### kimi-k2-0711-preview
+
+Feedback:
+
+```
+{
+  "BXD cognition datasets": {
+    "dataset-level resources": [
+      {
+        "name": "BXD Aged Hippocampus",
+        "focus": "hippocampal gene-expression & phenotypes in aged mice",
+        "relevance": "learning & memory",
+        "url": "https://rdf.genenetwork.org/v1/id/set_B6D2RI"
+      },
+      {
+        "name": "BXD JAX Open Field Study",
+        "focus": "open-field behavioral assays",
+        "relevance": "exploration, anxiety, locomotion",
+        "url": "https://rdf.genenetwork.org/v1/id/set_BXD_JAX_OFS"
+      },
+      {
+        "name": "BXD UTHSC MBD Hippocampus",
+        "focus": "hippocampal molecular & behavioral data",
+        "relevance": "cognition research",
+        "url": "https://rdf.genenetwork.org/v1/id/set_BXD_MBD_UTHSC"
+      },
+      {
+        "name": "BXD JAX AD Study",
+        "focus": "Alzheimer’s-disease model phenotypes & molecular data",
+        "relevance": "cognitive decline & memory impairment",
+        "url": "https://rdf.genenetwork.org/v1/id/set_BXD_JAX_AD"
+      }
+    ],
+    "individual cognitive traits": [
+      {
+        "trait_id": "BXD_13369",
+        "task": "5-choice serial reaction time task (5CSRT)",
+        "measure": "motivation (completed trials in 25 min)",
+        "interpretation": "low value = low motivation",
+        "url": "https://cd.genenetwork.org/show_trait?trait_id=13369&dataset=BXDPublish"
+      },
+      {
+        "trait_id": "BXD_13370",
+        "task": "5CSRT",
+        "measure": "attention accuracy (variable stimulus duration)",
+        "interpretation": "high value = good performance",
+        "url": "https://cd.genenetwork.org/show_trait?trait_id=13370&dataset=BXDPublish"
+      },
+      {
+        "trait_id": "BXD_13371",
+        "task": "5CSRT",
+        "measure": "attention (errors of omission)",
+        "interpretation": "low value = good performance",
+        "url": "https://cd.genenetwork.org/show_trait?trait_id=13371&dataset=BXDPublish"
+      },
+      {
+        "trait_id": "BXD_13364",
+        "task": "5CSRT",
+        "measure": "attention/motivation (errors of omission)",
+        "interpretation": "low value = good performance",
+        "url": "https://cd.genenetwork.org/show_trait?trait_id=13364&dataset=BXDPublish"
+      },
+      {
+        "trait_id": "CCB_10022",
+        "task": "fear conditioning",
+        "measure": "fear acquisition (% freezing difference 1st vs 5th tone)",
+        "interpretation": "fear-learning metric",
+        "url": "https://cd.genenetwork.org/show_trait?trait_id=10022&dataset=CCBXDPublish"
+      },
+      {
+        "trait_id": "CCB_10023",
+        "task": "fear conditioning",
+        "measure": "fear extinction (difference vs last 3 tones)",
+        "interpretation": "fear-memory-extinction metric",
+        "url": "https://cd.genenetwork.org/show_trait?trait_id=10023&dataset=CCBXDPublish"
+      },
+      {
+        "trait_id": "CCB_10024",
+        "task": "fear conditioning",
+        "measure": "fear expression (% freezing to first 3 tones in novel context)",
+        "interpretation": "fear-memory metric",
+        "url": "https://cd.genenetwork.org/show_trait?trait_id=10024&dataset=CCBXDPublish"
+      },
+      {
+        "trait_id": "CCB_10026",
+        "task": "fear conditioning",
+        "measure": "habituation to chamber (% freezing during 30-min habituation)",
+        "interpretation": "habituation metric",
+        "url": "https://cd.genenetwork.org/show_trait?trait_id=10026&dataset=CCBXDPublish"
+      }
+    ]
+  },
+  "usage_notes": "Explore the four dataset-level resources on GeneNetwork RDF for broad hippocampal, behavioral, and AD-related data. For specific cognitive phenotypes, use the eight individual trait links on the GeneNetwork CD portal."
+}
+
+```
+
+I liked how clear, relevant and concise it was
+
+
+### kimi-k2-0905-preview
+
+Feedback:
+
+```
+{
+  "cognition_datasets": {
+    "alzheimer_and_neurodegeneration": {
+      "dataset": "BXD NIA Alzheimer’s Studies",
+      "description": "Comprehensive cognitive-decline & Alzheimer’s data with behavioral testing",
+      "link": "https://cd.genenetwork.org/show_trait?trait_id=BXD_NIA_AD&dataset=BXD_NIA_AD"
+    },
+    "midbrain_transcriptomics": {
+      "dataset": "VUBXDMouseMidBrainQ0512",
+      "description": "Midbrain gene-expression relevant to cognitive function",
+      "link": "https://cd.genenetwork.org/show_trait?trait_id=VUBXDMouseMidBrainQ0512&dataset=VUBXDMouseMidBrainQ0512"
+    },
+    "large_scale_brain_phenome": {
+      "dataset": "CC BXD Tabbaa Brain n=1041 (Jan23)",
+      "description": "1041-strain brain phenome with neurological & cognitive measures",
+      "link": "https://cd.genenetwork.org/show_trait?trait_id=CC_BXD_TM&dataset=CC_BXD_TM"
+    },
+    "attention_and_motivation_5CSRT": {
+      "traits": [13369, 13370, 13371, 13364],
+      "description": "5-choice serial reaction-time task: completed trials, accuracy, omission errors",
+      "links": [
+        "https://cd.genenetwork.org/show_trait?trait_id=13369&dataset=BXDPublish",
+        "https://cd.genenetwork.org/show_trait?trait_id=13370&dataset=BXDPublish",
+        "https://cd.genenetwork.org/show_trait?trait_id=13371&dataset=BXDPublish",
+        "https://cd.genenetwork.org/show_trait?trait_id=13364&dataset=BXDPublish"
+      ]
+    },
+    "fear_learning_and_memory": {
+      "traits": [10022, 10023, 10024, 10026],
+      "panel": "CCBXD_TM",
+      "description": "Fear acquisition, extinction, expression and habituation (% freezing)",
+      "links": [
+        "https://cd.genenetwork.org/show_trait?trait_id=10022&dataset=CCBXD_TM",
+        "https://cd.genenetwork.org/show_trait?trait_id=10023&dataset=CCBXD_TM",
+        "https://cd.genenetwork.org/show_trait?trait_id=10024&dataset=CCBXD_TM",
+        "https://cd.genenetwork.org/show_trait?trait_id=10026&dataset=CCBXD_TM"
+]
+    }
+  },
+  "summary": "The BXD family provides multi-level cognition data: Alzheimer-focused phenotypes, midbrain transcriptomics, large-scale brain phenomes, plus standardized behavioral assays (5CSRT attention/motivation and fear-learning paradigms). All datasets are public on GeneNetwork with integrated QTL mapping tools."                                                   
+}
+```
+
+This is quite similar to the previous one
+I prefer the previous one because maintains data integrity
+
+
+### kimi-k2.5
+
+This model was showing promise because the agent discovered much more documents than previously
+
+Agent output:
+```
+"final_answer": "The BXDPublish dataset contains extensive cognition-related phenotypes including 6 traits for working memory deficit onset (AAO_ADBXD series), 9 social interaction measures (3C series for social approach/novelty), ethanol drinking behavior traits (DID method), and pharmacological response behaviors (nicotine, morphine, ethanol locomotor activity). These traits cover cognitive domains including learning and memory, social cognition, anxiety-like behavior, and drug-related behavioral responses. All traits are accessible via the GeneNetwork Classic Display (CD) interface using the provided links with format: https://cd.genenetwork.org/show_trait?trait_id={ID}&dataset=BXDPublish."
+```
+
+Unfortunately, generation is unstable. The final feedback was not formatted as JSON despite instructions
+
+In fact, one cannot set `temperature=0` because it has been constrained by developer. In short output between different runs might not be the same.
+
+Final feedback:
+
+```
+The BXD and BXDPublish datasets contain extensive cognition-related phenotypes spanning multiple behavioral domains:
+
+**Working Memory and Spatial Cognition:**
+- Y-maze spontaneous alternation measures tracked across ages 6, 8, 10, 14, and 16 months (traits 20577, 20567, 20572, 20592 for combined sexes; 20905, 20915, 20920 for males), assessing spatial working memory performance
+- Age at onset of working memory deficits (AAO series): traits 20473, 20637, 20720 (AAO_ADBXD series for Alzheimer's disease models) and 20556, 20803, 20884 (AAO_NtgBXD series for non-transgenic littermates), measuring when cognitive performance drops below 50% chance
+- Y-maze error indices quantifying unsuccessful spontaneous alternations (traits 20570, 20575, 20595 for both sexes; 20923 for males)
+
+**Attention and Impulsivity:**
+- 5-Choice Serial Reaction Time Task (5CSRT) measures: completed trials as motivation indicator (13369), response accuracy with variable stimulus duration as attention measure (13370), and errors of omission as attention/motivation measures (13364, 13371)
+
+**Visual Discrimination and Learning:**
+- Touchscreen-based visual discrimination assays: mean reaction time (16210), sessions required to discriminate rewarded versus unrewarded stimuli (16204), and extinction learning of instrumental responses (16223)
+- Spontaneous exploratory activity measured via magazine entries in touchscreen chambers (17938)
+
+**Social Cognition:**
+- 3-chamber social interaction paradigm: social approach preference (3C_SA_ChambPref 19306, 3C_SA_SniffPref 19307), social novelty preference (3C_SN_ChambPref 19308, 3C_SN_SniffPref 19309), and habituation behaviors including center latency and entries (19311, 19312)
+
+**Drug Response and Ethanol Behaviors:**
+- Drinking in the Dark (DID) method: 20% alcohol intake across weeks 1-5 (20010-20014) and difference scores measuring binge-like drinking patterns (20285, 20190, 20323, 20228, 20348, 20253)
+- Drug-induced locomotor activity: responses to nicotine (0_5NicPostCon 14805, 0_5NicPref 14803), morphine (AMCNT series 11826-11834), and ethanol (ACTI series 11954-11966)
+
+**Access Information:**
+All traits are accessible via GeneNetwork Classic Display using URLs formatted as:
+- https://cd.genenetwork.org/show_trait?trait_id={ID}&dataset=BXD
+- https://cd.genenetwork.org/show_trait?trait_id={ID}&dataset=BXDPublish
+
+**Data Sources:**
+These phenotypes derive from studies referenced in PubMed IDs 22098762 and 24586288, as well as unpublished datasets, providing comprehensive coverage of cognitive phenotypes in the BXD recombinant inbred population.
+```
+
+
+### Claude Haiku 4.5
+
+Feedback:
+```
+{
+  "query": "Digest BXD datasets related to cognition",
+  "summary": "A comprehensive analysis of BXD (BXD recombinant inbred lines) datasets containing cognition-related traits was conducted. The investigation revealed multiple cognition-related phenotypes available in the GeneNetwork database.",
+  "key_findings": {
+    "dataset_availability": "BXD datasets are confirmed to exist in the GeneNetwork RDF database and web interface",
+    "cognition_traits_identified": 9,
+    "trait_categories": [
+      {
+        "category": "5-Choice Serial Reaction Time Task (5CSRT)",
+        "description": "Measures of attention, motivation, and motor function",
+        "traits": [
+          {
+            "id": "BXD_13369",
+            "measure": "Number of completed trials in 25-minute session",
+            "mean": 56.35,
+            "url": "https://cd.genenetwork.org/show_trait?trait_id=13369&dataset=BXDPublish"
+          },
+          {
+            "id": "BXD_13368",
+            "measure": "Mean latency to retrieve food pellet (high value/low motivation)",
+            "mean": "2.72 seconds",
+            "url": "https://cd.genenetwork.org/show_trait?trait_id=13368&dataset=BXDPublish"
+          },
+          {
+            "id": "BXD_13365",
+            "measure": "Mean correct response latency (attention/motivation/motor)",
+            "mean": "0.98 seconds",
+            "url": "https://cd.genenetwork.org/show_trait?trait_id=13365&dataset=BXDPublish"
+          },
+          {
+            "id": "BXD_13370",
+            "measure": "Response accuracy with variable stimulus duration (attention)",
+            "mean": "75.21%",
+            "url": "https://cd.genenetwork.org/show_trait?trait_id=13370&dataset=BXDPublish"
+          },
+          {
+            "id": "BXD_13363",
+            "measure": "Response accuracy (attention)",
+            "mean": "84.19%",
+            "url": "https://cd.genenetwork.org/show_trait?trait_id=13363&dataset=BXDPublish"
+          }
+        ]
+      },
+      {
+        "category": "Morris Water Maze",
+        "description": "Learning and memory function assessment",
+        "traits": [
+          {
+            "id": "BXD_10345",
+            "measure": "Swim time for probe trial on day 5",
+            "mean": "31.45 seconds",
+            "url": "https://cd.genenetwork.org/show_trait?trait_id=10345&dataset=BXDPublish"
+          }
+        ]
+      },
+      {
+        "category": "Touchscreen Assays",
+        "description": "Visual discrimination and extinction learning",
+        "traits": [
+          {
+            "id": "BXD_16210",
+            "measure": "Mean reaction time to nose-poke stimulus (visual discrimination)",
+            "mean": "8.49 seconds",
+            "url": "https://cd.genenetwork.org/show_trait?trait_id=16210&dataset=BXDPublish"
+          },
+          {
+            "id": "BXD_16223",
+            "measure": "Correct responses during extinction learning",
+            "mean": 202.98,
+            "url": "https://cd.genenetwork.org/show_trait?trait_id=16223&dataset=BXDPublish"
+          }
+        ]
+      },
+      {
+        "category": "Spontaneous Activity",
+        "description": "Behavioral activity measures",
+        "traits": [
+          {
+            "id": "BXD_17938",
+            "measure": "Magazine entries in 30 minutes (2.5-3.5 month old females)",
+            "mean": "61.00 entries",
+            "url": "https://cd.genenetwork.org/show_trait?trait_id=17938&dataset=BXDPublish"
+          }
+        ]
+      }
+    ]
+  },
+  "access_information": {
+    "primary_resource": "GeneNetwork (https://genenetwork.org)",
+    "database": "BXDPublish dataset",
+    "note": "Initial SPARQL queries on the RDF endpoint had limitations in retrieving cognition-related traits, but the web interface provides direct access to all identified traits"
+  },
+  "conclusion": "The BXD datasets contain a rich collection of cognition-related phenotypes spanning multiple cognitive domains including attention, motivation, learning, memory, and behavioral activity. These traits are suitable for genetic mapping and systems genetics studies to identify genetic variants influencing cognitive function."
+}
+```
+
+This shares some similarities with the feedback from kimi-k2. However the feedback with Claude Haiku seems to be more elaborated than the one with kimi-k2.
+
+
+### Claude Sonnet 4
+
+Feedback:
+```
+{
+  "overview": "BXD datasets provide a comprehensive collection of cognition-related phenotypes spanning behavioral, molecular, and disease-focused studies across multiple cognitive domains.",
+  
+  "primary_datasets": {
+    "BXDPublish": {
+      "description": "Contains numerous cognitive and behavioral phenotypes including anxiety assays, motor learning tasks, and maze-based tests",
+      "key_traits": [
+        {
+          "trait_id": "18794",
+          "name": "Activity_Anxiety_Eigen",
+          "url": "https://cd.genenetwork.org/show_trait?trait_id=18794&dataset=BXDPublish"
+        },
+        {
+          "trait_id": "21179", 
+          "name": "Complex_motor_learning",
+          "url": "https://cd.genenetwork.org/show_trait?trait_id=21179&dataset=BXDPublish"
+        },
+        {
+          "trait_id": "21249",
+          "name": "General_Motor_learning", 
+          "url": "https://cd.genenetwork.org/show_trait?trait_id=21249&dataset=BXDPublish"
+        },
+        {
+          "trait_id": "10964",
+          "name": "Anxiety_LightSide",
+          "url": "https://cd.genenetwork.org/show_trait?trait_id=10964&dataset=BXDPublish"
+        },
+        {
+          "trait_id": "11012",
+          "name": "PlusMazeOpen",
+          "url": "https://cd.genenetwork.org/show_trait?trait_id=11012&dataset=BXDPublish"
+        },
+        {
+          "trait_id": "11013",
+          "name": "PlusMazeClosedIn",
+          "url": "https://cd.genenetwork.org/show_trait?trait_id=11013&dataset=BXDPublish"
+        }
+      ]
+    },
+    
+    "alzheimers_disease_datasets": {
+      "BXD_NIA_AD": {
+        "description": "Focuses on Alzheimer's disease research using crosses between 5XFAD females and BXD males to produce F1 transgenic carriers",
+        "features": "Behavioral and physical phenotypes tested at 6 and 14 months of age for cognitive decline and resilience studies",
+        "url": "http://rdf.genenetwork.org/v1/id/dataset_BXD_NIA_AD"
+      },
+      "JAX_BXD_AD_GSE119408_1124": {
+        "description": "Studies normal cognitive aging and Alzheimer's disease effects using Cg.5XFAD females bred to BXD males",
+        "features": "F1 progeny monitored throughout lifespan to evaluate genetic background effects on cognitive and pathological traits",
+        "url": "http://rdf.genenetwork.org/v1/id/dataset_JAX_BXD_AD_GSE119408_1124"
+      }
+    },
+    
+    "brain_region_datasets": {
+      "DOD_BXD_PFC_CD_RNA_Seq_1019": {
+        "region": "Prefrontal cortex",
+        "type": "RNA-seq",
+        "url": "http://rdf.genenetwork.org/v1/id/dataset_DOD_BXD_PFC_CD_RNA_Seq_1019"
+      },
+      "NIAAA_BXD_Hip_CMS_RNAseq1020": {
+        "region": "Hippocampus", 
+        "type": "RNA-seq",
+        "url": "http://rdf.genenetwork.org/v1/id/dataset_NIAAA_BXD_Hip_CMS_RNAseq1020"
+      },
+      "UTHSC_BXD_AgeHipp0515": {
+        "region": "Aged hippocampus",
+        "type": "Expression data",
+        "url": "http://rdf.genenetwork.org/v1/id/dataset_UTHSC_BXD_AgeHipp0515"
+      },
+      "JAX_BXD_Hip_Pro": {
+        "region": "Hippocampus",
+        "type": "Proteomics",
+        "datasets": [
+          "http://rdf.genenetwork.org/v1/id/dataset_JAX_BXD_Hip_Pro_0219",
+          "http://rdf.genenetwork.org/v1/id/dataset_JAX_BXD_Hip_Pro_0723"
+        ]
+      }
+    }
+  },
+  
+  "cognitive_domains": {
+    "attention_executive_function": {
+      "description": "5-choice serial reaction time task (5CSRT) measures using Med Associates 5-hole operant chambers",
+      "traits": [
+        {
+          "trait_id": "BXD_13369",
+          "measure": "Completed trials",
+          "url": "http://rdf.genenetwork.org/v1/id/trait_BXD_13369"
+        },
+        {
+          "trait_id": "BXD_13370", 
+          "measure": "Response accuracy with variable stimulus duration",
+          "url": "http://rdf.genenetwork.org/v1/id/trait_BXD_13370"
+        },
+        {
+          "trait_id": "BXD_13364",
+          "measure": "Errors of omission",
+          "url": "http://rdf.genenetwork.org/v1/id/trait_BXD_13364"
+        },
+        {
+          "trait_id": "BXD_13371",
+          "measure": "Errors of omission (additional)",
+          "url": "http://rdf.genenetwork.org/v1/id/trait_BXD_13371"
+        }
+      ]
+    },
+    
+    "learning_memory": {
+      "y_maze_tests": {
+        "description": "Y-maze spontaneous alternation performance measuring working memory and spatial cognition",
+        "age_groups": ["6 months", "8 months", "10 months", "14 months", "16 months"],
+        "sample_traits": [
+          {
+            "trait_id": "BXD_20577",
+            "url": "http://rdf.genenetwork.org/v1/id/trait_BXD_20577"
+          },
+          {
+            "trait_id": "BXD_20567", 
+            "url": "http://rdf.genenetwork.org/v1/id/trait_BXD_20567"
+          },
+          {
+            "trait_id": "BXD_20572",
+            "url": "http://rdf.genenetwork.org/v1/id/trait_BXD_20572"
+          }
+        ]
+      },
+      
+      "visual_discrimination": {
+        "description": "Touchscreen assays for visual learning",
+        "traits": [
+          {
+            "trait_id": "BXD_16204",
+            "measure": "Sessions to discriminate between rewarded and unrewarded stimuli",
+            "url": "http://rdf.genenetwork.org/v1/id/trait_BXD_16204"
+          },
+          {
+            "trait_id": "BXD_16210",
+            "measure": "Reaction time measurements", 
+            "url": "http://rdf.genenetwork.org/v1/id/trait_BXD_16210"
+          },
+          {
+            "trait_id": "BXD_16223",
+            "measure": "Extinction learning",
+            "url": "http://rdf.genenetwork.org/v1/id/trait_BXD_16223"
+          }
+        ]
+      }
+    },
+    
+    "cognitive_aging": {
+      "description": "Age-related cognitive decline measures",
+      "traits": [
+        {
+          "trait_id": "BXD_20556",
+          "measure": "Age at onset of working memory deficits",
+          "url": "http://rdf.genenetwork.org/v1/id/trait_BXD_20556"
+        },
+        {
+          "trait_id": "BXD_20803",
+          "measure": "Age at onset of working memory deficits (female-specific)",
+          "url": "http://rdf.genenetwork.org/v1/id/trait_BXD_20803"
+        }
+      ]
+    },
+    
+    "emotional_learning": {
+      "description": "Fear conditioning paradigms in CC-BXD datasets",
+      "traits": [
+        {
+          "trait_id": "CCB_10022",
+          "measure": "Fear acquisition",
+          "url": "http://rdf.genenetwork.org/v1/id/trait_CCB_10022"
+        },
+        {
+          "trait_id": "CCB_10023",
+          "measure": "Fear extinction",
+          "url": "http://rdf.genenetwork.org/v1/id/trait_CCB_10023"
+        },
+        {
+          "trait_id": "CCB_10024", 
+          "measure": "Fear expression",
+          "url": "http://rdf.genenetwork.org/v1/id/trait_CCB_10024"
+        },
+        {
+          "trait_id": "CCB_10026",
+          "measure": "Habituation to testing apparatus",
+          "url": "http://rdf.genenetwork.org/v1/id/trait_CCB_10026"
+        }
+      ]
+    }
+  },
+  
+  "specialized_studies": {
+    "neurotransmitter_systems": {
+      "VUBXDMouseMidBrainQ0512": {
+        "focus": "Serotonin (5-HT) homeostasis across BXD strains",
+        "measures": "5-HT and 5-HIAA levels in midbrain and other regions",
+        "url": "http://rdf.genenetwork.org/v1/id/dataset_VUBXDMouseMidBrainQ0512"
+      }
+    },
+    
+    "aging_pathology": {
+      "JAX_BXD_Hip_Pro_0723": {
+        "focus": "Polyglucosan bodies (PGBs) in aging hippocampus",
+        "relevance": "Genetic modifiers affecting PGB burden and links to learning and memory through Pgb1 locus",
+        "url": "http://rdf.genenetwork.org/v1/id/dataset_JAX_BXD_Hip_Pro_0723"
+      }
+    },
+    
+    "human_cognition": {
+      "HCP_datasets": {
+        "description": "Human Connectome Project personality-based cognitive measures",
+        "example_trait": {
+          "trait_id": "51_10296",
+          "measure": "Openness to new experiences (NEO-five factor inventory)",
+          "url": "http://rdf.genenetwork.org/v1/id/trait_51_10296"
+        }
+      }
+    }
+  },
+  
+  "research_applications": {
+    "multi_level_approach": "Datasets provide molecular expression to behavioral phenotypes",
+    "genetic_mapping": "QTL identification for cognitive traits",
+    "disease_modeling": "Alzheimer's disease and cognitive aging studies", 
+    "comparative_studies": "Cross-species validation with human datasets",
+    "aging_research": "Longitudinal cognitive assessments across lifespan"
+  },
+  
+  "key_resources": {
+    "main_portal": "https://cd.genenetwork.org/",
+    "rdf_endpoint": "http://rdf.genenetwork.org/",
+    "primary_reference": "http://rdf.ncbi.nlm.nih.gov/pubmed/22098762"
+  }
+}
+```
+
+This must be the most detailed and satisfactory feedback I have so far.
+
+
+### Claude Sonnet 4.5
+
+Feedback:
+```
+{
+  "overview": "BXD datasets provide comprehensive coverage of cognitive phenotypes across multiple behavioral domains, enabling genetic mapping of cognitive traits and identification of quantitative trait loci (QTLs) associated with various aspects of cognition.",
+  "cognitive_domains": {
+    "working_memory": {
+      "description": "Assessment of working memory and age-related cognitive decline in both Alzheimer's disease models and non-transgenic populations",
+      "paradigms": [
+        "Y-maze spontaneous alternation tests measuring working memory across ages 6-16 months",
+        "8-arm radial maze tests measuring spatial working memory in males and females at 11-13 weeks",
+        "Age at onset of working memory deficits in AD-BXD (5XFAD transgenic) and non-transgenic BXD populations"
+      ],
+      "measurements": [
+        "Alternating arm returns (error indices)",
+        "Arm visit time across multiple days",
+        "Performance dropping below 50% chance level (impairment threshold)"
+      ],
+      "populations": ["AD-BXD transgenic (5XFAD)", "Non-transgenic BXD"],
+      "sex_specific_data": true,
+      "age_ranges": ["6 months", "8 months", "10 months", "11-13 weeks", "14 months", "16 months"]
+    },
+    "fear_conditioning_and_contextual_memory": {
+      "description": "Measurement of associative learning, fear memory formation, expression, and extinction",
+      "paradigms": [
+        "Contextual fear memory (CFM) at different ages",
+        "Fear conditioning with context and tone measurements",
+        "Fear acquisition, expression, and extinction protocols"
+      ],
+      "measurements": [
+        "Freezing behavior in response to context",
+        "Freezing behavior in response to tone",
+        "Baseline response",
+        "Alternative context responses"
+      ],
+      "age_points": ["6 months", "14 months", "15 months"],
+      "populations": ["AD-BXD", "Non-transgenic controls"]
+    },
+    "attention_and_executive_function": {
+      "description": "Assessment of sustained attention, impulsivity, cognitive flexibility, and executive control",
+      "paradigms": [
+        "5-choice serial reaction time task (5CSRT)",
+        "NIH toolbox dimensional change card sort tests",
+        "Touchscreen-based visual discrimination assays"
+      ],
+      "measurements": [
+        "Number of completed trials (motivation)",
+        "Response accuracy (attention)",
+        "Errors of omission (attention/motivation)",
+        "Card sort adjusted and unadjusted scores",
+        "Sessions to criterion",
+        "Reaction time",
+        "Extinction learning"
+      ],
+      "cognitive_constructs": ["Attention", "Motivation", "Impulsivity", "Cognitive flexibility", "Behavioral flexibility"]
+    },
+    "learning_and_memory": {
+      "description": "Measurement of learning acquisition, task performance, and memory consolidation",
+      "paradigms": [
+        "Touchscreen chamber learning tasks",
+        "Visual discrimination learning",
+        "Trials to criterion measurements"
+      ],
+      "measurements": [
+        "Learning speed",
+        "Initial acquisition of tasks",
+        "Trials to criterion",
+        "Spontaneous activity in naive adults"
+      ]
+    },
+    "motor_learning_and_coordination": {
+      "description": "Assessment of motor skill acquisition and coordination",
+      "paradigms": [
+        "Rotarod performance under continuous acceleration",
+        "Complex wheel tasks"
+      ],
+      "measurements": [
+        "Performance improvements over trials",
+        "Differences in performance across developmental stages"
+      ],
+      "age_ranges": ["90-120 days"],
+      "sex_specific_data": true
+    },
+    "reward_learning_and_decision_making": {
+      "description": "Measurement of reward-related learning and decision-making processes",
+      "paradigms": [
+        "Cocaine-induced conditioned place preference (CPP)",
+        "Delay discounting tasks"
+      ],
+      "measurements": [
+        "Baseline measurements in drug and vehicle compartments",
+        "Time in drug-paired compartments",
+        "Changes in preference",
+        "Percent change in conditioning",
+        "Area under curve (AUC) at different reward magnitudes (200, 40K)"
+      ]
+    },
+    "social_cognition": {
+      "description": "Assessment of social recognition, social preference, and social interaction behaviors",
+      "paradigms": [
+        "Three-chamber social interaction tasks",
+        "Social dominance tasks",
+        "Direct social interaction tasks"
+      ],
+      "measurements": [
+        "Social approach preference (chamber and sniffing)",
+        "Social novelty preference (chamber and sniffing)",
+        "Habituation center latency and time",
+        "Chamber entries during habituation, social approach, and social novelty phases",
+        "Wins over cagemates and strangers",
+        "Sniffing duration",
+        "Aggression measures"
+      ]
+    },
+    "cognitive_development": {
+      "description": "Measurement of cognitive growth and development in early life",
+      "paradigms": [
+        "Cognitive growth fostering measures from parent-child interaction assessments"
+      ],
+      "measurements": [
+        "CGF contingency total scores across visits (CV1, CV2, CV3)",
+        "CGF subscale total scores across visits",
+        "Cognitive risk at 1 year"
+      ]
+    }
+  },
+  "anxiety_and_stress_related_measures": {
+    "description": "Assessment of anxiety-like behaviors that can affect cognitive performance",
+    "paradigms": [
+      "Elevated plus maze (EPM)",
+      "Elevated zero maze"
+    ],
+    "measurements": [
+      "Time in open arms",
+      "Latency to enter open areas",
+      "Center duration",
+      "Closed arm entries",
+      "Open arm entries",
+      "Total entries",
+      "Activity levels under restraint stress"
+    ],
+    "experimental_manipulations": ["Restraint stress", "Pharmacological treatments"]
+  },
+  "experimental_design_features": {
+    "sex_differences": "Separate measurements for males and females across multiple paradigms",
+    "age_ranges": "Comprehensive coverage from early development (11-13 weeks) through aging (16 months)",
+    "longitudinal_tracking": "Age at onset measurements and repeated assessments across time points",
+    "disease_models": "Alzheimer's disease models (5XFAD transgenic) compared with non-transgenic controls",
+    "environmental_manipulations": ["Normal chow vs. high-fat diet", "Restraint stress", "Pharmacological treatments"],
+    "genetic_reference_population": "BXD recombinant inbred strains enabling QTL mapping"
+  },
+  "data_applications": [
+    "Genetic mapping of cognitive traits",
+    "Identification of quantitative trait loci (QTLs) associated with cognition",
+    "Studies of age-related cognitive decline",
+    "Gene-environment interactions affecting cognition",
+    "Genetic influences on cognitive function across domains",
+    "Modeling of Alzheimer's disease-related cognitive deficits",
+    "Sex-specific genetic effects on cognition"
+  ],
+  "key_references": [
+    "http://rdf.ncbi.nlm.nih.gov/pubmed/22098762",
+    "http://rdf.ncbi.nlm.nih.gov/pubmed/24586288"
+  ],
+  "data_access": {
+    "platform": "GeneNetwork (genenetwork.org)",
+    "trait_viewer": "https://cd.genenetwork.org/show_trait",
+    "rdf_endpoints": "http://rdf.genenetwork.org/v1/id/"
+  }
+}
+```
+
+Feedback from Claude Sonnet 4.5 is very similar to the one from Claude Sonnet 4. However, Sonnet 4 emphasized not only cognitive domains but also primary dataset. Sonnet 4.5 did not.
+
+I would rate feedback from Sonnet 4 higher than one from Sonnet 4.5.
+
+
+
+### Final take
+
+* On Kimi models
+
+1. Kimi models are viable replacement options to Claude. They provide satisfactory, clear and concise answers.
+
+2. For reliability, prefer kimi-k2-0711-preview.
+
+3. Need to be careful with kimi-k2.5 in terms of instruction following (for time being)
+
+
+* On Claude models
+
+1. Sonnet 4 might be better at handling search tasks than Sonnet 4.5
+
+2. Claude haiku is still an option after Sonnet
+
+3. Claude haiku is doing slightly better than kimi-k2
+
+
+* On Claude vs Kimi
+
+The following ranking place Kimi models in context with Claude's:
+
+1. Claude Sonnet 4 and Sonnet 4.5
+
+2. Claude Haiku
+
+3. Kimi-k2-0711-preview and Kimi-k2-0905-preview
+
+
+That being said, the comparison was only made on 1 query. We will keep experimenting more to get a better understanding of the performance difference between the models
