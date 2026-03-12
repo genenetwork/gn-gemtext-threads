@@ -1,0 +1,59 @@
+# Implement File-Based, and CLI-Based Configuration for "gn-guile"
+
+## Tags
+
+* type: feature
+* assigned: fredm
+* priority: high
+* status: open
+* keywords: gn-guile, config, configs, configuration
+* interested: alexk, bonfacem, fredm, pjotrp
+
+## Description
+
+We currently use only environment variables to configure the "gn-guile" service. This is not a bad thing, per-se, but there are a few problems with the way we currently do it.
+
+First, we use global variables for the configurations, which can lead to "action at a distance" kind of failures that can be difficult to debug. I propose having an explicit configuration system that follows a known precedence order for the various configurations.
+
+The second issue is  that the naming scheme for the environment variables does not clearly indicate what they do, e.g.
+
+* `CGIT_REPO_PATH`: This environment variable holds the URL or path to a shared, bare repo, that is meant to serve as the remote from which clients and/or users pull and push from/to.
+* `CURRENT_REPO_PATH`: This environment variable is supposed to hold the path to the local checkout (or working repository) of the shared remote repository.
+* `GN_GUILE_WORKING_BRANCH`: This is the branch in the repository that "gn-guile" will pull/push changes from/to.
+
+### Configuration Precedence
+
+I propose getting rid of the environment variables for now, and using configuration files for the service configuration, and overriding values using the command-line arguments, at least for now.
+
+The conventional precedence rules, from lowest to lowest precedence is:
+
+* Hard-coded defaults
+* System configurations ("/etc")
+* User's Home configuration ("~/.")
+* Local config files ("$(pwd)/.")
+* Environment variables
+* Command-Line Arguments (CLI)
+
+I propose the introduction of the CLI arguments, and possibly HOME and CWD config files, via the "guile-config" library. The library does not (currently) support use of environment variable, so we can drop use of them for the time being.
+
+Once the configurations have been read, they will be passed to the functions that need them as arguments. In this way, we get rid of the global configuration variables.
+
+### Using Environment Variables
+
+Down the road, should we need to re-introduce environment variables, I propose renaming the variables in the following pattern:
+
+* `CGIT_REPO_PATH` ==> `GN_GUILE_GN_DOCS_REMOTE_URL`
+* `CURRENT_REPO_PATH` ==> `GN_GUILE_LOCAL_GN_DOCS_CHECKOUT`
+* `GN_GUILE_WORKING_BRANCH` can remain the same, or we can update it to `GN_GUILE_GN_DOCS_WORKING_BRANCH`
+
+etc.
+
+The new names are long, but also indicate the following:
+
+* `GN_GUILE...`: these envvars are used by the "gn-guile" service
+* `...GN_DOCS...`: and they are concerned with the "gn-docs" repository
+* `...REMOTE_URL`, `...CHECKOUT`, `...WORKING_BRANCH`, etc.: and each environment variable's purpose is disambiguated from the rest, clearly stating what it is about.
+
+### Related Issue(s)
+
+=> issues/gn-guile/Configurations gn-guile Configurations
