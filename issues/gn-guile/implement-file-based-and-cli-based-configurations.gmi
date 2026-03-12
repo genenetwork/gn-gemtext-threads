@@ -5,7 +5,7 @@
 * type: feature
 * assigned: fredm
 * priority: high
-* status: open
+* status: open (awaiting patch(es) review)
 * keywords: gn-guile, config, configs, configuration
 * interested: alexk, bonfacem, fredm, pjotrp
 
@@ -57,3 +57,9 @@ The new names are long, but also indicate the following:
 ### Related Issue(s)
 
 => issues/gn-guile/Configurations gn-guile Configurations
+
+
+### Fixes
+
+=> https://git.genenetwork.org/gn-guile/commit/?h=fredm/use-cli-args&id=f0f0ba92544a150f08cf26c56e19988309d7135e
+=> https://git.genenetwork.org/gn-guile/commit/?h=fredm/use-cli-args&id=d19fcd79a028e649cb8ab3e42f5796bc353309ed
