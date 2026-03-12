@@ -49,10 +49,11 @@ Our typical channels file, used in all the Genenetwork-specific repositories, is
 * [ ] (alex) Move GN Rust packages to new build system - reduces build time.
 * [ ] (bonfacem) Add a g-exp for gn-libs.   This way, whenever it changes, we don't need to do a guix re-build.
 * [ ] (bonfacem) Move gn-guile in CD to make edits on specific branch (instead of main).  Update CD with gn-guile edits.
-* [ ] (bonfacem) Work out a way for prod/cd to talk to GNAIS.
+* [ ] (bonfacem) Work out a way for prod/cd to talk to GNAIS.  Discuss if it is feasible to add gnais to gn-machines when it's feature complete.
 * [ ] (bonfacem, alex) Make sure LMDB scripts work in both tux02/production.
 * [ ] (bonfacem) Security audit on GN2/GN3 - using some LLM agent.
 * [ ] (bonfacem, fredm) Discuss any guix upgrades that we may need.
+* [ ] (pjotrp, bonfacem, fredm) Look at using agents to migrating from mysqldb to postgres.
 
 ## Footnotes
 
