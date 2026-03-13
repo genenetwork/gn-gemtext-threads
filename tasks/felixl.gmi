@@ -283,7 +283,7 @@ To New Beginnings
 
 * ### 09-03-2026 
 
-* [] - paper writing:
+* [+] - paper writing:
 *       - proceeded with literature search. Here's the criteria I use; 
 * => {provide link to your documentation} 
 *       - So, ideally, I focus on methods based literature, then model organism based literature, 2020 to present. 
@@ -305,8 +305,8 @@ To New Beginnings
 * => /home/felixl/felixl/Kilifish_2026/data/expression/annotation/tmp 
 
 ### Later weeks (2026 plan) 
-* [ ] Reverse Genotyping => (ML + Pan-Genome) genotyping 
-*   [] - a paper from this experimentation 
+* [+] Reverse Genotyping => (ML + Pan-Genome) genotyping 
+*   [+] - a paper from this experimentation 
 * [+] Kilifish into GN
 * [+] Review paper on genotyping
 * [X] HS Rat
