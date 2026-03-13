@@ -1,98 +1,62 @@
 # Tasks for Johannes
 
 ## Tags
-
 * kanban: johannesm
 * assigned: johannesm
-
+* status: in-progress
 
 ## Tasks
 
 ### Ongoing
-
-* [~] Work on AI search with Bonz
-
-* [] Get GNAgent into use in GN
-
-* [] Talk with Hao about publication on agent system and gain over GNQA
-
-* [] Read literature for paper
-
+* [ ] Develop hybrid (RAG + agent) solution for AI search
+* [ ] Build UI for AI search
+* [~] Experiment with GNAgent and network analysis
+* [ ] Build graph deep learning for network analysis
+* [ ] Build UI for GNAgent
+* [ ] Talk with Hao about publication on agent system and gain over GNQA
 
 
 ### Later
-
 * [~] Catch up on SPARQL
-
 * [~] Catch up on LMDB
 
 
 ### Past
-
 * [X] Make RAG script available for reuse and clean it with Bonface
-
-* [X] Discuss with Bonface on how to get metadata for RAG
-
+* [X] Discuss with Bonface on how to get metadata for GNAgent RAG
 * [X] Pickle RAG -> not successful :)
-
-* [X] Try out SPARQLWrapper
-
-* [X] Optimize RAG
-
-* [X] Integrate with RAG
-
-* [X] Get actual metadata with SPARQL endpoint
-
-* [X] Make RAG agentic -> AI system
-
-* [X] Visit precompute issue
-
+* [X] Try out SPARQLWrapper with GNAgent
+* [X] Optimize GNAgent RAG
+* [X] Get actual QTL metadata with SPARQL endpoint
+* [X] Make GNAgent RAG agentic -> AI system
+* [X] Visit precompute issue on mapping data
 * [X] Find more affordable options for GNQA
-
 * [X] Replace GNQA backend with Bonz
-
-* [X] Test GPU
-
-* [X] Test new AI system
-
-* [X] Use GPU to make naturalization faster
-
-* [X] Fix bugs and optimize AI system
-
-* [X] Test and validate AI system working
-
+* [X] Test GPU on balg01
+* [X] Test new AI system - GNAgent
+* [X] Use GPU to make naturalization faster on balg01 for GNAgent
+* [X] Fix GNAgent bugs and optimize AI system
+* [X] Test and validate GNAgent working
 * [X] Read up on performance evaluation for AI systems
-
-* [X] Refetch all data from SPARQL
-
-* [X] Preproces RDF for improved naturalization
-
+* [X] Refetch data from SPARQL
+* [X] Preprocess RDF for improved naturalization
 * [X] Make asynchronous requests to server for naturalization
-
-* [X] Document work on issue tracker
-
-* [X] Package code AI system
-
-* [X] Draft API endpoint
-
-* [X] Test package and share with Bonz
-
-* [X] Test AI system with descriptions, qtl and real biology questions
-
-* [X] Compare performance of Claude and open model on GN data before finetuning
-
-* [X] Look into system finetuning
-
-* [X] Test performance gain
-
-* [X] Think about how to show responses of agent system and GNQA in one UI
-
-* [X] Get API working
-
-* [X] Draft outline paper
-
+* [X] Document GNAgent work on issue tracker
+* [X] Package code GNAgent
+* [X] Draft API endpoint for GNAgent
+* [X] Test GNAgent package and share with Bonz
+* [X] Test GNAgent with descriptions, qtl and real biology questions
+* [X] Compare performance of Claude and open model on GN data with GNAgent
+* [X] Look into system finetuning and optimization
+* [X] Test performance gain before and after optimization
+* [X] Think about how to show responses of GNAgen and GNQA in one UI
+* [X] Get GNAgent API working
+* [X] Draft outline paper for GNAgent
 * [X] Add access to external database to GNAgent
+* [X] Draft proposal for Gulf War disease and finemapping
+* [X] Develop project on Gulf War disease and finemapping
+* [X] Read literature for Gulf War disease and finemapping paper
+* [X] Write paper on Gulf War disease and finemapping
+* [X] Write RAG and agent for AI search with Bonz
+* [X] Add memory to AI search - RAG and Agent
 
-* [X] Draft proposal for study on Gulf War disease
-
-* [X] Develop project on Gulf War disease
