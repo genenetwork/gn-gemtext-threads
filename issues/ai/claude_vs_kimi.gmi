@@ -18,15 +18,11 @@ This issue tracks experiments with Kimi as a potential replacement to Claude for
 
 ## Tasks
 
-[X] * Setup Kimi with DSPy
-
-[X] * Experiment with kimi models
-
-[X] * Compare AI search feedback between Kimi and Claude models
-
-[X] * Setup pi and kimi code
-
-[X] * Compare code generation capabilities of Kimi and Claude
+*[X] Setup Kimi with DSPy
+*[X] Experiment with kimi models
+*[X] Compare AI search feedback between Kimi and Claude models
+*[X] Setup pi and kimi code
+*[X] Compare code generation capabilities of Kimi and Claude
 
 
 ## 1. Setup Kimi with DSPy
