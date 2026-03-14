@@ -1,7 +1,7 @@
 # Can Kimi replace Claude in our AI work?
 
 * assigned: johannesm
-* status: in-progress
+* status: completed
 
 ## Description
 
