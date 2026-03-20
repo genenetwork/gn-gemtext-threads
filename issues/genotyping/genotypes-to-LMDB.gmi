@@ -1,0 +1,18 @@
+# Trouble shoot rqlt2 in GN2 (improve comptutations), dump genotypes (HS, Kilifish) to LMDB, reverse genotyping progress  
+
+* assigned: alex, flisso 
+* status: active 
+* extended parties: ai-lab team, Zach 
+
+## Descriptions 
+
+We want to improve the computation of rqtl2 in GN, add relevant features for mapping experiments; on the other hand, dump current genotypes (HS and Kilifish) into LMDB, then assess how the representation in LMDB makes sense. This is an extension of the current work around genotyping
+Hand in hand, implement reverse genotyping on bxd data, compare the number of peaks identified before and after 
+
+## Actionables: 
+
+* [] - Complete test run for reverse genotyping for the 13k traits (@flisso, assist @alex to make more sense of the genotype data structure and the biology behind it) 
+* [] - Dump HS, Kilifish genotypes into LMDB (collaborative effort: @alex and @flisso, combining the biological input and the engineering design to it; both parties learn, GN2 thrives)  
+* [] - Trouble shoot rqtl2, improve it for GN2 (@alex as lead; collaborate with @flisso to add relevant mapping features for visualizatio and ease of interpretability)  
+
+
