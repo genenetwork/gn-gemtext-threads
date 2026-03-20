@@ -1,0 +1,13 @@
+# "Delete All" Phenotypes Path Fails on Production.
+
+## Tags
+
+* assigned: fredm
+* priority: medium
+* keywords: gn-uploader, uploader, data, datasets
+* status: open
+* type: bug
+
+## Description
+
+The issue occurs in the background/asynchronous script when it attempts to delete the data from the auth server.

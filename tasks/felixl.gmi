@@ -294,6 +294,7 @@ To New Beginnings
 * ### 09-03-2026 
 
 * [+] - paper writing:
+* [] - paper writing:
 *       - proceeded with literature search. Here's the criteria I use; 
 * => {provide link to your documentation} 
 *       - So, ideally, I focus on methods based literature, then model organism based literature, 2020 to present. 

@@ -1,0 +1,26 @@
+# Restrict access to "Make Public" Feature of Resources
+
+## Tags
+
+* assigned: fredm
+* priority: medium
+* keywords: gn-auth, auth, gn2, genenetwork2, data, datasets
+* status: closed, completed
+* type: bug
+
+## Description
+
+We should make it such that, only users with the appropriate privileges are allowed to make resources public.
+
+This allows time for the data controlled by the resource to be curated for correctness before being exposed to the world.
+
+The relevant, high-level, tasks are:
+
+### Add a new privilege, say ~system:resource:make-public~
+
+=> https://git.genenetwork.org/gn-auth/commit/?id=4d1269e40ab745580ba080c05d7cddfea87880d6
+=> https://git.genenetwork.org/gn-auth/commit/?id=927afcfd31656e9f33249ee65c3328334a9990d3
+
+### Check for privilege when user clicks "Make Public"
+
+=> https://github.com/genenetwork/genenetwork2/commit/390df286ae54b1c385a0b623b11be5635f6e4458
