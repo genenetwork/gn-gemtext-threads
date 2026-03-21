@@ -40,11 +40,12 @@ We need fan-out to GN-specific pages.  Related to task listed below in ⁰
 * [X] (bonfacem) Add rate-limiting.  Note: 300 reqs/day.
 * [X] (johannesm) Write agent for gnais.
 * [X] (johannesm) Add memory to RAG and agent.
-* [ ] (bonfacem) Rewrite `rdf2partial_text.py` to query virtuoso.
+* [X] (bonfacem) Rewrite `rdf2partial_text.py` to query virtuoso.
+* [X] (bonfacem)[DEADLINE: <2026-03-20 Fri>] Build UI over above REST endpoints: parse REST endpoints.
+* [X] (johannesm, bonfacem)[DEADLINE: <2026-03-20 Fri>] Build UI over above REST endpoints: real-time streaming.
 * [ ] (johannesm, bonfacem) Test out new corpus, before worrying about probesets.
-* [ ] (johannesm) Combine RAG and Agent into hybrid system.
+* [X] (johannesm) Combine RAG and Agent into hybrid system.
 * [ ] (bonfacem) Figure out bare-bones auth to make gn2 talk to gnais
-* [ ] (johannesm, bonfacem) Build UI over above REST endpoints.
 * [ ] Add Nginx blocks for AI search app.
 
 
@@ -54,8 +55,6 @@ We need fan-out to GN-specific pages.  Related to task listed below in ⁰
 * [ ] (johannesm, bonfacem, pjotrp) Add pre-compute data to RDF / AI-Agent.   Note: keep pre-compute data at Pj's virtuoso node.  Enable federation so that Bonz' and Pj's nodes can talk to each other over federation.
 * [ ] (bonfacem) Plug in sheepdog to monitor gnais.   What happens when we run out of tokens?
 * [~] (bonfacem) Add package to guix-bioinformatics.   Questions: langchain support? Cancelled.   Poor guix support for AI libraries.   We work with pip+pyproject for now.
-
-
 
 
 ## Build search corpus wth phenotype metadata
