@@ -47,7 +47,7 @@ We need fan-out to GN-specific pages.  Related to task listed below in ⁰
 * [X] (johannesm) Combine RAG and Agent into hybrid system.
 * [ ] (bonfacem) Figure out bare-bones auth to make gn2 talk to gnais
 * [ ] Add Nginx blocks for AI search app.
-
+* [ ] (bonfacem) Make claude/kimi selectable in UI.
 
 ### Nice to have later (Genotypes/ Molecular Traits)
 * [ ] (johannesm, bonfacem) Extend / Modify (directly use sparql) corpus to molecular traits (later genotypes, precompute data and RIFs).
