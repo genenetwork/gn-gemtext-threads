@@ -2,6 +2,7 @@
 
 * assigned: bonfacem, alexm
 * status: in-progress
+* keywords: CD, traits, gn-guile,
 * priority: medium
 
 
