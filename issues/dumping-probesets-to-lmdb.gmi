@@ -1,0 +1,151 @@
+# Dumping Probesets from MariaDB to LMDB
+
+* assigned: alexm
+* status: in progress 
+* keywords: lmdb, probeset, documentation, script, datasets 
+
+
+## Introduction
+This describes the process of dumping ProbeSet datasets from the GeneNetwork MariaDB database to LMDB .
+**requirements**
+* Guix environment with Python and dependencies
+* Access to GeneNetwork MariaDB database
+
+
+
+## Guix Environment Setup
+
+Run with all dependencies:
+
+```
+guix shell python-wrapper python-mysqlclient python-numpy python-lmdb python-click -- \
+    python scripts/dump_probesets_lmdb.py list-datasets \
+    "mysql://user:password@localhost/db_webqtl"
+```
+
+## Available Commands
+
+### 1. List Datasets
+
+Show all ProbeSet datasets in the database:
+
+```
+python scripts/dump_probesets_lmdb.py list-datasets \
+    "mysql://user:password@localhost/db_webqtl"
+```
+
+expected results: Table with ID, Name, Short Name, Created date, Public status, and Full Name.
+
+### 2. Dump Single Dataset
+
+Export a specific dataset to LMDB format:
+
+```
+python scripts/dump_probesets_lmdb.py dump-dataset \
+    "mysql://user:password@localhost/db_webqtl" \
+    /path/to/output \
+    206 \
+    --batch-size 5000 \
+    --workers 4
+```
+
+Parameters:
+* `206` - Dataset ID from list-datasets
+* `/path/to/output` - Output directory
+* `--batch-size 5000` - Number of traits per batch
+* `--workers 4` - Parallel processing workers
+
+expected results: Creates `/path/to/output/<dataset_name>/` containing:
+* `data.mdb` - Expression matrix (binary f64)
+* `lock.mdb` - Lock file
+
+### 3. Dump All Datasets
+
+Export all public ProbeSet datasets:
+
+```
+python scripts/dump_probesets_lmdb.py dump-all-datasets \
+    "mysql://user:password@localhost/db_webqtl" \
+    ~/lmdb_data/ \
+    --batch-size 5000 \
+    --workers 4 \
+    --skip-existing
+```
+
+Options:
+* `--skip-existing` (default): Skip if directory already exists
+* `--no-skip-existing`: Overwrite existing datasets
+
+### 4. Verify Dumped Dataset
+
+Show metadata for a dumped dataset:
+
+```
+python scripts/dump_probesets_lmdb.py show-metadata \
+    /path/to/lmdb/HC_M2_0606_P
+```
+
+results:
+* Dataset ID, Name, Full Name
+* Matrix shape (traits × strains)
+* Data type, creation date
+* Has SE matrix: Yes/No
+
+### 5. List Traits
+
+Show all trait names in a dataset:
+
+```
+python scripts/dump_probesets_lmdb.py list-traits \
+    /path/to/lmdb/HC_M2_0606_P
+```
+
+### 6. Fetch Specific Trait
+
+Get expression values for a single trait:
+
+```
+# Plain text
+python scripts/dump_probesets_lmdb.py fetch-trait \
+    /path/to/lmdb/HC_M2_0606_P "100244_at"
+
+# JSON format
+python scripts/dump_probesets_lmdb.py fetch-trait \
+    /path/to/lmdb/HC_M2_0606_P "100244_at" --json
+```
+
+### 7. Print Matrix
+
+Display the full expression matrix (useful for debugging):
+
+```
+python scripts/dump_probesets_lmdb.py print-matrix \
+    /path/to/lmdb/HC_M2_0606_P
+```
+
+## LMDB Data Structure
+
+Each dumped dataset contains:
+
+* `probeset_matrix` - Expression values as raw f64 bytes (row-major)
+* `probeset_metadata` - JSON with dataset info, strain names, trait names
+* `probeset_se_matrix` - Standard errors (optional)
+
+Metadata includes:
+* `strains` - List of strain names (e.g., ["C57BL/6J", "DBA/2J", "BXD1", ...])
+* `strain_indices` - Mapping for O(1) lookup
+* `dtype` - "float64"
+* `shape` - [traits_count, strains_count]
+
+
+## Help
+
+```
+python scripts/dump_probesets_lmdb.py --help
+python scripts/dump_probesets_lmdb.py dump-dataset --help
+```
+
+## Related Topics
+
+=> /topics/lmdb-correlation-performance LMDB Correlation Performance
+=> /issues/correlation-rust-implementation Correlation Rust Implementation
