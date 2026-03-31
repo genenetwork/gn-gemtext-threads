@@ -1,4 +1,3 @@
-
 # LMDB-Based Correlation Computation Report
 
 * Assigned: alexm
@@ -19,8 +18,8 @@ The dataset is stored in LMDB and was converted to CSV for processing.
 
 * [x] Report on running the exon dataset with LMDB
 * [x] Implement interface for reading LMDB directly
-* [-] Add this as a test feature to CI/CD
-* [ ] Explore optimizations such as parallel computation
+* [x] Add this as a test feature to CI/CD
+* [x] Explore optimizations such as parallel computation
 
 ## Dataset Description
 
@@ -41,7 +40,7 @@ wc -l output.csv
 ```
 ```
 
--rw-r--r-- 1 alexm alexm 867M Mar 11 03:57 output.csv
+-rw-rw-r-- 1 alexm alexm 867M Mar 11 03:57 output.csv
 
 ```
 
@@ -209,3 +208,53 @@ Release mode:
 ```
 Elapsed: 15s
 
+```
+
+## GN3 API Endpoints
+
+GeneNetwork3 exposes HTTP endpoints for LMDB correlation:
+
+### Check Dataset Availability
+
+```
+GET /api/lmdb_corr/lmdb_status/<dataset_name>
+```
+
+Returns availability status and LMDB path.
+
+### Compute Correlation
+
+```
+POST /api/lmdb_corr/compute
+```
+
+Request body:
+
+```json
+{
+  "dataset_name": "HC_M2_0606_P",
+  "trait_vals": [25.08, 72.02, 47.56, 22.87],
+  "strains": ["BXD11", "BXD12", "BXD45", "BXD48"],
+  "method": "pearson",
+  "parallel": true,
+  "top_n": 500
+}
+```
+
+Response includes correlation results with r-values, p-values, and overlap counts.
+
+### Integration Flow
+
+```
+GN2 -> GN3 /lmdb_status -> Check LMDB exists
+  | Yes
+  v
+GN2 -> GN3 /compute -> Rust -> LMDB -> Results
+  | No
+  v
+GN2 -> CSV fallback -> Rust -> Results
+```
+
+GN2 requires GN3_API_URL configuration only. All LMDB paths are managed by GN3.
+
+=> /issues/dumping-probesets-to-lmdb Dumping Probesets to LMDB
