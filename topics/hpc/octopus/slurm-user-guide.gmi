@@ -6,6 +6,7 @@ The Octopus HPC uses slurm. There are many online resources for using slurm on H
 => https://www.carc.usc.edu/user-information/user-guides/hpc-basics/slurm-cheatsheet/
 
 In this document we discuss where differences may occur. For one, Octopus is one of the busiest HPCs in the world, no kidding, because of the large scale pangenome effort at UTHSC.
+
 As a user you will likely notice that. When you plan to fire up large jobs please discuss this on our matrix channel, otherwise jobs may get banned. Also Octopus is run by its users, pretty much in the form of a do-ocracy. Please respect our efforts.
 
 Important warning: Octopus is non-HIPAA. Octopus is not designed to handle sensitive data. Running clinical data without the right permissions is punishable by law. Use designated HIPAA systems for that type of data and analysis.
@@ -48,3 +49,10 @@ An example of using R with guix is described here:
 => ../../hpc/guix/R
 
 If you choose, you can still use conda, brew, spack, Python virtualenv, and what not. Userland tools will work. Even Docker or singularity may work as they work from Guix.
+
+# Links
+
+=> ../../octopus/links
+=> ../../octopus/recent-rust
+=> ../../octopus/set-up-guix-for-new-users
+=> ../../octopus/running-snakemake-workflows
