@@ -1,0 +1,18 @@
+# Singularity on Octopus
+
+Arun added singularity to /usr/local/bin
+
+```
+octopus01:~$ /usr/local/bin/singularity shell shub://vsoch/hello-world
+Progress ||----------------------------------|   0.0%
+Progress |===================================| 100.0%
+Singularity: Invoking an interactive shell within container...
+
+Singularity vsoch-hello-world-master-latest.simg:~>
+Singularity vsoch-hello-world-master-latest.simg:~> hello
+bash: hello: command not found
+Singularity vsoch-hello-world-master-latest.simg:~>
+Display all 727 possibilities? (y or n)
+Singularity vsoch-hello-world-master-latest.simg:~> cat /etc/issue
+Ubuntu 14.04.6 LTS \n \l
+```
