@@ -1,0 +1,207 @@
+# Cosigt (on Octopus)
+
+Cosigt is one of those bioinformatics workflows that has a complex deployment based on conda (or containers) and snakemake.
+
+=> https://davidebolo1993.github.io/cosigtdoc/setup/setup.html Setup docs
+=> https://github.com/davidebolo1993/cosigt Source code
+
+Stuff is heroically hard coded with conda. What to think of
+
+```
+cat envs/python.yaml
+channels:
+ - conda-forge
+ - bioconda
+dependencies:
+ - python=3.13.3
+ - pandas=2.2.3
+ - numpy=2.2.1
+```
+
+And, of course, we run a newer version of snakemake that is not supported...
+So, to run cosigt we need to adapt it somewhat.
+
+## Containers
+
+Cosigt has a separate container repo:
+
+=> https://github.com/davidebolo1993/cosigt_containers Cosigt containers
+
+also somewhat scarily hard coded
+
+```
+# Build stage
+FROM debian:bullseye-slim AS binary
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+#Build python conda env
+RUN curl -LO https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+RUN bash Miniconda3-latest-Linux-x86_64.sh -p /miniconda -b && \
+    rm Miniconda3-latest-Linux-x86_64.sh
+ENV PATH=/miniconda/bin:${PATH}
+RUN conda update -y conda && \
+        conda create -y -n pythonenv -c conda-forge -c bioconda \
+	python=3.13.1 \
+	pandas=2.2.3 \
+        numpy=2.2.1
+RUN echo "source activate pythonenv" > ~/.bashrc
+ENV PATH /miniconda/envs/pythonenv/bin:$PATH
+```
+
+## Solutions
+
+The author(s) obviously put a lot of work in. We have three routes here:
+
+* (1) Downgrade snakemake, use bioconda with hard coded versions
+* (2) Downgrade snakemake, convert docker containers to singularity
+* (3) Use guix
+
+If this is a on-off, I think (2) may be easiest. One-offs don't really exist, however. For longer term Guix provides the sane path. I note gafpack, gfainject, impg, pangene and wfmash are in the mix:
+
+=> https://github.com/davidebolo1993/cosigt_containers/tree/main
+
+These are all fast moving targets and mostly in Guix. If we want to continue using cosigt we may better support the whole deployment properly and use supported Guix packages so we can migrate and upgrade much easier.
+
+# Guix
+
+cosigt requires the following packages. Already in guix are:
+
+* bedtools 2.31
+* bioconductor-rtracklayer=1.62.0
+* htslib=1.22
+* kfilt=0.1.1
+* meryl=1.4.1
+* minimap2=2.28
+* numpy=2.2.1
+* pandas=2.2.3
+* python=3.13.3
+* r-base=4.3.3
+* r-data.table=1.15.4
+* r-dbscan=1.2.2
+* r-ggplot2=3.5.1
+* r-nbclust=3.0.1
+* r-randomcolor=1.1.0.1
+* r-reshape2=1.4.4
+* r-rjson=0.2.23
+* r-tidyverse=2.0.0
+* r-utils=2.12.3
+* samtools=1.22
+
+For most of the others we have guix packages already, and if not we should have them. Actually we packaged pggb and contained:
+
+* odgi=0.9.3
+* pggb=0.7.2
+* gafpack=0.1.3
+
+missing are:
+
+* bwa-mem2=2.2.1 (C, why is it not there?!)
+* gfainject=0.2.1 (rust)
+* impg=0.3.3 (has guix package in repo)
+* miniprot=0.18 (C code)
+* pangene=r231 (C code)
+* r-dendextend=1.18.1 (R)
+* r-gggenes=0.5.1 (R)
+* wally=0.7.1 (C++)
+
+Impg I packaged in its repo. The remaining packages look doable. It makes sense to package the remainging ones and upstream them. With upstreaming packages they get maintained by more people.
+Adding these packages will make the pipeline run, because we have snakemake.
+
+Using guix I imported these quickly
+
+* r-dendextend=1.18.1 (R)
+* r-gggenes=0.5.1 (R)
+
+With Claude I built:
+
+* bwa-mem2=2.2.1 (C, why is it not there?!)
+* gfainject=0.2.1 (rust)
+* miniprot=0.18 (C code)
+* pangene=r231 (C code)
+* wally=0.7.1 (C++)
+
+So remaining packages are in:
+
+* impg=0.3.3 (has guix package in repo)
+
+Trying to build impg the main challenge was a failing spoa package and a newly introduced ragc package. I had to build the last one separately to make progress. Being the Rust nightmare these things are I ended up with 190 cargo imported packages.
+
+### The dry-run succeeds and shows version 0.4.1 with all the git deps resolving to their checkout derivations.
+
+The key changes made to impg.scm:
+
+* Version: 0.3.1 → 0.4.1
+* Removed remove-agc-as-core-dependency phase - no agc-rs in v0.4.1 Cargo.toml
+* Rewrote fix-dependency-sources to patch all 10 git deps:
+* spoa_rs, ragc-core, ragc-common (in [patch] section), onecode, tpa, lib_wfa2, tracepoints, handlegraph, sweepga, seqwish, gfasort
+* ragc-core/ragc-common use specific full-line patterns to distinguish them since they share the same git URL
+* sweepga preserves default-features = false
+* ragc-core/ragc-common point to subdirectories within the ragc workspace checkout
+* Kept patch-include-paths-to-spoa unchanged
+
+The checkout exists but ragc-common subdirectory is missing. Let me check what's actually in the git checkout at commit e9e4a6f.
+
+For the guix import crate -f Cargo.lock impg approach: it fails because fastga-rs (a new git dep in 0.4.1) is not in the store. The importer tries to lstat its store path and fails.
+
+To make the import work, I first need to get the fastga-rs hash and fetch it into the store. I have the commit: e7a6d93621e53d141df5fbecb47651564555d43b. I need to compute the NAR hash via a temporary package build.
+
+Let's build onecode-rs first. I checked the repo out in factory dir. /guix-rust-package onecode-rs.
+Next build fastga-rs first. I checked the repo out in factory dir. /guix-rust-package fastga-rs.
+
+OK, both built after some wrangling! Now impg also builds and installs.
+
+
+* Added wfa2-lib/our -- builds WFA2-lib from smarco/WFA2-lib commit 380eb31 (v2.3.5+) which includes the wavefront_aligner_set_heuristic_wfmash function needed by lib_wfa2
+* Added wfa2-lib-static -- static build with -fPIC for linking into the Rust PIE binary
+* Patched impg's build to use system wfa2-lib-static instead of building WFA2-lib from a git submodule -- the patch-lib-wfa2-use-system phase rewrites lib_wfa2's build.rs to just link against the system library
+* Also patched is_multiple_of calls in impg's own source, vers-vecs, and rust-htslib (unstable in Rust < 1.87)
+* Fixed seqwish lockfile version mismatch
+
+### Now I'll create a script that generates all the synthetic test data. The pipeline needs:
+
+* A reference FASTA with a small chromosome + .fai
+* Assembly FASTA(s) with PanSN-spec contig names + .fai
+* A BAM file with reads aligned to the reference + .bai
+* A BED file defining the region of interest
+
+
+* wfa2-lib/fixed -- fixes GCC 13+ <cstdint> issue + adds pkg-config file
+* vcflib-gn -- builds against wfa2-lib/fixed, with correct pkg-config includedir
+* vg-gn -- uses bundled vcflib 1.0.7 (API compatible) instead of external 1.0.12, fixes bundled WFA2-lib cstdint, disables pybind11 in bundled vcflib cmake, tests disabled (1208/1209 pass)
+* pggb -- now uses vg-gn instead of vg
+
+### Full pipeline completed with pggb! Exit code 0.
+
+* Graph: pggb built a proper pangenome graph with 142 nodes (vs 7 trivial nodes from the minimap2+odgi fallback)
+* Genotype: testSample -> sampleA#2#chr1:201-800 + sampleC#2#chr1:201-800 (cosine similarity 0.523)
+* All 12 steps passed: samtools, minimap2, impg, bedtools, pggb, odgi, bwa-mem2, gfainject, gafpack, cosigt, meryl, kfilt
+* Graph built with: pggb
+
+### Both tests pass.
+
+Test files in cosigt/test/:
+
+* run_test.sh - Shell pipeline test (12 steps, all tools)
+* run_test_snakemake.sh - Snakemake pipeline test
+* snakemake/Snakefile - Self-contained test workflow (20 rules)
+* snakemake/config.yaml - Test configuration
+* README.md - Documentation describing both tests
+
+* Shell test: testSample -> sampleA#2#chr1:201-800 + sampleC#2#chr1:201-800 (cosine 0.523)
+* Snakemake test: testSample -> sampleA#2#chr1:200-800 + sampleC#2#chr1:200-800 (cosine 0.524)
+* PASS: Same haplotype calls from both pipelines
+
+The snakemake Snakefile was adapted for the tool versions available in the Guix profile (gfainject v0.1.0 with --bam, gafpack v0.1.0 with --graph/--alignments, impg v0.4.1 with -a).
+
+The cosigt, pggb, odgi etc. packages can be found at:
+
+=> https://git.genenetwork.org/guix-bioinformatics/tree/gn/packages/pangenome.scm
