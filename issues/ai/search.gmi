@@ -40,13 +40,14 @@ We need fan-out to GN-specific pages.  Related to task listed below in ⁰
 * [X] (bonfacem) Add rate-limiting.  Note: 300 reqs/day.
 * [X] (johannesm) Write agent for gnais.
 * [X] (johannesm) Add memory to RAG and agent.
-* [ ] (bonfacem) Rewrite `rdf2partial_text.py` to query virtuoso.
+* [X] (bonfacem) Rewrite `rdf2partial_text.py` to query virtuoso.
+* [X] (bonfacem)[DEADLINE: <2026-03-20 Fri>] Build UI over above REST endpoints: parse REST endpoints.
+* [X] (johannesm, bonfacem)[DEADLINE: <2026-03-20 Fri>] Build UI over above REST endpoints: real-time streaming.
 * [ ] (johannesm, bonfacem) Test out new corpus, before worrying about probesets.
-* [ ] (johannesm) Combine RAG and Agent into hybrid system.
+* [X] (johannesm) Combine RAG and Agent into hybrid system.
 * [ ] (bonfacem) Figure out bare-bones auth to make gn2 talk to gnais
-* [ ] (johannesm, bonfacem) Build UI over above REST endpoints.
 * [ ] Add Nginx blocks for AI search app.
-
+* [ ] (bonfacem) Make claude/kimi selectable in UI.
 
 ### Nice to have later (Genotypes/ Molecular Traits)
 * [ ] (johannesm, bonfacem) Extend / Modify (directly use sparql) corpus to molecular traits (later genotypes, precompute data and RIFs).
@@ -54,8 +55,6 @@ We need fan-out to GN-specific pages.  Related to task listed below in ⁰
 * [ ] (johannesm, bonfacem, pjotrp) Add pre-compute data to RDF / AI-Agent.   Note: keep pre-compute data at Pj's virtuoso node.  Enable federation so that Bonz' and Pj's nodes can talk to each other over federation.
 * [ ] (bonfacem) Plug in sheepdog to monitor gnais.   What happens when we run out of tokens?
 * [~] (bonfacem) Add package to guix-bioinformatics.   Questions: langchain support? Cancelled.   Poor guix support for AI libraries.   We work with pip+pyproject for now.
-
-
 
 
 ## Build search corpus wth phenotype metadata
@@ -399,3 +398,37 @@ See:
 
 ## Combine RAG and Agent into hybrid system.
 
+## SPARQL Prefixes
+
+```
+PREFIXES = {
+    # Standard vocabularies
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
+    "dct": "http://purl.org/dc/terms/",
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+
+    # GeneNetwork specific
+    "gn": "http://rdf.genenetwork.org/v1/id/",
+    "gnc": "http://rdf.genenetwork.org/v1/category/",
+    "gnt": "http://rdf.genenetwork.org/v1/term/",
+    "phenotype": "http://rdf.genenetwork.org/v1/phenotype/",
+    "publication": "http://rdf.genenetwork.org/v1/publication/",
+
+    # External ontologies
+    "fabio": "http://purl.org/spar/fabio/",
+    "prism": "http://prismstandard.org/namespaces/basic/2.0/",
+    "pubmed": "http://rdf.ncbi.nlm.nih.gov/pubmed/",
+    "xkos": "http://rdf-vocabulary.ddialliance.org/xkos#",
+    "qb": "http://purl.org/linked-data/cube#",
+    "sdmx-measure": "http://purl.org/linked-data/sdmx/2009/measure#",
+    "up": "http://purl.uniprot.org/core/",
+    "taxon": "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=",
+    "generif": "http://www.ncbi.nlm.nih.gov/gene?cmd=Retrieve&dopt=Graphics&list_uids=",
+    "ex": "http://example.org/stuff/1.0/",
+}
+```

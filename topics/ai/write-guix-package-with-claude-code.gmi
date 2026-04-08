@@ -1,0 +1,247 @@
+# Writing a guix package with Claude code
+
+Disclaimer: using Claude to write packages may prevent upstreaming the result. There is much ongoing discussion about policy.
+
+This page describes my attempt at creating a guix package using hints from others. Basically the idea is to use information from existing packages to create the boiler plate. Next use an agent to build the package and improve the package after scrutinizing the thrown errors. This mirrors exactly what a human packager does.
+
+First I created claude-code in a guix shell, see
+
+=> install-and-use-claude-code-in-guix-shell
+
+# First attempt creating a shell
+
+```
+guix shell -C -N -F ncurses which findutils gawk tmux curl ripgrep fzf guix guile ruby python bash openssl nss-certs coreutils grep sed jq git rust rust:cargo --share=$HOME/.local --share=$HOME/.cache/claude --share=$HOME/.claude --share=$HOME/tmp=/tmp --expose=$HOME/iwrk/opensource/guix/guix-master/gnu=$HOME/guix-gnu --expose=$HOME/iwrk/opensource/guix/contrib/=$HOME/guix-contrib --share=/var/guix/daemon-socket/ --expose=/gnu/store
+```
+
+This allows us to mount source code dirs and shared resources, such as the socket to the guix daemon.
+
+```
+cd claude-general
+~/.local/bin/claude
+```
+
+# Add git repos to a ./factory dir
+
+I added guix package repostiries of interest into this directory as well as the source code repos I wanted to package. If you use the Debian repos Claude can gain hints from their installation.
+
+# Next create a SKILL.md
+
+Next I created a skill file - based on the version by Alexey. We'll set up a shared repo for this.
+
+```
+---
+name: guix-packaging
+description: Guide lines on how to package software and packages to Guix
+---
+
+> Workflow
+> Patching
+> Building
+> Committing
+> Validating
+> History cleanup
+> Fetching sources
+
+## Workflow
+
+- Check package dependencies first; verify what already exists in Guix.
+  You can use `guix search PACKAGE` to find more info on a package.
+  For example `guix search hello`.
+- Use `ls` command to look in `../factory/` or `../factory` (in current
+  project) for local git checkouts of guix channels, the package or its dependencies. Follow symlinks.
+- Do not load the contents of guix repositories guix-contrib and guix-gnu and their git histories into RAM. Use `rg` to
+  search through them.
+- Use ripgrep `rg` to search for packages that start with define-public PACKAGE.
+- Do not ask for redirection permission for git and cd
+- do not ask for permission for compound commands with cd and git that require approval to prevent bare repository attacks
+- do not ask for permission for command contains output redirection (>) which could write to arbitrary files
+- during guix builds use background tasks without manual redirection
+- Prefer matching the dependency versions already used in Guix.
+- Do not download source code repositories without permission.
+- Use the debian package in ../factory/debian for hints.
+- Write the output to a file package.scm
+
+## Patching
+
+- Prefer to use guile code inside the package definition to make the package work.
+- Patch source code only when no other option exists.
+- Use substitutes for simple text replacements. Use patch files when the change is complex.
+- Never write patches by hand. Copy the original file, modify it, then generate a patch with `diff`.
+- Do not commit patch files separately from the package definition.
+- if there is an issue in current package due to dependency issue, fix dependency not patch
+
+## Building
+
+- Verify the package with `--dry-run` first.
+- Build with `guix build ...`.
+- Use `--no-offload` and redirect output with `&>` to a file.
+- Use `timeout 100` and `tail` to monitor long builds.
+- Try to avoid invalidate cache and force rebuilding the dependencies,
+  however prefer Guix way and cleaner approach. Cleaner packaging is more
+  important than cache
+
+## Committing
+
+- Use `commit-changes` skill for commit message format.
+- Every new package is a separate commit.
+- Commit each package together with its patch files.
+- Commit package dependencies before the packages that need them.
+  Introduce a dependency just-in-time -- in the same commit or
+  immediately before the package that first requires it.
+- Split infrastructure changes (build systems, modules, utilities)
+  into separate commits from package definitions.
+- Drop dead code and unused patch files.
+- Preserve existing code comments; verify they are still relevant
+  before committing.
+
+## Validating
+
+- Verify every commit with `--dry-run` before finalizing.
+- For exported packages:
+  `guix build PACKAGE --dry-run`
+- For packages that are not exported:
+  `guix build --no-offload -e '(@ (gnu packages foo) bar)' --dry-run`
+
+## History cleanup
+
+IMPORTANT: history cleanup is only by user request!
+
+- Review full commit messages (`git log`, not `--oneline`) when
+  cleaning up history.
+- Reorder commits so dependencies come before dependents.
+- Squash stale or fixup commits into their logical parent.
+- Each commit in the final history should build cleanly on its own.
+
+## Fetching sources
+
+- If you need something from the web, fetch it to a local file first, then use it.
+- Compute hashes during implementation via `guix download` or `guix hash`.
+- For git snapshots, use `let` with `commit` and `revision` variables (Guix convention):
+
+```scheme
+ (let ((commit "b908baf1825b1a89afef87b09e22c32af2ca6548")
+       (revision "0"))
+   ...
+   (version (git-version "0.0.0" revision commit))
+   (source (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/ggml-org/llama.cpp")
+                   (commit commit)))
+             (file-name (git-file-name name version))
+             (sha256 (base32 "HASH")))))
+```
+
+
+# Back in Claude
+
+```
+guix-package bwa2-mem
+```
+
+And it generated the following package fully working in about 10 iterations. Token usage for pretty limited!
+
+```scheme
+;;; bwa-mem2 package definition
+;;; Load with: guix build --load-path=. -e '(@ (package) bwa-mem2)'
+
+(define-module (package)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix gexp)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix packages)
+  #:use-module (guix utils)
+  #:use-module (gnu packages compression))
+
+(define bwa-mem2-safestringlib-source
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://github.com/intel/safestringlib")
+          (commit "39219363f0497d04c710a1e11acdeb6d18d4b2f5")))
+    (file-name "safestringlib-checkout")
+    (sha256
+     (base32
+      "1b5s2b19hybr2r0mxch5x5f0gzy77w1xcfp2js4rprqr8dimppak"))))
+
+(define-public bwa-mem2
+  (package
+    (name "bwa-mem2")
+    (version "2.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/bwa-mem2/bwa-mem2")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "01dhryf6nbdicrvbdk4mrdypm0l9vqh1qis9qp0pdh8qbxgh060c"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:tests? #f
+           #:make-flags
+           #~(list (string-append "CC=" #$(cc-for-target))
+                   (string-append "CXX=" #$(cxx-for-target)))
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'unpack-safestringlib
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (copy-recursively
+                    (assoc-ref inputs "safestringlib-source")
+                    "ext/safestringlib")
+                   ;; safeclib_private.h guards stdlib.h/ctype.h behind
+                   ;; autoconf macros that are never set without ./configure.
+                   ;; Add them unconditionally after the stdio.h include.
+                   (substitute* "ext/safestringlib/safeclib/safeclib_private.h"
+                     (("#include <stdio.h>")
+                      "#include <stdio.h>\n#include <stdlib.h>\n#include <ctype.h>\n#include <stddef.h>\n#include <string.h>\n#include <limits.h>"))))
+               (delete 'configure)
+               (replace 'install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let* ((out (assoc-ref outputs "out"))
+                          (bin (string-append out "/bin")))
+                     (mkdir-p bin)
+                     (for-each (lambda (f)
+                                 (install-file f bin))
+                               (list "bwa-mem2"
+                                     "bwa-mem2.sse41"
+                                     "bwa-mem2.sse42"
+                                     "bwa-mem2.avx"
+                                     "bwa-mem2.avx2"
+                                     "bwa-mem2.avx512bw"))))))))
+    (native-inputs `(("safestringlib-source" ,bwa-mem2-safestringlib-source)))
+    (inputs (list zlib))
+    (supported-systems '("x86_64-linux"))
+    (home-page "https://github.com/bwa-mem2/bwa-mem2")
+    (synopsis "Next generation of the BWA-MEM short read aligner")
+    (description
+     "BWA-MEM2 is the next version of the BWA-MEM algorithm in the BWA
+software package.  It produces alignment identical to BWA-MEM and is
+approximately 1.3-3.1x faster depending on the use case, the reference
+genome, and the query set.  The tool runs on x86 hardware and builds
+multiple SIMD-optimized variants (SSE4.1, SSE4.2, AVX, AVX2, AVX512BW)
+with a runtime dispatcher.")
+    (license license:expat)))
+```
+
+This is pretty good. Obviously the fix for safestringlib should be handled differtently and copying the binaries is probably not necessary. BUT, still nice we got something that builds without any effort.
+
+In the next iteration Claude made safestringlib a separate package and installs binaries through guix properly.
+
+# Notes
+
+## OOM
+
+Claude code ran out of RAM a few times. That is why I told it to use rg instead of loading full repos in RAM ;)
+
+## Maintaining state
+
+The key gets written to ~/.claude.json. I simply copy that to capture state. Don't add it to git though.
+
+## Accessing profiles
+
+If Claud needs to add software using guix, it will need to see the full store. Add --share=/gnu/store

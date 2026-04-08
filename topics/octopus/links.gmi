@@ -1,0 +1,11 @@
+# Octopus pages/links
+
+=> ../hpc/octopus/slurm-user-guide Slurm user guide
+=> set-up-guix-for-new-users Guix for new users
+=> recent-rust Running a recent rust
+=> running-snakemake-workflows Running snakemake
+=> singularity Running singularity
+
+## Software we use
+
+=> bioinformatics/cosigt Cosigt

@@ -1,400 +1,86 @@
 # Installation with Guix
 
-This document is WIP and still a mixture of old and new docs.
-
 Large system deployments can get very complex. In this document we explain the GeneNetwork reproducible deployment system which is based on GNU Guix The Guix system can be used to install GN with all its files and dependencies.
 
-Note that the official deployment works through a Guix VM. This is described in
+Note that for GeneNetwork webservices the official deployment works through a Guix VM. This is described in
 
 => ./deployment
 
-# Check list
-
-To run GeneNetwork the following services need to function:
-
-* [ ] GNU Guix with a guix profile for genenetwork2
-* [ ] A path to the (static) genotype files
-* [?] Gn-proxy for authentication
-* [ ] The genenetwork3 service
-* [ ] Redis
-* [ ] Mariadb
-
 # Installing Guix packages
 
-Make sure to install GNU Guix using the binary download instructions on the main website. Follow the instructions on Note the download amounts to several GBs of data. Debian-derived distros may support
+You can kick off and create a new profile with a recent guix bootstrapping from any other guix installed on your system. If you have /gnu/store you have guix.
+
+Otherwise, make sure to install GNU Guix using the binary download instructions on the main website. Follow the instructions on Note the download amounts to several GBs of data.
+
+So best is just to install the downloadable binary from the Guix website.
+
+=> https://guix.gnu.org/en/download/
+
+and run (as root)
+
+```
+sh guix-install.sh
+```
+
+Debian-derived distros (no longer) may support
 
 ```
 apt-get install guix
 ```
 
-# Creating a GNU Guix profile
+# Update Guix with our guix-bioinformatics channel
 
 We run a GNU Guix channel with packages at
 
-=> https://gitlab.com/genenetwork/guix-bioinformatics
-
-The README has instructions hosting a channel (recommended!), but sometimes we use the GUIX_PACKAGE_PATH instead. First upgrade to a recent guix with
+=> https://git.genenetwork.org/guix-bioinformatics/tree/README.org
 
 ```
+wget "https://git.genenetwork.org/guix-bioinformatics/plain/channels.scm"
 mkdir ~/opt
-guix pull -p ~/opt/guix-pull
+guix pull -p ~/opt/guix-pull --url=https://codeberg.org/guix/guix --channels=channels.scm
 ```
 
-It should upgrade (ignore the locales warnings).  You can optionally specify the specific git checkout of guix with
+It should upgrade (ignore the locales warnings).
+Note also that you can optionally specify a specific git checkout of guix, which is useful when you need to roll back to an earlier version (sometimes our channel goes out of sync.
+
+Pull the new profile and list packages with
 
 ```
-guix pull -p ~/opt/guix-pull --commit=f04883d
-```
-
-which is useful when you need to roll back to an earlier version (sometimes our channel goes out of sync). Next, we install GeneNetwork2 with
-
-```
+unset GUIX_PROFILE # on Debian
 source ~/opt/guix-pull/etc/profile
-git clone https://git.genenetwork.org/guix-bioinformatics/guix-bioinformatics.git ~/guix-bioinformatics
+guix package -A
+guix build PACKAGE
 ```
 
-you probably also need guix-past (the upstream channel for older packages):
+You can normally ignore the warnings.
+
+# Create Docker or Singularity container
+
+Guix can create containers with the pack command. E.g. instead of installing packge do
 
 ```
-git clone https://gitlab.inria.fr/guix-hpc/guix-past.git ~/guix-past
-cd ~/guix-past
-env GUIX_PACKAGE_PATH=$HOME/guix-bioinformatics:$HOME/guix-past/modules ~/opt/guix-pull/bin/guix package -i genenetwork2 -p ~/opt/genenetwork2
+guix pack -f docker -S /bin=bin PACKAGE
 ```
 
-Ignore the warnings. Guix should install the software without trying to build everything. If you system insists on building all packages, try the `--dry-run` switch and fix the [[https://guix.gnu.org/manual/en/html_node/Substitute-Server-Authorization.html][substitutes]]. You may add the `--substitute-urls="http://guix.genenetwork.org https://ci.guix.gnu.org https://mirror.hydra.gnu.org"` switch.
-
-The guix.genenetwork.org has most of our packages pre-built(!). To use it on your own machine the public key is
+or, for Singularity
 
 ```
-(public-key
- (ecc
-  (curve Ed25519)
-  (q #9F56EAB5CE37AA15693C31F451140588240F259676C137E31C0CA70EC4D1B534#)
-  )
- )
+guix pack -f squashfs -S /bin=bin PACKAGE
 ```
+
+See
+
+=> https://guix.gnu.org/manual/1.5.0/en/html_node/Invoking-guix-pack.html
+
+# Troubleshooting
+
+Guix should install the software without trying to build everything. If you system insists on building all packages, try the `--dry-run` switch and fix the [[https://guix.gnu.org/manual/en/html_node/Substitute-Server-Authorization.html][substitutes]].
+
+We have our own binary substitutes server that you may add:
+
+=> https://git.genenetwork.org/guix-bioinformatics/tree/README.org
+
+Add the https://cuirass.genenetwork.org to the list of your substitute servers.
 
 Once we have a GNU Guix profile, a running database (see below) and the file storage,
 we should be ready to fire up GeneNetwork:
-
-# Running GN2
-
-Check out the source with git:
-
-```
-git clone git@github.com:genenetwork/genenetwork2.git
-cd genenetwork2
-```
-
-You may want to use the testing branch.
-
-Run GN2 with earlier created Guix profile
-
-```
-export GN2_PROFILE=$HOME/opt/genenetwork2
-env TMPDIR=$HOME/tmp WEBSERVER_MODE=DEBUG LOG_LEVEL=DEBUG SERVER_PORT=5012 GENENETWORK_FILES=/export/data/genenetwork/genotype_files SQL_URI=mysql://webqtlout:webqtlout@localhost/db_webqtl ./bin/genenetwork2 etc/default_settings.py -gunicorn-dev
-```
-
-The script comes with  debug and logging switches can be particularly useful when
-developing GN2. Location and files are examples.
-
-It may be useful to tunnel the web server to your local browser with an ssh tunnel:
-
-## Testing on an ssh tunnnel
-
-If you want to test a service running on the server on a certain port (say 8202) use
-
-  ssh -L 8202:127.0.0.1:8202 -f -N myname@penguin2.genenetwork.org
-
-And browse on your local machine to http://localhost:8202/
-
-# BELOW INFORMATION NEEDS TO BE UPDATED
-
-* Run gn-proxy
-
-GeneNetwork requires a separate gn-proxy server which handles
-authorisation and access control. For instructions see the
-[[https://github.com/genenetwork/gn-proxy][README]]. Note it may already be running on our servers!
-
-* Run Redis
-
-Redis part of GN2 deployment and will be started by the ./bin/genenetwork2
-startup script.
-
-* Run MariaDB server
-** Install MariaDB with GNU GUIx
-
-These are the steps you can take to install a fresh installation of
-mariadb (which comes as part of the GNU Guix genenetwork2 install).
-
-As root configure the Guix profile, previously that was
-
-```
-. ~/opt/genenetwork2/etc/profile
-```
-
-But now we use the recommended
-
-```
-/usr/local/guix-profiles/guix-pull/bin/guix install mariadb borg -p /usr/local/guix-profiles/gn-latest
-. /usr/local/guix-profiles/gn-latest/etc/profile
-```
-
-Exctract the db (that takes a while too)
-
-```
-/usr/local/guix-profiles/gn-latest/bin/borg extract /export2/data/wrk/tux01/borg-tux01::borg-backup-mariadb-20240218-06:16-Sun --progress
-```
-
-and run for example
-
-```
-adduser mariadb
-addgroup mariadb (and add user to group)
-mkdir -p /export2/mariadb/database
-chown mariadb.mariadb -R /export2/mariadb/
-mkdir -p /var/run/mysqld
-chown mariadb.mariadb /var/run/mysqld
-su mariadb
-. /usr/local/guix-profiles/gn-latest/etc/profile
-mariadb --version
-  mariadb  Ver 15.1 Distrib 10.10.2-MariaDB, for Linux (x86_64) using readline 5.1
-mariadb_install_db --user=mariadb --datadir=/export2/mariadb/database
-mariadbd -u mariadb --datadir=/exportdb/mariadb/database/mariadb --explicit_defaults_for_timestamp -P 12048"
-```
-
-If you want to run as root you may have to set /etc/my.cnf
-
-```
-[mariadbd]
-user=root
-```
-
-You also need to set
-
-```
-ft_min_word_len = 3
-```
-
-To make sure word text searches (shh) work and rebuild the tables if
-required.
-
-To check error output in a file on start-up run with something like
-
-
-```
-mariadbd -u mariadb --console  --explicit_defaults_for_timestamp  --datadir=/export/mariadb/tux01_mariadb/latest --log-error=~/test.log
-/usr/local/guix-profiles/gn-latest/bin/mariadb -uwebqtlout -pwebqtlout db_webqtl -e 'show tables'
-```
-
-When you get errors like:
-
-```
-qlalchemy.exc.IntegrityError: (_mariadb_exceptions.IntegrityError) (1215, 'Cannot add foreign key constraint')
-```
-
-you may need to set
-
-```
-set foreign_key_checks=0
-```
-
-The current production my.conf is
-
-```
-[mysqld]
-
-# innodb_empty_free_list_algorithm=backoff
-innodb_buffer_pool_size=16G
-# innodb_ibuf_max_size=2G
-innodb_ft_min_token_size=3
-# innodb_use_sys_malloc=0
-innodb_file_per_table=ON
-key_buffer_size=10M
-
-ft_min_word_len = 3
-
-# main = 1 for active master: server A
-gtid-domain-id=1
-
-tmpdir=/export/tmp
-wait_timeout=180
-lc_time_names=en_US
-lc_messages=en_US
-max_connections=2048
-thread_cache_size=16
-open_files_limit = 16384
-query_cache_type=1                                                                                  query_cache_min_res_unit = 1k
-query_cache_limit = 1M
-query_cache_size=128M
-
-log_error=/var/log/mysql/error.log
-skip-name-resolve
-
-# Skip recovery for now:
-innodb_force_recovery=1
-
-# Only when listening to the network!
-# bind-address = 0.0.0.0
-# port = 3306
-
-slow_query_log=1
-slow_query_log_file=/var/log/mysql/mysql-slow.log
-long_query_time=60.0
-log_queries_not_using_indexes=0
-log_warnings=4
-log_slow_admin_statements=ON
-
-ft_min_word_len=3
-
-log-bin=/var/lib/mysql/gn0-binary-log
-expire-logs-days=120
-server-id=1
-# Domain = 1 for active master: server A
-gtid-domain-id=1
-
-[myisamchk]
-sort_buffer_size=4M
-ft_min_word_len = 3
-```
-
-Note that we handle IP restrictions through the nftables firewall.
-
-The systemd config is
-
-```
-[Unit]
-Description=MariaDB database server
-Documentation=man:mysqld(8)
-Documentation=https://mariadb.com/kb/en/library/systemd/
-After=network.target
-
-[Install]
-WantedBy=multi-user.target
-Alias=mysqld.service
-
-[Service]
-TimeoutStartSec=infinity
-TimeoutStopSec=infinity
-LimitNOFILE=infinity
-LimitMEMLOCK=infinity
-
-Type=simple
-PrivateNetwork=false
-
-User=mariadb
-Group=mariadb
-
-CapabilityBoundingSet=CAP_IPC_LOCK                                                                  # Prevent writes to /usr, /boot, and /etc
-ProtectSystem=true
-                                                                       PrivateDevices=true
-# Prevent accessing /home, /root and /run/user
-ProtectHome=false
-
-# Execute pre and post scripts as root, otherwise it does it as User=
-PermissionsStartOnly=true
-
-ExecStartPre=/usr/bin/install -m 755 -o mariadb -g root -d /var/run/mysqld
-
-ExecStart=/usr/local/guix-profiles/gn-latest/bin/mariadbd --datadir=/export/mariadb/tux01_mariadb/latest $MYSQLD_OPTS $_WSREP_NEW_CLUSTER $_WS
-REP_START_POSITION -W
-
-ExecStartPost=/bin/sh -c "systemctl unset-environment _WSREP_START_POSITION"
-
-KillSignal=SIGTERM
-
-SendSIGKILL=no
-Restart=on-abort
-RestartSec=15s
-
-UMask=007
-
-PrivateTmp=false
-```
-
-## Load the small database in MySQL
-
-Currently we have two databases for deployment,
-'db_webqtl_s' is the small testing database containing experiments
-from BXD mice and 'db_webqtl_plant' which contains all plant related
-material.
-
-Download a recent database from
-
-=> https://files.genenetwork.org/database/
-
-After installation unzip the database binary in the MySQL directory, e.g.
-
-```
-cd ~/mysql
-p7zip -d db_webqtl_s.7z
-chown -R mysql:mysql db_webqtl_s/
-chmod 700 db_webqtl_s/
-chmod 660 db_webqtl_s/*
-```
-
-restart MySQL service (mysqld). Login as root
-
-: mysql_upgrade -u root --force
-
-: myslq -u root
-
-and
-
-: mysql> show databases;
-: +--------------------+
-: | Database           |
-: +--------------------+
-: | information_schema |
-: | db_webqtl_s        |
-: | mysql              |
-: | performance_schema |
-: +--------------------+
-
-Set permissions and match password in your settings file below:
-
-: mysql> grant all privileges on db_webqtl_s.* to gn2@"localhost" identified by 'webqtl';
-
-You may need to change "localhost" to whatever domain you are
-connecting from (mysql will give an error).
-
-Note that if the mysql connection is not working, try connecting to
-the IP address and check server firewall, hosts.allow and mysql IP
-configuration (see below).
-
-Note for the plant database you can rename it to db_webqtl_s, or
-change the settings in etc/default_settings.py to match your path.
-
-# Get genotype files
-
-The script looks for genotype files. You can find a BXD subset in
-
-=> https://files.genenetwork.org/genotype_files/
-
-(Note we should add plants)
-
-```
-mkdir -p $HOME/genotype_files
-cd $HOME/genotype_files
-```
-
-# Trouble shooting
-
-## Mysql can't connect server through socket ERROR
-
-The following error
-
-: sqlalchemy.exc.OperationalError: (_mysql_exceptions.OperationalError) (2002, 'Can\'t connect to local MySQL server through socket \'/run/mysqld/mysqld.sock\' (2 "No such file or directory")')
-
-means that MySQL is trying to connect locally to a non-existent MySQL
-server, something you may see in a container. Typically replicated with something like
-
-: mysql -h localhost
-
-try to connect over the network interface instead, e.g.
-
-: mysql -h 127.0.0.1
-
-if that works run genenetwork after setting SQL_URI to something like
-
-: export SQL_URI=mysql://gn2:mysql_password@127.0.0.1/db_webqtl_s
