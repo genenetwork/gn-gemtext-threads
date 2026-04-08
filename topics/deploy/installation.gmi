@@ -1,10 +1,8 @@
 # Installation with Guix
 
-This document is WIP and still a mixture of old and new docs.
-
 Large system deployments can get very complex. In this document we explain the GeneNetwork reproducible deployment system which is based on GNU Guix The Guix system can be used to install GN with all its files and dependencies.
 
-Note that the official deployment works through a Guix VM. This is described in
+Note that for GeneNetwork webservices the official deployment works through a Guix VM. This is described in
 
 => ./deployment
 
