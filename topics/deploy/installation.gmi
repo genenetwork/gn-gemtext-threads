@@ -35,7 +35,8 @@ We run a GNU Guix channel with packages at
 => https://git.genenetwork.org/guix-bioinformatics/tree/README.org
 
 ```
-wget "https://git.genenetwork.org/guix-bioinformatics/plain/channels.scm"
+wget "https://git.genenetwork.org/guix-bioinformatics/plain/channels.scm.example"
+mv channels.scm.example channels.scm
 mkdir ~/opt
 guix pull -p ~/opt/guix-pull --url=https://codeberg.org/guix/guix --channels=channels.scm
 ```
