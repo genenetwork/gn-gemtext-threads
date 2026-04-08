@@ -28,7 +28,7 @@ Debian-derived distros (no longer) may support
 apt-get install guix
 ```
 
-# Creating a GNU Guix profile
+# Update Guix with our guix-bioinformatics channel
 
 We run a GNU Guix channel with packages at
 
