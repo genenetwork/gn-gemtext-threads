@@ -8,20 +8,23 @@ Note that the official deployment works through a Guix VM. This is described in
 
 => ./deployment
 
-# Check list
-
-To run GeneNetwork the following services need to function:
-
-* [ ] GNU Guix with a guix profile for genenetwork2
-* [ ] A path to the (static) genotype files
-* [?] Gn-proxy for authentication
-* [ ] The genenetwork3 service
-* [ ] Redis
-* [ ] Mariadb
-
 # Installing Guix packages
 
-Make sure to install GNU Guix using the binary download instructions on the main website. Follow the instructions on Note the download amounts to several GBs of data. Debian-derived distros may support
+You can kick off and create a new profile with a recent guix bootstrapping from any other guix installed on your system. If you have /gnu/store you have guix.
+
+Otherwise, make sure to install GNU Guix using the binary download instructions on the main website. Follow the instructions on Note the download amounts to several GBs of data.
+
+So best is just to install the downloadable binary from the Guix website.
+
+=> https://guix.gnu.org/en/download/
+
+and run (as root)
+
+```
+sh guix-install.sh
+```
+
+Debian-derived distros (no longer) may support
 
 ```
 apt-get install guix
@@ -31,37 +34,31 @@ apt-get install guix
 
 We run a GNU Guix channel with packages at
 
-=> https://gitlab.com/genenetwork/guix-bioinformatics
-
-The README has instructions hosting a channel (recommended!), but sometimes we use the GUIX_PACKAGE_PATH instead. First upgrade to a recent guix with
+=> https://git.genenetwork.org/guix-bioinformatics/tree/README.org
 
 ```
+wget "https://git.genenetwork.org/guix-bioinformatics/plain/channels.scm"
 mkdir ~/opt
-guix pull -p ~/opt/guix-pull
+guix pull -p ~/opt/guix-pull --url=https://codeberg.org/guix/guix --channels=channels.scm
 ```
 
-It should upgrade (ignore the locales warnings).  You can optionally specify the specific git checkout of guix with
+It should upgrade (ignore the locales warnings).
+Note also that you can optionally specify a specific git checkout of guix, which is useful when you need to roll back to an earlier version (sometimes our channel goes out of sync.
+
+Pull the new profile and list packages with
 
 ```
-guix pull -p ~/opt/guix-pull --commit=f04883d
-```
-
-which is useful when you need to roll back to an earlier version (sometimes our channel goes out of sync). Next, we install GeneNetwork2 with
-
-```
+unset GUIX_PROFILE # on Debian
 source ~/opt/guix-pull/etc/profile
-git clone https://git.genenetwork.org/guix-bioinformatics/guix-bioinformatics.git ~/guix-bioinformatics
+guix package -A
+guix build PACKAGE
 ```
 
-you probably also need guix-past (the upstream channel for older packages):
+You can normally ignore the warnings.
 
-```
-git clone https://gitlab.inria.fr/guix-hpc/guix-past.git ~/guix-past
-cd ~/guix-past
-env GUIX_PACKAGE_PATH=$HOME/guix-bioinformatics:$HOME/guix-past/modules ~/opt/guix-pull/bin/guix package -i genenetwork2 -p ~/opt/genenetwork2
-```
+# Troubleshooting
 
-Ignore the warnings. Guix should install the software without trying to build everything. If you system insists on building all packages, try the `--dry-run` switch and fix the [[https://guix.gnu.org/manual/en/html_node/Substitute-Server-Authorization.html][substitutes]]. You may add the `--substitute-urls="http://guix.genenetwork.org https://ci.guix.gnu.org https://mirror.hydra.gnu.org"` switch.
+Guix should install the software without trying to build everything. If you system insists on building all packages, try the `--dry-run` switch and fix the [[https://guix.gnu.org/manual/en/html_node/Substitute-Server-Authorization.html][substitutes]]. You may add the `--substitute-urls="http://guix.genenetwork.org https://ci.guix.gnu.org https://mirror.hydra.gnu.org"` switch.
 
 The guix.genenetwork.org has most of our packages pre-built(!). To use it on your own machine the public key is
 
