@@ -54,6 +54,24 @@ guix build PACKAGE
 
 You can normally ignore the warnings.
 
+# Create Docker or Singularity container
+
+Guix can create containers with the pack command. E.g. instead of installing packge do
+
+```
+guix pack -f docker -S /bin=bin PACKAGE
+```
+
+or, for Singularity
+
+```
+guix pack -f squashfs -S /bin=bin PACKAGE
+```
+
+See
+
+=> https://guix.gnu.org/manual/1.5.0/en/html_node/Invoking-guix-pack.html
+
 # Troubleshooting
 
 Guix should install the software without trying to build everything. If you system insists on building all packages, try the `--dry-run` switch and fix the [[https://guix.gnu.org/manual/en/html_node/Substitute-Server-Authorization.html][substitutes]].
