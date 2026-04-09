@@ -1,0 +1,262 @@
+
+# Implementation of storing genotypes in lmdb 
+
+# Tags
+
+* assigned: alexm 
+* priority: high 
+* type: feature-request
+* status: open, in progress
+* keywords: lmdb, genotypes, versioning 
+
+
+# Description
+
+Implement LMDB-based storage for genotype matrices to support fast, scalable access to large genetoype datasets.
+
+The system should support efficient storage and retrieval of genotype data along with metadata (samples, markers, positions, chromosomes),
+Include versioning of datasets and cryptographic verification to ensure data integrity across updates.
+
+
+
+
+## TL;DR (Quick Reference)
+for quick usage setup :
+
+```
+
+# Enter environment
+
+guix shell python-wrapper python-click python-lmdb python-numpy
+
+# Import dataset
+
+python lmdb_matrix.py import-genotype file.geno ./lmdb_store
+
+# Force overwrite
+
+python lmdb_matrix.py import-genotype file.geno ./lmdb_store --force
+
+# Update dataset (new version)
+
+python lmdb_matrix.py update-genotype DATASET file.geno ./lmdb_store
+
+# List datasets
+
+python lmdb_matrix.py list-datasets ./lmdb_store
+
+# List versions
+
+python lmdb_matrix.py list-versions DATASET ./lmdb_store
+
+# Verify integrity
+
+python lmdb_matrix.py verify DATASET ./lmdb_store
+
+# Reconstruct latest
+
+python lmdb_matrix.py reconstruct DATASET ./lmdb_store
+
+# Reconstruct specific version
+
+python lmdb_matrix.py reconstruct DATASET ./lmdb_store --version 2
+
+```
+
+For detailed explanations, examples, and outputs, see sections below.
+
+## Prerequisites
+
+You need Guix installed.
+
+## Quick Start
+
+
+### 2. Launch Guix Shell with Dependencies
+
+```
+
+guix shell python-wrapper python-click python-lmdb python-numpy python-pytest
+
+```
+
+### 3. Container (Isolated)
+
+```
+
+guix shell --container 
+--manifest=manifest.scm 
+--network 
+--share=$HOME/genotyping 
+-- 
+bash
+
+```
+
+## CLI Tool Usage
+
+### Importing a Genotype File
+
+#### Basic import
+
+```
+
+guix shell python-wrapper python-click python-lmdb python-numpy -- 
+python lmdb_matrix.py import-genotype 
+~/genotype_files/genotype/BXD.geno 
+./lmdb_store
+
+```
+
+#### With custom dataset ID and metadata
+
+```
+
+guix shell python-wrapper python-click python-lmdb python-numpy -- 
+python lmdb_matrix.py import-genotype 
+~/genotype_files/genotype/BXD.geno 
+./lmdb_store 
+--dataset-id "BXD_2018" 
+--author "Arthur Centeno" 
+--reason "Initial import from GeneNetwork"
+
+```
+
+#### Expected output
+
+```
+
+Parsing BXD.geno...
+Dataset: BXD
+Type: riset
+Founders: ['B', 'D']
+Matrix: 7343 markers x 198 samples
+
+✓ Stored as version 1
+Dataset ID: BXD_2018
+Hash: a3f7b2c8d9e1f456...
+Storage type: full
+Timestamp: 2024-01-15T10:30:00Z
+
+```
+
+### Importing an Existing Dataset
+
+```
+
+guix shell python-wrapper python-click python-lmdb python-numpy -- 
+python lmdb_matrix.py import-genotype 
+~/genotype_files/genotype/BXD.geno 
+./lmdb_store
+
+```
+
+#### Output when dataset exists
+
+```
+
+Parsing BXD.geno...
+Dataset: BXD
+Type: riset
+Founders: ['B', 'D']
+Matrix: 7343 markers x 198 samples
+
+⚠ Dataset 'BXD' already exists!
+Current version: 3
+Hash: b8e4c1d2a5f3e789...
+
+Use --force to import anyway, or use update-genotype to create a new version.
+
+```
+
+### Forcing an Import (--force)
+
+If you want to overwrite an existing dataset without creating a new version, use the --force flag.
+
+WARNING: This will replace the existing dataset and may remove previous history.
+
+```
+
+guix shell python-wrapper python-click python-lmdb python-numpy -- 
+python lmdb_matrix.py import-genotype 
+~/genotype_files/genotype/BXD.geno 
+./lmdb_store 
+--force
+
+```
+
+#### When to use --force
+
+* Re-importing after fixing parsing issues
+* Resetting during development/testing
+* Replacing corrupted initial imports
+
+#### When NOT to use it
+
+* When you need version history -> use update-genotype
+* When making incremental changes
+
+#### Expected behavior
+
+```
+
+⚠ Dataset 'BXD' already exists!
+Forcing overwrite...
+
+✓ Dataset replaced successfully
+Dataset ID: BXD
+Version reset to: v1
+Storage type: full
+
+```
+
+### import-genotype vs update-genotype
+
+| Command           | Creates     | Version     | Storage              | History      |
+|------------------|-------------|-------------|----------------------|-------------|
+| import-genotype   | New dataset | v1 (always) | Full matrix          | Starts fresh |
+| update-genotype   | New version | v2, v3...   | Delta (changes only) | Preserved    |
+
+### Updating a Dataset (Creating New Versions)
+
+```
+
+guix shell python-wrapper python-click python-lmdb python-numpy -- 
+python lmdb_matrix.py update-genotype 
+BXD_2018 
+~/genotype_files/genotype/BXD_corrected.geno 
+./lmdb_store 
+--author "qc_pipeline" 
+--reason "QC correction"
+
+```
+
+### Hash Chain
+
+```
+
+hash_v1 = SHA256("MATRIX_V1" + v1_data + null)
+hash_v2 = SHA256("MATRIX_V1" + v2_delta + hash_v1)
+hash_v3 = SHA256("MATRIX_V1" + v3_delta + hash_v2)
+
+```
+
+## Running Tests
+
+### All Tests
+
+```
+
+guix shell python-wrapper python-lmdb python-numpy python-pytest -- 
+python -m pytest tests/ -v
+
+```
+
+### Specific Tests
+
+```
+
+guix shell python-wrapper python-numpy python-pytest -- 
+python -m pytest tests/test_hashing.py -v
+
+```
