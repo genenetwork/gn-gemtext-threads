@@ -1,0 +1,86 @@
+# gn-ai search UI/UX enhancements (web-native)
+
+* assigned: bonfacem, johannesm
+* status: in-progress
+
+Some improvements for gn-ai UI:
+
+## 1. [ ] Expandable "Reasoning" accordion / Visual pipeline progress (stepper / skeleton screens) - medium
+
+* Extend the backend to return an optional reasoning field (BM25 hits, vector scores, agent scratchpad).
+* Render it inside a <details><summary> block in the response partial.
+* Keep it collapsed by default.
+
+Web equivalent of terminal tool-use pills.
+
+* Emit structured progress events from HybridSearch.handle() — e.g. bm25:start, bm25:done, vector:start, vector:done, agent:start, agent:done.
+* Render a horizontal stepper or skeleton loader above the final answer while the search is in flight.
+* Requires SSE or WebSocket to update in real time.
+
+
+## 2. [ ] One-click copy for answers and cards - easy
+
+Web pattern: floating action buttons on message bubbles.
+
+* Add a small "Copy" icon that appears on hover inside each .message-ai bubble.
+* Copy the plain-text summary or an individual result card via navigator.clipboard.writeText().
+* Show a transient toast or tooltip saying "Copied!"
+
+## 3. [ ] Streaming responses via SSE - medium
+
+* Add /search/stream endpoint that returns text/event-stream.
+* Yield the user message immediately, then stream the AI response in chunks as each RAG stage completes.
+* Client: use htmx SSE extension or a lightweight EventSource listener that appends chunks to #messages.
+* Decide on caching strategy (disable or adapt for partial responses).
+
+## 4. [ ] Persistent conversation threads (sidebar) - hard
+
+* Maintain a conversation array per thread (server-side session or lightweight DB table).
+* Inject prior turns into the HybridSearch prompt context.
+* Add a left sidebar listing past threads with clickable titles and delete buttons.
+* Generate shareable URLs per thread (e.g. /thread/<id>).
+
+## 5. [ ] Auto-expanding search input - easy
+
+Web pattern: textarea that grows with content.
+
+* Replace the single-line <input> with an auto-resizing <textarea>.
+* Cap the visible height at ~6 lines and add an internal scrollbar for longer pasted text.
+* Keep Enter submitting the form and Shift+Enter inserting a newline.
+
+## 6. [ ] Markdown rendering for summaries - easy
+
+Web pattern: safe markdown-to-HTML conversion.
+
+* Choose markdown-it (server-side Jinja2 filter) or marked (client-side).
+* Render the summary field as rich HTML instead of plain text.
+* Sanitise the output (Bleach / DOMPurify) before DOM insertion to prevent XSS.
+
+## 7. [ ] Smart auto-scroll with scroll-lock - medium
+
+Web pattern: chat containers that respect user scroll position.
+
+* In the htmx:afterSwap listener, check whether the user is already near the bottom:
+
+```
+const nearBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 100;
+```
+
+* Only scroll to bottom when nearBottom is true.
+* Consider a subtle "New message" indicator when the user is scrolled up.
+
+## 8. [ ] Rating answers - easy
+
+* Add thumbs up/down buttons in UI.
+* Track rating in a data store, per session.
+
+## 9. [ ] Display data-tables / Draw Figures - hard
+
+* Display usable data-tables.
+* Generate plots in results.
+
+## Bonus web-only ideas
+
+* Dark-mode toggle — persists in localStorage and toggles a data-theme attribute on <html>.
+* Toast notifications — replace inline error banners with transient toast messages for copy confirmations, network errors, etc.
+* Result export — add "Export to CSV / JSON" buttons for tabular result sets.
