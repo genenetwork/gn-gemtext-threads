@@ -18,7 +18,7 @@ Web equivalent of terminal tool-use pills.
 * Requires SSE or WebSocket to update in real time.
 
 
-## 2. [ ] One-click copy for answers and cards - easy
+## 2. [X] One-click copy for answers and cards - easy
 
 Web pattern: floating action buttons on message bubbles.
 
@@ -56,7 +56,7 @@ Web pattern: safe markdown-to-HTML conversion.
 * Render the summary field as rich HTML instead of plain text.
 * Sanitise the output (Bleach / DOMPurify) before DOM insertion to prevent XSS.
 
-## 7. [ ] Smart auto-scroll with scroll-lock - medium
+## 7. [X] Smart auto-scroll with scroll-lock - easy
 
 Web pattern: chat containers that respect user scroll position.
 
