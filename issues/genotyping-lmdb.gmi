@@ -1,5 +1,5 @@
 
-# Implementation of storing genotypes in lmdb 
+# Implementation of storing genotypes in LMDB
 
 # Tags
 
@@ -12,16 +12,15 @@
 
 # Description
 
-Implement LMDB-based storage for genotype matrices to support fast, scalable access to large genetoype datasets.
+Implement LMDB-based storage for genotype matrices to support fast, scalable access to large genotype datasets.
 
-The system should support efficient storage and retrieval of genotype data along with metadata (samples, markers, positions, chromosomes),
-Include versioning of datasets and cryptographic verification to ensure data integrity across updates.
+The system should support efficient storage and retrieval of genotype data along with metadata (samples, markers, positions, chromosomes). It should also include versioning of datasets and cryptographic verification to ensure data integrity across updates.
 
 
 
 
 ## TL;DR (Quick Reference)
-for quick usage setup :
+for quick usage setup:
 
 ```
 
@@ -72,7 +71,7 @@ You need Guix installed.
 ## Quick Start
 
 
-### 2. Launch Guix Shell with Dependencies
+### 1. Launch Guix Shell with Dependencies
 
 ```
 
@@ -80,7 +79,7 @@ guix shell python-wrapper python-click python-lmdb python-numpy python-pytest
 
 ```
 
-### 3. Container (Isolated)
+### 2. Container (Isolated)
 
 ```
 
@@ -165,50 +164,21 @@ Matrix: 7343 markers x 198 samples
 Current version: 3
 Hash: b8e4c1d2a5f3e789...
 
-Use --force to import anyway, or use update-genotype to create a new version.
+update-genotype to create a new version.
 
 ```
 
-### Forcing an Import (--force)
+### Updating (create new version)
 
-If you want to overwrite an existing dataset without creating a new version, use the --force flag.
-
-WARNING: This will replace the existing dataset and may remove previous history.
 
 ```
 
-guix shell python-wrapper python-click python-lmdb python-numpy -- 
-python lmdb_matrix.py import-genotype 
-~/genotype_files/genotype/BXD.geno 
-./lmdb_store 
---force
-
+python lmdb_matrix.py update-genotype BXD file.geno ./lmdb_store \
+  --author "qc_pipeline" \
+  --reason "QC correction"
 ```
 
-#### When to use --force
 
-* Re-importing after fixing parsing issues
-* Resetting during development/testing
-* Replacing corrupted initial imports
-
-#### When NOT to use it
-
-* When you need version history -> use update-genotype
-* When making incremental changes
-
-#### Expected behavior
-
-```
-
-⚠ Dataset 'BXD' already exists!
-Forcing overwrite...
-
-✓ Dataset replaced successfully
-Dataset ID: BXD
-Version reset to: v1
-Storage type: full
-
-```
 
 ### import-genotype vs update-genotype
 
@@ -231,15 +201,63 @@ BXD_2018
 
 ```
 
-### Hash Chain
+### Verify
 
 ```
 
-hash_v1 = SHA256("MATRIX_V1" + v1_data + null)
-hash_v2 = SHA256("MATRIX_V1" + v2_delta + hash_v1)
-hash_v3 = SHA256("MATRIX_V1" + v3_delta + hash_v2)
+# Full verify: recomputes all hashes from payloads (thorough but slow)
+python lmdb_matrix.py verify BXD ./lmdb_store
+
+# Fast verify: checks chain linkage only (quick routine check)
+python lmdb_matrix.py verify BXD ./lmdb_store --fast
+
 
 ```
+
+### Export to .geno file
+
+
+```
+# Default: no header comments, clean output
+python lmdb_matrix.py export-genotype BXD ./lmdb_store BXD_exported.geno
+
+# With header comments
+python lmdb_matrix.py export-genotype BXD ./lmdb_store BXD_exported.geno --comments
+
+# Specific version
+python lmdb_matrix.py export-genotype BXD ./lmdb_store BXD_v2.geno --version 2
+```
+
+
+## Stats (storage analysis)
+
+
+```
+python lmdb_matrix.py stats BXD ./lmdb_store
+```
+
+expected results:
+
+
+```
+Dataset: BXD
+--------------------------------------------------
+Total versions:       12
+Full snapshots:       2
+Deltas:               10
+
+Total payload:        5662.66 KB
+  Full snapshots:     2831.19 KB
+  Deltas:             2831.48 KB
+
+Without deltas:       16987.12 KB
+Storage savings:      66.7%
+--------------------------------------------------
+```
+
+
+
+
 
 ## Running Tests
 
@@ -260,3 +278,22 @@ guix shell python-wrapper python-numpy python-pytest --
 python -m pytest tests/test_hashing.py -v
 
 ```
+
+## TODO's
+
+* [x] Import a .geno file → stored as version 1 with full snapshot
+* [x] Update with a new .geno → creates version 2, 3, ...
+* [x] Changes → stored as sparse delta or full snapshot
+* [x] Reconstruct any version exactly as it existed
+* [x] Verify hash chain integrity (full or fast mode)
+* [x] Diff two versions to see what changed
+* [x] Export back to .geno format (round-trip verified)
+* [x] Detect tampering — any corrupted payload or broken chain is caught
+* [] test by users  cc  @flisso 
+* [] CD integration
+* [] rework on genotypes with multiple founders 
+
+
+## References
+See the repo for dumping genotypes to LMDB for more options:
+=> https://github.com/Alexanderlacuna/-genenetwork_genotyping_lmdb
