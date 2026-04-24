@@ -29,7 +29,7 @@ I added guix package repostiries of interest into this directory as well as the 
 
 Next I created a skill file - based on the version by Alexey. We are listing skills here:
 
-=> ./skills/
+=> ./skills/guix-packaging/SKILL.md
 
 For example:
 
@@ -38,6 +38,7 @@ For example:
 name: guix-packaging
 description: Guide lines on how to package software and packages to Guix
 ---
+```
 
 ## Workflow
 
@@ -209,7 +210,7 @@ And it generated the following package fully working in about 10 iterations. Tok
                                      "bwa-mem2.avx"
                                      "bwa-mem2.avx2"
                                      "bwa-mem2.avx512bw"))))))))
-    (native-inputs `(("safestringlib-source" ,bwa-mem2-safestringlib-source)))
+    (native-inputs '(("safestringlib-source" ,bwa-mem2-safestringlib-source)))
     (inputs (list zlib))
     (supported-systems '("x86_64-linux"))
     (home-page "https://github.com/bwa-mem2/bwa-mem2")
