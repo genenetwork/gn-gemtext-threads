@@ -107,3 +107,22 @@ Here we focus on the production server setup running on test01:
 See
 
 => /topics/systems/debug-and-developing-code-with-genenetwork-system-container
+
+# Handling setuid/setgid
+
+
+(operating-system
+ ; ...
+   (append (list (setuid-program
+                  (program (file-append opensmtpd "/sbin/smtpctl"))
+                  (setuid? #f)
+                  (setgid? #t)
+                  (user "root")
+                  (group "smtpq"))
+                 (setuid-program
+                  (program (file-append opensmtpd "/sbin/sendmail"))
+                  (setuid? #f)
+                  (setgid? #t)
+                  (user "root")
+                  (group "smtpq")))
+           %setuid-programs))

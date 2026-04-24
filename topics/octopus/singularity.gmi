@@ -16,3 +16,15 @@ Display all 727 possibilities? (y or n)
 Singularity vsoch-hello-world-master-latest.simg:~> cat /etc/issue
 Ubuntu 14.04.6 LTS \n \l
 ```
+
+# Create singularity image from guix package
+
+```
+guix pack -f squashfs -S /bin=bin pangenomes bash-minimal --tune=native
+```
+
+To cross-compile you could use, for example, --tune=skylake-avx512. Note this will only build on a machine that has the full skylake (or newer) instructions. E.g. tux05 EPYC 9274F is Zen 4 (Genoa), which supports AVX-512. The skylake-avx512 tuning level maps to x86-64-v4 (AVX-512F, AVX-512BW, AVX-512CD, AVX-512DQ, AVX-512VL), all of which Zen 4 supports. You could also use -march=znver4 for GCC to get Zen 4-specific optimizations, but skylake-avx512 / x86-64-v4 is the safe portable choice that works on both Intel and AMD with AVX-512.
+
+```
+/usr/local/bin/singularity shell bwxxlq1a7y02rcz1323xh1368l0w8h9s-pangenomes-bash-minimal-squashfs-pack.gz.squashfs
+```
