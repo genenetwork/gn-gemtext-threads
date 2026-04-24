@@ -27,21 +27,17 @@ I added guix package repostiries of interest into this directory as well as the 
 
 # Next create a SKILL.md
 
-Next I created a skill file - based on the version by Alexey. We'll set up a shared repo for this.
+Next I created a skill file - based on the version by Alexey. We are listing skills here:
+
+=> ./skills/
+
+For example:
 
 ```
 ---
 name: guix-packaging
 description: Guide lines on how to package software and packages to Guix
 ---
-
-> Workflow
-> Patching
-> Building
-> Committing
-> Validating
-> History cleanup
-> Fetching sources
 
 ## Workflow
 
@@ -140,7 +136,7 @@ IMPORTANT: history cleanup is only by user request!
 guix-package bwa2-mem
 ```
 
-And it generated the following package fully working in about 10 iterations. Token usage for pretty limited!
+And it generated the following package fully working in about 10 iterations. Token usage was pretty limited!
 
 ```scheme
 ;;; bwa-mem2 package definition
