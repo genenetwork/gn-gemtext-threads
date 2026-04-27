@@ -16,8 +16,10 @@ Important warning: Octopus is non-HIPAA. Octopus is not designed to handle sensi
 sinfo tells you about the slurm nodes:
 
 ```
-sinfo -i
+export PATH=$PATH:/usr/local/bin
+sinfo -a
 sinfo -R # show node state
+scontrol show node octopus10
 ```
 
 squeue gives info about the job queue
@@ -36,6 +38,32 @@ To get a shell prompt on one of the nodes (useful for testing your environment)
 
 ```
 srun -N 1 --mem=32G --pty /bin/bash
+```
+
+# Troubleshooting
+
+```
+scontrol show node octopus10
+  Reason=Kill task failed [root@2026-04-23T15:01:19]
+```
+
+"Kill task failed" — this means Slurm tried to kill a job/task on the node (likely at job completion or cancellation) and the kill didn't succeed within the expected time. Slurm then drained the node as a precaution, since it can't guarantee the node is in a clean state.
+
+What to check on the node:
+
+```
+ps aux | grep -E 'D|Z'
+journalctl -u slurmd --since "2026-04-23 14:55"
+tail -100 /var/log/slurmd.log
+cat /proc/mounts
+dmesg | tail -50
+```
+
+To put it back into service (once you're satisfied the node is clean):
+bash
+
+```
+scontrol update NodeName=octopus10 State=resume
 ```
 
 # Differences
