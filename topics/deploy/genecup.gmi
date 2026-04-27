@@ -12,6 +12,19 @@ If you have ssh access you can push to the repo with
 
 # Deploy on tux02
 
+Latest:
+
+
+```
+hchen@tux02:~/services/genecup$ guix shell --no-substitutes -L .  -C -N -F --share=/export2/PubMed2 --share=$HOME/tmp=/tmp  edirect-25 which coreutils genecup-gemini -- env EDIRECT_LOCAL_ARCHIVE=/export2/PubMed2/Source archive-pubmed -https -index
+```
+
+or
+
+```
+guix shell -L . -C -N -F genecup-gemini coreutils --share=/export2/PubMed2=/PubMed --share=/export/genecup-gemini --share=/export/genecup-gemini/tmp=/tmp --expose=$HOME/.config/gemini -- env  EDIRECT_LOCAL_ARCHIVE=/PubMed/Source GENECUP_DATADIR=/export/genecup-gemini/ NLTK_DATA=/export3/PubMed/nltk_data genecup --port 4201
+```
+
 On Tux02 as shepherd user I can build:
 
 ```
