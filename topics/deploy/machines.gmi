@@ -1,13 +1,35 @@
 # Machines
 
+## Currently unreachable
+
 ```
-- [ ] bacchus             172.23.17.156   (00:11:32:ba:7f:17) -  1 Gbs
-- [ ] penguin2
+- [ ] tux04               128.169.5.119   (14:23:f2:4f:e6:11)
+  + [ ] ssh - critical, unreachable from octopus01,03
+  + [X] http/https - critical, reachable
+
+octopus01:~$ ssh tux04
+ssh: connect to host tux04 port 22: No route to host
+```
+
+## Available
+
+External
+
+```
+- [X] tux01
+  + [X] ssh - critical, unreachable from octopus01,03
+  + [X] http/https - critical, reachable
+- [X] tux03               128.169.5.101   (00:0a:f7:c1:00:8b) -  1 Gbs
+```
+
+Internal
+
+```
+- [X] bacchus             172.23.17.156   (00:11:32:ba:7f:17) -  1 Gbs
+- [X] penguin2
 - [X] lambda01            172.23.18.212   (7c:c2:55:11:9c:ac) - currently 172.23.17.41
 - [X] tux03i              172.23.17.181   (00:0a:f7:c1:00:8d) - 10 Gbs
-  [X] tux03               128.169.5.101   (00:0a:f7:c1:00:8b) -  1 Gbs
 - [X] tux04i              172.23.17.170   (14:23:f2:4f:e6:10)
-- [X] tux04               128.169.5.119   (14:23:f2:4f:e6:11)
 - [X] space               128.169.5.175   (e4:3d:1a:80:6c:40)
 - [ ] space-i             172.23.18.153   (cc:48:3a:13:db:4c)
 ```
