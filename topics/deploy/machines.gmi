@@ -3,12 +3,9 @@
 ## Currently unreachable
 
 ```
-- [ ] tux04               128.169.5.119   (14:23:f2:4f:e6:11)
-  + [ ] ssh - critical, unreachable from octopus01,03
-  + [X] http/https - critical, reachable
-
-octopus01:~$ ssh tux04
-ssh: connect to host tux04 port 22: No route to host
+- [ ] tux04 outgoing ssh
+- [ ] tux01 outgoing ssh
+- [ ] tux03 outgoing ssh
 ```
 
 ## Available
@@ -20,6 +17,9 @@ External
   + [X] ssh - critical, unreachable from octopus01,03
   + [X] http/https - critical, reachable
 - [X] tux03               128.169.5.101   (00:0a:f7:c1:00:8b) -  1 Gbs
+- [X] tux04               128.169.5.119   (14:23:f2:4f:e6:11)
+  + [x] ssh - critical, use tux01i.genenetwork.org
+  + [X] http/https - critical, reachable
 ```
 
 Internal
