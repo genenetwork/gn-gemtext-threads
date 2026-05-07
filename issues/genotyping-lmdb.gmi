@@ -289,9 +289,9 @@ python -m pytest tests/test_hashing.py -v
 * [x] Diff two versions to see what changed
 * [x] Export back to .geno format (round-trip verified)
 * [x] Detect tampering — any corrupted payload or broken chain is caught
-* [] add compression for this.
-* [] rework on genotypes with multiple founders 
-* [] test by users  cc  @flisso 
+* [x] add compression for this.
+* [x] rework on genotypes with multiple founders 
+* [-] test by users  cc  @flisso 
 * [] CD integration
 
 
