@@ -1,37 +1,22 @@
 # Machines
 
-## Currently unreachable
+## External
+
 
 ```
-- [ ] tux04 outgoing ssh
-- [ ] tux01 outgoing ssh
-- [ ] tux03 outgoing ssh
+- [X] tux01               128.169.168.10  (00:0a:f7:e3:f5:4a)
+- [X] tux02               128.169.168.11  (b0:26:28:11:d3:88)
+- [X] tux03               128.169.168.12  (00:0a:f7:c1:00:8c) -  1 Gbs
+- [X] tux04               128.169.168.13  (14:23:f2:4f:e6:10) - 10 Gbs
+- [X] space               128.169.168.30  (e4:3d:1a:80:6c:40)
 ```
 
-## Available
-
-External
-
-```
-- [X] tux01
-  + [X] ssh - critical, unreachable from octopus01,03
-  + [X] http/https - critical, reachable
-- [X] tux03               128.169.5.101   (00:0a:f7:c1:00:8b) -  1 Gbs
-- [X] tux04               128.169.5.119   (14:23:f2:4f:e6:11)
-  + [x] ssh - critical, use tux01i.genenetwork.org
-  + [X] http/https - critical, reachable
-```
-
-Internal
+## Internal
 
 ```
 - [X] bacchus             172.23.17.156   (00:11:32:ba:7f:17) -  1 Gbs
 - [X] penguin2
 - [X] lambda01            172.23.18.212   (7c:c2:55:11:9c:ac) - currently 172.23.17.41
-- [X] tux03i              172.23.17.181   (00:0a:f7:c1:00:8d) - 10 Gbs
-- [X] tux04i              172.23.17.170   (14:23:f2:4f:e6:10)
-- [X] space               128.169.5.175   (e4:3d:1a:80:6c:40)
-- [ ] space-i             172.23.18.153   (cc:48:3a:13:db:4c)
 ```
 
 ```
@@ -103,37 +88,4 @@ PING tux08.uthsc.edu (172.23.17.186) 56(84) bytes of data.
 PING tux09.uthsc.edu (172.23.17.182) 56(84) bytes of data.
     link/ether 14:23:f2:4e:49:10 brd ff:ff:ff:ff:ff:ff
     inet 172.23.17.182/21 brd 172.23.23.255 scope global dynamic eno12399np0
-```
-
-
-## Out-of-band access
-
-c for console or control
-
-```
-- [ ] DNS entries no longer visible
-- [ ] penguin2-c        172.23.31.83
-- [ ] octolair01        172.23.16.228
-- [ ] lambda01-c        172.23.17.173   (3c:ec:ef:aa:e5:50)
-- [ ] tux01-c           172.23.31.85    (58:8A:5A:F9:3A:22)
-- [ ] tux02-c           172.23.30.40    (58:8A:5A:F0:E6:E4)
-- [ ] tux03-c           172.23.31.87    (D0:94:66:37:39:D5)
-- [X] tux04-c           172.23.18.222   (C8:4B:D6:97:03:7D)
-- [ ] tux05-c           172.23.22.218   (C8:4B:D6:97:05:C3)
-- [ ] tux06-c           172.23.18.219   (C8:4B:D6:9B:8B:3A)
-- [ ] tux07-c           172.23.21.85    (C8:4B:D6:9B:8B:8E)
-- [ ] tux08-c           172.23.17.161   (C8:4B:D6:9B:8B:76)
-- [ ] tux09-c           172.23.17.187   (C8:4B:D6:9B:8D:14)
-- [ ] space-c           172.23.31.74    (CC:48:3A:13:DB:45)
-- [ ] octopus01-c       172.23.31.39    (2C:EA:7F:F2:9E:10)
-- [ ] octopus02-c       172.23.31.37    (2C:EA:7F:F2:D8:74)
-- [ ] octopus03-c       172.23.31.94    (2C:EA:7F:F2:CC:34)
-- [ ] octopus04-c       172.23.31.38    (2C:EA:7F:F2:CF:F4)
-- [ ] octopus05-c       172.23.31.95    (2C:EA:7F:F2:D2:7C)
-- [ ] octopus06-c       172.23.31.36    (2C:EA:7F:F2:CF:A4)
-- [ ] octopus07-c       172.23.31.65    (2C:EA:7F:F2:D8:14)
-- [ ] octopus08-c       172.23.31.66    (2C:EA:7F:F2:CA:D4)
-- [ ] octopus09-c       172.23.31.71    (2C:EA:7F:F2:D3:74)
-- [ ] octopus10-c       172.23.31.33    (2C:EA:7F:F2:D2:6C)
-- [ ] octopus11-c       172.23.31.64    (2C:EA:7F:F2:CE:84)
 ```
