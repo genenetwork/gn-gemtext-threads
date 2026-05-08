@@ -24,7 +24,16 @@
 ;; Put in the hosts you are interested in here.
 (define %hosts
   (list "octopus01"
-        "spacex"))
+        "octopus02"
+        "octopus03"
+        "octopus04"
+        "rabbit"
+        "tux01"
+        "tux02"
+        "tux03"
+        "tux04"
+        "tux05"
+        ))
 
 (define (ini-file name scm)
   "Return a file-like object representing INI file with @var{name} and
