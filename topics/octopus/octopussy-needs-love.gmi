@@ -292,8 +292,8 @@ O4 is going to be the backup head node. It will act as a compute node too, until
 
 * [X] Update guix on O1
 * [X] Install guix moosefs
-* [X] Start moosefs master on O3
-* [X] Start moosefs metalogger on O4
+* [X] Start moosefs master on O4
+* [X] Start moosefs metalogger on O3
 * [X] Check moosefs logging facilities
 * [X] See if we can get a global moosefs state on balancing redundancy
 * [X] See if we can mark drives so it is easier to track them
