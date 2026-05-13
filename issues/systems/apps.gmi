@@ -79,9 +79,9 @@ Current apps managed by shepherd/systemd on tux02/balg01 are
 * [ ] - make sure it works on reboot (systemd)
 => http://jumpshiny.genenetwork.org/
 * [+] jumpshiny app (xusheng)
-* [+] - fire up service (still some dependencies)
+* [X] - fire up service (still some dependencies)
 * [X] - add sheepdog monitor
-* [ ] - https
+* [X] - https
 * [ ] - add link in GN2
 * [ ] - add banner for GeneNetwork
 * [ ] - create system container
@@ -219,6 +219,7 @@ Currently:
 
 Jumpshiny: as aijun, cd services/jumpshiny and ./.guix-run
 
+I unpacked the jumpshiny repo in factory dir. Currently we run it using ./.guix-run script. Package jumshiny and make sure it starts up with 'Rscript run_app.R'. You can update the package definitions in the factory/guix-bioinformatics dir using the load paths for guix as above.
 
 ## JUMPsem_web
 

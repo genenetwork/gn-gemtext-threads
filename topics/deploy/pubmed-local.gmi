@@ -1,0 +1,110 @@
+# PubMed local
+
+PubMed local consists of 54Gb raw data, unpacked into 118Gb. Add indexes and everything we need about 200Gb on nvme.
+
+```
+napoli:/export3/PubMed/Source/pubmed$ du -sh *
+85G     Archive
+77M     Data
+1.6G    Extras
+19G     Invert
+14G     Merged
+17G     Postings
+26G     Scratch
+54G     Source
+```
+
+As we are doing it with genecup:
+
+```
+. /home/wrk/opt/guix-b0fa1dc/etc/profile
+cd ~/services/genecup
+```
+
+Finally edirect-25 started indexing with
+
+```
+guix shell -L .  -C -N -F --share=/export3/PubMed --share=$HOME/tmp=/tmp  edirect-25 which coreutils unzip genecup-gemini -- env EDIRECT_LOCAL_ARCHIVE=/export3/PubMed/Source archive-pubmed -index
+```
+
+It may take a while for a 50Gb+ download.
+
+env EDIRECT_LOCAL_ARCHIVE=/export3/PubMed/Source xsearch -db pubmed -query "vitamin c + + common cold"
+
+EDIRECT_PUBMED_MASTER        (old, database-specific)
+       ↓
+EDIRECT_LOCAL_MASTER         (newer, multi-database parent dir)
+       ↓
+EDIRECT_LOCAL_ARCHIVE        (current preferred name)
+
+I.e.:
+
+```
+  EDIRECT_LOCAL_ARCHIVE  - Main archive path (required)
+  EDIRECT_LOCAL_WORKING  - Working directory (defaults to ARCHIVE)
+  EDIRECT_LOCAL_POSTING  - Postings directory (defaults to ARCHIVE)
+  EDIRECT_LOCAL_INVERTS  - Inverted indices directory (defaults to WORKING)
+  EDIRECT_LOCAL_SOURCES  - Source files directory (defaults to WORKING)
+```
+
+With EDIRECT_LOCAL_ARCHIVE=/export/pubmed, the directory structure would be:
+
+```
+  /export/pubmed/pubmed/Archive/      - archived XML records
+  /export/pubmed/pubmed/Data/         - data files
+  /export/pubmed/pubmed/Invert/       - inverted index files (*.inv.gz)
+  /export/pubmed/pubmed/Merged/       - merged index files (*.mrg.gz)
+  /export/pubmed/pubmed/Postings/     - posting files
+  /export/pubmed/pubmed/Source/       - source files
+  /export/pubmed/pubmed/Scratch/      - temporary working files
+    Collect/  Current/  Indexed/  Inverted/  Temporary/
+```
+
+  The *.inv.gz error means the merge step can't find inverted index files. Either the invert step didn't run or
+  EDIRECT_LOCAL_ARCHIVE isn't pointing to the right directory. What value do you have for EDIRECT_LOCAL_ARCHIVE?
+
+● The exact commands for each step (all run from factory/GeneCup):
+
+```
+  guix shell -L ../guix-bioinformatics -L . edirect-25 coreutils -- env EDIRECT_LOCAL_ARCHIVE=/export3/PubMed/Source archive-pubmed -https -step DAT
+  guix shell -L ../guix-bioinformatics -L . edirect-25 coreutils -- env EDIRECT_LOCAL_ARCHIVE=/export3/PubMed/Source archive-pubmed -https -step DWN
+  guix shell -L ../guix-bioinformatics -L . edirect-25 coreutils -- env EDIRECT_LOCAL_ARCHIVE=/export3/PubMed/Source archive-pubmed -https -step GEN
+  guix shell -L ../guix-bioinformatics -L . edirect-25 coreutils -- env EDIRECT_LOCAL_ARCHIVE=/export3/PubMed/Source archive-pubmed -https -step POP
+  guix shell -L ../guix-bioinformatics -L . edirect-25 coreutils -- env EDIRECT_LOCAL_ARCHIVE=/export3/PubMed/Source archive-pubmed -https -step RES
+  guix shell -L ../guix-bioinformatics -L . edirect-25 coreutils -- env EDIRECT_LOCAL_ARCHIVE=/export3/PubMed/Source archive-pubmed -https -step IDX
+  guix shell -L ../guix-bioinformatics -L . edirect-25 coreutils -- env EDIRECT_LOCAL_ARCHIVE=/export3/PubMed/Source archive-pubmed -https -step COL
+  guix shell -L ../guix-bioinformatics -L . edirect-25 coreutils -- env EDIRECT_LOCAL_ARCHIVE=/export3/PubMed/Source archive-pubmed -https -step MRG
+  guix shell -L ../guix-bioinformatics -L . edirect-25 coreutils -- env EDIRECT_LOCAL_ARCHIVE=/export3/PubMed/Source archive-pubmed -https -step PST
+```
+
+Key: -https forces HTTPS instead of FTP (which is blocked). EDIRECT_LOCAL_ARCHIVE=/export3/PubMed/Source points to the archive root.
+
+The local index is incomplete -- only ~30% of PubMed was indexed:
+
+* 1401 source XML files were downloaded (full baseline)
+* All 1401 sentinels exist (GEN step completed)
+* But only 42 out of ~1401 Collect files exist -- the COL step didn't finish
+* The Postings were built from only the partial Merged data
+
+xfetch works fine -- it reads from the Merged index, not the Archive directory. The Archive (with only 00/ subdir) is irrelevant for xfetch.
+
+```
+  To get equal counts, you'd need to re-run the indexing pipeline to completion:
+  index-pubmed -e2invert
+  index-pubmed -collect
+  index-pubmed -merge
+  index-pubmed -promote
+```
+
+This would process all 1401 source files through the full pipeline and populate the search index completely. After that, xsearch should return counts close to esearch.
+
+The PubMed FTP baseline XML files are missing abstracts, however, for a significant number of articles. This is
+a known issue -- some publisher-provided abstracts are not included in the FTP distribution due to licensing
+restrictions. NCBI's API (efetch) can serve them because the API has different licensing terms than the bulk FTP
+download.
+
+To get the full abstract corpus, you have these options:
+
+* Use the NCBI API -- for the articles you actually need, fetch them via efetch -db pubmed -id PMID -format xml. This is what GeneCup already does with esearch | efetch. Rate-limited but gives complete data. PubMed * Central Open Access (PMC OA) -- full-text articles (not just abstracts) for the open access subset. Available at ftp.ncbi.nlm.nih.gov/pub/pmc/oa_bulk/. Doesn't cover everything though.
+* Hybrid approach -- use the local index for search (xsearch), then fall back to NCBI's API (efetch) for fetching the actual abstracts when the local xfetch returns no abstract. This gives you fast local search with complete abstract retrieval.
+* License the full dataset -- NCBI has agreements with publishers; the NLM Medline/PubMed license may give you access to the full abstracts in bulk. Contact NLM for this.

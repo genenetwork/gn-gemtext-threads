@@ -1,0 +1,203 @@
+# Benchmark DuckDB against LMDB for storing genotypes
+
+# Tags
+
+* assigned: alexm
+* priority: medium
+* type: feature-request
+* status: open, waiting
+* keywords: duckdb, lmdb, genotypes, benchmarking, parquet, qtl
+
+
+# Description
+
+Design and benchmark a DuckDB-based analytical layer for genotype data,
+complementing the existing LMDB canonical storage.  The goal is to
+evaluate whether a columnar relational backend can improve QTL analysis,
+correlation queries, and ad-hoc exploration without sacrificing the
+integrity guarantees provided by LMDB's versioned, hash-chained store.
+
+This work is driven by the three-layer architecture proposed in the
+DuckDB design document:
+
+* Raw      – human-readable .geno files
+* Canonical – LMDB (versioned truth, hash-chained integrity)
+* Analytical – DuckDB + Parquet (fast columnar queries)
+
+
+## Why DuckDB?
+
+LMDB excels at keyed matrix storage, versioning, and cryptographic
+verification, but it is not optimized for analytical queries such as:
+
+* aggregations across markers or samples
+* joins with phenotype tables
+* filtering by chromosome position or dosage range
+* exporting slices for external tools (R, Python)
+
+DuckDB is an in-process, columnar OLAP engine that can query Parquet
+files directly with full SQL support.
+
+
+## Target Benchmarks
+
+Compare DuckDB + Parquet against LMDB for the following access patterns:
+
+| Workload | LMDB approach | DuckDB approach | Success criterion |
+|----------|---------------|-----------------|-------------------|
+| Random marker lookup by ID | key → matrix row | SQL SELECT on indexed marker_id | comparable latency |
+| Range scan by chromosome & Mb | reconstruct full matrix, filter in Python | SQL WHERE chr = … AND Mb BETWEEN … | DuckDB faster |
+| Compute mean dosage per marker | reconstruct, NumPy mean | SQL GROUP BY + AVG | DuckDB faster |
+| Join with phenotype table | export to CSV/DataFrame, merge | SQL JOIN on sample_id | DuckDB significantly faster |
+| Export slice for R/qtl2 | reconstruct matrix, write .csv | COPY (SELECT …) TO 'slice.parquet' | DuckDB faster |
+| Storage size | LMDB delta-compressed | Parquet + SNAPPY/ZSTD | comparable or smaller |
+| Ingestion time | .geno → LMDB | .geno → Parquet → DuckDB view | acceptable overhead |
+
+
+## Recommended Schema (Hybrid / Normalized)
+
+Closest to how high-performance QTL systems work.  Marker metadata is
+stored once, eliminating redundancy that would bloat a long-format
+table where every genotype row repeats chr, cM, and Mb.  DuckDB's
+columnar engine handles joins efficiently, so normalization does not
+hurt performance and improves both storage density and cache locality.
+
+```sql
+CREATE TABLE markers (
+    marker_id TEXT PRIMARY KEY,
+    chr       TEXT,
+    cM        DOUBLE,
+    Mb        DOUBLE
+);
+
+CREATE TABLE genotypes (
+    dataset_id TEXT,
+    marker_id  TEXT REFERENCES markers(marker_id),
+    sample_id  TEXT,
+    genotype   INTEGER,   -- encoded: 0=B, 1=D, 2=H, etc.
+    allele_raw TEXT       -- optional: original symbol for traceability
+);
+```
+
+### Alternative: Long / Tidy Format
+
+A single denormalized table.  Useful when the priority is simplicity
+(e.g., one-shot export to an external tool that expects a flat CSV).
+However, it duplicates marker metadata on every row and therefore
+consumes more space.
+
+```sql
+CREATE TABLE genotypes_long (
+    dataset_id   TEXT,
+    chr          TEXT,
+    marker_id    TEXT,
+    cM           DOUBLE,
+    Mb           DOUBLE,
+    sample_id    TEXT,
+    genotype     INTEGER,
+    allele_raw   TEXT
+);
+```
+
+Avoid the wide-format (one column per strain) because it requires DDL
+changes for every new sample.
+
+
+## Ingestion Pipeline
+
+Step 1 — Parse raw .geno (same as LMDB importer):
+* skip lines starting with # or @
+* parse header row: Chr Locus cM Mb BXD1 BXD2 …
+* extract @ metadata into separate structure
+
+Step 2 — Light cleaning:
+* U / - / empty → NULL
+* B/D/H → encoded integers (or defer to analytical layer)
+* validate consistent row length
+
+Step 3 — Split into normalized tables:
+* markers  → (marker_id, chr, cM, Mb)
+* genotypes → (dataset_id, marker_id, sample_id, genotype, allele_raw)
+
+Step 4 — Export to Parquet:
+```python
+import duckdb
+con = duckdb.connect()
+con.execute("""
+    COPY (SELECT * FROM read_csv_auto('markers.csv'))
+    TO 'markers.parquet' (FORMAT PARQUET, COMPRESSION 'ZSTD')
+""")
+con.execute("""
+    COPY (SELECT * FROM read_csv_auto('genotypes.csv'))
+    TO 'genotypes.parquet' (FORMAT PARQUET, COMPRESSION 'ZSTD')
+""")
+```
+
+Step 5 — Create DuckDB views:
+```sql
+CREATE VIEW markers_latest AS
+SELECT * FROM read_parquet('markers.parquet');
+
+CREATE VIEW genotypes_latest AS
+SELECT * FROM read_parquet('genotypes.parquet');
+```
+
+Step 6 — Analysis example (range scan + aggregation):
+```sql
+SELECT g.marker_id, m.chr, m.Mb, AVG(g.genotype) AS mean_dosage
+FROM genotypes_latest g
+JOIN markers_latest m USING (marker_id)
+WHERE m.chr = '1' AND m.Mb BETWEEN 50 AND 60
+GROUP BY g.marker_id, m.chr, m.Mb;
+```
+
+
+## Integration with LMDB
+
+LMDB remains the canonical source of truth.  The DuckDB layer is a
+one-way, idempotent export:
+
+```
+.geno ──► LMDB (canonical, versioned)
+   │
+   └── reconstruct version N ──► split markers + genotypes ──► Parquet
+                                          │
+                                          ▼
+                                    DuckDB analytical views
+```
+
+When a dataset is updated in LMDB, the export pipeline is re-run to
+regenerate the Parquet files.  DuckDB never writes back to LMDB.
+
+
+## Prototype Tasks
+
+* [ ] implement .geno → normalized markers + genotypes converter (reuse LMDB parser logic)
+* [ ] benchmark Parquet write times and file sizes against LMDB for BXD, HS, and Kilifish panels
+* [ ] create DuckDB schema and load views for at least one panel
+* [ ] run marker-range scan benchmark (chr + Mb filter) and compare with LMDB reconstruction + Python filter
+* [ ] run mean-dosage benchmark (GROUP BY marker_id) and compare with LMDB + NumPy
+* [ ] run phenotype-join benchmark and compare with LMDB → DataFrame merge
+* [ ] measure ingestion pipeline end-to-end time
+* [ ] document Guix shell environment (duckdb python package + pyarrow)
+* [ ] write ADR if DuckDB proves beneficial
+
+
+## Open Questions
+
+1. Should we maintain a persistent DuckDB database file, or rely on
+   on-the-fly Parquet scanning?
+2. Can we attach LMDB directly via a DuckDB custom scanner, avoiding
+   the intermediate Parquet step?
+3. How does DuckDB perform when multiple panels are queried together
+   (e.g., UNION ALL across datasets)?
+4. What is the memory footprint for large panels (>10k markers × >1k
+   samples) in DuckDB versus LMDB reconstruction?
+
+
+## References
+
+* => /issues/genotyping-lmdb.gmi LMDB genotype storage (canonical layer)
+* => /issues/dumping-probesets-to-lmdb.gmi Dumping Probesets to LMDB
+* => /issues/optimize-correlations-with-lmdb.g LMDB correlation optimization
+* => https://duckdb.org/docs/guides/file_formats/parquet_import DuckDB Parquet documentation

@@ -1,0 +1,61 @@
+# Reverse Genotyping Approach for BXD
+
+## Tags
+
+* assigned: felixl, alexm, ai-lab
+* type: project
+* priority: high
+* status: ongoing
+* keywords: genotyping, smoothing, QTL hotspots, biological signals, noise, markers (SNPs), reverse genotyping
+
+## Objective
+
+Improve genotype representation for mapping workflows (for example, GEMMA and QTL mapping) by combining classical genotype smoothing with a hotspot-aware "reverse genotyping" strategy.
+
+## Why This Matters
+
+Genotype datasets are large and often contain redundant marker information. Denser marker sets can increase compute cost and may amplify noise, which can reduce mapping efficiency and interpretability.
+
+Classical smoothing reduces markers by representing recombination intervals with boundary markers (for example, proximal and distal markers). This improves speed, but it may discard non-selected markers that still capture meaningful biological signal.
+
+Reverse genotyping is designed to reduce that risk by using observed QTL hotspot patterns across many traits to guide marker retention.
+
+## Current Actionables
+
+* [x] Access and prepare BXD 13k traits as the case study dataset.
+* [+] Use a subset of 300 traits for testing, then scale to the full set.
+* [ ] Build a model that stacks QTL peaks into a single reference profile (`Rev.Geno.Ref`) for BXD traits.
+* [+] Examine the QTL trait-file structure.
+* [ ] Define hotspot detection criteria (for example, statistical thresholds and overlap rules).
+* [x] Generate haplotype data from BXD genotype data.
+
+## Comparison Experiments
+
+* [ ] Phase 01: Run mapping for selected traits using only haplotype data.
+* [ ] Phase 02: Run mapping for same selected traits using haplotype data enriched with `Rev.Geno.Ref`.
+* [ ] Compare Phase 01 vs Phase 02 plots and assess which approach better captures biologically meaningful hotspots. (for justification) 
+
+## Method Summary (Reverse Genotyping)
+
+* Step 1: Run trait mapping and collect QTL hits across all available traits (BXD target: ~13k traits). {already in place} 
+* Step 2: Identify genomic regions where significant peaks overlap across traits (hotspots).
+* Step 3: Build a stacked hotspot profile that summarizes shared high-signal regions.
+* Step 4: Use this profile to refine marker selection in smoothed haplotype data by keeping markers aligned with hotspot regions and deprioritizing markers repeatedly unsupported by hotspot evidence.
+* Step 5: Re-run mapping and evaluate signal quality, speed, and interpretability.
+
+For reference, this single-trait plot illustrates the standard threshold-based interpretation:
+=> https://genenetwork.org/run_mapping/a539822f0c329d628942e12db93ebfb4?mapping_run_time=5.375121116638184
+
+Example interpretation:
+* If the significance threshold is 3.0, the major peak in this example appears on chromosome 7.
+
+## Expected Outcome
+
+The goal is to combine:
+* improved mapping accuracy;
+* faster runtime from reduced marker complexity;
+* clearer hotspot-driven interpretation of trait-marker associations.
+
+## Open Question
+
+How can pangenome resources and AI/ML models improve hotspot detection, marker prioritization, and robustness of the reverse genotyping pipeline?

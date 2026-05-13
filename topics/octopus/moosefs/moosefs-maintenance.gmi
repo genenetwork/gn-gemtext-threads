@@ -1,4 +1,4 @@
-# Moosefs
+# Moosefs on Octopus HPC
 
 We use moosefs as a network distributed storage system with redundancy. The setup is to use SSDs for fast access and spinning storage for redundancy/backups (in turn these are in RAID5 configuration). In addition we'll experiment with a non-redundant fast storage access using the fastest drives and network connections.
 
@@ -9,6 +9,31 @@ We have three storage classes:
 * raid5 - one copy on RAID5 spinning HDDs
 
 For *labels* we have an R class for redundant (very slow) SSDs. So, S=SSD, H=HDD, F=fast SSD and R=slow SSD.
+
+# Commands
+
+To check moosefs we use mfscli. Load the alias/paths with
+
+```
+source /export/octopus/manage/user/profile
+mfscli -SIC
+```
+
+Which shows the state of redundancy and any issues on the system. You want to see something like
+
+```
+missing: 0 / endangered: 0 / undergoal: 0 / stable: 8951552 / overgoal: 0 / pending deletion: 31 / to be removed: 0
+```
+
+Other commands are
+
+```
+mfscli -SCS         # show status of chunk servers
+mfscli -SCC -d mem  # show RAM use of chunk servers
+mfscli -SMS         # show mounted moosefs
+mfscli -SHD         # show individual drives
+mfscli -h           # show all options
+```
 
 # Numbers
 
@@ -21,7 +46,7 @@ For *labels* we have an R class for redundant (very slow) SSDs. So, S=SSD, H=HDD
 We should use different ports than lizard. Lizard uses 9419-24 by default. So let's use
 9519- ports.
 
-* 9519 for moose meta logger
+* 9519 for master meta logger
 * 9520 for chunk server connections
 * 9521 for mount connections
 * 9522 for slow HDD chunks (H:HDD)

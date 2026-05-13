@@ -1037,4 +1037,3 @@ However, I noticed that with kimi code, one is not able to choose the kimi model
 * It's safer to not expect either models to be as smart as programmers and take care of all aspects to satisfaction. In this experiment, they both failed to generate useful final synthesis to the user of the RAG. That means the prompt needs to be very specific and detailed to not let the coding agent for example the choice to write whole logic from scratch for example.
 
 * Using the pi setup instead of kimi code or even claude code is more advantageous. Generation of pi+kimi-k2.5 and kimi code are the same and with pi, one can easily switch between different kimi models or even providers (i.e kimi to claude). I personally liked the pi interface better; it's more informative and very extensible.
-

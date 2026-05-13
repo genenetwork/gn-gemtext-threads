@@ -1,0 +1,46 @@
+# Trait page breaks when gn-guile is down
+
+* assigned: bonfacem, alexm
+* status: in-progress
+* keywords: CD, traits, gn-guile,
+* priority: medium
+
+
+## Description
+
+Trait page currently depends on gn-guile (gene aliases service) during rendering.
+When gn-guile is unavailable, the request for aliases fails and the entire page crashes.
+
+Example:
+=> https://cd.genenetwork.org/show_trait?trait_id=1424253_at&dataset=HC_M2_0606_P
+
+Error (partial):
+```
+
+  File "/home/genenetwork/genenetwork2/gn2/base/trait.py", line 157, in wikidata_alias_fmt
+    human_response = requests.get(urljoin(GN_GUILE_SERVER_URL, f"gene/aliases/{self.symbol.upper()}"))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/bffgdyyzb990xcsm556vcfdcx0m8j4gn-profile/lib/python3.11/site-packages/requests/api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/bffgdyyzb990xcsm556vcfdcx0m8j4gn-profile/lib/python3.11/site-packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/bffgdyyzb990xcsm556vcfdcx0m8j4gn-profile/lib/python3.11/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/bffgdyyzb990xcsm556vcfdcx0m8j4gn-profile/lib/python3.11/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/bffgdyyzb990xcsm556vcfdcx0m8j4gn-profile/lib/python3.11/site-packages/requests/adapters.py", line 677, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=PORT): Max retries exceeded with url: /gene/aliases/1810073G14RIK (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f20c40eeed0>: Failed to establish a new connection: [Errno 111] Connection refused'))
+
+
+```
+
+Expected behavior: trait page should always load. If aliases cannot be fetched, show empty or fallback content instead.
+
+
+## Tasks
+* [ ] Ensure trait page always renders: remove hardcoded endpoints, catch gn-guile errors, and provide safe defaults

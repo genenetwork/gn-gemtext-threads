@@ -13,17 +13,29 @@ The shell prompt looks like:
 ```
 mkdir workdir && cd workdir
 mkdir -p $HOME/.local $HOME/.cache/claude $HOME/.claude
-guix shell -C -N -F curl bash openssl nss-certs coreutils grep sed jq git --share=$HOME/.local --share=$HOME/.cache/claude --share=$HOME/.claude
+guix shell -C -N -F curl bash openssl nss-certs coreutils grep sed jq git --share=$HOME/.local --share=$HOME/.cache/claude --share=$HOME/.claude --share=/gnu/store --share=/usr/local/guix-profiles
 curl -fvSL https://claude.ai/install.sh | bash
 ```
 
 Takes a few minutes.
+
+Note
+
+```
+guix describe
+  guix dc0ffec
+    repository URL: https://codeberg.org/guix/guix
+    commit: dc0ffec8daa45ed240f62912115e233be82a35fa
+```
+
 The installation is self contained. You probably want to make a guix manifest to run Claude inside some source directory.
 Set the path and run claude from ~/.local/bin/claude.
 
 ```
+. /usr/local/guix-profiles/guix-dc0ffec/etc/profile
 export PATH=$PATH:$HOME/.local/bin
-claude
+export TERM=xterm
+claude --dangerously-skip-permissions
 ```
 
 The key gets written to ~/.claude.json. I simply copy that to capture state. Don't add it to git though.
