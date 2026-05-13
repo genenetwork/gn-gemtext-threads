@@ -8,12 +8,10 @@
 ## Tasks
 
 ### Ongoing
-* [ ] Develop hybrid (RAG + agent) solution for AI search
-* [ ] Build UI for AI search
+* [~ ] Write AI search paper
+* [ ] Package gnagent
 * [~] Experiment with GNAgent and network analysis
 * [ ] Build graph deep learning for network analysis
-* [ ] Build UI for GNAgent
-* [ ] Talk with Hao about publication on agent system and gain over GNQA
 
 
 ### Later
@@ -59,4 +57,4 @@
 * [X] Write paper on Gulf War disease and finemapping
 * [X] Write RAG and agent for AI search with Bonz
 * [X] Add memory to AI search - RAG and Agent
-
+* [X] Develop hybrid (RAG + agent) solution for AI search
