@@ -35,7 +35,12 @@ Set the path and run claude from ~/.local/bin/claude.
 . /usr/local/guix-profiles/guix-dc0ffec/etc/profile
 export PATH=$PATH:$HOME/.local/bin
 export TERM=xterm
+tmux
 claude --dangerously-skip-permissions
 ```
 
 The key gets written to ~/.claude.json. I simply copy that to capture state. Don't add it to git though.
+
+# See also
+
+=> ./write-guix-package-with-claude-code
