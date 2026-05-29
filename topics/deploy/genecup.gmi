@@ -16,6 +16,26 @@ Latest:
 
 
 ```
+hchen@tux02:~/services/genecup$ . /home/wrk/opt/guix-b0fa1dc/etc/profile
+hchen@tux02:~/services/genecup$ guix describe
+  guix-bioinformatics f873d98
+    repository URL: https://git.genenetwork.org/guix-bioinformatics
+    branch: main
+    commit: f873d984352e0d76ca54ce2d3507dcd0b45c8ebc
+  guix f87e31d
+    repository URL: https://codeberg.org/guix/guix
+    branch: master
+    commit: f87e31d8f0c5f121f054c0b96adf03999532c929
+  guix-past d0e0152
+    repository URL: https://codeberg.org/guix-science/guix-past
+    branch: master
+    commit: d0e01528abcf07a40981303b3e4a54edd7ffd501
+  guix-rust-past-crates 20997cc
+    repository URL: https://codeberg.org/guix/guix-rust-past-crates.git
+    branch: trunk
+    commit: 20997ccc759799c19709fdde729d67e470fa5bcf
+
+
 hchen@tux02:~/services/genecup$ guix shell --no-substitutes -L .  -C -N -F --share=/export2/PubMed2 --share=$HOME/tmp=/tmp  edirect-25 which coreutils genecup-gemini -- env EDIRECT_LOCAL_ARCHIVE=/export2/PubMed2/Source archive-pubmed -https -index
 ```
 
