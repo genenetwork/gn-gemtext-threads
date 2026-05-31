@@ -1,0 +1,168 @@
+# Guix Daemon: AppArmor & Privilege Troubleshooting
+
+> Debian 14 (Forky) — kernel userns hardening + AppArmor confinement
+
+---
+
+## Background
+
+The `EACCES` error on `/bin/gettext.sh` is a kernel-level block, not a file
+permission issue. Guix's build daemon uses unprivileged user namespaces to
+sandbox each build. Debian 14 (like Ubuntu 24.04) tightened AppArmor defaults
+to restrict this. Upgrading the daemon binary does not fix it — the kernel
+sysctl does.
+
+---
+
+## Diagnosis
+
+```bash
+# Check AppArmor userns restriction (Debian 14+)
+cat /proc/sys/kernel/apparmor_restrict_unprivileged_userns
+
+# Check generic userns (older mechanism)
+sysctl kernel.unprivileged_userns_clone
+
+# Check if AppArmor is running
+sudo aa-status 2>/dev/null || echo "AppArmor not running"
+
+# Check for a guix-daemon AppArmor profile
+sudo aa-status | grep -i guix
+```
+
+---
+
+## Fix 1: Disable AppArmor confinement for guix-daemon (surgical)
+
+The most targeted fix — disables only the guix-daemon profile, not AppArmor globally.
+
+```bash
+sudo apt install apparmor-utils
+sudo aa-disable /etc/apparmor.d/guix-daemon
+sudo systemctl restart guix-daemon
+```
+
+### Why this is permanent
+
+`aa-disable` creates a symlink in `/etc/apparmor.d/disable/` which survives
+reboots. AppArmor skips any profile symlinked there at boot.
+
+```bash
+# Verify
+ls -la /etc/apparmor.d/disable/ | grep guix
+```
+
+### Re-enable later
+
+```bash
+sudo aa-enforce /etc/apparmor.d/guix-daemon
+# or manually:
+sudo rm /etc/apparmor.d/disable/guix-daemon
+sudo apparmor_parser -r /etc/apparmor.d/guix-daemon
+```
+
+---
+
+## Fix 2: Relax the kernel sysctl globally
+
+Use this if there is no guix-daemon AppArmor profile, or if Fix 1 doesn't resolve it.
+
+```bash
+# AppArmor userns restriction
+sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+echo 'kernel.apparmor_restrict_unprivileged_userns=0' | sudo tee /etc/sysctl.d/99-guix-userns.conf
+
+# Generic userns (if unprivileged_userns_clone = 0)
+sudo sysctl -w kernel.unprivileged_userns_clone=1
+echo 'kernel.unprivileged_userns_clone=1' | sudo tee -a /etc/sysctl.d/99-guix-userns.conf
+
+sudo sysctl --system
+sudo systemctl restart guix-daemon
+```
+
+---
+
+## What AppArmor Does to guix-daemon
+
+AppArmor confines the daemon by restricting at the kernel level:
+
+- **Filesystem access** — limits readable/writable paths. Guix needs broad
+  access to `/gnu/store/**`, `/var/guix/**`, `/bin/`, `/usr/bin/`, and temp
+  dirs. A strict profile that doesn't whitelist these causes EACCES.
+- **User namespaces** — the daemon calls `clone()` with `CLONE_NEWUSER` to
+  sandbox builds. AppArmor can block this syscall entirely — the root cause of
+  the original error.
+- **Capabilities** — `CAP_SYS_ADMIN` (namespace ops), `CAP_CHOWN`,
+  `CAP_SETUID`/`CAP_SETGID` for setting up build users.
+- **Network access** — controls whether builds can reach the network.
+
+### Why `/bin/gettext.sh` specifically
+
+The daemon tried to execute that path during build environment setup. AppArmor
+blocked the userns creation (or the path access directly) before the kernel
+even checked file permissions — hence EACCES on a file that is actually
+readable.
+
+---
+
+## Running guix-daemon with Reduced Privilege
+
+Full unprivileged operation is not yet practical (the daemon still needs a few
+root-level ops for sandboxing), but privilege can be significantly reduced.
+
+### Option A: Capability bounding via systemd (recommended)
+
+Grant only the capabilities the daemon actually needs, rather than running
+with full root.
+
+```ini
+# /etc/systemd/system/guix-daemon.service.d/override.conf
+[Service]
+AmbientCapabilities=CAP_SYS_ADMIN CAP_CHOWN CAP_SETUID CAP_SETGID
+CapabilityBoundingSet=CAP_SYS_ADMIN CAP_CHOWN CAP_SETUID CAP_SETGID
+NoNewPrivileges=false
+```
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart guix-daemon
+```
+
+### Option B: `--disable-chroot` (less isolation, no `CAP_SYS_ADMIN` needed)
+
+```ini
+# Edit /etc/systemd/system/guix-daemon.service
+ExecStart=/var/guix/profiles/per-user/root/current-guix/bin/guix-daemon \
+  --build-users-group=guixbuild \
+  --disable-chroot
+```
+
+Builds are less isolated but the daemon no longer needs `CAP_SYS_ADMIN`.
+
+### Option C: `setcap` on the binary
+
+```bash
+sudo setcap cap_sys_admin,cap_chown,cap_setuid,cap_setgid+ep $(which guix-daemon)
+```
+
+Then run the daemon as a dedicated non-root user.
+
+---
+
+## Verify the Fix
+
+```bash
+sudo systemctl status guix-daemon
+guix build hello 2>&1 | head -20
+```
+
+---
+
+## Security Tradeoff Summary
+
+| Approach | Security | Effort |
+|---|---|---|
+| `aa-disable` guix-daemon profile | Good — AppArmor still protects everything else | Low |
+| Global sysctl relax | Weaker — userns unrestricted system-wide | Low |
+| systemd capability bounding | Best — minimal privilege, AppArmor still active | Medium |
+| `--disable-chroot` | Weakest build isolation | Low |
