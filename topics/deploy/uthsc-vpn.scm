@@ -1,3 +1,5 @@
+;; $(guix build -f uthsc-vpn.scm)
+
 (use-modules ((gnu packages check)
               #:select (python-pytest python-pytest-asyncio python-pytest-httpserver))
              ((gnu packages freedesktop) #:select (python-pyxdg))
