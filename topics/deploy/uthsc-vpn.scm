@@ -188,6 +188,14 @@
                                  ("Options" . "UnsafeLegacyRenegotiation")))))
         (setenv "REQUESTS_CA_BUNDLE"
                 #$(local-file "uthsc-certificate.pem"))
+
+        ;; Force software rendering — forwarded X11 has no working GLX/GPU,
+        ;; so QtWebEngine's Chromium GL init crashes without these.
+        (setenv "QTWEBENGINE_CHROMIUM_FLAGS"
+                "--disable-gpu --disable-gpu-compositing --in-process-gpu")
+        (setenv "QT_OPENGL" "software")
+        (setenv "LIBGL_ALWAYS_SOFTWARE" "1")
+
         (invoke #$(file-append openconnect-sso-uthsc "/bin/openconnect-sso")
                 "--server" "uthscvpn1.uthsc.edu" ; ask us for end-point or see UT docs
                 "--authgroup" "UTHSC"

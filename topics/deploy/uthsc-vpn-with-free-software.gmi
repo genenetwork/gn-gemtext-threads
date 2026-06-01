@@ -105,3 +105,11 @@ export QTWEBENGINE_CHROMIUM_FLAGS=--disable-seccomp-filter-sandbox
 Many thanks to Arun, Pjotr and Erik without whose earlier work this guide would not be possible.
 => https://github.com/pjotrp/linux-at-university-of-tennessee
 => https://github.com/ekg/openconnect-sso-docker
+
+# Setting up SSO on a remote with `ssh -X`
+
+Make sure the DISPLAY is set to something like 'localhost:10.0'. I found this to be one issue:
+
+```
+AddressFamily inet
+```
