@@ -1,0 +1,15 @@
+# Diffs authorisation error
+
+## Tags
+
+* type: bug
+* status: open
+* priority: high
+* assigned: fredm, zsloan
+* keywords: gn2, genenetwork2, genenetwork 2, authorisation, diffs
+
+## Description
+
+There are currently two separate issues:
+- Bug when trying to approve/reject diffs
+- We're uncertain what sort of auth to use for diffs approval/rejection (currently any logged-in user has access)
