@@ -69,3 +69,9 @@ Notion 03: Replace the `group:resource:*` privileges with the new `resource:*:*`
 This will then need to be followed up with updating the code doing the authorisation checks to fix any breakages.
 
 Notion 04: While handling the other notions above, we should also probably separate editing of the metadata from the editing of computationally-significant data.
+
+### Apparent double auth happening in diffs approval/rejection
+
+There appear to be two separate functions handling this that both run when diffs are approved or rejected - __authorised_p__ and __edit_with_authorisation__
+
+I (zsloan) made a commit removing the former (b1c50aed6cefa2a989ef9804f281ff97fec4d42a) and this seems to address an error that was occurring before, but I'm still not aware if there was originally some reason for this.
