@@ -6,10 +6,64 @@
 * status: open
 * priority: high
 * assigned: fredm, zsloan
-* keywords: gn2, genenetwork2, genenetwork 2, authorisation, diffs
+* keywords: gn2, genenetwork2, genenetwork 2, gn3, genenetwork3, genenetwork 3, authorisation, diffs
 
 ## Description
 
 There are currently two separate issues:
-- Bug when trying to approve/reject diffs
-- We're uncertain what sort of auth to use for diffs approval/rejection (currently any logged-in user has access)
+* Bug when trying to approve/reject diffs
+* We're uncertain what sort of auth to use for diffs approval/rejection (currently any logged-in user has access)
+
+### Approving and Rejecting Diffs
+
+TODO: Update...
+
+### Auth Uncertainty
+
+Initially, it seems the system was using the following privileges to control access to the edits:
+
+* system:inbredset:apply-case-attribute-edit
+* system:inbredset:reject-case-attribute-edit
+* system:system-wide:inbredset:apply-case-attribute-edit
+* system:system-wide:inbredset:reject-case-attribute-edit
+
+The trouble here is that these privileges are linked to the population resource rather than the phenotype resource itself, which leads to problems fetching and applying the authorisation correctly.
+
+To fix this, I (fredm) propose changing the privileges to:
+
+* resource:metadata:apply-edit
+* resource:metadata:reject-edit
+* system:system-wide:metadata:apply-edit
+* system:system-wide:metadata:reject-edit
+
+In conjunction with that, we'll probably need to do the following updates too:
+
+* system:inbredset:create-case-attribute => resource:metadata:create
+* system:inbredset:delete-case-attribute => resource:metadata:delete
+* system:inbredset:edit-case-attribute => resource:metadata:edit
+* system:inbredset:view-case-attribute => resource:metadata:view
+* system:system-wide:inbredset:delete-case-attribute => system:system-wide:metadata:delete
+* system:system-wide:inbredset:edit-case-attribute => system:system-wide:metadata:edit
+* system:system-wide:inbredset:view-case-attribute => system:system-wide:metadata:view
+
+We then need to assign the `resource:metadata:*` privileges at the phenotype/genotype/mRNA resource level, not the InbredSet group level. The `system:systemwide:metadata:*` resource should be assigned at the system level.
+
+### Naming Problems
+
+The other problem is the naming of the feature here, in both GN2 and GN3.
+
+In GN3, the feature to edit/reject the data is in the `gn3.api.case_attributes` module. When you think about what the code is doing, however, you note that what is changing is the values of the "case attributes" and not actually the "case attributes" themselves -- we are editing data and metadata (values), not the structure of it (case attribute names).
+
+With this in consideration, there are a number of notions to consider/fix as detailed below.
+
+Notion 01: Rather than renaming the privileges as in the **Auth Uncertainty** section above, instead, add new privileges entirely with the names proposed in the sections above. These newly defined privileges can then be grouped into relevant resource-level and system-level roles and assigned appropriately. The code doing the checks can then be refactored as appropriate, renaming `gn3/api/case_attribute.py` to say, `gn3/api/data_metadata.py` or similar.
+
+Notion 02: Leave the `system:**:inbredset:*` privileges for use with editing the "case-attribute" names rather than the data.
+
+Notion 03: Replace the `group:resource:*` privileges with the new `resource:*:*` privileges. We'll need to define the differences between dealing with the resource itself, the attached data in the phenotype/genotype/mRNA traits, and the metadata for said traits -- maybe have:
+
+* resource:wrapper:* : deal with the wrapper object around the traits that we use as the resource
+* resource:data:* : deal with auth to the trait data (i.e. data used in computations)
+* resource:metadata:*: deal with auth to the trait metadata (i.e. supporting data, not necessarily used in computations)
+
+This will then need to be followed up with updating the code doing the authorisation checks to fix any breakages.
