@@ -67,3 +67,5 @@ Notion 03: Replace the `group:resource:*` privileges with the new `resource:*:*`
 * resource:metadata:*: deal with auth to the trait metadata (i.e. supporting data, not necessarily used in computations)
 
 This will then need to be followed up with updating the code doing the authorisation checks to fix any breakages.
+
+Notion 04: While handling the other notions above, we should also probably separate editing of the metadata from the editing of computationally-significant data.
