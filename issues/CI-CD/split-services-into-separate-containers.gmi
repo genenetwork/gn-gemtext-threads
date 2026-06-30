@@ -1,0 +1,51 @@
+# Diffs authorisation error
+
+## Tags
+
+* type: bug
+* status: open
+* priority: high
+* assigned: fredm, bonfacem, aruni
+* keywords: CI, CI/CD
+
+## Description
+
+Currently the CI/CD service is composed of many services, i.e.
+
+* GeneNetwork CI/CD System: composed of laminar, virtuoso, xapian, redis, gn-libs, gn-auth, gn-guile, gn3, gn2 and eventually gn-uploader
+* Issue Tracker: composed of laminar, gn-gemtext-threads
+* CGIT service: composed of cgit daemon
+* ...
+
+We could split the definitions by services, e.g.
+
+```
+* GeneNetwork CI/CD System
+  +- Laminar CI
+  +- Virtuoso
+  +- Redis
+  +- Xapian search
+  +- gn-libs
+  +- gn-auth
+  +- gn-guile
+  +- gn3
+  +- gn2
+  +- gn-uploader
+  +- nginx
+* Issue Tracker
+  +- Laminar CI
+  +- gn-gemtext-threads
+  +- nginx
+* CGIT Service
+  +- cgit daemon
+  +- nginx
+* ...
+```
+
+We could even split the "GeneNetwork CI/CD System" further to extract the shared services like Redis and Virtuoso.
+
+The Laminar service is a little tricky, but it might be also possible to extract it into a separate container too. This might involve using **guix deploy** in a "control" Guix System Distribution container that will orchestrate everything else.
+
+Look into:
+
+- `guix deploy`: Run in a GuixSD container in =tux04= and forward its SSH port to the host. Use it to build the containers.
