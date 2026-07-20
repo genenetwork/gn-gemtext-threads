@@ -13,7 +13,7 @@ The shell prompt looks like:
 ```
 mkdir workdir && cd workdir
 mkdir -p $HOME/.local $HOME/.cache/claude $HOME/.claude
-guix shell -C -N -F curl bash openssl nss-certs tmux coreutils grep sed jq git --share=$HOME/.local --share=$HOME/.cache/claude --share=$HOME/.claude --share=/gnu/store --share=/usr/local/guix-profiles
+guix shell -C -N -F curl bash openssl nss-certs tmux coreutils grep sed jq git which gawk --share=$HOME/.local --share=$HOME/.cache/claude --share=$HOME/.claude --share=/gnu/store --share=/usr/local/guix-profiles --share=/var/guix
 curl -fvSL https://claude.ai/install.sh | bash
 ```
 
@@ -37,6 +37,7 @@ export PATH=$PATH:$HOME/.local/bin
 export TERM=xterm
 tmux
 claude --dangerously-skip-permissions
+
 ```
 
 The key gets written to ~/.claude.json. I simply copy that to capture state. Don't add it to git though.
