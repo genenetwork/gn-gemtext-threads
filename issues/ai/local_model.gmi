@@ -74,8 +74,8 @@ We need poetry to build the project and its dependencies.
 We also need to build corpus and setup chroma DB for the document RAG and memory with:
 ```
 python scripts/fetch_metadata.py
-chroma run --path path/to/corpus/chroma
-chroma run --path path/to/corpus/chroma/mem0_chroma --port 8001
+chroma run --path <path/to/corpus/chroma>
+chroma run --path <path/to/corpus/chroma/mem0_chroma> --port 8001
 ```
 
 We might also need to start a redis server for answer caching:
@@ -94,16 +94,17 @@ PORT=11434
 
 JUDGE_MODEL="anthropic/claude-haiku-4-5"
 API_KEY=<api-key>
-MEMORY_MODEL="None"
-SECRET_KEY="default"
-CORPUS_PATH="/home/johannesm/setup_gnais/metadata_output/"
-DB_PATH="/home/johannesm/setup_gnais/chroma"
-DATASET_PATH="/home/johannesm/gn-ai/aisearch/data/small_benchmark.csv"
-OUTPUT_PATH="/home/johannesm/setup_gnais/results/phi3.5_simple_results.csv"
 SPARQL_ENDPOINT="https://rdf.genenetwork.org/sparql"
-AUTH_SERVER_URL="None"
-SEED=10
-N_ITERATIONS=3
+MEMORY_MODEL=<value>
+SECRET_KEY=<value>
+AUTH_SERVER_URL=<value>
+SEED=<value>
+N_ITERATIONS=<value>
+
+CORPUS_PATH=<path/to/corpus>
+DB_PATH=<path/to/corpus/chroma>
+DATASET_PATH=<path/to/dataset>
+OUTPUT_PATH=<path/to/output/evaluation>
 ```
 
 For more details, see:
