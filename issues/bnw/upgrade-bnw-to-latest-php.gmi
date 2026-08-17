@@ -1,0 +1,71 @@
+# Upgrade BNW to newest PHP
+
+## Tags
+
+* type: bug
+* status: open
+* priority: high
+* assigned: fredm, pjotrp
+* keywords: bnw
+
+## Description
+
+The UTHSC IT department requested that we update BNW (Bayesian Network Webserver) to the latest version of PHP.
+
+## Notes
+
+Begin by identifying the parts that make up the service, i.e.
+
+* The source repositor(y/ies)
+* Deployment: package and system definitions
+
+The following useful links were identified
+
+=> https://git.genenetwork.org/guix-bioinformatics/tree/gn/packages/bnw.scm?id=e586976ac493d2f7480784f098d58c9fed065b02 BNW package definition
+=> https://git.genenetwork.org/guix-bioinformatics/tree/gn/services/bnw-container.scm?id=e586976ac493d2f7480784f098d58c9fed065b02 BNW System Definition
+=> https://github.com/ziejd2/BNW Source repository
+=> https://git.genenetwork.org/BNW A fork of the source repository with branch 'master' renamed to 'main'
+
+
+There was need to update the text editor configs to enable editing of PHP code.
+
+
+Next was looking at the code. The version of PHP in use is determined by the version of guix in use. I (@fredm) am guessing that the version of guix used to build the BNW container before was `guix (GNU Guix) 9f829da86fceb78cc6fedfd30ee42071d3e402c4`, which has PHP 7.4.14. This is an earlier version than is specified by IT (7.4.25).
+
+```
+fredm@tux02:~/guix-bioinformatics$ guix --version
+guix (GNU Guix) 9f829da86fceb78cc6fedfd30ee42071d3e402c4
+Copyright (C) 2021 the Guix authors
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+fredm@tux02:~/guix-bioinformatics$ guix search php | grep -A1 'name: php'
+name: php
+version: 7.4.14
+```
+
+A newer version of guix `guix (GNU Guix) 61428ccf41f21f5ea1e4f1eec722ef9b1efc3a0e` has a more recent version of PHP (8.3.12).
+
+```
+fredm@tux02:~/guix-bioinformatics$ ~/opt/guix-production/bin/guix --version
+guix (GNU Guix) 61428ccf41f21f5ea1e4f1eec722ef9b1efc3a0e
+Copyright (C) 2025 the Guix authors
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+fredm@tux02:~/guix-bioinformatics$ ~/opt/guix-production/bin/guix search php | grep -A1 'name: php'
+name: php
+version: 8.3.12
+--
+name: php
+version: 5.6.40
+```
+
+A way to quickly identify any obvious bugs caused by a migration from PHP 7.4.14 to PHP 8.3.12 was sought. The following tools were identified as possible ways to check:
+
+=> https://github.com/phpstan/phpstan PHPStan
+=> https://github.com/rectorphp/rector rector
+
+Unfortunately, none of these are defined in Guix. Instead, a Guix shell was setup for claude code. This was used to go through the code to identify what might need to be updated to ensure the code works with the newer version(s) of PHP.
+
+Claude was used to generate patches, and the patches were manuall reviewed before applying and pushing.
