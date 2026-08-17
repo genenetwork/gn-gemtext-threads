@@ -69,3 +69,9 @@ A way to quickly identify any obvious bugs caused by a migration from PHP 7.4.14
 Unfortunately, none of these are defined in Guix. Instead, a Guix shell was setup for claude code. This was used to go through the code to identify what might need to be updated to ensure the code works with the newer version(s) of PHP.
 
 Claude was used to generate patches, and the patches were manuall reviewed before applying and pushing.
+
+
+## Pending
+
+* [ ] Test locally using php server
+* [ ] Build container with newer guix version and redeploy
