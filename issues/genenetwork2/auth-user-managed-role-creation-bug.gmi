@@ -13,3 +13,9 @@
 Users with `resource-owner` access should be able to create new roles to limit access to the resources they own at each resource's level.
 
 This seems to fail currently.
+
+## Notes
+
+### 2026-08-19
+
+Fixed. Awaiting deployment.
