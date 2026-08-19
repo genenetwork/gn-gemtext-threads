@@ -1,0 +1,15 @@
+# User-Managed Role Creation Bug
+
+## Tags
+
+* type: bug
+* status: open
+* priority: medium
+* assigned: fredm, zachs, acenteno
+* keywords: gn2, genenetwork2, auth, gn-auth
+
+## Description
+
+Users with `resource-owner` access should be able to create new roles to limit access to the resources they own at each resource's level.
+
+This seems to fail currently.
