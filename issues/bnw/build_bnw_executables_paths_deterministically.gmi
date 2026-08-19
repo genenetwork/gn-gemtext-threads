@@ -18,3 +18,8 @@ This issue, therefore, tracks 2 things:
 
 * [ ] Building the executables and installing them in a deterministic path
 * [ ] Checking for errors/failures running the scripts/executables from PHP
+
+There are subtle, but insidious assumptions that BNW makes, that break the application should something change, e.g.
+
+* that the application shall always be run in the repository root
+* ...
