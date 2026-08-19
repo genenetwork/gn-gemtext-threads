@@ -1,0 +1,92 @@
+# Bug: View Role Broken
+
+## Tags
+
+* type: bug
+* status: open
+* priority: medium
+* assigned: fredm, zachs, acenteno
+* keywords: gn2, genenetwork2, auth, gn-auth
+
+## Description
+
+The view role page is broken for certain roles
+
+To reproduce:
+
+* Go to https://genenetwork.org
+* Sign in
+* Go to your dashboard
+* Go to "Data Access and Management" section
+* Click on the "acenteno@uthsc.edu—BXD_Makowski—2026-04-15" resource
+* In the resource-view page, scroll down to the "Resource Data"/Roles/Users tabs
+* Click on the "Users" tab to view users with access to the resource
+* Click on any of the "resource-owner" or "hook-role-from-edu-domain" roles for any user
+* Observe the exception: `'sysauth' is undefined (error)`
+
+The full exception is as follows:
+
+```
+      GeneNetwork 3.12-rc1  https://genenetwork.org/oauth2/role/role/522e4d40-aefc-4a64-b7e0-768b8be517ee 
+Traceback (most recent call last):
+  File "/gnu/store/f6ci5zhix1kkig383gzapzx1l2xgicim-profile/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/f6ci5zhix1kkig383gzapzx1l2xgicim-profile/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/f6ci5zhix1kkig383gzapzx1l2xgicim-profile/lib/python3.11/site-packages/gn2/wqflask/oauth2/checks.py", line 75, in __token_valid__
+    return session.user_token().either(__redirect_to_login__, __with_token__)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/f6ci5zhix1kkig383gzapzx1l2xgicim-profile/lib/python3.11/site-packages/pymonad/either.py", line 89, in either
+    return right_function(self.value)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/f6ci5zhix1kkig383gzapzx1l2xgicim-profile/lib/python3.11/site-packages/gn2/wqflask/oauth2/checks.py", line 73, in __with_token__
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/f6ci5zhix1kkig383gzapzx1l2xgicim-profile/lib/python3.11/site-packages/gn2/wqflask/oauth2/roles.py", line 26, in role
+    return oauth2_get(f"auth/role/view/{role_id}").either(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/f6ci5zhix1kkig383gzapzx1l2xgicim-profile/lib/python3.11/site-packages/pymonad/either.py", line 91, in either
+    return left_function(self.monoid[0])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/f6ci5zhix1kkig383gzapzx1l2xgicim-profile/lib/python3.11/site-packages/gn2/wqflask/oauth2/request_utils.py", line 110, in request_error
+    return render_template("oauth2/request_error.html", response=response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/f6ci5zhix1kkig383gzapzx1l2xgicim-profile/lib/python3.11/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/f6ci5zhix1kkig383gzapzx1l2xgicim-profile/lib/python3.11/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/f6ci5zhix1kkig383gzapzx1l2xgicim-profile/lib/python3.11/site-packages/jinja2/environment.py", line 1301, in render
+    self.environment.handle_exception()
+  File "/gnu/store/f6ci5zhix1kkig383gzapzx1l2xgicim-profile/lib/python3.11/site-packages/jinja2/environment.py", line 936, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/gnu/store/f6ci5zhix1kkig383gzapzx1l2xgicim-profile/lib/python3.11/site-packages/gn2/wqflask/templates/oauth2/request_error.html", line 1, in top-level template code
+    {% extends "oauth2/base.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/f6ci5zhix1kkig383gzapzx1l2xgicim-profile/lib/python3.11/site-packages/gn2/wqflask/templates/oauth2/base.html", line 2, in top-level template code
+    {%from "oauth2/profile_nav.html" import profile_nav%}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/f6ci5zhix1kkig383gzapzx1l2xgicim-profile/lib/python3.11/site-packages/gn2/wqflask/templates/index_page.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/gnu/store/f6ci5zhix1kkig383gzapzx1l2xgicim-profile/lib/python3.11/site-packages/gn2/wqflask/templates/base.html", line 341, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/f6ci5zhix1kkig383gzapzx1l2xgicim-profile/lib/python3.11/site-packages/gn2/wqflask/templates/oauth2/base.html", line 6, in block 'content'
+    {{profile_nav(calling_page, sysauth, display)}}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/f6ci5zhix1kkig383gzapzx1l2xgicim-profile/lib/python3.11/site-packages/jinja2/runtime.py", line 777, in _invoke
+    rv = self._func(*arguments)
+         ^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/f6ci5zhix1kkig383gzapzx1l2xgicim-profile/lib/python3.11/site-packages/gn2/wqflask/templates/oauth2/profile_nav.html", line 45, in template
+    {%if sysauth.can_link_data %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gnu/store/f6ci5zhix1kkig383gzapzx1l2xgicim-profile/lib/python3.11/site-packages/jinja2/environment.py", line 485, in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'sysauth' is undefined
+```
+
+This is probably caused by changes to the way we check for privileges -- the `sysauth` object will need to be provided to the template(s) to avoid this error.
