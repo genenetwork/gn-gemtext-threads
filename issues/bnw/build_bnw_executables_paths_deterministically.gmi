@@ -1,0 +1,20 @@
+# Build BNW Executables' Paths Deterministically
+
+## Tags
+
+* type: bug
+* status: open
+* priority: high
+* assigned: fredm, pjotrp
+* keywords: bnw
+
+## Description
+
+As part of the BNW package, there are executables built from C code included in the package. These executables are then used by the BNW service to process some data and give results.
+
+Unfortunately, the BNW code assumes relative paths in both the PHP and shell scripts, some of which end up pointing to the wrong paths. These then fail, and PHP does not report the errors.
+
+This issue, therefore, tracks 2 things:
+
+* [ ] Building the executables and installing them in a deterministic path
+* [ ] Checking for errors/failures running the scripts/executables from PHP

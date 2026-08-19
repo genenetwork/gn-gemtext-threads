@@ -80,6 +80,15 @@ Testing the changes on local dev environment began.
 A number of minor and obvious bugs were fixed.
 
 Paths to executable that made assumption of specific system paths (e.g. /usr/bin/dot, /usr/bin/octave, etc) were identified and fixed in a more robust way.
+
+
+## 2026-08-19
+
+Use of relative paths for executables built as part of BNW leads to silently failing background scripts, i.e. the scripts fail to run due to wrong paths and PHP does not catch and report the failures, leading to failure(s) when the subsequent code attempts to access files it expects to have been created by the scripts but were not. The new issue below was created to track the fixes for this.
+
+=> issues/bnw/build_bnw_executables_paths_deterministically Build BNW Executables' Paths Deterministically
+
+
 ## Pending
 
 * [ ] Test locally using php server
