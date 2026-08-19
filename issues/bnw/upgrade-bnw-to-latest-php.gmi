@@ -14,6 +14,8 @@ The UTHSC IT department requested that we update BNW (Bayesian Network Webserver
 
 ## Notes
 
+### 2026-08-17
+
 Begin by identifying the parts that make up the service, i.e.
 
 * The source repositor(y/ies)
@@ -71,6 +73,13 @@ Unfortunately, none of these are defined in Guix. Instead, a Guix shell was setu
 Claude was used to generate patches, and the patches were manuall reviewed before applying and pushing.
 
 
+### 2026-08-18
+
+Testing the changes on local dev environment began.
+
+A number of minor and obvious bugs were fixed.
+
+Paths to executable that made assumption of specific system paths (e.g. /usr/bin/dot, /usr/bin/octave, etc) were identified and fixed in a more robust way.
 ## Pending
 
 * [ ] Test locally using php server
