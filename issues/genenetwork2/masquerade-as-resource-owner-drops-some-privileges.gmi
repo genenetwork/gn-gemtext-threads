@@ -3,7 +3,7 @@
 ## Tags
 
 * type: bug
-* status: open
+* status: closed, completed, fixed
 * priority: high
 * assigned: fredm, zachs, acenteno
 * keywords: gn2, genenetwork2, auth, gn-auth
@@ -27,3 +27,13 @@
   ```
 
 This bug is weird, in that it does not uniformly show up for all cases.
+
+After troubleshooting some more, this was caused by a subtle issue:
+
+A resource-owner who is also not a group-leader has the appropriate privileges to assign roles to users, but they do not have the appropriate privilege to list users. This was, originally, based on the idea that resources would be owned by user-groups rather than users -- this is not really true.
+
+The fix is to assign the `system:user:list` privilege to the `resource-owner` role itself to avoid this issue in the future.
+
+=> https://git.genenetwork.org/gn-auth/commit/?id=de5487f92ab60a10fa72458c1f4b421d4f0a2674 Here is the fix.
+
+The change above has been deployed and this issue can now be marked as closed.
