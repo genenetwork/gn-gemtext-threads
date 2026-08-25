@@ -3,7 +3,7 @@
 ## Tags
 
 * type: bug
-* status: open
+* status: closed, completed
 * priority: medium
 * assigned: fredm, zachs, acenteno
 * keywords: gn2, genenetwork2, auth, gn-auth
@@ -90,3 +90,8 @@ jinja2.exceptions.UndefinedError: 'sysauth' is undefined
 ```
 
 This is probably caused by changes to the way we check for privileges -- the `sysauth` object will need to be provided to the template(s) to avoid this error.
+
+
+### Update: 2026-08-25
+
+This was fixed with the last update.
