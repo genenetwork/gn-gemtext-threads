@@ -4,6 +4,7 @@
 * priority: high
 * status: to-do
 * deadline: <2026-01-08 Thur>
+* status: closed, completed
 
 ## Description
 

@@ -2,7 +2,7 @@
 
 * assigned: bonfacem
 * priority: high
-* status: to-do
+* status: closed, completed
 * deadline: <2026-01-07 Wed>
 
 ## Description
