@@ -3,7 +3,7 @@
 ## Tags
 
 * type: bug
-* status: open
+* status: closed, completed
 * priority: medium
 * assigned: fredm, zachs, acenteno
 * keywords: gn2, genenetwork2, auth, gn-auth
@@ -19,3 +19,7 @@ This seems to fail currently.
 ### 2026-08-19
 
 Fixed. Awaiting deployment.
+
+### 2026-08-20
+
+Deployed. This is fixed.
