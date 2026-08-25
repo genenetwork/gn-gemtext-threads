@@ -3,7 +3,7 @@
 ## Tags
 
 * type: bug
-* status: open
+* status: closed, completed, fixed
 * priority: high
 * assigned: zachs, fredm
 * keywords: gn2, genenetwork2, genenetwork 2, collections
