@@ -42,3 +42,10 @@ We break-out the issues above into separate pages to track the progress of the f
 
 => /issues/genenetwork3/ctl-maps-error
 => /issues/genenetwork3/generate-heatmaps-failing
+
+## Update: 2026-08-25
+
+* The "Partial Correlations" feature is fixed for this, and other pages.
+* The "MultiMap" feature seems to be subtly broken -- there is no error, but the resulting graph is mostly empty.
+* The CTL Feature is still broken.
+* The "Generate Heatmap" feature is still broken -- background terminal process fails.
