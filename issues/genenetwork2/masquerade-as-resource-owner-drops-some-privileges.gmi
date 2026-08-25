@@ -1,0 +1,29 @@
+# Masquerade: Masquerading as resource-owner Drops Some Privileges
+
+## Tags
+
+* type: bug
+* status: open
+* priority: high
+* assigned: fredm, zachs, acenteno
+* keywords: gn2, genenetwork2, auth, gn-auth
+
+## Description
+
+* Go to https://genenetwork.org/
+* Log in using one of the system-administrator users
+* Go to the "View Dashboard" page
+* Select "Masquerade As"
+* Select a user who has a 'resource-owner' privilege but is not a system-administrator
+* Click the "Masquerade" button to masquerade as that user
+* Now go to the user's dashboard
+* Go to "Data and Access Management" page
+* Click on one of the resources that the user is 'resource-owner' on
+* Scroll down to the "Resource Data" section
+* Select the "Users" tab
+* See errors like:
+  ```
+  Users:   UNAUTHORIZED: AuthorisationError ; You do not have the appropriate privileges to list users.
+  ```
+
+This bug is weird, in that it does not uniformly show up for all cases.
