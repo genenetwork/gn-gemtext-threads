@@ -187,7 +187,7 @@
                                 ("system_default_sect"
                                  ("Options" . "UnsafeLegacyRenegotiation")))))
         (setenv "REQUESTS_CA_BUNDLE"
-                #$(local-file "uthsc-certificate.pem"))
+                #$(local-file "uthsc-certificate-chain.pem"))
 
         ;; Force software rendering — forwarded X11 has no working GLX/GPU,
         ;; so QtWebEngine's Chromium GL init crashes without these.
