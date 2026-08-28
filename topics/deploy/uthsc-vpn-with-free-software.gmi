@@ -61,8 +61,9 @@ Then, run the openconnect-sso client as usual.
 ## Misconfigured UTHSC TLS certificate
 
 The UTHSC TLS certificate does not validate on some systems. You can work around this by downloading the certificate chain and adding it to your system:
-* Navigate with browser to https://vpn-server/. Inspect the certificate in the browser (lock icon next to search bar) and export .pem file
-* Move it to /usr/local/share/ca-certificates (with .crt extension) or equivalent
+* Navigate with browser to https://vpn-server/. Inspect the certificate in the browser (lock icon next to search bar) and export uthscvpn1-uthsc-edu-chain.pem file
+* On Debian/Ubuntu move it to /usr/local/share/ca-certificates (with .crt extension) or equivalent (you don't need to do this with the guix scm setup)
+* Check it with 'openssl x509 -in /etc/ssl/certs/uthscvpn1.uthsc.edu.pem -noout -text'
 * On Debian/Ubuntu update the certificate store with update-ca-certificates
 You should see
 ```
@@ -72,7 +73,7 @@ Updating certificates in /etc/ssl/certs...
 Thanks Niklas. See also
 => https://superuser.com/a/719047/914881
 
-However, adding certificates to your system manually is not good security practice. It is better to limit the added certificate to the openconnect process. You can do this using the REQUESTS_CA_BUNDLE environment variable like so:
+However, adding certificates to your system manually is not good security practice. It is better to limit the added certificate to the openconnect process (as we use with Guix). You can do this using the REQUESTS_CA_BUNDLE environment variable like so:
 ```
 REQUESTS_CA_BUNDLE=/path/to/uthsc/certificate.pem openconnect-sso --server vpn-server --authgroup UTHSC
 ```
@@ -99,6 +100,10 @@ Older versions would not show a proper dialog for sign-in. Try
 ```
 export QTWEBENGINE_CHROMIUM_FLAGS=--disable-seccomp-filter-sandbox
 ```
+
+## Certificate SSLError SSLCertVerificationError CERTIFICATE_VERIFY_FAILED
+
+If the certificate fails update it as described above for the PEM chain file - available through the webserver.
 
 ## Acknowledgement
 
