@@ -15,29 +15,29 @@
 
 * [ ] backup lizardfs
 * [ ] add new large storage to moosefs (machine is ready)
+* [ ] /export on octopus01 is RAID5 end of life, move it to octopus04
 * [ ] add lizard drives to moosefs
+* [ ] delete incomplete records on moosefs
 * [ ] work on speeding up moosefs using 10Gbs (@pjotrp)
 * - [ ] test network interfaces and switches (@pjotrp)
 
-## GN
+### GN
 
+* [ ] check backups and offline
 * [ ] secure RDF guile server(s)
 * [ ] Replace reaper with GEMMA
 * [ ] Fix apps and create system containers for herd services - see issues/systems/apps
 * [ ] Slurm+ravanan on production for GEMMA speedup
 * [ ] Embed R/qtl2 (Alex)
 
-## Octopus:
 
-* [X] Fix Tux05 badblocks on /dev/sdb2   1050624  47925247 46874624 22.4G Linux filesystem
-  - see add-boot-partition
-* [X] Copy linux partition on tux04, tux05, tux02 and test reboot
-* [X] moosefs on Tuxes
-* [X] Boot and install over network
-* [ ] Add synology to moosefs
+## Later
+
+### Octopus:
+
+* [ ] Add synology to moosefs?
 * [ ] Centralized user management system (no longer needed with distributed nodes?)
 * [ ] Monitor nodes
-* [ ] Check machines so they talk with each other over fiber
 
 ## Backups & storage:
 
@@ -66,5 +66,4 @@ Security:
 * - [ ] room on tux05-9 - each can hold 8 nvme - we have 20 slots
 * - [ ] octopus slots are full. There are some 10+ spinning disks and 2x smaller 1TB nvmes we can replace.
 * [ ] repurpose samsung drives with heatsink (@fredm)
-* [-] !!Organize pluto, update Julia and add apps to GN menu Jupyter notebooks
 * [-] get data from summer211 (access machine room)
