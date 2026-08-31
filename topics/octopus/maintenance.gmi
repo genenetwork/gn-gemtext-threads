@@ -1,5 +1,7 @@
 # Octopus/Tux maintenance
 
+See also tasks/machine-room
+
 ## To remember
 
 `fdisk -l` to see disk models

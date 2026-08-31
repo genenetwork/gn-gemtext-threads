@@ -11,41 +11,21 @@
 
 ## Short term
 
-* [ ] Tux02 and tux03 need cables to wire up 2nd PSUs
-* [ ] Octopi have 1 PSU only
-* [ ] Order drives. We have some caddies.
-* - [ ] add drives on 'tux03', then we'll need an additional 5 DXD9H caddies and 4 M.2-to-SATA adapters
-* - [ ] ample room on tux01 - can take old SSDs
-* - [ ] room on tux05-9 - each can hold 8 nvme - we have 20 slots
-* - [ ] octopus slots are full. There are some 10+ spinning disks and 2x smaller 1TB nvmes we can replace.
-* [ ] repurpose samsung drives with heatsink (@fredm)
-* [X] map out physical network layout in MR (@fredm)
-* [+] get disks from chenbro and rehost (@fredm)
-* [ ] work on speeding up moosefs (@pjotrp)
+### Octopus
+
+* [ ] backup lizardfs
+* [ ] add new large storage to moosefs (machine is ready)
+* [ ] add lizard drives to moosefs
+* [ ] work on speeding up moosefs using 10Gbs (@pjotrp)
 * - [ ] test network interfaces and switches (@pjotrp)
-* [ ] add storage server with spinning disks
-* - [X] put order in
-* - [+] install machine
-* [+] migrate GN production to tux04 (@fredm)
-* - [+] first remove Samsung PCIe (@fredm)
-* - [X] add RAID (@pjotrp)
-* [ ] remove P2 data flavia, hao, davida to make space for moose
 
 ## GN
 
 * [ ] secure RDF guile server(s)
-* [X] penguin2 has 90TB of space we can use on NFS/backups - they went on moosefs
 * [ ] Replace reaper with GEMMA
-* [X] Transfer nervenet.org to dnsimple
-* [X] Trait vectors for Johannes
-* [X] grub on tux04
-* [X] nft on tux04
-* [X] !!Xusheng jumpshiny services
 * [ ] Fix apps and create system containers for herd services - see issues/systems/apps
 * [ ] Slurm+ravanan on production for GEMMA speedup
 * [ ] Embed R/qtl2 (Alex)
-* [ ] Hoot in GN2 (Andrew)
-* [ ] tux02 certbot failing (manual now)
 
 ## Octopus:
 
@@ -77,54 +57,14 @@ Security:
 
 * [ ] Limit idrac access
 
-## Spice
-
-* [ ] Add 2nd boot partition on balg01
-* [ ] Add firewall test to sheepdog
-
 ## Maybe
 
+* [ ] remove P2 data flavia, hao, davida to make space for moose
+* [ ] Order drives. We have some caddies.
+* - [ ] add drives on 'tux03', then we'll need an additional 5 DXD9H caddies and 4 M.2-to-SATA adapters
+* - [ ] ample room on tux01 - can take old SSDs
+* - [ ] room on tux05-9 - each can hold 8 nvme - we have 20 slots
+* - [ ] octopus slots are full. There are some 10+ spinning disks and 2x smaller 1TB nvmes we can replace.
+* [ ] repurpose samsung drives with heatsink (@fredm)
 * [-] !!Organize pluto, update Julia and add apps to GN menu Jupyter notebooks
 * [-] get data from summer211 (access machine room)
-
-## Done
-
-* [X] add SSD to tux03 (@fredm)
-* [X] describe machines with Rick Stripes
-* [X] get bacchus back on line
-* [X] fix www.genenetwork.org and gn2.genenetwork.org https
-* [X] VPN access and FoUT
-* [X] lambda: get fiber working
-* [X] lambda: add to Octopus HPC
-* [X] lambda: racked up and runs
-* [X] lambda: add network (Roger)
-    link/ether 7c:c2:55:11:9c:ac brd ff:ff:ff:ff:ff:ff
-    inet 172.23.18.212/21 brd 172.23.23.255 scope global dynamic eno1
-* [X] lambda: get service tag Tamara (with Erik?)
-* [X] lambda: install ubuntu (with Erik)
-* [X] Order storage and caddies (w. Tamara)
-* [X] Spice: Firewall out of band
-* [X] Spice: Add storage
-* [X] Tux01 and Tux02 disk space issues
-* [X] Reinstate backup drops on tux02, rabbit, &space and &epysode; reduce incoming IP
-* [X] Pluto tool with Zach & Efraim
-* [X] Order drives and caddies tux01 & tux02 (with @haoc)
-* [X] Introduce &disk space and mdstat monitor
-* [X] Machine room HDDs
-* [X] decommission/surplus out-racked machines (whith @arthurc)
-      + see also ../issues/systems/decommission-machines.gmi
-* [X] Install tux04-tux09
-* [X] tux04 and tux05 give errors
-* [X] use fiber optics for subnet Octopus and Tuxes
-* [X] Octopus11 has no fiber
-* [X] tux06 has temp fiber
-* [X] tux07 has no fiber
-* [X] tux08 has no fiber
-* [X] tux09 has no fiber
-### Lambda
-* [X] remote access? (with Erik)
-  * [X] get BMC password
-* [X] space server out-of-band access
-### Spice
-* [X] Run GN off balg01
-* [X] Convert balg02 to Guix server
