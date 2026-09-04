@@ -2,11 +2,12 @@
 
 ## Tags
 
-* assigned: fredm
+* assigned: fredm, zachs, acenteno
 * priority: medium
-* keywords: gn-uploader, uploader, data, datasets, genotypes
+* keywords: gn-uploader, uploader, data, data upload, genotypes
 * status: open
 * type: feature request, feature-request
+
 
 ## Description
 
@@ -16,23 +17,83 @@ After the genotypes are successfully uploaded, then a number of extra steps need
 
 * Run some data precomputation scripts, e.g. QTLReaper, …
 * Pass data to @zachs to generate Genenetwork-spefic genotype files (i.e. =genotype/*.geno=, =genotype/*.json=, =bimbam/*.txt=, etc)
-* Pass generated files to @fredm for upload to productio
+* Pass generated files to @fredm for setup in production (automate this if possible)
 
-The following will be the main tasks under this feature:
+This issue will track the overall design and implementation of the feature, linking to other issues as necessary.
 
-### TODO Error-Checking
+### Input Data Formats
 
-Catch obvious data errors, e.g. encoding errors, unspecified alleles, etc.
+Currently, genotype data can be provided to us (i.e. @acenteno and @zachs) in the following formats:
 
-### TODO Run Pre-Compute Scripts
+* Character-separated values (CSV) format very close to the custom .geno format
+* BIMBAM format
+* VCF Format
+* R/qtl2 format
 
-when data passes initial QC and is uploaded successfully, run various pre-compute scripts needed to generate data for Genenetwork, e.g. QTLReaper, etc
+There is a huge host of file formats that can hold genotype information — we cannot hope to implement parsing for all of them. Instead, we need to only consider one or two main formats, then convert everything else into th(at/ose) main format(s).
 
-### TODO Generate Genenetwork-Specific Genotype files
+
+### Data Processing
+
+The uploaded files will need to parsed from the input formats previously, and the data translated into the storage formats mentioned above.
+
+Our order of implementation for the data parsing will be as follows:
+
+To start with, we can look into building a parser for any and all CSV-compatible formats (e.g. R/qtl2, plain CSV files, Excel files, etc). We can then implement parsing of **.vcf.gz** files, and convert all other formats to that.
+
+**TODO**: This implies some method of detecting the type of file, classifying it and figuring out how to parse it to extract the relevant data.
+
+
+#### Data Ingestion
+
+The ingestion phase thus becomes something like:
+
+* 01. User uploads a file of unknown provenance.
+* 02. Detect type of file.
+* 03. If file is `.vcf.gz` go to step 07.
+* 04. If file is CSV-compatible (plain CSV, BIMBAM, R/qtl2, etc) go to 08.
+* 05. If file is neither of the above check whether it's a known format that can be converted to `.vcf.gz` go to step 09
+* 06. If file fails all checks (steps 03 to 05), exit immediately with a lot of fussing.
+* 07. Parse the `.vcf.gz` then go to step 10.
+* 08. Parse the CSV-compatible file then go to step 10.
+* 09. Convert the file to `.vcf.gz` then go to step 07.
+* 10. Convert data to internal, intermediate representation.
+* 11. Send intermediate representation into QC phase
+
+To detect the file types we could make use of mime types and magic bytes rather than file extensions that could be easily changed.
+
+Conversion from other formats, e.g. PLINK, BGEN, etc. into `.vcf.gz` could be done via subprocess using CLI tools like plink and/or bcftools (look them up).
+
+
+#### TODO Quality Control: Error-Checking
+
+Catch obvious data errors, e.g.
+
+* encoding errors,
+* unspecified alleles,
+* samples mismatch (samples in file that do not exist in the DB)
+⋮
+* etc.
+
+
+### Storage Formats
+
+Data is stored in
+
+* Relational (SQL) database
+* Custom .geno files
+* Custom .json files to track different .geno files necessary for different datasets
+
+*** TODO: Link to the .geno and .json file formats used internally by GeneNetwork ***
+
+
+#### TODO Generate Genenetwork-Specific Genotype files
 
 Replace most of the manual effort @zachs is forced to do. This can have a curation step where @zachs can look over the results to verify results.
 
-### TODO Setup Generated, Genenetwork-Specific Genotype Files
+We store R/qtl2, BIMBAM and the custom .geno formats.
+
+#### TODO Setup Generated, Genenetwork-Specific Genotype Files
 
 Put the files in (a) specified directorie(s) where various services in the Genenetwork system can find them.
 
@@ -41,3 +102,13 @@ This will involve changing the deployment system in the following ways:
 * Have a (set of) director(y/ies) where the generated genotype files are stored in
 * This (set of) director(y/ies) will be writable **ONLY** by the =gn-uploader= service
 * This (set of) director(y/ies) will be shared with all the other services that make up the Genenetwork service that need the genotype files, but those services will only be able to read the genotype files, not write to them, or the (set of) director(y/ies) containing them.
+
+
+#### TODO Run Pre-Compute Scripts
+
+When data passes initial QC, is uploaded successfully and setup correctly in the database and files, we need to then run various pre-compute scripts needed to generate data for Genenetwork, e.g. QTLReaper, GEMMA, etc
+
+
+## Links
+
+=> https://uploader.genenetwork.org/ 1. gn-uploader: The GeneNetwork Data Uploader
