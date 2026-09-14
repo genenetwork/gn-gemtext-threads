@@ -13,9 +13,30 @@ Singularity vsoch-hello-world-master-latest.simg:~> hello
 bash: hello: command not found
 Singularity vsoch-hello-world-master-latest.simg:~>
 Display all 727 possibilities? (y or n)
+Singularity vsoch-hello-world-master-latest.simg:~> less -V
+less 458 (GNU regular expressions)
+Copyright (C) 1984-2012 Mark Nudelman
 Singularity vsoch-hello-world-master-latest.simg:~> cat /etc/issue
 Ubuntu 14.04.6 LTS \n \l
 ```
+
+Note that the `less -V` is likely older than on your system! Check the versions.
+
+```
+/usr/local/bin/singularity pull shub://vsoch/hello-world
+Progress |===================================| 100.0%
+/usr/local/bin/singularity exec vsoch-hello-world-master-latest.simg less -V
+less 458 (GNU regular expressions)
+Copyright (C) 1984-2012 Mark Nudelman
+```
+
+will run the singularity version. Now to see if slurm works:
+
+```
+/usr/local/bin/srun -N 1 --mem=32G --pty /bin/bash
+```
+
+And it should work. If you get an error like 'ERROR  : Home directory is not owned by calling user: /' it means we need to add a user account on octopus.
 
 # Create singularity image from guix package
 

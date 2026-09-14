@@ -59,8 +59,7 @@ cat /proc/mounts
 dmesg | tail -50
 ```
 
-To put it back into service (once you're satisfied the node is clean):
-bash
+To put a drained node back into service (once you're satisfied the node is clean):
 
 ```
 scontrol update NodeName=octopus10 State=resume
