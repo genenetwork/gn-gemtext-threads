@@ -34,9 +34,12 @@ will run the singularity version. Now to see if slurm works:
 
 ```
 /usr/local/bin/srun -N 1 --mem=32G --pty /bin/bash
+/usr/local/bin/singularity exec --no-home vsoch-hello-world-master-latest.simg less -V
+less 458 (GNU regular expressions)
+Copyright (C) 1984-2012 Mark Nudelman
 ```
 
-And it should work. If you get an error like 'ERROR  : Home directory is not owned by calling user: /' it means we need to add a user account on octopus.
+And it should work. If you get an error like 'ERROR: Home directory is not owned by calling user: /' it means we need to add a user account on octopus (uid in /etc/passwd on each node)
 
 # Create singularity image from guix package
 
