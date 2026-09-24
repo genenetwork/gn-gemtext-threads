@@ -3,6 +3,20 @@
 This document closely mirrors the official upgrade guide. The official upgrade guide is very thorough. Please refer to it and update this document if something is not clear.
 => https://slurm.schedmd.com/upgrades.html Official slurm upgrade guide
 
+Slurm consists of a number of tools:
+
+Munge (MUNGE Uid 'N' Gid Emporium) is the authentication service Slurm uses by default to verify that messages between daemons (and between users and daemons) actually come from who they claim to come from — without needing passwords or Kerberos.
+
+Every slurmd (on compute nodes), slurmctld (on the controller - still octopus01), slurmdbd (accounting), and every user command (srun, sbatch, squeue, etc.) calls the local munged daemon to encode/sign a credential before sending a request, and to decode/verify a credential it receives.
+
+slurmctld is the central controller daemon — the brain of the cluster. Runs on one node (the "controller" or "head" node, sometimes an active/backup pair for HA).
+
+slurmdbd — the Slurm Database Daemon. Runs on one node (often the same as the controller, but can be separate), and sits between slurmctld and a MySQL/MariaDB backend.
+
+slurmrestd is the Slurm REST API daemon. It's not required for basic cluster operation (resume/scheduling/job execution work fine without it) — it's an optional add-on that exposes Slurm's functionality over HTTP/JSON instead of requiring the command-line tools or C API.
+
+So, the nodes run munge and slurmd. The rust runs on the controller (here).
+
 ## Preparation
 
 It is possible to upgrade slurm in-place without upsetting running jobs. But, for our small cluster, we don't mind a little downtime. So, it is simpler if we schedule some downtime with other users and make sure there are no running jobs.
@@ -13,6 +27,7 @@ slurm can only be upgraded safely in small version increments. For example, it i
 ## Backup
 
 Stop the slurmdbd, slurmctld and slurmd services.
+
 ```
 # systemctl stop slurmdbd slurmctld slurmd slurmrestd
 ```
@@ -45,12 +60,41 @@ Make any configuration file changes outlined in RELEASE_NOTES. Next, run the slu
 # sudo -u slurm slurmdbd -D
 ```
 Reload the new systemd configuration files. Then, start the slurmdbd, slurmctld and slurmd services one at a time ensuring that each starts up correctly before proceeding on to the next.
+
 ```
 # systemctl daemon-reload
 # systemctl start slurmdbd
 # systemctl start slurmctld
 # systemctl start slurmd
 # systemctl start slurmrestd
+```
+
+Basically the binaries are running from /usr/local/bin and /usr/local/sbin. A systemd should look like:
+
+```
+cat /lib/systemd/system/slurmd.service
+
+[Unit]
+Description=Slurm node daemon
+After=munge.service network.target remote-fs.target
+ConditionPathExists=/etc/slurm/slurm.conf
+Documentation=man:slurmd(8)
+
+[Service]
+Type=forking
+EnvironmentFile=-/etc/default/slurmd
+ExecStart=/usr/local/sbin/slurmd $SLURMD_OPTIONS
+ExecReload=/bin/kill -HUP $MAINPID
+PIDFile=/run/slurm/slurmd.pid
+KillMode=process
+LimitNOFILE=131072
+LimitMEMLOCK=infinity
+LimitSTACK=infinity
+Delegate=yes
+TasksMax=infinity
+
+[Install]
+WantedBy=multi-user.target
 ```
 
 ## Upgrade slurm on the worker nodes

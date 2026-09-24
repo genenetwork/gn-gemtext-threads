@@ -30,7 +30,7 @@ Reviving draining node (as root)
 ```
 scontrol update NodeName=octopus05 State=DOWN Reason="undraining"
 scontrol update NodeName=octopus05 State=RESUME
-scontrol show node octopus05
+scontrol show node octopus05p
 ```
 
 Kill time can lead to drain state

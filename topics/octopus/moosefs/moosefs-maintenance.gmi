@@ -12,7 +12,7 @@ For *labels* we have an R class for redundant (very slow) SSDs. So, S=SSD, H=HDD
 
 # Commands
 
-To check moosefs we use mfscli. Load the alias/paths with
+To check moosefs we use mfscli. As a normal user load the alias/paths with
 
 ```
 source /export/octopus/manage/user/profile
