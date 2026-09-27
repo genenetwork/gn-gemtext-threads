@@ -16,7 +16,7 @@
              ((gnu packages guile-xyz) #:select (guile-ini guile-lib guile-smc))
              ((gnu packages qt) #:select (python-pyqt-6 python-pyqtwebengine-6))
              ((gnu packages vpn) #:select (openconnect vpn-slice))
-             ((gnu packages xml) #:select (python-lxml-4.9))
+             ((gnu packages xml) #:select (python-lxml))
              (guix build-system pyproject)
              (guix build-system python)
              (guix download)
@@ -96,6 +96,28 @@
      (modify-inputs (package-propagated-inputs python-requests)
        (replace "python-charset-normalizer" python-charset-normalizer-2.10)
        (replace "python-urllib3" python-urllib3-1.26)))))
+
+(define-public python-lxml-4.9
+  ;; removed from guix in commit d45b0d2. Copied here to keep build sane.
+  (hidden-package
+   (package
+     (inherit python-lxml)
+     (name "python-lxml")
+     (version "4.9.4")
+     (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "lxml" version))
+        (sha256
+         (base32 "03l86qr5xzvz0jcbk669sj8nbw1fjshmf0b7l83gl5cfnx81wm5i"))))
+     (arguments
+      (list #:tests? #f                 ;some tests fail with newer libxml2
+            #:phases
+            #~(modify-phases %standard-phases
+                (add-after 'unpack 'relax-gcc-14-strictness
+                  (lambda _
+                    (setenv "CFLAGS"
+                            "-Wno-error=incompatible-pointer-types")))))))))
 
 (define-public openconnect-sso
   (package
