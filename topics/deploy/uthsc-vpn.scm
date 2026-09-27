@@ -1,4 +1,6 @@
 ;; $(guix build -f uthsc-vpn.scm)
+;;
+;; Update this ==> 2026-09-27: Known working guix commit: 825f0743
 
 (use-modules ((gnu packages check)
               #:select (python-pytest python-pytest-asyncio python-pytest-httpserver))
