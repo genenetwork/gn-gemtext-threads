@@ -3,13 +3,13 @@
 (use-modules ((gnu packages check)
               #:select (python-pytest python-pytest-asyncio python-pytest-httpserver))
              ((gnu packages freedesktop) #:select (python-pyxdg))
-             ((gnu packages python-build) #:select (python-poetry-core python-toml))
+             ((gnu packages python-build) #:select (python-poetry-core python-toml python-colorama))
              ((gnu packages python-crypto)
               #:select (python-keyring python-pyotp))
              ((gnu packages python-web) #:select (python-requests python-urllib3))
              ((gnu packages python-xyz)
               #:select (python-attrs python-charset-normalizer
-                                     python-colorama python-prompt-toolkit python-pysocks
+                                     python-prompt-toolkit python-pysocks
                                      python-structlog))
              ((gnu packages guile-xyz) #:select (guile-ini guile-lib guile-smc))
              ((gnu packages qt) #:select (python-pyqt-6 python-pyqtwebengine-6))
