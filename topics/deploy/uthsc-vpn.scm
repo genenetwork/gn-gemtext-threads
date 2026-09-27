@@ -3,7 +3,9 @@
 (use-modules ((gnu packages check)
               #:select (python-pytest python-pytest-asyncio python-pytest-httpserver))
              ((gnu packages freedesktop) #:select (python-pyxdg))
-             ((gnu packages python-build) #:select (python-poetry-core python-toml python-colorama))
+             ((gnu packages python-build)
+              #:select (python-poetry-core python-toml python-colorama
+                                           python-wheel python-setuptools))
              ((gnu packages python-crypto)
               #:select (python-keyring python-pyotp))
              ((gnu packages python-web) #:select (python-requests python-urllib3))
@@ -74,10 +76,7 @@
         (base32 "04zlajr77f6c7ai59l46as1idi0jjgbvj72lh4v5wfpz2s070pjp"))))
     (build-system python-build-system)
     (arguments
-     (list #:tests? #f))
-    (native-inputs
-     (modify-inputs (package-native-inputs python-charset-normalizer)
-       (delete "python-setuptools")))))
+     (list #:tests? #f))))
 
 (define python-requests-2.28
   (package
@@ -92,7 +91,7 @@
                 "10vrr7bijzrypvms3g2sgz8vya7f9ymmcv423ikampgy0aqrjmbw"))))
     (build-system python-build-system)
     (arguments (list #:tests? #f))
-    (native-inputs (list))
+    (native-inputs (list python-setuptools))
     (propagated-inputs
      (modify-inputs (package-propagated-inputs python-requests)
        (replace "python-charset-normalizer" python-charset-normalizer-2.10)
