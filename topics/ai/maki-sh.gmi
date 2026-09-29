@@ -1,0 +1,23 @@
+# Maki.sh
+
+```
+mkdir workdir && cd workdir
+mkdir -p $HOME/.local $HOME/.config/maki
+
+guix shell -C -N -F gzip ncurses which findutils gawk tmux curl ripgrep fzf guix guile ruby python bash openssl nss-certs coreutils grep sed jq git rust rust:cargo tar --share=$HOME/.local --share=$HOME/.config/maki --share=$HOME/tmp=/tmp --share=/var/guix/daemon-socket/ --expose=/gnu/store
+
+curl -fsSL https://maki.sh/install.sh | sh
+```
+
+```
+https://github.com/pjotrp/vcflib.git
+export OPENROUTER_API_KEY=your-key-here
+maki
+```
+
+or set a key with
+
+```
+maki auth login
+maki
+```
