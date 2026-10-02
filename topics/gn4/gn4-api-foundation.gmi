@@ -1,0 +1,143 @@
+# GN4 API Foundation: Design and Migration Plan
+
+## Tags
+
+* Assigned: alexm,
+* Keywords: GN4, API, OpenAPI, Rust, MCP, LLM, Design
+* Type: Enhancements,
+* Status: In Progress
+
+
+
+## Description
+
+This document is the design note for the genenetwork4 (gn4) API
+foundation: the Rust/axum API server that makes GN data discoverable to
+LLMs (and humans) via REST, described by an OpenAPI v3 spec.
+
+=> https://www.openapis.org/what-is-openapi OpenAPI specification
+
+The gn4 repo:
+
+=> https://git.genenetwork.org/genenetwork4/
+
+Assignments for the follow-up items live in the issue tracker:
+
+=> https://issues.genenetwork.org GN issue tracker
+
+## Decisions
+
+1. No separate "API for AI". One new API serves both humans and LLMs;
+   existing gn3 REST APIs are maintained as long as needed, then
+   retired.
+2. The API is described by an OpenAPI v3 spec (petstore v3.0 is the
+   reference example), kept as the source of truth next to the code.
+3. Responses must be descriptive: success carries next actions ("list",
+   "drill down"); errors carry suggestions.
+4. Rust first, because AI coding agents make fewer subtle mistakes with
+   the borrow checker and strict typing. Tests in Python. PyO3
+   bindings where necessary. This is an experiment: if it fails we
+   revert to Python.
+5. The MCP server runs in its own container as the LLM-facing layer
+   over the same REST endpoints.
+
+## Foundation structure
+
+```
+genenetwork4/
+├── openapi.yaml            <- source of truth for the API surface
+├── src/
+│   ├── main.rs             <- thin binary: config, bind, serve
+│   ├── lib.rs              <- app() router; registry of route modules
+│   ├── config.rs           <- layered: defaults -> GN4_CONF -> GN4_SECRETS
+│   ├── response.rs         <- the descriptive envelope (below)
+│   └── routes/             <- one module per gn3 API domain
+│       ├── search.rs
+│       ├── correlation.rs
+│       └── ...
+├── tests/                  <- Rust in-process router tests
+├── test/python/            <- Python tests over real HTTP (1:1 mirror)
+└── guix.scm, rust-package.scm
+```
+
+Rules:
+
+- One response envelope everywhere. Success: data + next actions.
+  Error: message + suggestions. Never ad-hoc JSON per endpoint.
+- Every endpoint ships as a pair: Rust in-process test + Python test
+  over real HTTP. Clients of the API are not all Rust.
+- openapi.yaml and routes must never drift; a test validates them
+  against each other.
+- Build is reproducible: vendored crates via rust-package.scm
+  (guix import crate -f Cargo.lock genenetwork4), cargo-build-system,
+  Python REST tests run in the Guix check phase.
+
+## Migration pattern: proxy -> native
+
+gn4 does NOT reimplement gn3 endpoints up front. Each endpoint starts
+as a thin Rust handler that proxies gn3's Flask endpoint and re-wraps
+the result in the descriptive envelope. Endpoints then go native one at
+a time, hottest/most-LLM-used first.
+
+```
+client -> gn4 (OpenAPI, descriptive)
+             |-- native: implemented in Rust
+             `-- proxy:  HTTP -> gn3 blueprint -> rewrap
+```
+
+This keeps the LLM-facing contract stable while implementations move,
+and avoids a big-bang rewrite. During transition two APIs run, but only
+one is being written.
+
+## Pilot: search
+
+First endpoint is /api/v2/search:
+
+- Phase A: proxy to gn3 /api/search; exercise OpenAPI + envelope on
+  real data immediately.
+- Phase B: native on the improved xapian index as it lands.
+
+The NL->xapian model becomes a tool in the MCP layer; the
+HS-rats/BXD question-answer corpus becomes the search-quality test set.
+Owners for both are tracked in the issue tracker.
+
+## Rust scope and the PyO3 seam
+
+Rust owns the API surface AND the compute. PyO3 is the seam, both
+directions:
+
+- cdylib FFI: gn3 calls gn4 compute functions directly. Replaces the
+  old subprocess pattern (calling Rust binaries via python's system),
+  which was a bad idea in hindsight - agreed.
+- embedding: a Rust endpoint can reuse gn3 Python logic while we
+  migrate.
+
+If the Rust experiment fails, the PyO3 seam is exactly where the
+revert-to-Python swap happens without losing endpoints.
+
+## Roadmap / priority list
+
+- [x] gn4 repo skeleton, guix packaging, Rust+Python test discipline
+- [ ] config.rs (layered config like gn3: GN4_CONF, GN4_SECRETS)
+- [ ] response.rs (descriptive envelope) + error type with suggestions
+- [ ] openapi.yaml for /version + /search + validation test
+- [ ] /api/v2/search phase A: proxy gn3 search, envelope, tests
+- [ ] foundation email to the "AI API" thread; daily reports resume
+- [ ] /api/v2/correlation: lift the proven correlation_rust engine in
+- [ ] mapping figures: tighten POST+hash mechanism; searchable image
+      cache (assigned in the issue tracker)
+- [ ] MCP server container wrapping the REST endpoints
+- [ ] next domains by LLM usage: sampledata, metadata, lmdb traits
+
+## Guardrails for AI-assisted coding
+
+AI agents write much of the code; these guardrails keep that from
+spiralling. gn4 specifics:
+
+=> ../ai/vibe-coding-guardrails.gmi Guardrails for AI-assisted coding
+
+## Open questions
+
+- Exact proxy auth path between gn4 and gn3 (shared secret? loopback
+  only?) - gn3 precedent exists from earlier work.
+- Bind address: dev binds 0.0.0.0 today; restrict before deploy.

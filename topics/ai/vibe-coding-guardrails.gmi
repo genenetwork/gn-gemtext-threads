@@ -1,0 +1,27 @@
+# Guardrails for AI-assisted coding
+
+AI agents write much of the code; humans direct, review, and verify.
+These guardrails keep that from spiralling; first applied in
+genenetwork4:
+
+=> ../gn4/gn4-api-foundation.gmi GN4 API foundation
+
+1. Tests are the gate. An endpoint does not exist until its Rust test
+   AND its mirrored Python test pass. Agents must generate the test
+   with (or before) the endpoint - never after.
+2. guix build -L . -f guix.scm is the canonical build. If the vendored
+   crates (rust-package.scm) drift from Cargo.lock, the build fails
+   loudly instead of quietly downloading new code.
+3. Spec-first. openapi.yaml changes land in the same commit as the
+   route; the validation test makes drift impossible to merge.
+4. One envelope. response.rs is the only way to return data; agents
+   cannot invent per-endpoint JSON shapes.
+5. Small commits, one endpoint at a time. The proxy -> native pattern
+   keeps every change reversible.
+6. No new dependencies without a human ok. Each new crate must be
+   vendored deliberately (guix import crate), so dependency growth is
+   visible in review.
+7. Typed everything. serde structs for every payload; no raw stringly
+   JSON. The compiler plus the envelope types catch agent mistakes at
+   build time - this is exactly why Rust was chosen.
+
