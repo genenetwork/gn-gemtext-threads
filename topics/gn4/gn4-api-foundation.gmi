@@ -2,7 +2,7 @@
 
 ## Tags
 
-* Assigned: alexm,
+* Assigned: alexm, pjotrp (gemma)
 * Keywords: GN4, API, OpenAPI, Rust, MCP, LLM, Design
 * Type: Enhancements,
 * Status: In Progress
@@ -32,6 +32,7 @@ Assignments for the follow-up items live in the issue tracker:
    retired.
 2. The API is described by an OpenAPI v3 spec (petstore v3.0 is the
    reference example), kept as the source of truth next to the code.
+   The spec is openapi.json (JSON, not YAML - Pjotr prefers JSON).
 3. Responses must be descriptive: success carries next actions ("list",
    "drill down"); errors carry suggestions.
 4. Rust first, because AI coding agents make fewer subtle mistakes with
@@ -45,7 +46,7 @@ Assignments for the follow-up items live in the issue tracker:
 
 ```
 genenetwork4/
-├── openapi.yaml            <- source of truth for the API surface
+├── openapi.json            <- source of truth for the API surface
 ├── src/
 │   ├── main.rs             <- thin binary: config, bind, serve
 │   ├── lib.rs              <- app() router; registry of route modules
@@ -66,7 +67,7 @@ Rules:
   Error: message + suggestions. Never ad-hoc JSON per endpoint.
 - Every endpoint ships as a pair: Rust in-process test + Python test
   over real HTTP. Clients of the API are not all Rust.
-- openapi.yaml and routes must never drift; a test validates them
+- openapi.json and routes must never drift; a test validates them
   against each other.
 - Build is reproducible: vendored crates via rust-package.scm
   (guix import crate -f Cargo.lock genenetwork4), cargo-build-system,
@@ -88,6 +89,27 @@ client -> gn4 (OpenAPI, descriptive)
 This keeps the LLM-facing contract stable while implementations move,
 and avoids a big-bang rewrite. During transition two APIs run, but only
 one is being written.
+
+## Endpoint rollout plan [agreed 2026-10-02]
+
+Pjotr (Re: AI API): "We should start with search and/or correlations.
+I'll do gemma. Make a plan."
+
+Order of work, structure first, then endpoints proxy -> native:
+
+1. Foundation structure - Alex. The axum router skeleton, one module
+   per gn3 API domain, config.rs, response.rs, openapi.json, the
+   test-pair discipline. Nothing endpoint-specific ships before this
+   exists (this is item "1. FOUNDATION" of the plan email).
+2. search - Alex + Johannes. Proxy phase A now (see below), native
+   on the improved xapian index as it lands.
+3. correlations - Alex. Lift the proven correlation_rust engine in
+   through the PyO3 seam; cdylib FFI replaces the old subprocess
+   pattern.
+4. gemma - Pjotr. Coordinates at the OpenAPI-spec level; the
+   envelope + proxy/native pattern is his contract.
+5. then: mapping figures, MCP server container, next domains by LLM
+   usage (sampledata, metadata, lmdb traits).
 
 ## Pilot: search
 
@@ -120,7 +142,7 @@ revert-to-Python swap happens without losing endpoints.
 - [x] gn4 repo skeleton, guix packaging, Rust+Python test discipline
 - [ ] config.rs (layered config like gn3: GN4_CONF, GN4_SECRETS)
 - [ ] response.rs (descriptive envelope) + error type with suggestions
-- [ ] openapi.yaml for /version + /search + validation test
+- [ ] openapi.json for /version + /search + validation test
 - [ ] /api/v2/search phase A: proxy gn3 search, envelope, tests
 - [ ] foundation email to the "AI API" thread; daily reports resume
 - [ ] /api/v2/correlation: lift the proven correlation_rust engine in
@@ -134,7 +156,7 @@ revert-to-Python swap happens without losing endpoints.
 AI agents write much of the code; these guardrails keep that from
 spiralling. gn4 specifics:
 
-=> ../ai/vibe-coding-guardrails.gmi Guardrails for AI-assisted coding
+=> ../ai/agentic-coding-guardrails.gmi Guardrails for agentic coding
 
 ## Open questions
 

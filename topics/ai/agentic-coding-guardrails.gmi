@@ -1,4 +1,4 @@
-# Guardrails for AI-assisted coding
+# Guardrails for agentic coding
 
 AI agents write much of the code; humans direct, review, and verify.
 These guardrails keep that from spiralling; first applied in
@@ -12,7 +12,7 @@ genenetwork4:
 2. guix build -L . -f guix.scm is the canonical build. If the vendored
    crates (rust-package.scm) drift from Cargo.lock, the build fails
    loudly instead of quietly downloading new code.
-3. Spec-first. openapi.yaml changes land in the same commit as the
+3. Spec-first. openapi.json changes land in the same commit as the
    route; the validation test makes drift impossible to merge.
 4. One envelope. response.rs is the only way to return data; agents
    cannot invent per-endpoint JSON shapes.
