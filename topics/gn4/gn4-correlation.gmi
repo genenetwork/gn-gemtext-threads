@@ -1,0 +1,74 @@
+# GN4 Correlation endpoint
+
+## Tags
+
+* Assigned: alexm
+* Keywords: GN4, correlation, correlation_rust, LMDB, OpenAPI
+* Type: Enhancements
+* Status: In Progress
+
+
+
+## Description
+
+Design note for the gn4 correlation endpoint: sample correlations
+served to LLMs (via the MCP wrapper) and humans, described by the
+OpenAPI spec, wrapped in the descriptive envelope.
+
+## What a caller looks like
+
+```
+Rob in Claude web
+  |  "correlate this trait against the BXD liver dataset"
+  v
+MCP server (thin wrapper over the REST API)
+  |  tool call -> HTTP
+  v
+gn4  POST /api/v2/correlation
+  |  1. resolves identifiers -> SQL against db_webqtl
+  |  2. calls correlation_rust IN-PROCESS (no gn3, no subprocess)
+  v
+envelope JSON: {data: [...], next: [...]}
+  v
+Claude reads it, shows Rob a table, suggests the next question
+```
+
+## Decisions
+
+1. Engine: correlation_rust at HEAD (a3853fb), consumed as a Guix
+   package with a git origin (commit + hash), matching the
+   gn-rust-correlation pattern -- `guix import crate` does not handle
+   git deps. Cargo-side git dep (rev-pinned, never a branch) for
+   local dev only; the two pins must match. rust-package.scm
+   regenerated for the new dep tree (lmdb, rayon; C libs GSL, lmdb).
+2. Integration: the engine is compiled INTO the gn4 binary --
+   in-process function call, no subprocess, no gn3 in the path.
+   Heavy computations run on the blocking pool behind a bounded
+   semaphore: unlimited concurrent 2M-trait correlations would
+   starve tokio.
+3. Correctness contract: canonical numbers are what users see today
+   (gn3's compute_all_sample_correlation, pure Python). Golden tests
+   pin engine output against it BEFORE any engine refactor. The
+   oracle runs once, by hand, to freeze expected outputs as committed
+   fixture files; tests compare engine vs fixtures -- deterministic,
+   and runnable in the offline guix build sandbox. If numbers ever
+   legitimately change, the fixture diff is the review point.
+4. Phasing: Phase A = temp-JSON contract (zero engine changes).
+   Phase B = direct vectors, after golden tests. Proxy-first
+   considered and rejected: engine lift is already agreed with
+   Pjotr, and a proxy would only re-wrap gn3's own
+   subprocess-of-subprocess path.
+5. Data plumbing: gn4 owns the SQL that gn2 does today
+   (ProbeSetFreeze/XRef/Data, PublishData, StrainXRef). Row/sample
+   alignment with the trait's x_vals must be exact or every
+   correlation is plausible-looking garbage -- the SQL gets its own
+   test against a trait with known values. LMDB trait store = fast
+   path for sample correlations, skipping the SQL at query time.
+6. Endpoint: POST /api/v2/correlation takes dataset + trait
+   identifiers, not raw rows -- identifier resolution is our job.
+   This endpoint is the envelope's first adopter: {data, next}
+   ships from day one, no legacy wire format to break.
+
+## Repo
+
+Engine: https://github.com/Alexanderlacuna/correlation_rust
