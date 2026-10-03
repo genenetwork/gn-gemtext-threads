@@ -46,7 +46,17 @@ Assignments for the follow-up items live in the issue tracker:
 
 ```
 genenetwork4/
-├── openapi.json            <- source of truth for the API surface
+├── openapi.json            <- BUNDLED spec artifact; checked in,
+│                              validated against routes by test
+├── spec/                   <- authored per domain, one file per endpoint
+│   ├── openapi.src.json    <- root: info, servers, $ref lists
+│   ├── paths/
+│   │   ├── version.json
+│   │   └── search.json     <- routes/search.rs owns this file
+│   └── schemas/
+│       ├── envelope.json   <- the one response envelope
+│       ├── error.json      <- errors carry suggestions
+│       └── search.json
 ├── src/
 │   ├── main.rs             <- thin binary: config, bind, serve
 │   ├── lib.rs              <- app() router; registry of route modules
@@ -58,6 +68,7 @@ genenetwork4/
 │       └── ...
 ├── tests/                  <- Rust in-process router tests
 ├── test/python/            <- Python tests over real HTTP (1:1 mirror)
+│   + the spec bundler (jsonref, ~20 lines, vendored/owned)
 └── guix.scm, rust-package.scm
 ```
 
@@ -67,8 +78,13 @@ Rules:
   Error: message + suggestions. Never ad-hoc JSON per endpoint.
 - Every endpoint ships as a pair: Rust in-process test + Python test
   over real HTTP. Clients of the API are not all Rust.
-- openapi.json and routes must never drift; a test validates them
-  against each other.
+- Spec is authored split under spec/ (paths/ + schemas/, one file per
+  endpoint) and bundled to openapi.json by a small vendored Python
+  script (jsonref). Split from the start: agents write most of the
+  spec, and small per-domain files cap each agent's blast radius.
+  No external bundler tools; the bundler lives in test/python/.
+- openapi.json and routes must never drift; a test validates the
+  bundled spec against the running routes.
 - Build is reproducible: vendored crates via rust-package.scm
   (guix import crate -f Cargo.lock genenetwork4), cargo-build-system,
   Python REST tests run in the Guix check phase.
@@ -142,7 +158,8 @@ revert-to-Python swap happens without losing endpoints.
 - [x] gn4 repo skeleton, guix packaging, Rust+Python test discipline
 - [ ] config.rs (layered config like gn3: GN4_CONF, GN4_SECRETS)
 - [ ] response.rs (descriptive envelope) + error type with suggestions
-- [ ] openapi.json for /version + /search + validation test
+- [ ] spec/ tree (paths/version, paths/search, schemas) + jsonref
+      bundler -> openapi.json + validation test
 - [ ] /api/v2/search phase A: proxy gn3 search, envelope, tests
 - [ ] foundation email to the "AI API" thread; daily reports resume
 - [ ] /api/v2/correlation: lift the proven correlation_rust engine in
