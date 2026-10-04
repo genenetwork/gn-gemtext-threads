@@ -13,7 +13,8 @@
 
 This document is the design note for the genenetwork4 (gn4) API
 foundation: the Rust/axum API server that makes GN data discoverable to
-LLMs (and humans) via REST, described by an OpenAPI v3 spec.
+LLMs (and humans) via REST, described by an OpenAPI v3 spec generated
+from the code with utoipa and served at /openapi.json.
 
 => https://www.openapis.org/what-is-openapi OpenAPI specification
 
@@ -25,14 +26,29 @@ Assignments for the follow-up items live in the issue tracker:
 
 => https://issues.genenetwork.org GN issue tracker
 
+## Status [2026-10-04]
+
+* Foundation shipped and merged to main (2026-10-04): config.rs
+  (layered: defaults -> GN4_CONF -> GN4_SECRETS -> env), response.rs
+  (envelope), error.rs (RFC-7807 ApiError), routes/ split per domain,
+  /openapi.json via utoipa, two test suites with DB skip-on-unusable,
+  cargo fmt canonical. Foundation branch deleted after fast-forward.
+* Correlation design note written:
+  => gn4-correlation.gmi Correlation endpoint design (stub landed)
+* Production gn3 verified reachable for the search proxy pilot:
+  https://genenetwork.org/api3/search/?query=alcohol&type=phenotype
+  returns live xapian results (100 hits default).
+
 ## Decisions
 
 1. No separate "API for AI". One new API serves both humans and LLMs;
    existing gn3 REST APIs are maintained as long as needed, then
    retired.
 2. The API is described by an OpenAPI v3 spec (petstore v3.0 is the
-   reference example), kept as the source of truth next to the code.
-   The spec is openapi.json (JSON, not YAML - Pjotr prefers JSON).
+   reference example) GENERATED FROM THE CODE with utoipa:
+   `#[utoipa::path]` attributes on handlers, `#[derive(ToSchema)]` on
+   request/response structs, served at /openapi.json (JSON, not YAML -
+   Pjotr prefers JSON).
 3. Responses must be descriptive: success carries next actions ("list",
    "drill down"); errors carry suggestions.
 4. Rust first, because AI coding agents make fewer subtle mistakes with
@@ -42,33 +58,46 @@ Assignments for the follow-up items live in the issue tracker:
 5. The MCP server runs in its own container as the LLM-facing layer
    over the same REST endpoints.
 
-## Foundation structure
+### Spec direction [DECIDED 2026-10-03, Pjotr]
+
+Pjotr (Re: October daily report): "Let's start my way - I think it
+moves a bit faster. Later we can bolt specs on and regenerate the API
+code."
+
+The spec is CODE-DERIVED (utoipa), not authored. Rationale: a route
+change that forgets its attribute is a compile error or an obviously
+incomplete diff, not spec drift discovered weeks later; the served
+spec always matches the running routes by construction.
+
+This SUPERSEDES the authored-spec-tree approach recorded in commit
+e4834ab ("Document split spec layout") and in the 2026-10-02 version
+of this note (spec/ directory + vendored jsonref bundler + checked-in
+openapi.json). That approach is PARKED, not deleted: if hand-authored
+specs become necessary later (e.g. spec-first generation of handlers),
+bolt them on then and regenerate from them.
+
+## Foundation structure [as built]
 
 ```
 genenetwork4/
-├── openapi.json            <- BUNDLED spec artifact; checked in,
-│                              validated against routes by test
-├── spec/                   <- authored per domain, one file per endpoint
-│   ├── openapi.src.json    <- root: info, servers, $ref lists
-│   ├── paths/
-│   │   ├── version.json
-│   │   └── search.json     <- routes/search.rs owns this file
-│   └── schemas/
-│       ├── envelope.json   <- the one response envelope
-│       ├── error.json      <- errors carry suggestions
-│       └── search.json
+├── docs/
+│   ├── SKILL.md              <- reusable practices, written for AI agents
+│   ├── genenetwork_datatypes.md
+│   └── mariadb_db-webqtl.md  <- schema dump (112 tables)
 ├── src/
-│   ├── main.rs             <- thin binary: config, bind, serve
-│   ├── lib.rs              <- app() router; registry of route modules
-│   ├── config.rs           <- layered: defaults -> GN4_CONF -> GN4_SECRETS
-│   ├── response.rs         <- the descriptive envelope (below)
-│   └── routes/             <- one module per gn3 API domain
-│       ├── search.rs
-│       ├── correlation.rs
-│       └── ...
-├── tests/                  <- Rust in-process router tests
-├── test/python/            <- Python tests over real HTTP (1:1 mirror)
-│   + the spec bundler (jsonref, ~20 lines, vendored/owned)
+│   ├── main.rs               <- thin binary: config, bind, serve
+│   ├── lib.rs                <- app() router; registry of route modules
+│   ├── config.rs             <- layered: defaults -> GN4_CONF -> GN4_SECRETS -> env
+│   ├── response.rs           <- the descriptive envelope
+│   ├── error.rs              <- RFC-7807 ApiError shared by all routes
+│   ├── db.rs                 <- read-only MariaDB queries (SQL_URI)
+│   └── routes/               <- one module per gn3 API domain
+│       ├── species.rs
+│       ├── groups.rs
+│       └── correlation.rs    <- STUB: contract first, engine later
+├── tests/                    <- Rust in-process router tests
+│   └── common/mod.rs         <- db_available(): credential probe; skip if unusable
+├── test/python/              <- Python tests over real HTTP (1:1 mirror)
 └── guix.scm, rust-package.scm
 ```
 
@@ -78,13 +107,15 @@ Rules:
   Error: message + suggestions. Never ad-hoc JSON per endpoint.
 - Every endpoint ships as a pair: Rust in-process test + Python test
   over real HTTP. Clients of the API are not all Rust.
-- Spec is authored split under spec/ (paths/ + schemas/, one file per
-  endpoint) and bundled to openapi.json by a small vendored Python
-  script (jsonref). Split from the start: agents write most of the
-  spec, and small per-domain files cap each agent's blast radius.
-  No external bundler tools; the bundler lives in test/python/.
-- openapi.json and routes must never drift; a test validates the
-  bundled spec against the running routes.
+- OpenAPI derives from code; /openapi.json is served from the
+  registered routes at runtime, not checked in.
+- The LLM-facing surface is still pinned by tests: tests/openapi.rs
+  asserts the served document describes all endpoints.
+- Tests that need MariaDB probe the configured SQL_URI credentials
+  and skip (with a message) when the database is genuinely unusable -
+  the Guix build sandbox has no database, and skip (not failure) is
+  the correct result there. Port-open is NOT sufficient: a listening
+  server can still reject the credentials.
 - Build is reproducible: vendored crates via rust-package.scm
   (guix import crate -f Cargo.lock genenetwork4), cargo-build-system,
   Python REST tests run in the Guix check phase.
@@ -113,15 +144,15 @@ I'll do gemma. Make a plan."
 
 Order of work, structure first, then endpoints proxy -> native:
 
-1. Foundation structure - Alex. The axum router skeleton, one module
-   per gn3 API domain, config.rs, response.rs, openapi.json, the
-   test-pair discipline. Nothing endpoint-specific ships before this
-   exists (this is item "1. FOUNDATION" of the plan email).
+1. [x] Foundation structure - Alex. The axum router skeleton, one
+       module per gn3 API domain, config.rs, response.rs, openapi.json,
+       the test-pair discipline. SHIPPED 2026-10-03, merged to main
+       2026-10-04 (fd0d45b..924bcf3).
 2. search - Alex + Johannes. Proxy phase A now (see below), native
    on the improved xapian index as it lands.
 3. correlations - Alex. Lift the proven correlation_rust engine in
-   through the PyO3 seam; cdylib FFI replaces the old subprocess
-   pattern.
+   (see gn4-correlation.gmi for phasing); cdylib FFI replaces the old
+   subprocess pattern.
 4. gemma - Pjotr. Coordinates at the OpenAPI-spec level; the
    envelope + proxy/native pattern is his contract.
 5. then: mapping figures, MCP server container, next domains by LLM
@@ -132,7 +163,8 @@ Order of work, structure first, then endpoints proxy -> native:
 First endpoint is /api/v2/search:
 
 - Phase A: proxy to gn3 /api/search; exercise OpenAPI + envelope on
-  real data immediately.
+  real data immediately. gn3 production verified reachable
+  2026-10-03 (see Status).
 - Phase B: native on the improved xapian index as it lands.
 
 The NL->xapian model becomes a tool in the MCP layer; the
@@ -156,13 +188,17 @@ revert-to-Python swap happens without losing endpoints.
 ## Roadmap / priority list
 
 - [x] gn4 repo skeleton, guix packaging, Rust+Python test discipline
-- [ ] config.rs (layered config like gn3: GN4_CONF, GN4_SECRETS)
-- [ ] response.rs (descriptive envelope) + error type with suggestions
-- [ ] spec/ tree (paths/version, paths/search, schemas) + jsonref
-      bundler -> openapi.json + validation test
+- [x] config.rs (layered config like gn3: GN4_CONF, GN4_SECRETS)
+- [x] response.rs (descriptive envelope) + error.rs (RFC-7807)
+- [x] OpenAPI via utoipa, served at /openapi.json (2026-10-03 decision
+      of Pjotr's; supersedes the authored spec/ tree item below)
+- [~] spec/ tree (paths/version, paths/search, schemas) + jsonref
+      bundler -> openapi.json + validation test [SUPERSEDED 2026-10-03 -
+      see "Spec direction" above]
 - [ ] /api/v2/search phase A: proxy gn3 search, envelope, tests
-- [ ] foundation email to the "AI API" thread; daily reports resume
-- [ ] /api/v2/correlation: lift the proven correlation_rust engine in
+- [x] foundation email to the "AI API" thread; daily reports resume
+- [ ] /api/v2/correlation: contract stub landed; engine lift per
+      gn4-correlation.gmi (golden tests first)
 - [ ] mapping figures: tighten POST+hash mechanism; searchable image
       cache (assigned in the issue tracker)
 - [ ] MCP server container wrapping the REST endpoints
@@ -180,3 +216,5 @@ spiralling. gn4 specifics:
 - Exact proxy auth path between gn4 and gn3 (shared secret? loopback
   only?) - gn3 precedent exists from earlier work.
 - Bind address: dev binds 0.0.0.0 today; restrict before deploy.
+- clippy in the pre-commit gate (cargo fmt --check was added
+  2026-10-04; clippy proposed, awaits Pjotr).
