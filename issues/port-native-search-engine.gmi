@@ -1,0 +1,98 @@
+
+# Port plan: native search engine behind the gn4 Engine seam
+
+* assigned: alex
+* tags: gn4, search, rust
+* status: proposed -- pending Pjotr's OK on the xapian-FFI direction
+
+Nothing below starts before that OK. This page is the plan of record
+for review; the full design document lands with the port branch
+itself, next to the code it plans.
+
+## Goal
+
+Move gn4 /search from forwarding to gn3 to a native Rust engine
+behind the Engine seam (branch native-search-seam, under review),
+reading the existing xapian index through the patched xapian-rs fork:
+
+=> https://github.com/Alexanderlacuna/xapian-rs Patched xapian-rs fork: checked-parse API (typed parser errors instead of panics), processor declines map to MatchNothing, f64 range bounds, cxx pinned for the 1.85 toolchain. Its test suite runs under the pinned guix toolchain (rust 1.85.1, libxapian 1.4.29).
+
+Definition of done: the parity harness (branch parity-harness) scores
+54/54 with the native engine behind the route, plus the usual gates
+(build, tests, clippy, guix) and review sign-off.
+
+## The graded contract
+
+The parity harness grades 54 shapes recorded from live production
+(2026-10-05), now committed as a reduced corpus that runs hermetically
+in ~20 seconds on any checkout:
+
+* 200-match shapes: status + full match-set equality + top-10 overlap
+  against the recorded fixtures.
+* Recorded parser errors (`alcohol AND`, `mean:abc..def`) grade as
+  gn4 422 invalid_query through the existing error mapping.
+* The recorded 500 for a malformed location (`Hs:foo:1M`) grades as
+  gn4 502 backend_error -- recorded production behavior, fixture wins.
+* `a&&b`, `alcohol &&`, `position:` are recorded as 200-with-hits
+  (production accepts them under libxapian 1.4.29) and grade as match
+  shapes.
+
+Fixtures are the grading truth. If the owner changes a contract, the
+affected fixtures re-baseline and the harness enforces the new one --
+decisions land as single revertible commits, not silent drift.
+
+## Stage ladder
+
+Each stage is one or a few modular commits, each compiling, tested,
+revertible on its own, and gated by named harness shapes:
+
+* C0 merge prerequisite: seam + harness branches onto one base.
+  Gate: forwarding route still 54/54 (nothing changed for users).
+* C1 wiring: git dependency on the fork (rev-pinned), index-path
+  config (`XAPIAN_DB_PATH`, mirroring gn3's own key), engine-selection
+  switch (forwarding stays available as the fallback). Gate:
+  build/tests green, no shape delta.
+* C2 index access: engine opens the recorded index snapshot
+  read-only. Gate: recorded-count spot checks against the fixtures.
+* C3 the engine, in six incremental commits, each turning on its
+  named shapes:
+  * C3.1 core + route flip: stemmer, checked parse, XT type filter,
+    full-match-set retrieval, result shaping.
+  * C3.2 boolean prefixes: author, species, group (lowercased),
+    tissue, dataset, symbol, chr, peakchr.
+  * C3.3 probabilistic prefixes + aliases: description, rif, wiki.
+  * C3.4 numeric ranges: mean, peak, peakmb, additive, year.
+  * C3.5 position/pos SI-suffix processor.
+  * C3.6 Hs/Mm location processors, including the recorded
+    malformed-chromosome 500 -> 502 mechanics.
+* C4 full floor: 54/54 + review sign-off.
+
+## Decisions for the owner
+
+* 422-vs-500 for malformed input: proposal recorded in
+  gn4-search-native.gmi -- all malformed query input -> 422 with a
+  typed body, one consistent contract instead of inherited crashes.
+  The harness enforces whichever is chosen; the swap is one
+  revertible commit.
+* Hs liftover: implement (the chain file already lives in gn3) or
+  accept the documented difference; isolated in one commit either way.
+* Engine blessing: xapian-FFI is the recommendation on recorded
+  evidence (same index, same grammar, near-automatic parity floor);
+  tantivy stays possible behind the same seam at a higher cost
+  (indexer rebuild + a 142-package dependency tree).
+
+Mechanical defaults already chosen, visible and revertible: malformed
+position values -> empty match (not a crash); config names as above.
+
+## Already in place
+
+* The fork: live, tested, documented (link above).
+* The harness: branch parity-harness, calibrated 54/54 against the
+  forwarding route, fails loudly by construction (negative controls).
+* The seam: branch native-search-seam, under review.
+* A local development index (47k documents from the 2025-02 public
+  snapshot, built with the production indexer) supports engine
+  development before the production snapshot is available;
+  recorded-count gates still need the real index.
+
+=> ../topics/gn4/gn4-search-native.gmi Search topic: grammar, evidence, the 422 proposal
