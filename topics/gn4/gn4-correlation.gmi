@@ -24,7 +24,7 @@ Rob in Claude web
 MCP server (thin wrapper over the REST API)
   |  tool call -> HTTP
   v
-gn4  POST /api/v2/correlation
+gn4  POST /compute/correlation
   |  1. resolves identifiers -> SQL against db_webqtl
   |  2. calls correlation_rust IN-PROCESS (no gn3, no subprocess)
   v
@@ -64,7 +64,7 @@ Claude reads it, shows Rob a table, suggests the next question
    correlation is plausible-looking garbage -- the SQL gets its own
    test against a trait with known values. LMDB trait store = fast
    path for sample correlations, skipping the SQL at query time.
-6. Endpoint: POST /api/v2/correlation takes dataset + trait
+6. Endpoint: POST /compute/correlation takes dataset + trait
    identifiers, not raw rows -- identifier resolution is our job.
    This endpoint is the envelope's first adopter: {data, next}
    ships from day one, no legacy wire format to break.

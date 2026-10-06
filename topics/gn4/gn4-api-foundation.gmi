@@ -160,7 +160,7 @@ Order of work, structure first, then endpoints proxy -> native:
 
 ## Pilot: search
 
-First endpoint is /api/v2/search:
+First endpoint is /search:
 
 - Phase A: proxy to gn3 /api/search; exercise OpenAPI + envelope on
   real data immediately. gn3 production verified reachable
@@ -170,6 +170,9 @@ First endpoint is /api/v2/search:
 The NL->xapian model becomes a tool in the MCP layer; the
 HS-rats/BXD question-answer corpus becomes the search-quality test set.
 Owners for both are tracked in the issue tracker.
+
+=> gn4-search-native.gmi The native migration (bridge pattern, engine
+analysis, parity floor) is tracked in its own note as of 2026-10-06.
 
 ## Rust scope and the PyO3 seam
 
@@ -195,9 +198,12 @@ revert-to-Python swap happens without losing endpoints.
 - [~] spec/ tree (paths/version, paths/search, schemas) + jsonref
       bundler -> openapi.json + validation test [SUPERSEDED 2026-10-03 -
       see "Spec direction" above]
-- [ ] /api/v2/search phase A: proxy gn3 search, envelope, tests
+- [x] /search phase A: proxy gn3 search, envelope, tests (merged to
+      main 2026-10-05, with authorization token per Pjotr's
+      token-on-all-endpoints pattern; native migration tracked in
+      gn4-search-native.gmi)
 - [x] foundation email to the "AI API" thread; daily reports resume
-- [ ] /api/v2/correlation: contract stub landed; engine lift per
+- [ ] /compute/correlation: contract stub landed; engine lift per
       gn4-correlation.gmi (golden tests first)
 - [ ] mapping figures: tighten POST+hash mechanism; searchable image
       cache (assigned in the issue tracker)

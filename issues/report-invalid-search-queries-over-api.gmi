@@ -12,3 +12,31 @@
 genenetwork2 offloads search to the genenetwork3 search API. When there is an error in the genenetwork3 API call, genenetwork2 has no idea what went wrong and cannot produce a good stacktrace. The genenetwork3 API should do a better job of communicating errors.
 
 In particular, for the search API, we should start with correctly reporting invalid search queries so that genenetwork2 can present it appropriately in its web UI.
+
+## Update: 2026-10-06
+
+Two developments on the gn4 path (gn4 now fronts search at
+/search with its own envelope and authorization):
+
+* The reporting half is in place there: gn4 maps gn3's 400 parser
+  errors to a 422 `invalid_query` response carrying gn3's actual
+  diagnostic, so a caller always sees a structured error instead of
+  silence (merged to gn4 main 2026-10-05, with an offline contract
+  mirror in test/python/test_search.py).
+* The definition of "invalid" moved underneath us, though:
+  production /api3/search no longer rejects some malformed queries.
+  Verified 2026-10-06, the inputs "a&&b", "alcohol &&" and
+  "position:" now return 200 with up to 100 hits -- the query is
+  sanitized before parsing ("a&&b" returns the exact match set of
+  "a b"; "position:" of "position"). The 400 diagnostics that
+  gn4's frozen tests recorded on 2026-10-03/04 reflect the older
+  behavior. Which behavior is authoritative is an open question
+  with Pjotr: deliberate sanitize-and-search, or a regression of
+  the strict parse.
+
+The native-search migration notes carry the surrounding context:
+
+=> ../topics/gn4/gn4-search-native.gmi search native migration
+
+The gn2/gn3-facing half of this issue (gn3 communicating errors to
+  gn2's web UI) remains open as originally written.

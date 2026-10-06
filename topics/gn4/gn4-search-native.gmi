@@ -1,0 +1,125 @@
+# GN4 Search: proxy -> native migration
+
+## Tags
+
+* Assigned: alexm
+* Keywords: GN4, search, xapian, tantivy, parity, proxy, native
+* Type: Enhancement
+* Status: In Progress
+
+
+
+## Description
+
+Search is the pilot for the proxy -> native migration pattern: gn4
+first fronts gn3's xapian-backed /api/search behind its own envelope
+and contract, then replaces the backend with a native engine inside
+gn4. This note records the decisions, the state, and the engine
+analysis that drives the next step.
+
+## The migration pattern
+
+```
+user / LLM
+  |
+gn4  GET /search   (envelope, tokens, error contract -- FROZEN)
+  |
+  +-- phase A [MERGED]: forward q verbatim to gn3 /api3/search,
+  |     rewrap hits; recorded gn3 responses double as test oracle
+  |
+  +-- phase B [IN REVIEW]: Engine seam -- routes delegate to an
+  |     Engine trait; the gn3 forwarder is one impl; a native
+  |     engine drops in without touching routes or contract
+  |
+  +-- phase C [NEXT]: native engine matches the recorded oracle at
+        the parity floor; the gn3 forwarding path is deleted
+```
+
+## Decisions
+
+1. [2026-10-04, Pjotr] GN4 is a new beast: port relevant code into
+   gn4; duplication accepted; gn3 is dropped in time.
+2. [2026-10-04, Pjotr] Search itself goes Rust; indexing stays as-is
+   for now (built by the existing indexer -- his study decides its
+   future).
+3. [2026-10-04, Alex; accepted by Pjotr] Bridge: the proxy's recorded
+   gn3 responses remain the test oracle; the native engine must match
+   the /search contract; forwarding dies at parity.
+4. [2026-10-05, Pjotr] Runtime dependencies settle on gn3 + gn-auth +
+   mariadb, gn3 for validation only; no gn2, no gn-guile.
+5. [2026-10-06, Alex] Parity is a FLOOR, not a target: match-set
+   equality keyed (dataset, name) plus top-10 Jaccard >= 0.8. Exact
+   cross-engine ranking is unattainable and not attempted.
+
+## State (2026-10-06)
+
+* Phase A merged to main: /search behind the envelope with an
+  authorization token, hermetic offline tests (stub JWKS + locally
+  signed tokens), and a Python contract mirror.
+* Phase B on branch native-search-seam (pushed, awaiting review):
+  src/search/ module with the Engine trait; routes unchanged in
+  behavior; the module docs record the full xapian query grammar
+  (every prefix, operator, range rule -- reconstructed from source
+  with file:line provenance) as the requirement any native engine
+  must satisfy.
+* Corpus: 54 query shapes recorded from production /api3/search with
+  an idempotent, re-runnable script (md5-identical across runs);
+  error classes and empty-set shapes logged per shape.
+
+## Engine analysis [2026-10-06]
+
+A tantivy spike indexed a 609-document slice from the recorded
+responses and ran the grammar through it. Findings:
+
+* The recorded payload is a PROJECTION of the searchable document:
+  gn3 indexes publication metadata and trait synonyms the API does
+  not return ("alcohol": 1,197 hits; only 53 payloads contain the
+  term). No native engine can reproduce gn3's match set from API
+  responses -- the indexer's document construction is the real port,
+  and it is engine-independent.
+* Enrichment fields (mean, additive, lrs, geno_chr, geno_mb) are
+  DB-filled at query time in gn3; a native engine ports those queries
+  regardless of engine choice.
+* tantivy: every sampled grammar construct is expressible (some via
+  a small translator; NEAR approximate); ranges/keywords recall 1.000
+  on the slice; cost is a 142-package Cargo.lock, not pure-Rust
+  (zstd-sys), against a very active upstream.
+* xapian-FFI: reuses the existing index, grammar, and the indexer's
+  document construction; but the Rust binding crates are dormant
+  (xapian 0.1.5, 2023; xapian-rs 0.3.0, 2024), so we would own a
+  small bindgen layer over open-db/parser/mset; the C++ dependency
+  stays in the guix build; the indexer question is deferred, not
+  answered.
+* Read: xapian-FFI fits the parity goal -- same engine makes the
+  floor nearly automatic, and the indexer keeps running as-is.
+  tantivy is right only if the goal shifts to quality metrics beyond
+  xapian parity (Johannes's track), accepting the indexer rebuild
+  plus the 142-package tree.
+
+## Next step
+
+A small binding spike against the real index: open the production
+xapian database from Rust, configure the parser per the grammar
+spec, run one query end-to-end, and prove guix can build and link
+it. Disposable, days not weeks; it answers the two open risks
+(the unsafe layer, the packaging) before committing to the port.
+
+## Open items
+
+* Binding spike -- pending Pjotr's OK on the xapian-FFI direction.
+* Authoritative behavior for invalid queries: production now
+  returns 200 + hits for "a&&b", "alcohol &&", and "position:"
+  (verified 2026-10-06; the parser input appears sanitized before
+  parsing), while the merged tests expect the 400 syntax diagnostics
+  recorded earlier. Question with Pjotr; affects the frozen stub and
+  the error-mapping path.
+* 14 corpus shapes return empty match sets at production: valid
+  responses, but they weaken the parity floor; the query list may
+  need re-shaping.
+* Pjotr's indexer study (what builds the index today; document
+  shape) -- feeds the native engine's document expectations.
+* The indexer migration itself is a separate, later project once
+  search is native.
+
+=> gn4-api-foundation.gmi Foundation note (envelope, proxy/native pattern)
+=> gn4-correlation.gmi Correlation note (same oracle pattern)
