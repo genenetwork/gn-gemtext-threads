@@ -3,11 +3,7 @@
 
 * assigned: alex
 * tags: gn4, search, rust
-* status: proposed -- pending Pjotr's OK on the xapian-FFI direction
-
-Nothing below starts before that OK. This page is the plan of record
-for review; the full design document lands with the port branch
-itself, next to the code it plans.
+* status: proposed
 
 ## Goal
 
@@ -41,7 +37,7 @@ Fixtures are the grading truth. If the owner changes a contract, the
 affected fixtures re-baseline and the harness enforces the new one --
 decisions land as single revertible commits, not silent drift.
 
-## Stage ladder
+## TODOs
 
 Each stage is one or a few modular commits, each compiling, tested,
 revertible on its own, and gated by named harness shapes:
@@ -67,7 +63,7 @@ revertible on its own, and gated by named harness shapes:
     malformed-chromosome 500 -> 502 mechanics.
 * C4 full floor: 54/54 + review sign-off.
 
-## Decisions for the owner
+## Open decisions
 
 * 422-vs-500 for malformed input: proposal recorded in
   gn4-search-native.gmi -- all malformed query input -> 422 with a
@@ -76,10 +72,11 @@ revertible on its own, and gated by named harness shapes:
   revertible commit.
 * Hs liftover: implement (the chain file already lives in gn3) or
   accept the documented difference; isolated in one commit either way.
-* Engine blessing: xapian-FFI is the recommendation on recorded
-  evidence (same index, same grammar, near-automatic parity floor);
-  tantivy stays possible behind the same seam at a higher cost
-  (indexer rebuild + a 142-package dependency tree).
+* Engine choice: native xapian through the patched bindings
+  (recommended on recorded evidence -- same index, same grammar,
+  near-automatic parity floor) versus tantivy (possible behind the
+  same seam, at a higher cost: indexer rebuild + a 142-package
+  dependency tree).
 
 Mechanical defaults already chosen, visible and revertible: malformed
 position values -> empty match (not a crash); config names as above.
