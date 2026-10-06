@@ -104,15 +104,36 @@ spec, run one query end-to-end, and prove guix can build and link
 it. Disposable, days not weeks; it answers the two open risks
 (the unsafe layer, the packaging) before committing to the port.
 
+## Proposed: one error contract for malformed input (PROPOSED -- Pjotr's call)
+
+Replace production's three accidental behaviors (500 ValueError,
+500 InvalidOperationError, silent 200s) with one rule: all malformed
+query input returns 422 invalid_query with a structured, typed body:
+
+``` {"error": {"type": "invalid_query",
+          "message": "Syntax: <expression> AND <expression>",
+          "param": "query",
+          "detail": {"xapian_error_type": "QueryParserError"}}} ```
+
+Rationale: one machine-checkable rule instead of inherited crashes;
+typed errors let LLM/API clients self-correct and retry (serves the
+AI-discoverability track); every link is already built
+(parse_query_checked -> ParseError -> structured 422). The parity
+harness enforces whichever contract is chosen; Q42 re-baselines once
+blessed, the && fixtures already record production's 200s.
+
 ## Open items
 
 * Binding spike -- pending Pjotr's OK on the xapian-FFI direction.
-* Authoritative behavior for invalid queries: production now
-  returns 200 + hits for "a&&b", "alcohol &&", and "position:"
-  (verified 2026-10-06; the parser input appears sanitized before
-  parsing), while the merged tests expect the 400 syntax diagnostics
-  recorded earlier. Question with Pjotr; affects the frozen stub and
-  the error-mapping path.
+* Authoritative behavior for invalid queries (updated 2026-10-06,
+  supersedes the sanitize theory): libxapian 1.4.29 itself parses
+  "a&&b", "alcohol &&", and "position:" -- production returns 200
+  with hits (a&&b: 13,760, per the frozen corpus). Malformed
+  processor VALUES are different: production crashes on them
+  (position:abc -> 500 ValueError; Hs:foo:1M -> 500
+  InvalidOperationError, curl-verified + corpus-fixture-recorded).
+  Those 500s are implementation accidents, not design. See the
+  proposed contract below.
 * 14 corpus shapes return empty match sets at production: valid
   responses, but they weaken the parity floor; the query list may
   need re-shaping.
