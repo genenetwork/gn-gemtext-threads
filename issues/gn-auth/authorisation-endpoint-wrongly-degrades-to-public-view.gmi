@@ -1,0 +1,19 @@
+# Authorisation Endpoint Wrongly Degrades to `public-view`
+
+## Tags
+
+* status: open
+* priority: high
+* type: bug
+* assigned: fredm
+* keywords: gn-auth, issue, authorisation
+
+## Description
+
+The **/auth/resource/authorisation/** endpoint has currently (as of 2026-10-07) been rebuilt to degrade to 'public-view' when a `authlib.integrations.flask_oauth2.errors._HTTPException` is raised (see https://git.genenetwork.org/gn-auth/tree/gn_auth/auth/authorisation/resources/views.py?id=fe20e4cd95465933ddd7715e9278b9a3cccb9bd0#n536).
+
+This is, unfortunately, not the right way to handle this. Why?
+
+There is data that is set up as private, implying that it should not be viewable publicly. If you ran into such data, you only need to trigger the said exception, and you'd be dropped into 'public-view' allowing you to access data that you should not be able to access.
+
+This bug needs to be fixed as soon as possible.
