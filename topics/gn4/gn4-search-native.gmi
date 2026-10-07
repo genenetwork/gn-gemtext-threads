@@ -104,7 +104,7 @@ spec, run one query end-to-end, and prove guix can build and link
 it. Disposable, days not weeks; it answers the two open risks
 (the unsafe layer, the packaging) before committing to the port.
 
-## One error contract for malformed input (agreed -- thumbs-up on the proposal, 2026-10-06)
+## One error contract for malformed input (agreed, 2026-10-06)
 
 Replace production's three accidental behaviors (500 ValueError,
 500 InvalidOperationError, silent 200s) with one rule: all malformed

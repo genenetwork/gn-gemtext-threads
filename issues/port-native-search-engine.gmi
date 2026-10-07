@@ -65,7 +65,7 @@ revertible on its own, and gated by named harness shapes:
 
 ## Open decisions
 
-* 422-vs-500 for malformed input: AGREED (2026-10-06) -- 422 invalid_query with a typed body; proposal recorded in
+* 422-vs-500 for malformed input: agreed (2026-10-06) -- 422 invalid_query with a typed body; recorded in
   gn4-search-native.gmi -- all malformed query input -> 422 with a
   typed body, one consistent contract instead of inherited crashes.
   The harness enforces whichever is chosen; the swap is one
