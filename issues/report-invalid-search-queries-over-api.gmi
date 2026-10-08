@@ -40,3 +40,20 @@ The native-search migration notes carry the surrounding context:
 
 The gn2/gn3-facing half of this issue (gn3 communicating errors to
   gn2's web UI) remains open as originally written.
+
+Update 2026-10-08: the structured-invalid-query contract is settled for
+gn4. Agreed 2026-10-06: every malformed query that reaches parsing is
+answered with a 422 `invalid_query` body —
+
+    {"error": {"type": "invalid_query", "message": "...",
+               "param": "query",
+               "detail": {"xapian_error_type": "..."}}}
+
+— carrying the underlying diagnostic, on top of the 400-mapping already
+in gn4 main. The gn4 native search engine implements the full contract
+(2026-10-07, native-search-engine branch): parser rejections, invalid
+numeric-range values, and invalid position/Hs/Mm fields all return the
+typed 422 instead of a 200-empty or a 500. The earlier open question —
+whether /api3's sanitize-and-search behavior is authoritative — remains
+open with the gn3 owner. This closes the gn4 half of the issue; the
+gn2/gn3 UI-facing half remains as originally written.
