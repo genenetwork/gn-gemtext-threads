@@ -1,0 +1,116 @@
+# Search indexing: incremental by document, with a Rust destination
+
+Scope: the xapian search index pipeline — today gn3's Python indexer
+(scripts/index-genenetwork) — and how it becomes incremental.
+Measurements are from two instrumented full runs on 2026-10-11
+against the public 2025-02-18 database dump plus RDF caches
+(47,040 documents; the instrumented build is byte-identical to the
+reference index). Shares are what transfer: the absolute seconds are
+single-host, warm-page-cache numbers, and the cache stage was a
+warm-disk replay — a cold run pays a network SPARQL crawl instead.
+
+## What exists today (verified in source and measurement)
+
+- Every document already carries a stable unique identity term —
+  constructed as `Q<doctype>:<name>:<dataset>`, lowercased — 47,040
+  distinct, no duplicates, written through `replace_document`, so
+  updates-by-key are supported by the format since the beginning.
+- Change detection already exists, but only as an all-or-nothing
+  external gate: `is_data_modified` compares stored per-table
+  `CHECKSUM TABLE` values and a hash over the Virtuoso TTL directory
+  (`md5hash_ttl_dir`, stored as `generif-checksum`), then answers
+  one question — "did anything change?" — with an exit code. One
+  changed row triggers the same full rebuild as a thousand.
+- Where a full rebuild actually spends its time (two runs, 4.7%
+  apart):
+  - ~47% replaying/reprocessing the SPARQL-derived wiki/rif text
+    caches (independent of any database change)
+  - ~30% xapian document writes
+  - ~18% term generation and document build
+  - ~1.5% database reads — the crawl itself is nearly free
+
+## The design
+
+### Stage 0 — per-document granularity in the current indexer
+
+Keep the existing gate as the outer trigger, and add granularity
+underneath it:
+
+- For each document, hash its complete source data: the full joined
+  row set it is built from, the dataset label, and the cache text it
+  consumed — keyed by its identity term. Because the dataset label
+  is part of the input, mirrored datasets (two labels over the same
+  rows) each carry their own key, and a shared-row change surfaces as
+  a delta on both. Any change, from the database or the caches,
+  surfaces as a source-hash delta on exactly the affected documents.
+- A run crawls (cheap: ~1.5% of rebuild time), compares source
+  hashes against the stored set, and rewrites only changed
+  documents. Cache text is re-derived only for documents whose rows
+  changed or whose consumed cache slices changed: slices are keyed
+  by symbol, so each document records which slice identities it
+  consumed, and a cache change is mapped to documents through the
+  symbol→document relation. The ~47% replay applies only when cache
+  content actually changes — not on every run.
+- Documents whose source rows disappeared are deleted by identity
+  term. The stored key set — not the index, not the crawl — is the
+  source of truth for existence; a dataset withdrawn from
+  configuration deletes all of its documents the same way.
+- When nothing changed — the common case — the run writes nothing.
+- Source hashes live in a sidecar file next to the index, not in
+  index metadata (no new failure mode inside the index itself).
+  Write order: index commit first, sidecar rename strictly after.
+  A startup check compares the sidecar against the index's stored
+  state; on mismatch, the next run falls back to a full
+  crawl-and-compare.
+- Stage 0 is timeboxed: it proves the semantics in production, and
+  is replaced wholesale by stage 1, not maintained alongside it.
+
+### Stage 1 — the Rust port
+
+The indexer moves into gn4's Rust codebase, sharing one set of
+schema definitions (document data, value slots, term scheme,
+identity terms) with the native search engine — writer and reader
+compile against the same types, so writer/reader drift becomes a
+compile error instead of a bug report.
+
+- Same semantics as stage 0, proven equal by the gates below.
+- The from-scratch rebuild path stays as bootstrap and as the
+  corruption-recovery tool.
+- The Python indexer is retired when the Rust path has passed the
+  gates on real data.
+
+## The gates
+
+1. Idempotence: an incremental run after no changes writes nothing;
+   the index is untouched.
+2. Correctness: after simulated changes (add, update, and delete),
+   the incrementally-updated index and a from-scratch rebuild of
+   the same data are equal document-for-document — same identity
+   terms, document data, termlists, value slots, and positions.
+   (After real incremental updates the on-disk files legitimately
+   differ from a rebuild — docid assignment and chunk layout are
+   not deterministic — so equality is defined at document level,
+   not byte level.) Deletion is part of this gate explicitly: an
+   incremental path that cannot remove documents is not
+   incremental.
+3. Twin-index equivalence for the Rust port: the Rust indexer's
+   output is compared document-for-document (identity, data,
+   termlist, value slots, positions) against the Python indexer's
+   output on the same data — including the known quirks the
+   comparison must preserve verbatim: active English stemming, the
+   non-functional stopper configuration, and the occupied slots
+   0–5.
+
+## Open questions
+
+- The trigger and schedule for runs (cron interval, daemon, or
+  on-event) — the design is trigger-agnostic; the choice is
+  operational.
+- Whether production enables row-based binlog, which would later
+  allow exact row-level change feeds as an alternative to the
+  crawl-and-compare approach.
+- The measured change rate of the production database — the
+  crawl-and-compare design does not depend on it, but it informs
+  the schedule choice.
+
+=> gn4-search-native.gmi search native migration
