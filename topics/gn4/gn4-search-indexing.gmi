@@ -22,12 +22,16 @@ warm-disk replay — a cold run pays a network SPARQL crawl instead.
   one question — "did anything change?" — with an exit code. One
   changed row triggers the same full rebuild as a thousand.
 - Where a full rebuild actually spends its time (two runs, 4.7%
-  apart):
+  apart — measured on the public dump, whose gene side is truncated:
+  100,000 ProbeSetXRef rows against millions in production, so the
+  ~1.5% database-read share does NOT transfer; on the gene side the
+  crawl is a real cost at production scale, which is why cheap
+  row-count signals must short-circuit a run first):
   - ~47% replaying/reprocessing the SPARQL-derived wiki/rif text
     caches (independent of any database change)
   - ~30% xapian document writes
   - ~18% term generation and document build
-  - ~1.5% database reads — the crawl itself is nearly free
+  - ~1.5% database reads on the measured data
 
 ## The design
 
@@ -56,6 +60,10 @@ underneath it:
   source of truth for existence; a dataset withdrawn from
   configuration deletes all of its documents the same way.
 - When nothing changed — the common case — the run writes nothing.
+- Updates land in the live index: gn3 opens the index per request
+  (search.py holds the database open only for the duration of one
+  query), so a per-document update is visible to the next request
+  with no service stop and no change to gn3 itself.
 - Source hashes live in a sidecar file next to the index, not in
   index metadata (no new failure mode inside the index itself).
   Write order: index commit first, sidecar rename strictly after.
