@@ -87,6 +87,63 @@ compile error instead of a bug report.
 - The Python indexer is retired when the Rust path has passed the
   gates on real data.
 
+## Write path and sidecar (Rust port, design note 2026-10-13)
+
+Measurements below are single-host, warm-page-cache, on the public
+2025-02-18 dump and its RDF caches. Shares are expected to transfer;
+absolute seconds do not. They describe the Rust write path and sidecar;
+the from-scratch rebuild stays as bootstrap and recovery.
+
+Finding that shaped the design: the per-document *build* cost is
+dominated by term generation, not by the change hash. On the warm
+incremental sweep, term generation and document assembly is ~94-95%
+of the build phase; canonical encoding ~1.3%; the SHA-256 digest
+~2.7-3.6%. The sidecar therefore keeps a cryptographic SHA-256
+digest: replacing it would optimise a few percent and trade away
+collision resistance.
+
+Write path (measured, warm incremental): documents are built one at
+a time and written as they are produced, rather than building the
+whole document set in memory first. On a corpus scaled to ~10x
+(458,452 documents), peak resident memory fell from ~12.0 GiB to
+~1.6 GiB, and the full build time from ~1393 s to ~494 s; live
+document objects are constant. The small-corpus build carries a few
+seconds of streaming overhead. (The ~1.6 GiB figure is with the
+source-hash set still monolithic.)
+
+Sidecar (design, implementation in progress): sharded by dataset,
+with a small manifest carrying the format version, document count,
+and a content hash per shard. The manifest is written strictly after
+the index commit and after the shards (each as temp + rename).
+Startup verifies a shard's content hash before parsing it, and any
+mismatch falls back to a full compare. An identity pre-pass checks
+`name:dataset` uniqueness before any write (part of the measured write
+path above), and shard-scoped processing targets resident memory
+bounded by the largest dataset rather than the whole corpus; that
+bound is not yet measured.
+
+```
+        crawl (rows grouped by dataset)
+        |
+        v
+        identity pre-pass (uniqueness before any write)
+        |
+        v
+        build one doc  (no all-docs fan-in)
+        |
+        v
+        replace_document (by idterm)
+        |
+        v
+        commit every N docs
+        |
+        v
+        sidecar.d/<dataset>.json shards (temp + rename)
+        |
+        v
+        manifest.json (version, doc_count, per-shard sha256)   [written last]
+```
+
 ## The gates
 
 1. Idempotence: an incremental run after no changes writes nothing;
