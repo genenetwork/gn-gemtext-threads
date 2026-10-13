@@ -33,6 +33,14 @@ warm-disk replay — a cold run pays a network SPARQL crawl instead.
   - ~18% term generation and document build
   - ~1.5% database reads on the measured data
 
+## Data scope (policy, 2026-10-12)
+
+All metadata is public and indexable: names, descriptions, dataset
+info, the QTL results (LRS/locus/additive/p-value) and summary
+statistics. The raw per-strain trait-value matrix is private and never
+enters the index. The indexer's documents carry only the metadata
+layer, so the scope is satisfied by construction.
+
 ## The design
 
 ### Stage 0 — per-document granularity in the current indexer
@@ -111,16 +119,27 @@ document objects are constant. The small-corpus build carries a few
 seconds of streaming overhead. (The ~1.6 GiB figure is with the
 source-hash set still monolithic.)
 
-Sidecar (design, implementation in progress): sharded by dataset,
-with a small manifest carrying the format version, document count,
-and a content hash per shard. The manifest is written strictly after
-the index commit and after the shards (each as temp + rename).
-Startup verifies a shard's content hash before parsing it, and any
-mismatch falls back to a full compare. An identity pre-pass checks
-`name:dataset` uniqueness before any write (part of the measured write
-path above), and shard-scoped processing targets resident memory
-bounded by the largest dataset rather than the whole corpus; that
-bound is not yet measured.
+Sidecar (sharded by dataset). The sidecar is a small manifest next
+to the index (`<index>.sidecar.json`) plus a directory of per-dataset
+shards (`<index>.sidecar.d/`), one shard per distinct dataset label,
+so a run loads and rewrites only the shards it touches — one changed
+dataset rewrites one shard. The manifest carries the format version,
+the document count, and a content hash per shard. Changed shards are
+written temp + rename, the manifest is written last, and a startup
+check verifies each shard's hash before parsing it and requires the
+manifest's key set to match the index's; any mismatch or unreadable
+shard falls back to a full rebuild rather than being read as empty, so
+a crash leaves either a document-count mismatch or a hash mismatch,
+both detected. Writes are committed in bounded chunks.
+
+Crawl order and identity are pinned. Both SQL streams are ordered by
+dataset with a binary collation (`COLLATE utf8mb4_bin`) so the stream
+order matches the byte-order merge; the identity pre-pass checks
+`name:dataset` uniqueness before any write — including across datasets
+(two dataset labels differing only by case are rejected). Because
+sharding is per dataset, "one changed trait rewrites one shard" is
+structural rather than a tuning choice, and the shard count is a
+property of the data (the public datasets of the database).
 
 ```
         crawl (rows grouped by dataset)
@@ -168,14 +187,16 @@ bound is not yet measured.
 
 ## Open questions
 
-- The trigger and schedule for runs (cron interval, daemon, or
-  on-event) — the design is trigger-agnostic; the choice is
-  operational.
-- Whether production enables row-based binlog, which would later
-  allow exact row-level change feeds as an alternative to the
-  crawl-and-compare approach.
-- The measured change rate of the production database — the
-  crawl-and-compare design does not depend on it, but it informs
-  the schedule choice.
+- Detection, production: enable system versioning on the tables
+  (ROW_START/ROW_END, read with plain SELECT) as a fast delta path; the
+  full hash sweep remains the correctness backstop and the fallback
+  whenever versioning is absent or a row is changed without it. The
+  row-based binlog path is dropped. This needs a one-time schema
+  change on the production tables (the owner's side).
+- Schedule: the cron or daemon cadence, overlap protection (a mutex so
+  two runs cannot interleave), and a lag bound with an alert.
+- Filter default: whether the confidential-dataset metadata is
+  included or filtered is a production choice, kept as an indexer flag
+  (the data scope above is the policy).
 
 => gn4-search-native.gmi search native migration
