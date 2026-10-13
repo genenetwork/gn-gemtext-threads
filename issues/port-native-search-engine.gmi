@@ -94,3 +94,4 @@ position values -> empty match (not a crash); config names as above.
 
 => ../topics/gn4/gn4-search-native.gmi Search topic: grammar, evidence, the 422 proposal
 => ../topics/gn4/gn4-search-indexing.gmi Search indexing: incremental-by-document design, measured
+=> ../topics/gn4/gn4-indexer-change-detection.gmi Change detection via system versioning, and the cron story

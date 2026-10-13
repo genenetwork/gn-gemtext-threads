@@ -1,0 +1,92 @@
+# gn4 indexer — change detection via system versioning, and the cron story
+
+Status: design + validated queries. No gn4 code change yet; nothing
+written to production. Owner approved the approach 2026-10-12
+("Versioning sounds good to me! We can run production any way we want.").
+This note covers objective 5 (versioning delta) and objective 6 (cron).
+
+## The problem
+
+The native Rust indexer rebuilds by hashing every document's full source.
+That is correct but pays the whole crawl even when almost nothing changed.
+The goal is to narrow the work to the changed rows, without ever letting
+the fast path be the thing that proves the index correct.
+
+## Design 1 — change detection (delta)
+
+The owner runs one-time `ALTER TABLE <t> ADD SYSTEM VERSIONING;` on the
+production tables. MariaDB then exposes `ROW_START`/`ROW_END`
+(`TIMESTAMP(6)`), read with plain `SELECT`. No binlog, no extra
+privileges beyond SELECT.
+
+* Coverage marker: the run's DB `NOW(6)`, stored in the sidecar manifest.
+  The manifest is written last, after the index commit, so the marker never
+  advances ahead of the index it describes; a crash routes to a full run.
+* Window invariant: capture the marker before querying, advance it after
+  committing. Query `[prev_marker, new_marker)`.
+* Late-commit hazard: a transaction that starts before the marker but
+  commits after the scan has `ROW_START` inside the window and is
+  invisible to it. A naive advance would then skip it forever. Mitigation:
+  re-query an overlap window `[new_marker - O, now)` each run (idempotent),
+  plus the periodic verification sweep as the bounded backstop.
+* Deletes: a `DELETE` only moves `ROW_END`, so the window must test
+  `ROW_END` as well as `ROW_START`. Liveness is decided by current
+  existence, not by `ROW_END` alone.
+* Contributing tables that are not versioned (cache text, `Geno`,
+  `Phenotype`, `Publication`, …) are invisible to the delta and are caught
+  only by the sweep — stated as a boundary, not an edge case.
+* Purge detection: if the oldest resolvable history is newer than the
+  marker, fall back to a full run.
+
+### The safety rule (why this is safe)
+
+The delta only ever narrows which documents the full sweep rebuilds. The
+correctness proof remains a periodic **full source-hash sweep**. A delta
+miss is corrected within one sweep period.
+
+## Design 2 — cron story
+
+Two schedules, one lock:
+
+* Delta run every 10 minutes (low-latency DB freshness).
+* Verification sweep every 3 hours (the correctness bound; catches
+  cache-text edits and unversioned tables).
+
+Overlap protection is a single `flock` on a held file descriptor, with
+skip-and-log on a busy lock. `flock` is crash-safe (the kernel releases it
+on `kill -9`); a pidfile is not. Queueing is rejected — a long sweep would
+build a backlog faster than it drains.
+
+Lag SLA is measured on the DB clock: how far the manifest marker trails
+`NOW(6)`. The alert threshold is set relative to the worst-case run
+duration (production sweep is ~23–99 min), not the tick period, so a
+healthy long sweep does not page.
+
+## Validated (local MariaDB, throwaway versioned copies)
+
+* no change → empty delta, writes nothing; change → exactly the changed
+  row; delete → `ROW_END`; insert-then-delete → no document.
+* late-commit reproduced: naive advance misses permanently; overlap window
+  catches it.
+* marker sabotage (NULL/future/absent) → fall back to full.
+* history purge → fall back to full.
+* invisible change (cache-text edit): delta 0 rows, sweep rewrites the
+  documents, result equals a fresh full build (46,732 matched, 0
+  mismatched).
+* flock: second holder skips; after `kill -9` the next one acquires.
+
+## Open questions for the owner
+
+* How often are full index rebuilds expected in normal operation? This
+  prices the remaining speed work.
+* When to schedule the one-time system-versioning `ALTER` on the
+  production tables? It is one command per table, and the rest of the
+  design waits on nothing else.
+* Worst-case transaction duration on the write path (to size the overlap
+  window `O`); until measured, a conservative constant plus the sweep
+  backstop is used.
+
+## Not in scope
+
+Speed and memory of the delta query at production scale (indexed access to
+the generated columns) are unmeasured; correctness does not depend on it.
