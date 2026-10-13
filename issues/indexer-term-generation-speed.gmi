@@ -1,0 +1,51 @@
+# Indexer speed: term generation and assembly dominate build time
+
+Measured on an internal corpus (~46,732 documents; figures indicative):
+per-document term generation and document assembly is ~94-95% of the
+build phase (~145 µs/doc gene, ~210 µs/doc phenotype); canonical
+encoding is ~1.3% and the SHA-256 change digest ~2.7-3.6%. The build
+cost lives in term generation, not in the change hash, so the
+incremental sidecar keeps a SHA-256 digest.
+
+Static finding: the code constructs a fresh TermGenerator, an English
+Snowball Stem, and a SimpleStopper for every document (several heap
+allocations per document), and re-tokenises and re-stems the same short
+strings (dataset, species, group, tissue) across thousands of
+documents. The absolute cost of the per-document construction is not
+yet measured.
+
+Plan (risk-ordered; every lever gated by document-for-document parity):
+
+1. Sub-profile the term-generation block (termgen/stem/stopper
+   construction, index_text with and without positions, prefixed terms,
+   RDF cache lookups, docdata assembly, value slots) to locate the
+   dominant sub-cost before choosing any lever.
+2. L1a (low risk): build the Stem once and lend it; keep a fresh
+   TermGenerator per document so term positions stay correct.
+3. L4 (low risk): reduce docdata string copies; serialized bytes
+   unchanged.
+4. L1b (deferred; needs a vendored xapian-rs shim to reset term
+   positions): also reuse the TermGenerator.
+5. L2/L3 (deferred; high risk, separate workstream): memoise tokenisation
+   and stemming; must reproduce index_text semantics byte-for-byte.
+
+Gate for every lever: the twin-index comparison (identical document
+data, terms with wdf and sorted positions, value slots) stays clean,
+and a lever whose measured win lands inside the run-to-run noise is
+reverted rather than shipped.
+
+## Tags
+
+* assigned: alexm
+* keywords: xapian, indexing, performance, term-generation
+* type: enhancement
+* status: open
+* priority: medium
+
+## Tasks
+
+* [] sub-profile the term-generation block
+* [] L1a: hoist the stem once
+* [] L4: docdata copy reduction (only if it measures material)
+* [] decide L1b (vendored shim) after the L1a numbers
+* [] decide L2/L3 (memoised stemming) as a separate high-risk workstream
