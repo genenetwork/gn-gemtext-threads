@@ -59,3 +59,19 @@ $ curl -X GET "http://localhost:8091"
 ```
 
 My (fredm) current guess is that some error leads the gn-guile app to enter failure mode where it drops into the debugger. The app stops being responsive, but it is not technically dead. Thus, "herd" sees it as running, but any other service depending on the application runs into the timeout issue.
+
+
+From the logs from "herd" we see that something is actually sending a gene-alias query of `"* { margin: 0; padding: 0; }"`. This implies that something that can access localhost is sending `/gene/aliases/* { margin: 0; padding: 0; }`.
+
+After a little bit of digging, it looks like this might be one of:
+
+=> genenetwork2/gn2/wqflask/search_results.py:        urljoin(GN_GUILE_SERVER_URL, f"gene/aliases/{symbol_string}"))
+=> genenetwork2/gn2/base/trait.py:                                f"gene/aliases/{self.symbol.upper()}"),
+=> genenetwork2/gn2/base/trait.py:                                f"gene/aliases/{self.symbol.capitalize()}"),
+=> genenetwork2/gn2/base/trait.py:                                f"gene/aliases/{self.symbol.lower()}"))))
+
+I tried reproducing the issue by doing a search, but that did not work.
+
+For now, I simply added some extra logging to GN2 to try and surface the issue, see
+
+=> https://github.com/genenetwork/genenetwork2/commit/d96ee76e15b6ee109e786bb82145a1574464af5d
