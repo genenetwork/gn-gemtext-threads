@@ -1,0 +1,61 @@
+# Application Frozen on Production
+
+## Tags
+
+* type: bug
+* assigned:
+* priority: high
+* status: open
+* keywords: gn-guile
+* interested: alexk, bonfacem, fredm, pjotrp
+
+## Description
+
+gn-guile, will after a while, seemingly stop responding on the port that it listens on.
+
+The container's `/var/log/gn-guile.log` file is empty.
+
+When you go into the container and check status, it indicates it's still running, e.g.
+
+```
+$ herd status gn-guile -n 200
+Status of gn-guile:
+  It is running since Wed Oct  7 19:04:55 2026 (7 days ago).
+  Main PID: 47
+  Command: /gnu/store/a2zi4xi8xnv8kaka8ka2dv6wr5ci0kzn-gn-guile-pola-wrapper 127.0.0.1 8091
+  It is enabled.
+  Provides: gn-guile
+  Requires: networking
+  Will be respawned.
+  Log file: /var/log/gn-guile.log
+
+Recent messages:
+  .
+  .
+  .
+  2026-10-09 04:40:49 ;;; ("https://query.wikidata.org/sparql?query=SELECT%20DISTINCT%20%3Fstripped_alias%0A%20%20%20%20%20%20%20%20%20%20%20%20%20WHERE%20%7B%20%3Cstyle%3E%20rdfs%3Alabel%20%3Fname%20%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20
+%20%20%20%20%20%20%20%20%20skos%3AaltLabel%20%3Falias%20.%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20BIND%20%28STR%28%3Falias%29%20%20AS%20%3Fstripped_alias%29%20.%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20
+%20%20%20FILTER%28LANG%28%
+  2026-10-09 04:40:49 3Fname%29%20%3D%20%22en%22%20%26%26%20LANG%28%3Falias%29%20%3D%20%22en%22%29.%7D")
+  2026-10-09 04:40:49
+  2026-10-09 04:40:49 ;;; ("* { margin: 0; padding: 0; }")
+  .
+  .
+  .
+```
+
+but when you check with curl:
+
+```
+$ curl -X GET "http://localhost:8091"
+curl: (28) Failed to connect to localhost port 8091 after 134008 ms: Could not connect to server
+```
+
+After restarting the application (`herd restart gn-guile`), the application starts responding normally.
+
+```
+$ curl -X GET "http://localhost:8091"
+{"name":"GeneNetwork REST API","version":"4.0.0","comment":"This is the official REST API for the GeneNetwork service hosted at https://genenetwork.org/","license":{"source code (unless otherwise specified)":"Affero GNU Public License 3.0 (AGPL3)","data (unless otherwise specified)":"Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)"},"note":"This is work in progress (WIP). Note that the final base URL will change! The temporary prefix is:","prefix":"http://localhost:8091","links":{"species":"http://localhost:8091/species.meta.json"}
+```
+
+My (fredm) current guess is that some error leads the gn-guile app to enter failure mode where it drops into the debugger. The app stops being responsive, but it is not technically dead. Thus, "herd" sees it as running, but any other service depending on the application runs into the timeout issue.
