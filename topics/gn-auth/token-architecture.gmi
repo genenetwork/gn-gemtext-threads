@@ -1,0 +1,117 @@
+# GN Token Architecture: Rob, the Agent, and the OAuth2 Flow
+
+## Tags
+
+* Assigned: alexm, pjotrp
+* Keywords: gn-auth, gn4, oauth2, token, JWT, authorization, MCP, LLM
+* Type: Design
+* Status: Draft -- for Pjotr's review
+
+
+
+## Description
+
+How authorization works across GeneNetwork once Pjotr's token plan
+("next stop: a token to query the DB", Matrix 2026-10-04) lands. This
+note is written from the consumer's perspective -- Rob, a researcher
+whose LLM agent (Claude via the MCP layer) queries GN data -- because
+the agents are the first-class API customers (Pjotr: "search is what AI
+will use first").
+
+This is NOT a new system. GeneNetwork already operates an OAuth2
+authorization server:
+
+=> https://git.genenetwork.org/gn-auth/ gn-auth repository
+
+gn-auth implements the full grant set -- authorization code, password,
+refresh token, JWT bearer -- issues JWT access tokens signed with RSA
+key-pairs (see generating-key-pairs.gmi), publishes JWKS for signature
+verification, and models users, groups, roles, privileges and
+resources. What changes with the token plan is that gn4's DB-backed
+endpoints stop serving anonymous traffic and start acting as a proper
+resource server behind gn-auth.
+
+## Actors
+
+=> ../gn4/gn4-api-foundation.gmi GN4 API foundation
+
+* Rob -- a researcher with a GN2 account.
+* Rob's agent -- Claude driving the MCP layer, calling gn4's REST API.
+* GN2 -- the web UI (genenetwork.org); Rob's entry point and the
+  broker that turns his login into API credentials.
+* gn-auth -- the OAuth2 authorization server (separate service; auth
+  DB is SQLite, user data comes from db_webqtl via SQL_URI).
+* gn4 -- the new Rust API; becomes a resource server: it verifies
+  tokens, it does not mint them.
+
+## The flow, from Rob's side
+
+1. Rob logs into GN2 with his existing account. "Force people to go
+   through GN2" (Pjotr) means literally this: the authorization-code
+   grant's entry point is the GN2 login.
+2. Rob authorizes his agent client (once). gn-auth runs the
+   authorization_code grant and returns:
+   - an access token -- a signed JWT, short-lived (OAUTH2_TOKEN_EXPIRES_IN)
+   - a refresh token -- long-lived, never sent to gn4
+3. Rob configures his MCP server once:
+   GN_API = https://genenetwork.org/...
+   GN_TOKEN = <access token>
+4. Every request the agent makes carries it:
+   GET /compute/correlation
+   Authorization: Bearer <access token>
+5. gn4 verifies the JWT -- signature against gn-auth's public key
+   (JWKS), expiry, audience -- and serves the request. Missing,
+   expired or invalid token: the standard RFC-7807 error shape with
+   status 401 and code "unauthorized" (the ApiError convention gn4
+   already implements).
+6. When the access token expires, Rob's client uses the refresh_token
+   grant to mint a new one without bothering Rob to log in again.
+
+## Why this answers the theft question
+
+Bearer tokens are credentials by possession: whoever holds the string
+can use it. gn-auth's existing design already chooses the mitigation:
+
+* access tokens are SHORT-LIVED (theft window is bounded by
+  OAUTH2_TOKEN_EXPIRES_IN, not by "until someone notices")
+* refresh tokens are never presented to resource servers, so a leak of
+  what gn4 sees (access tokens only) cannot yield long-lived access
+* tokens are attributable to a user, so abuse is traceable and
+  revocable at gn-auth
+
+No new machinery is needed for the gn4 side of this: the
+refresh/access split, expiry, and revocation already exist in gn-auth.
+
+## What gn4 must add (small)
+
+* A verification middleware on DB-backed routes (the /species,
+  /groups, traits, probesets families), reading gn-auth's JWKS at
+  startup and caching the public key. Axum/tower middleware, one
+  place, one 401 shape -- the same discipline as the request-id layer.
+* Route scoping decision: public (/, /version, /openapi.json) vs
+  protected (DB-backed). Search proxy phase A forwards to gn3, so its
+  auth question is gn3-side, not ours.
+* Service-to-service calls need their own grant choice
+  (client_credentials or jwt_bearer, both present in gn-auth) for
+  GN2->gn4 and gn3->gn4 traffic that has no interactive user.
+
+## Questions for Pjotr
+
+* Local JWT verification (JWKS, cached) or introspection against
+  gn-auth per request? Local is faster and stateless; introspection
+  gives instant revocation at the cost of a network call per request.
+  (gn-auth's resource_server.py suggests the JWKS pattern was
+  anticipated.)
+* Scope model: one scope (e.g. "data:read") to start, or split by
+  domain from day one? OAUTH2_SCOPE is configurable already.
+* Does the shared service token (phase 1, before per-user tokens
+  arrive) get modeled as a client_credentials client in gn-auth, or as
+  config-side static secret? Prefer the former -- one audit trail.
+
+## Related
+
+=> generating-key-pairs.gmi JWT signing key-pair generation
+=> ../gn4/gn4-api-foundation.gmi GN4 API foundation (proxy auth path
+   open question -- this note answers it)
+=> ../../issues/report-invalid-search-queries-over-api.gmi Search
+   error-forwarding issue (the 422 shape sits next to the future 401)

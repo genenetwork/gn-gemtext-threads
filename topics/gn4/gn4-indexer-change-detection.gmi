@@ -14,8 +14,8 @@ the fast path be the thing that proves the index correct.
 
 ## Design 1 — change detection (delta)
 
-The owner runs one-time `ALTER TABLE <t> ADD SYSTEM VERSIONING;` on the
-production tables. MariaDB then exposes `ROW_START`/`ROW_END`
+One-time `ALTER TABLE <t> ADD SYSTEM VERSIONING;` on the production
+tables -- one command per table, run on the production side. MariaDB then exposes `ROW_START`/`ROW_END`
 (`TIMESTAMP(6)`), read with plain `SELECT`. No binlog, no extra
 privileges beyond SELECT.
 
@@ -75,7 +75,7 @@ healthy long sweep does not page.
   mismatched).
 * flock: second holder skips; after `kill -9` the next one acquires.
 
-## Open questions for the owner
+## Open questions
 
 * How often are full index rebuilds expected in normal operation? This
   prices the remaining speed work.

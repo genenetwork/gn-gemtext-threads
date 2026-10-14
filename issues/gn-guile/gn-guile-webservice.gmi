@@ -1,0 +1,129 @@
+
+# GN4 Guile Webservice Documentation
+
+This is the documentation for setting gn-guile locally.
+
+## 1. Channels Setup
+
+Make sure your **channels file** includes the latest commits, especially `gn-machines`: 
+
+```
+;; guile_channels.scm
+(list
+ (channel
+  (name 'gn-machines)
+  (url "https://git.genenetwork.org/gn-machines")
+  (branch "main")
+  (commit "3b488840ff60a140f25dc1d2d24473b70a49fcc5"))
+
+ (channel
+  (name 'guix)
+  (url "https://codeberg.org/guix/guix")
+  (branch "master")
+  (commit "0a4740705090acc4c8a10d4f53afc58c9f62e980"))
+
+ (channel
+  (name 'guix-forge)
+  (url "https://git.systemreboot.net/guix-forge/")
+  (branch "main")
+  (introduction
+   (make-channel-introduction
+    "0432e37b20dd678a02efee21adf0b9525a670310"
+    (openpgp-fingerprint
+     "7F73 0343 F2F0 9F3C 77BF 79D3 2E25 EE8B 6180 2BB3"))))
+
+ (channel
+  (name 'guix-bioinformatics)
+  (url "https://git.genenetwork.org/guix-bioinformatics")
+  (branch "master")
+  (commit "9b0955f14ec725990abb1f6af3b9f171e4943f77")))
+  
+```
+
+>a Updating `gn-machines` to the latest commit fixes the previous `no code for module (config)` error. `-L ~/gn-machines` is no longer
+
+## 2. Clone Repositories
+
+### gn-guile
+```
+
+> git clone tux02.genenetwork.org:/home/git/public/gn-guile
+or
+>  https://git.genenetwork.org/gn-guile
+```
+
+
+
+### gn-docs
+```
+
+> git clone [https://git.genenetwork.org/gn-docs/](https://git.genenetwork.org/gn-docs/) ~/gn-guile-files/gn-docs
+
+```
+
+> Ensure `gn-docs-local-checkout` points to this path.
+
+## 3. Running the Web Server
+
+Navigate to `gn-guile` and start the server:
+
+```
+
+> guix shell --container --network --file=guix.scm 
+> -- guile -L . --fresh-auto-compile -e main bin/gn-guile 8091
+
+```
+
+- `--container` runs in an isolated environment  
+- `--network` allows container network access  
+- Check API root:  
+```
+
+> curl [http://127.0.0.1:8091](http://127.0.0.1:8091)
+
+```
+
+Other endpoints:
+```
+
+> curl [http://127.0.0.1:8091/home/msk](http://127.0.0.1:8091/home/msk)
+> curl [http://127.0.0.1:8091/home/aging](http://127.0.0.1:8091/home/aging)
+
+```
+
+### 3.1 Development with Emacs/Geiser
+```
+
+> guix shell --container --network --development --file=guix.scm 
+> -- guile -L . --fresh-auto-compile --listen=1970 -e main bin/gn-guile 8091
+
+```
+
+- Connect via **Emacs-Geiser** on port `1970`  
+- Update procedures live using `C-M-x`  
+- Alternatives: [ares](https://git.sr.ht/~abcdw/guile-ares-rs) and [arei](https://git.sr.ht/~abcdw/emacs-arei)
+
+## 4. Configuration Notes
+
+`gn-docs-local-checkout` must exist:
+
+```
+
+> mkdir -p ~/gn-guile-files/gn-docs
+
+```
+
+Or pass it explicitly:
+
+```
+
+> guile -e main bin/gn-guile --gn-docs-local-checkout /home/kabui/gn-guile-files/gn-docs
+
+```
+
+- Inside `--container`, bind with:  
+```
+
+> --share=$HOME/gn-guile-files=/home/kabui/gn-guile-files
+
+```

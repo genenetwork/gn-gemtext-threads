@@ -1,0 +1,73 @@
+# GN4 Guile Webservice Documentation
+
+This is the documentation for setting up the `gn-guile` webservice locally.
+
+## 1. Channels Setup
+
+Building the profile with a  channel file.
+
+
+
+```
+
+;; guile_channels.scm
+(list
+ (channel
+  (name 'gn-machines)
+  (url "https://git.genenetwork.org/gn-machines")
+  (branch "main")))
+
+
+```
+
+## 2. Clone Repositories
+
+### gn-guile
+> git clone tux02.genenetwork.org:/home/git/public/gn-guile  
+or  
+> git clone https://git.genenetwork.org/gn-guile
+
+### gn-docs
+> git clone https://git.genenetwork.org/gn-docs/ ~/gn-guile-files/gn-docs
+
+> Ensure `gn-docs-local-checkout` points to this path.
+
+## 3. Running the Web Server
+
+Navigate to `gn-guile` and start the server:
+
+> guix shell --container --network --file=guix.scm -- guile -L . --fresh-auto-compile -e main bin/gn-guile 8091
+
+- `--container` runs in an isolated environment  
+- `--network` allows container network access  
+
+Check API root:  
+> curl http://127.0.0.1:8091
+
+Other endpoints:  
+> curl http://127.0.0.1:8091/home/msk  
+> curl http://127.0.0.1:8091/home/aging
+
+### 3.1 Development with Emacs/Geiser
+
+> guix shell --container --network --development --file=guix.scm -- guile -L . --fresh-auto-compile --listen=1970 -e main bin/gn-guile 8091  --gn-docs-local-checkout /home/kabui/gn-guile-files/gn-docs
+
+- Connect via **Emacs-Geiser** on port `1970`  
+- Update procedures live using `C-M-x`  
+- Alternatives: [ares](https://git.sr.ht/~abcdw/guile-ares-rs) and [arei](https://git.sr.ht/~abcdw/emacs-arei)
+
+## 4. Configuration Notes
+
+`gn-docs-local-checkout` must exist:
+
+> mkdir -p ~/gn-guile-files/gn-docs
+
+Or pass it explicitly:
+
+> guile -e main bin/gn-guile --gn-docs-local-checkout /home/kabui/gn-guile-files/gn-docs
+
+Inside `--container`, bind with:
+
+> --share=$HOME/gn-guile-files=/home/kabui/gn-guile-files
+
+ guix shell --container --network --development --file=guix.scm  --share=/home/kabui/gn-guile-files=/home/kabui/gn-guile-files -- guile -L . --fresh-auto-compile --listen=1970 -e main bin/gn-guile --gn-docs-local-checkout "/home/kabui/gn-guile-files/gn-docs 

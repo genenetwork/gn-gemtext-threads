@@ -33,7 +33,7 @@ in ~20 seconds on any checkout:
   (production accepts them under libxapian 1.4.29) and grade as match
   shapes.
 
-Fixtures are the grading truth. If the owner changes a contract, the
+Fixtures are the grading truth. If a contract changes, the
 affected fixtures re-baseline and the harness enforces the new one --
 decisions land as single revertible commits, not silent drift.
 

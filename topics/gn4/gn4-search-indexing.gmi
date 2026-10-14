@@ -192,7 +192,7 @@ property of the data (the public datasets of the database).
   full hash sweep remains the correctness backstop and the fallback
   whenever versioning is absent or a row is changed without it. The
   row-based binlog path is dropped. This needs a one-time schema
-  change on the production tables (the owner's side).
+  change on the production tables (production side).
 - Schedule: the cron or daemon cadence, overlap protection (a mutex so
   two runs cannot interleave), and a lag bound with an alert.
 - Filter default: whether the confidential-dataset metadata is
