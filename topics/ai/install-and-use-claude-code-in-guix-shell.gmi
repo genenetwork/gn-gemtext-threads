@@ -13,6 +13,7 @@ The shell prompt looks like:
 ```
 mkdir workdir && cd workdir
 mkdir -p $HOME/.local $HOME/.cache/claude $HOME/.claude
+. ~/opt/guix-pull/etc/profile
 guix shell -C -N -F curl bash openssl nss-certs tmux coreutils grep sed jq git which gawk --share=$HOME/.local --share=$HOME/.cache/claude --share=$HOME/.claude --share=/gnu/store --share=/usr/local/guix-profiles --share=/var/guix
 curl -fvSL https://claude.ai/install.sh | bash
 ```
@@ -29,7 +30,7 @@ guix describe
 ```
 
 The installation is self contained. You probably want to make a guix manifest to run Claude inside some source directory.
-Set the path and run claude from ~/.local/bin/claude.
+Set the path and run claude from ~/.local/bin/claude. With yolo mode:
 
 ```
 . /usr/local/guix-profiles/guix-dc0ffec/etc/profile
@@ -37,10 +38,11 @@ export PATH=$PATH:$HOME/.local/bin
 export TERM=xterm
 tmux
 claude --dangerously-skip-permissions
-
 ```
 
 The key gets written to ~/.claude.json. I simply copy that to capture state. Don't add it to git though.
+
+You should set the model to 'sonnet medium' for efficiency.
 
 # See also
 
