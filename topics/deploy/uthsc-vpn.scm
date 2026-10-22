@@ -20,7 +20,7 @@
              ((gnu packages vpn) #:select (openconnect vpn-slice))
              ((gnu packages xml) #:select (python-lxml))
              (guix build-system pyproject)
-             (guix build-system python)
+             ((guix build-system python) #:select (python-build-system))
              (guix download)
              (guix gexp)
              (guix git-download)
