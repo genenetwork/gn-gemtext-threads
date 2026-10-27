@@ -1,0 +1,20 @@
+# User Registration: Spammers
+
+## Tags
+
+* type: bug
+* status: open
+* priority: high
+* assigned: fredm
+* interested: alexm, zachs, pjotrp
+* keywords: genenetwork, user, registration, user registration
+
+## Description
+
+Some user accounts are spam accounts. We need to deal with them.
+
+Some possible solutions:
+
+* Mandatory account verification (double opt-in): We already do a version of this: we should probably actually make the token unique (it is... mostly) and cryptographically secure (it is not, currently).
+* Real-time domain & MX record lookup: Check for valid mail exchanger (MX) records to immediately catch fake domains. Should do this check before attempting to send the token mentioned previously.
+* Disposable and temporary email detection: this is also a check we can do before attempting to send the token. Search for open datasets regarding these.
