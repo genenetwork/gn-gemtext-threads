@@ -6,18 +6,29 @@ mkdir workdir && cd workdir
 mkdir -p $HOME/.local $HOME/.pi
 
 . ~/opt/guix-pull/etc/profile
-guix shell -C -N -F guix gzip ncurses which findutils gawk tmux curl ripgrep fzf guix guile ruby python bash openssl nss-certs coreutils grep sed jq git xz gcc-toolchain rust rust:cargo tar --share=$HOME/.local --share=$HOME/tmp=/tmp --share=/var/guix/daemon-socket/ --expose=/gnu/store --share=$HOME/.pi
+guix shell -C -N -F guix gzip ncurses which findutils gawk tmux curl ripgrep fzf guix guile ruby python bash openssl nss-certs coreutils grep sed jq git xz gcc-toolchain rust rust:cargo tar --share=$HOME/.pi --share=$HOME/.local --share=$HOME/tmp=/tmp --share=/var/guix/daemon-socket/ --expose=/gnu/store
 
 curl -fsSL https://pi.dev/install.sh | sh
-
-export PATH="/home/wrk/.local/share/pi-node/node-v22.23.2-linux-x64/bin:$PATH"
 ```
 
-For specials
+Setup specials
 
 ```
 npx @lunaroute/cli setup pi
 ```
+
+
+check the path
+
+```
+export PATH="/home/wrk/.local/share/pi-node/node-v22.23.2-linux-x64/bin:$PATH"
+pi list
+User packages:
+  npm:@lunaroute/pi-extension
+    /home/wrk/.pi/agent/npm/node_modules/@lunaroute/pi-extension
+```
+
+Other modules
 
 ```
 pi list
