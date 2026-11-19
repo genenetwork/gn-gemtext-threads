@@ -3,7 +3,26 @@
 if you use tmux
 
 ```
-tmux set -g default-terminal "xterm-256color"
+wrk@vesuvio:~$ cat .tmux.conf
+unbind C-b
+unbind C-a
+
+set-option -g prefix C-a
+set-option -g default-terminal "xterm-256color"
+bind-key C-a send-prefix
+
+set -g history-limit 50000
+setw -g alternate-screen off
+
+# set-option -g prefix C-y
+# bind-key C-y send-prefix
+
+setw -g mode-keys vi
+
+set-window-option -g aggressive-resize
+
+mkdir -p tmp/ai-root
+cd tmp/ai-root
 tmux
 ```
 
@@ -35,6 +54,12 @@ pi list
 User packages:
   npm:@lunaroute/pi-extension
     /home/wrk/.pi/agent/npm/node_modules/@lunaroute/pi-extension
+```
+
+Run pi with scrolling
+
+```
+pi --tui-mode regular
 ```
 
 Other modules
